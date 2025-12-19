@@ -1,0 +1,65 @@
+<div id="log-container">
+    <div class="message-row">
+        <div class="avatar-box">
+            <img class="avatar" src="头像链接" onerror="this.style.visibility='hidden'">
+        </div>
+        
+        <div class="content-box">
+            <div class="user-info">
+                <span class="username" style="color: #十六进制颜色">角色名</span>
+                <span class="to-target"> > @目标名</span>
+            </div>
+            <div class="bubble">
+                <span class="channel-tag">频道名</span>
+                <div class="text">消息内容</div>
+                <div class="dice-result">骰子结果</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+.message-row {
+    display: flex;
+    margin-bottom: 15px;
+    align-items: flex-start;
+}
+
+.avatar-box {
+    width: 50px; /* 固定头像占位 */
+    flex-shrink: 0;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px; /* 圆角方框 */
+    object-fit: cover;
+}
+
+.bubble {
+    position: relative;
+    padding: 10px 15px;
+    border-radius: 12px;
+    background: #f0f2f5; /* 默认底色 */
+    margin-top: 5px;
+    min-width: 50px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.channel-tag {
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    font-size: 10px;
+    background: #e0e0e0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #666;
+}
+
+.dice-result {
+    margin-top: 5px;
+    font-style: italic;
+    color: #ff4757;
+    font-weight: bold;
+}
