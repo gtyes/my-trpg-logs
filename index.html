@@ -1,65 +1,149 @@
-<div id="log-container">
-    <div class="message-row">
-        <div class="avatar-box">
-            <img class="avatar" src="头像链接" onerror="this.style.visibility='hidden'">
-        </div>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>我的 TRPG 跑团日志</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root { --primary-bg: #f5f7f9; }
+        body { background: var(--primary-bg); font-family: "Microsoft YaHei", sans-serif; margin: 0; }
         
-        <div class="content-box">
-            <div class="user-info">
-                <span class="username" style="color: #十六进制颜色">角色名</span>
-                <span class="to-target"> > @目标名</span>
+        /* 头部样式 */
+        .header { background: #2c3e50; color: white; padding: 40px 20px; text-align: center; margin-bottom: 30px; }
+
+        /* 日志容器 */
+        .log-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+        /* 每一行消息的布局 */
+        .msg-row { display: flex; margin-bottom: 20px; position: relative; transition: all 0.3s; }
+        
+        /* 头像：圆角方框 */
+        .avatar-box { width: 50px; flex-shrink: 0; margin-right: 12px; }
+        .avatar { width: 48px; height: 48px; border-radius: 8px; background: #ddd; object-fit: cover; }
+        .avatar-empty { width: 48px; height: 48px; visibility: hidden; }
+
+        .content-box { flex-grow: 1; position: relative; }
+
+        /* 角色名与私聊对象 */
+        .user-info { font-size: 13px; margin-bottom: 4px; font-weight: bold; }
+        .to-name { color: #888; font-weight: normal; margin-left: 5px; }
+
+        /* 气泡样式 */
+        .bubble { 
+            background: white; padding: 12px 16px; border-radius: 0 12px 12px 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; min-height: 20px;
+        }
+
+        /* 频道标签 */
+        .channel-tag { 
+            position: absolute; top: -10px; right: 10px; font-size: 10px; 
+            background: #eee; padding: 2px 6px; border-radius: 4px; color: #999;
+        }
+
+        /* 骰子结果样式 */
+        .dice { color: #d63031; font-weight: bold; font-style: italic; margin-top: 5px; border-top: 1px dashed #eee; padding-top: 5px; }
+
+        /* 编辑工具栏 */
+        .edit-tools { display: none; position: absolute; left: -100px; top: 0; }
+        .is-editing .edit-tools { display: block; }
+        .control-panel { position: fixed; bottom: 20px; right: 20px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 100; }
+        
+        textarea { width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 5px; font-family: inherit; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="header animate__animated animate__fadeIn">
+        <h1>{{ title }}</h1>
+        <p>跑团时间：{{ date }}</p>
+    </div>
+
+    <div class="log-container" :class="{'is-editing': isEditing}">
+        <div v-for="(msg, index) in logs" :key="msg.id" class="msg-row animate__animated animate__fadeInUp">
+            
+            <div class="edit-tools">
+                <button @click="moveUp(index)">↑</button>
+                <button @click="moveDown(index)">↓</button>
+                <button @click="remove(index)" style="color:red">×</button>
+                <button @click="insertAfter(index)">+</button>
             </div>
-            <div class="bubble">
-                <span class="channel-tag">频道名</span>
-                <div class="text">消息内容</div>
-                <div class="dice-result">骰子结果</div>
+
+            <div class="avatar-box">
+                <img v-if="msg.icon" :src="msg.icon" class="avatar">
+                <div v-else class="avatar-empty"></div>
+            </div>
+
+            <div class="content-box">
+                <div class="user-info" :style="{color: msg.color}">
+                    {{ msg.name }}
+                    <span v-if="msg.to" class="to-name"> > @{{ msg.to }}</span>
+                </div>
+                
+                <div class="bubble">
+                    <span class="channel-tag">{{ msg.channel }}</span>
+                    
+                    <div v-if="!isEditing" class="text">{{ msg.text }}</div>
+                    <textarea v-else v-model="msg.text" rows="2"></textarea>
+                    
+                    <div v-if="msg.dice" class="dice">{{ msg.dice }}</div>
+
+                    <img v-if="msg.image" :src="msg.image" style="max-width: 100%; margin-top: 10px; border-radius: 5px;">
+                </div>
             </div>
         </div>
     </div>
+
+    <div class="control-panel">
+        <button @click="isEditing = !isEditing">
+            {{ isEditing ? '退出并预览' : '开启编辑模式' }}
+        </button>
+        <button v-if="isEditing" @click="downloadJson" style="margin-left: 10px; background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 4px;">
+            导出修改后的 JSON
+        </button>
+    </div>
 </div>
 
-.message-row {
-    display: flex;
-    margin-bottom: 15px;
-    align-items: flex-start;
-}
+<script>
+    const { createApp } = Vue;
 
-.avatar-box {
-    width: 50px; /* 固定头像占位 */
-    flex-shrink: 0;
-}
-
-.avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 8px; /* 圆角方框 */
-    object-fit: cover;
-}
-
-.bubble {
-    position: relative;
-    padding: 10px 15px;
-    border-radius: 12px;
-    background: #f0f2f5; /* 默认底色 */
-    margin-top: 5px;
-    min-width: 50px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.channel-tag {
-    position: absolute;
-    top: -8px;
-    right: 10px;
-    font-size: 10px;
-    background: #e0e0e0;
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: #666;
-}
-
-.dice-result {
-    margin-top: 5px;
-    font-style: italic;
-    color: #ff4757;
-    font-weight: bold;
-}
+    createApp({
+        data() {
+            return {
+                title: "某次精彩的 TRPG 跑团",
+                date: "2023-10-27",
+                isEditing: false,
+                logs: []
+            }
+        },
+        mounted() {
+            // 读取你抓取的 JSON 文件
+            fetch('data.json')
+                .then(res => res.json())
+                .then(data => {
+                    this.logs = data;
+                });
+        },
+        methods: {
+            remove(index) { this.logs.splice(index, 1); },
+            moveUp(index) { if(index > 0) [this.logs[index], this.logs[index-1]] = [this.logs[index-1], this.logs[index]]; },
+            moveDown(index) { if(index < this.logs.length-1) [this.logs[index], this.logs[index+1]] = [this.logs[index+1], this.logs[index]]; },
+            insertAfter(index) {
+                const newMsg = { ...this.logs[index], id: Date.now(), text: "新插入的内容", dice: null };
+                this.logs.splice(index + 1, 0, newMsg);
+            },
+            downloadJson() {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.logs, null, 2));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", "data.json");
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+            }
+        }
+    }).mount('#app')
+</script>
+</body>
+</html>
