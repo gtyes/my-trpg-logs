@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志查看器 - 旧日档案馆</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="log-viewer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="log-viewer-page">
+    <!-- 加载遮罩 -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="eldritch-spinner"></div>
+            <p>正在加载日志数据...</p>
+            <p class="loading-sub">请保持理智值</p>
+        </div>
+    </div>
+
+    <div id="app">
+        <!-- 顶部导航栏 -->
+        <nav class="top-nav">
+            <button class="nav-toggle" @click="toggleSidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="nav-center">
+                <h1 class="campaign-title">{{ title }}</h1>
+                <div class="campaign-meta">
+                    <span class="meta-item">
+                        <i class="fas fa-calendar"></i> {{ date }}
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-comments"></i> {{ totalMessages }} 条消息
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-users"></i> {{ characterCount }} 名角色
+                    </span>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <!-- 搜索框 -->
+                <div class="search-box">
+                    <input type="text" 
+                           v-model="searchQuery" 
+                           @input="performSearch"
+                           placeholder="搜索消息内容...">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <!-- 筛选按钮 -->
+                <div class="filter-dropdown">
+                    <button class="filter-btn" @click="toggleFilterDropdown">
+                        <i class="fas fa-filter"></i>
+                        筛选
+                        <span v-if="activeFiltersCount > 0" class="filter-badge">
+                            {{ activeFiltersCount }}
+                        </span>
+                    </button>
+                    
+                    <div class="filter-panel" v-show="showFilterPanel">
+                        <div class="filter-section">
+                            <h4>按角色筛选</h4>
+                            <div class="filter-options">
+                                <label v-for="character in characterList" :key="character">
+                                    <input type="checkbox" 
+                                           :value="character"
+                                           v-model="selectedCharacters">
+                                    {{ character }}
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <h4>按频道筛选</h4>
+                            <div class="filter-options">
+                                <label v-for="channel in channelList" :key="channel">
+                                    <input type="checkbox" 
+                                           :value="channel"
+                                           v-model="selectedChannels">
+                                    {{ channel }}
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <h4>时间范围</h4>
+                            <div class="date-range">
+                                <input type="date" v-model="dateRange.start">
+                                <span>至</span>
+                                <input type="date" v-model="dateRange.end">
+                            </div>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button @click="applyFilters" class="btn-apply">应用筛选</button>
+                            <button @click="clearFilters" class="btn-clear">清空</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 显示模式切换 -->
+                <div class="view-toggle">
+                    <button :class="{active: viewMode === 'paginated'}" 
+                            @click="viewMode = 'paginated'"
+                            title="分页模式">
+                        <i class="fas fa-file-alt"></i>
+                    </button>
+                    <button :class="{active: viewMode === 'continuous'}" 
+                            @click="viewMode = 'continuous'"
+                            title="连续模式">
+                        <i class="fas fa-scroll"></i>
+                    </button>
+                </div>
+                
+                <!-- 返回首页 -->
+                <a href="index.html" class="btn-home" title="返回首页">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+        </nav>
+        
+        <!-- 主要内容区域 -->
+        <div class="main-container" :class="{sidebarCollapsed: !sidebarOpen}">
+            <!-- 左侧章节导航栏 -->
+            <aside class="sidebar" v-show="sidebarOpen">
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-bookmark"></i> 章节导航</h3>
+                    <button class="sidebar-close" @click="toggleSidebar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="chapter-list">
+                    <div v-for="chapter in chapters" 
+                         :key="chapter.id"
+                         class="chapter-item"
+                         :class="{active: currentChapter === chapter.id}"
+                         @click="jumpToChapter(chapter)">
+                        <div class="chapter-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="chapter-content">
+                            <h4>{{ chapter.name }}</h4>
+                            <p class="chapter-info">
+                                第 {{ chapter.position }} 条消息开始
+                                <span v-if="chapter.page"> · 第 {{ chapter.page }} 页</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 角色列表 -->
+                <div class="character-list">
+                    <h4><i class="fas fa-users"></i> 登场角色</h4>
+                    <div class="character-tags">
+                        <span v-for="character in characterList" 
+                              :key="character"
+                              class="character-tag"
+                              :class="{active: isCharacterActive(character)}"
+                              @click="toggleCharacterFilter(character)">
+                            {{ character }}
+                        </span>
+                    </div>
+                </div>
+            </aside>
+            
+            <!-- 右侧日志内容 -->
+            <main class="log-content">
+                <!-- 分页控制 -->
+                <div class="pagination-controls" v-if="viewMode === 'paginated'">
+                    <button @click="prevPage" :disabled="currentPage === 1">
+                        <i class="fas fa-chevron-left"></i> 上一页
+                    </button>
+                    
+                    <div class="page-info">
+                        第 <input type="number" 
+                                v-model.number="jumpPage" 
+                                @keyup.enter="jumpToPage"
+                                min="1" :max="totalPages"> 
+                        页 / 共 {{ totalPages }} 页
+                        <button @click="jumpToPage" class="btn-jump">跳转</button>
+                    </div>
+                    
+                    <div class="page-stats">
+                        显示 {{ startIndex + 1 }} - {{ Math.min(endIndex, totalMessages) }} 条消息
+                    </div>
+                    
+                    <button @click="nextPage" :disabled="currentPage === totalPages">
+                        下一页 <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <!-- 搜索/筛选状态 -->
+                <div class="filter-status" v-if="isFiltered">
+                    <span class="filter-tags">
+                        当前筛选:
+                        <span v-if="searchQuery" class="filter-tag">
+                            搜索: "{{ searchQuery }}"
+                            <button @click="clearSearch"><i class="fas fa-times"></i></button>
+                        </span>
+                        <span v-for="char in selectedCharacters" :key="'char-'+char" class="filter-tag">
+                            角色: {{ char }}
+                            <button @click="removeCharacterFilter(char)"><i class="fas fa-times"></i></button>
+                        </span>
+                        <button @click="clearAllFilters" class="btn-clear-all">清除所有筛选</button>
+                    </span>
+                </div>
+                
+                <!-- 日志消息展示 -->
+                <div class="messages-container">
+                    <!-- 使用你原来的日志渲染逻辑，但应用暗黑主题 -->
+                    <template v-for="(group, groupIndex) in channelGroups" :key="groupIndex">
+                        <!-- 章节标题 -->
+                        <div v-if="group.channel === '系统' && group.messages[0] && group.messages[0].isChapter" 
+                             class="chapter-title-section"
+                             :style="getChapterStyle(group.messages[0])">
+                            <div class="chapter-title-content">
+                                {{ group.messages[0].text.replace('=== ', '').replace(' ===', '') }}
+                                <div class="chapter-divider">
+                                    <div class="divider-line"></div>
+                                    <div class="divider-symbol">✵</div>
+                                    <div class="divider-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 普通频道组 -->
+                        <div v-else class="channel-group"
+                             :class="{collapsed: isChannelCollapsed(group.channel)}"
+                             :style="getChannelBackgroundStyle(group.channel)">
+                            
+                            <!-- 频道名 -->
+                            <div class="channel-header" :style="getChannelNameStyle(group.channel)">
+                                <h3>
+                                    <i class="fas fa-hashtag"></i>
+                                    {{ group.channel }}
+                                </h3>
+                                <button class="channel-toggle" 
+                                        @click="toggleChannelCollapse(group.channel)"
+                                        v-if="group.messages.length > 3">
+                                    {{ isChannelCollapsed(group.channel) ? '展开' : '折叠' }}
+                                </button>
+                            </div>
+                            
+                            <!-- 消息列表 -->
+                            <div class="channel-messages" v-show="!isChannelCollapsed(group.channel)">
+                                <div v-for="(msg, msgIndex) in group.messages" 
+                                     :key="msg.id"
+                                     class="message-row"
+                                     :class="{
+                                         'system-message': msg.name.toLowerCase() === 'system',
+                                         'highlighted': isMessageHighlighted(msg)
+                                     }">
+                                    
+                                    <!-- 系统消息 -->
+                                    <template v-if="msg.name.toLowerCase() === 'system'">
+                                        <div class="system-message-content" :style="getSystemMessageStyle()">
+                                            <div class="system-icon">
+                                                <i class="fas fa-cog"></i>
+                                            </div>
+                                            <div class="system-text">
+                                                {{ systemSettings.prefix ? systemSettings.prefix + ' ' : '' }}{{ msg.text }}
+                                            </div>
+                                        </div>
+                                    </template>
+                                    
+                                    <!-- 普通消息 -->
+                                    <template v-else>
+                                        <div class="avatar-column">
+                                            <img v-if="msg.icon" 
+                                                 :src="msg.icon" 
+                                                 class="avatar"
+                                                 :alt="msg.name + '的头像'">
+                                            <div v-else class="avatar-placeholder">
+                                                {{ msg.name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="message-content">
+                                            <!-- 角色名 -->
+                                            <div class="message-header">
+                                                <span class="character-name" 
+                                                      :style="getCharacterNameStyle(msg.name)">
+                                                    {{ msg.name }}
+                                                    <span v-if="msg.to" class="mention">
+                                                        → @{{ msg.to }}
+                                                    </span>
+                                                </span>
+                                                <span class="message-time">
+                                                    {{ formatTime(msg.time) }}
+                                                </span>
+                                            </div>
+                                            
+                                            <!-- 消息气泡 -->
+                                            <div class="message-bubble" :style="getBubbleStyle(msg.name)">
+                                                <div class="message-text" :style="getTextStyle()">
+                                                    {{ msg.text }}
+                                                </div>
+                                                
+                                                <!-- 消息图片 -->
+                                                <div v-if="msg.messageImage" class="message-image">
+                                                    <img :src="msg.messageImage" 
+                                                         @click="previewImage(msg.messageImage)"
+                                                         :alt="'来自' + msg.name + '的图片'">
+                                                </div>
+                                                
+                                                <!-- 骰子结果 -->
+                                                <div v-if="msg.dice || msg.extend" 
+                                                     class="dice-result"
+                                                     :style="getDiceStyle(msg)">
+                                                    <div class="dice-icon">
+                                                        <i class="fas fa-dice-d20"></i>
+                                                    </div>
+                                                    <div class="dice-text">
+                                                        {{ getDiceText(msg) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <!-- 底部翻页控制 -->
+                <div class="pagination-bottom" v-if="viewMode === 'paginated'">
+                    <button @click="prevPage" :disabled="currentPage === 1">
+                        <i class="fas fa-chevron-left"></i> 上一页
+                    </button>
+                    <div class="page-indicator">
+                        第 {{ currentPage }} 页 / 共 {{ totalPages }} 页
+                    </div>
+                    <button @click="nextPage" :disabled="currentPage === totalPages">
+                        下一页 <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </main>
+        </div>
+        
+        <!-- 图片预览模态框 -->
+        <div class="image-modal" v-show="showImagePreview" @click.self="closeImagePreview">
+            <div class="modal-content">
+                <button class="modal-close" @click="closeImagePreview">
+                    <i class="fas fa-times"></i>
+                </button>
+                <img :src="previewImageUrl" alt="图片预览">
+            </div>
+        </div>
+        
+        <!-- 快速导航悬浮按钮 -->
+        <div class="quick-nav">
+            <button class="quick-btn" @click="scrollToTop" title="回到顶部">
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            <button class="quick-btn" @click="toggleSidebar" title="切换侧边栏">
+                <i class="fas fa-bars"></i>
+            </button>
+            <button class="quick-btn" @click="scrollToBottom" title="跳到底部">
+                <i class="fas fa-arrow-down"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 单独的日志查看器样式 -->
+    <link rel="stylesheet" href="log-viewer.css">
+    
+    <!-- 脚本 -->
+    <script src="log-viewer.js"></script>
+    <script>
+        // 隐藏加载动画
+        window.addEventListener('load', function() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
