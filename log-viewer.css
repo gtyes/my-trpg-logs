@@ -1,4 +1,18 @@
- /* 加载状态样式 */
+.debug-btn {
+    background: transparent;
+    border: 1px solid #ff9800;
+    color: #ff9800;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
+
+.debug-btn:hover {
+    background: rgba(255, 152, 0, 0.1);
+}
+/* 加载状态样式 */
 .loading-state {
     text-align: center;
     padding: 4rem 2rem;
