@@ -52,7 +52,14 @@
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
-                
+                    <!-- 调试按钮 -->
+    <button v-if="errorMessage" @click="showJsonContent" class="debug-btn" title="查看JSON内容">
+        <i class="fas fa-bug"></i> 调试
+    </button>
+    
+    <button v-if="errorMessage" @click="testLocalJson" class="debug-btn" title="测试文件路径">
+        <i class="fas fa-search"></i> 测试路径
+    </button>
                 <!-- 筛选按钮 -->
                 <div class="filter-dropdown">
                     <button class="filter-btn" @click="toggleFilterDropdown">
