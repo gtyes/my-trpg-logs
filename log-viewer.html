@@ -21,153 +21,76 @@
 
     <div id="app">
         <!-- 顶部导航栏 -->
-        <nav class="top-nav">
-            <button class="nav-toggle" @click="toggleSidebar">
-                <i class="fas fa-bars"></i>
+        <!-- 顶部导航栏 - 简化版 -->
+<nav class="top-nav">
+    <button class="nav-toggle" @click="toggleSidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="nav-center">
+        <h1 class="campaign-title">{{ title }}</h1>
+    </div>
+    
+    <div class="nav-actions">
+        <!-- 搜索框 -->
+        <div class="search-box">
+            <input type="text" 
+                   v-model="searchQuery" 
+                   @input="performSearch"
+                   placeholder="搜索消息内容...">
+            <button class="search-btn">
+                <i class="fas fa-search"></i>
             </button>
-            
-            <div class="nav-center">
-                <h1 class="campaign-title">{{ title }}</h1>
-                <div class="campaign-meta">
-                    <span class="meta-item">
-                        <i class="fas fa-calendar"></i> {{ date }}
-                    </span>
-                    <span class="meta-item">
-                        <i class="fas fa-comments"></i> {{ totalMessages }} 条消息
-                    </span>
-                    <span class="meta-item">
-                        <i class="fas fa-users"></i> {{ characterCount }} 名角色
-                    </span>
-                </div>
-            </div>
-            
-            <div class="nav-actions">
-                <!-- 搜索框 -->
-                <div class="search-box">
-                    <input type="text" 
-                           v-model="searchQuery" 
-                           @input="performSearch"
-                           placeholder="搜索消息内容...">
-                    <button class="search-btn">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-                <!-- 筛选按钮 -->
-                <div class="filter-dropdown">
-                    <button class="filter-btn" @click="toggleFilterDropdown">
-                        <i class="fas fa-filter"></i>
-                        筛选
-                        <span v-if="activeFiltersCount > 0" class="filter-badge">
-                            {{ activeFiltersCount }}
-                        </span>
-                    </button>
-                    
-                    <div class="filter-panel" v-show="showFilterPanel">
-                        <div class="filter-section">
-                            <h4>按角色筛选</h4>
-                            <div class="filter-options">
-                                <label v-for="character in characterList" :key="character">
-                                    <input type="checkbox" 
-                                           :value="character"
-                                           v-model="selectedCharacters">
-                                    {{ character }}
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="filter-section">
-                            <h4>按频道筛选</h4>
-                            <div class="filter-options">
-                                <label v-for="channel in channelList" :key="channel">
-                                    <input type="checkbox" 
-                                           :value="channel"
-                                           v-model="selectedChannels">
-                                    {{ channel }}
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="filter-section">
-                            <h4>时间范围</h4>
-                            <div class="date-range">
-                                <input type="date" v-model="dateRange.start">
-                                <span>至</span>
-                                <input type="date" v-model="dateRange.end">
-                            </div>
-                        </div>
-                        
-                        <div class="filter-actions">
-                            <button @click="applyFilters" class="btn-apply">应用筛选</button>
-                            <button @click="clearFilters" class="btn-clear">清空</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 显示模式切换 -->
-                <div class="view-toggle">
-                    <button :class="{active: viewMode === 'paginated'}" 
-                            @click="viewMode = 'paginated'"
-                            title="分页模式">
-                        <i class="fas fa-file-alt"></i>
-                    </button>
-                    <button :class="{active: viewMode === 'continuous'}" 
-                            @click="viewMode = 'continuous'"
-                            title="连续模式">
-                        <i class="fas fa-scroll"></i>
-                    </button>
-                </div>
-                
-                <!-- 返回首页 -->
-                <a href="index.html" class="btn-home" title="返回首页">
-                    <i class="fas fa-home"></i>
-                </a>
-            </div>
-        </nav>
+        </div>
+        
+        <!-- 显示模式切换 -->
+        <div class="view-toggle">
+            <button :class="{active: viewMode === 'paginated'}" 
+                    @click="viewMode = 'paginated'"
+                    title="分页模式">
+                <i class="fas fa-file-alt"></i>
+            </button>
+            <button :class="{active: viewMode === 'continuous'}" 
+                    @click="viewMode = 'continuous'"
+                    title="连续模式">
+                <i class="fas fa-scroll"></i>
+            </button>
+        </div>
+        
+        <!-- 返回首页 -->
+        <a href="index.html" class="btn-home" title="返回首页">
+            <i class="fas fa-home"></i>
+        </a>
+    </div>
+</nav>
         
         <!-- 主要内容区域 -->
         <div class="main-container" :class="{sidebarCollapsed: !sidebarOpen}">
             <!-- 左侧章节导航栏 -->
-            <aside class="sidebar" v-show="sidebarOpen">
-                <div class="sidebar-header">
-                    <h3><i class="fas fa-bookmark"></i> 章节导航</h3>
-                    <button class="sidebar-close" @click="toggleSidebar">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="chapter-list">
-                    <div v-for="chapter in chapters" 
-                         :key="chapter.id"
-                         class="chapter-item"
-                         :class="{active: currentChapter === chapter.id}"
-                         @click="jumpToChapter(chapter)">
-                        <div class="chapter-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="chapter-content">
-                            <h4>{{ chapter.name }}</h4>
-                            <p class="chapter-info">
-                                第 {{ chapter.position }} 条消息开始
-                                <span v-if="chapter.page"> · 第 {{ chapter.page }} 页</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 角色列表 -->
-                <div class="character-list">
-                    <h4><i class="fas fa-users"></i> 登场角色</h4>
-                    <div class="character-tags">
-                        <span v-for="character in characterList" 
-                              :key="character"
-                              class="character-tag"
-                              :class="{active: isCharacterActive(character)}"
-                              @click="toggleCharacterFilter(character)">
-                            {{ character }}
-                        </span>
-                    </div>
-                </div>
-            </aside>
+            <!-- 左侧章节导航栏 -->
+<aside class="sidebar" v-show="sidebarOpen">
+    <div class="sidebar-header">
+        <h3>章节导航</h3>
+        <button class="sidebar-close" @click="toggleSidebar">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="chapter-list">
+        <div v-for="chapter in chapters" 
+             :key="chapter.id"
+             class="chapter-item"
+             :class="{active: currentChapter === chapter.id}"
+             @click="jumpToChapter(chapter)">
+            <div class="chapter-content">
+                <h4>{{ chapter.name }}</h4>
+                <p class="chapter-info">
+                    从第 {{ chapter.position }} 条消息开始
+                </p>
+            </div>
+        </div>
+    </div>
+</aside>
             
             <!-- 右侧日志内容 -->
             <main class="log-content">
