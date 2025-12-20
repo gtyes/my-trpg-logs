@@ -211,7 +211,22 @@
                         <button @click="clearAllFilters" class="btn-clear-all">清除所有筛选</button>
                     </span>
                 </div>
-                
+                <!-- 在log-viewer.html的messages-container部分之前添加 -->
+<div v-if="isLoading" class="loading-state">
+    <div class="eldritch-spinner"></div>
+    <p>正在加载日志数据...</p>
+</div>
+
+<div v-else-if="errorMessage" class="error-state">
+    <h3><i class="fas fa-exclamation-triangle"></i> 加载失败</h3>
+    <p>{{ errorMessage }}</p>
+    <p>请检查：</p>
+    <ul>
+        <li>JSON文件路径是否正确</li>
+        <li>JSON文件格式是否正确</li>
+        <li>打开浏览器控制台(F12)查看详细错误</li>
+    </ul>
+</div>
                 <!-- 日志消息展示 -->
                 <div class="messages-container">
                     <!-- 使用你原来的日志渲染逻辑，但应用暗黑主题 -->
