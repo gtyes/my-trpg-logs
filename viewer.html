@@ -685,7 +685,13 @@ function toggleChatCollapse() {
                 // 设置标题
                 document.title = '血色毡帽 - TRPG跑团日志';
                 // 改为内联方式设置标题字符
-document.getElementById('logTitle').textContent = '血色毡帽';
+        const titleHTML = `
+            <span style="color: #8b0000;">血</span>
+            <span style="color: white;">色</span>
+            <span style="color: white;">毡</span>
+            <span style="color: white;">帽</span>
+        `;
+        document.getElementById('logTitle').innerHTML = titleHTML;
                 
                 // 设置右侧悬浮图片
                 const rightImageUrl = logData.rightFloatingImage || 'https://example.com/default-image.png';
