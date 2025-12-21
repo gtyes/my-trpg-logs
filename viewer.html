@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRPG跑团日志</title>
+    <title>血色毡帽 - TRPG跑团日志</title>
     <style>
+        /* 网站整体样式 */
         * {
             margin: 0;
             padding: 0;
@@ -13,52 +14,77 @@
         
         body {
             font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
-            background: #f5f7f9;
+            background: #f5f7f9; /* 网站背景色 */
             color: #333;
+            line-height: 1.6;
         }
         
-        /* 顶部标题栏 */
-        .top-header {
+        /* 页面容器 */
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white; /* 页面背景色 */
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        /* 模组标题 */
+        .module-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            border-radius: 10px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        
+        .module-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .module-header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* 控制栏 */
+        .control-bar {
             background: white;
             padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .log-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        
-        .top-controls {
-            display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             gap: 15px;
         }
         
-        .search-box {
-            position: relative;
-        }
-        
-        .search-box input {
-            padding: 8px 35px 8px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            width: 250px;
-        }
-        
-        .search-icon {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
+        .control-buttons {
+            display: flex;
+            gap: 10px;
         }
         
         .control-btn {
@@ -69,79 +95,253 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            transition: all 0.3s;
         }
         
         .control-btn:hover {
             background: #2980b9;
+            transform: translateY(-2px);
         }
         
-        /* 悬浮章节导航 */
-        .floating-sidebar {
-            position: fixed;
-            left: 20px;
-            top: 100px;
-            width: 250px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            z-index: 999;
-            max-height: calc(100vh - 140px);
-            overflow-y: auto;
-            display: none; /* 默认隐藏，点击按钮显示 */
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            max-width: 300px;
         }
         
-        .floating-sidebar.show {
-            display: block;
+        .search-box input {
+            width: 100%;
+            padding: 8px 35px 8px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: border-color 0.3s;
         }
         
-        .sidebar-header {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            background: #2c3e50;
-            color: white;
-            border-radius: 10px 10px 0 0;
+        .search-box input:focus {
+            outline: none;
+            border-color: #3498db;
         }
         
-        .sidebar-header h2 {
-            font-size: 1.2rem;
-            margin: 0;
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
         }
         
-        .chapter-list {
-            padding: 10px 0;
-        }
-        
-        .chapter-item {
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-            border-left: 3px solid transparent;
-        }
-        
-        .chapter-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .chapter-item.active {
-            background: #e3f2fd;
-            border-left-color: #3498db;
-        }
-        
-        /* 主内容区 */
-        .main-container {
-            max-width: 1000px;
-            margin: 0 auto;
+        /* 日志区域 */
+        .log-area {
+            position: relative;
             padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            background: #f8f9fa; /* 日志区域背景 */
+            min-height: 500px;
+        }
+        
+        /* 频道组样式 - 修复：整个组使用相同背景 */
+        .channel-group {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
             position: relative;
         }
         
-        /* 分页控件 - 居中，在内容后面 */
+        .channel-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            opacity: 0.8; /* 背景透明度 */
+        }
+        
+        .channel-group-content {
+            position: relative;
+            z-index: 1;
+            padding: 15px;
+        }
+        
+        /* 频道名样式 */
+        .channel-name {
+            text-align: center;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            padding: 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* 章节标题样式 */
+        .chapter-title {
+            text-align: center;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 40px 20px;
+            border-radius: 10px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            break-before: page;
+            page-break-before: always;
+        }
+        
+        .chapter-title::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            opacity: 0.9;
+            z-index: 1;
+        }
+        
+        .chapter-title-text {
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* 消息行样式 */
+        .message-row {
+            display: flex;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .avatar-box {
+            width: 50px;
+            flex-shrink: 0;
+            margin-right: 12px;
+            position: relative;
+        }
+        
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        
+        .content-box {
+            flex-grow: 1;
+            min-width: 0;
+        }
+        
+        /* 角色名样式 */
+        .character-name-box {
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        .character-name-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 6px;
+            z-index: 0;
+        }
+        
+        .character-name {
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .to-name {
+            color: #fff;
+            font-weight: normal;
+            margin-left: 5px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        /* 气泡样式 */
+        .message-bubble {
+            padding: 12px 15px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-top: 5px;
+        }
+        
+        .message-bubble::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -8px;
+            width: 16px;
+            height: 16px;
+            transform: translateY(10px) rotate(45deg);
+            z-index: 0;
+        }
+        
+        .message-text {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .message-image {
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .message-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        
+        .dice-result {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255,255,255,0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 系统消息 */
+        .system-message {
+            text-align: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 6px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        /* 分页控件 */
         .pagination-container {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 15px;
-            margin: 30px 0 50px 0;
+            margin: 40px 0 20px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             flex-wrap: wrap;
         }
         
@@ -153,6 +353,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            min-width: 80px;
         }
         
         .pagination-btn:disabled {
@@ -161,9 +362,10 @@
         }
         
         .pagination-info {
-            font-size: 14px;
-            color: #666;
-            margin: 0 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 0 15px;
         }
         
         .pagination-jump {
@@ -173,29 +375,111 @@
         }
         
         .pagination-jump input {
-            width: 60px;
+            width: 70px;
             padding: 8px;
-            border: 1px solid #ddd;
+            border: 2px solid #ddd;
             border-radius: 4px;
             text-align: center;
+            font-size: 14px;
+        }
+        
+        /* 悬浮章节导航 */
+        .floating-chapter-nav {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            width: 250px;
+            max-height: 70vh;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .floating-chapter-nav.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-60%) translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+            }
+        }
+        
+        .chapter-nav-header {
+            padding: 15px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 10px 10px 0 0;
+            position: sticky;
+            top: 0;
+        }
+        
+        .chapter-nav-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .chapter-nav-list {
+            padding: 10px 0;
+        }
+        
+        .chapter-nav-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .chapter-nav-item:hover {
+            background: #f5f7f9;
+            border-left-color: #3498db;
+        }
+        
+        .chapter-nav-item.active {
+            background: #e3f2fd;
+            border-left-color: #3498db;
+            font-weight: bold;
         }
         
         /* 筛选面板 */
         .filter-panel {
             position: fixed;
-            right: -350px;
-            top: 100px;
-            width: 300px;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             background: white;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            width: 280px;
             padding: 20px;
-            z-index: 999;
-            transition: right 0.3s ease;
+            z-index: 1000;
+            display: none;
         }
         
         .filter-panel.show {
-            right: 20px;
+            display: block;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateY(-60%) translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+            }
         }
         
         .filter-section {
@@ -205,123 +489,8 @@
         .filter-section h4 {
             margin-bottom: 10px;
             color: #2c3e50;
-        }
-        
-        /* 日志消息样式 */
-        .log-messages {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-        
-        /* 频道组样式 */
-        .channel-group {
-            margin-bottom: 25px;
-        }
-        
-        .channel-name {
-            text-align: center;
-            font-weight: 600;
-            margin: 15px 0;
-            padding: 8px;
-            color: #2c3e50;
-            background: rgba(52, 152, 219, 0.1);
-            border-radius: 6px;
-        }
-        
-        /* 章节标题样式 */
-        .chapter-title {
-            text-align: center;
-            font-weight: bold;
-            margin: 30px 0 20px 0;
-            padding: 30px;
-            border-radius: 10px;
-            color: white;
-            background-size: cover;
-            background-position: center;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-            break-before: page; /* 强制分页 */
-        }
-        
-        /* 消息样式 */
-        .message-row {
-            display: flex;
-            margin-bottom: 15px;
-            position: relative;
-        }
-        
-        .avatar-box {
-            width: 50px;
-            flex-shrink: 0;
-            margin-right: 12px;
-        }
-        
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        
-        .content-box {
-            flex-grow: 1;
-        }
-        
-        .character-name-box {
-            padding: 4px 10px;
-            border-radius: 6px;
-            display: inline-block;
-            margin-bottom: 6px;
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .character-name {
-            font-weight: bold;
-        }
-        
-        .to-name {
-            color: #666;
-            font-weight: normal;
-            margin-left: 5px;
-            font-size: 0.9em;
-        }
-        
-        .message-bubble {
-            padding: 10px 14px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .message-text {
-            margin-bottom: 8px;
-            line-height: 1.5;
-        }
-        
-        .dice-result {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px dashed #eee;
-            font-family: 'Consolas, Monaco, monospace';
-        }
-        
-        .system-message {
-            text-align: center;
-            margin: 10px 0;
-            padding: 10px;
-            color: #7f8c8d;
-            background: rgba(0,0,0,0.03);
-            border-radius: 6px;
-            font-size: 14px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
         }
         
         /* 加载状态 */
@@ -329,36 +498,43 @@
             text-align: center;
             padding: 50px;
             color: #7f8c8d;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
         
         /* 空状态 */
         .empty-state {
             text-align: center;
-            padding: 50px;
-            color: #7f8c8d;
+            padding: 60px 20px;
+            color: #95a5a6;
+            font-size: 1.2rem;
         }
         
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .top-header {
+            .page-container {
+                padding: 10px;
+            }
+            
+            .module-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .control-bar {
                 flex-direction: column;
-                gap: 15px;
-                padding: 15px;
+                align-items: stretch;
             }
             
-            .search-box input {
-                width: 100%;
+            .search-box {
+                max-width: 100%;
             }
             
-            .floating-sidebar {
+            .floating-chapter-nav,
+            .filter-panel {
                 width: 90%;
                 left: 5%;
-                top: 80px;
-            }
-            
-            .main-container {
-                padding: 10px;
+                right: 5%;
+                top: 100px;
+                transform: none;
             }
             
             .pagination-container {
@@ -369,66 +545,40 @@
     </style>
 </head>
 <body>
-    <!-- 顶部标题栏 -->
-    <div class="top-header">
-        <div class="log-title" id="logTitle">血色毡帽</div>
-        <div class="top-controls">
-            <button class="control-btn" onclick="toggleChapterSidebar()">📖 章节导航</button>
+    <div class="page-container">
+        <!-- 模组标题 -->
+        <div class="module-header">
+            <h1 id="moduleTitle">血色毡帽</h1>
+            <div class="subtitle" id="moduleSubtitle">TRPG跑团日志</div>
+        </div>
+        
+        <!-- 控制栏 -->
+        <div class="control-bar">
+            <div class="control-buttons">
+                <button class="control-btn" onclick="toggleChapterNav()">📖 章节导航</button>
+                <button class="control-btn" onclick="toggleFilterPanel()">🔍 筛选搜索</button>
+            </div>
+            
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="搜索消息内容...">
+                <input type="text" id="searchInput" placeholder="搜索消息内容或角色名...">
                 <span class="search-icon">🔍</span>
             </div>
-            <button class="control-btn" onclick="toggleFilterPanel()">筛选</button>
         </div>
-    </div>
-
-    <!-- 悬浮章节导航 -->
-    <div class="floating-sidebar" id="chapterSidebar">
-        <div class="sidebar-header">
-            <h2>章节导航</h2>
-        </div>
-        <div class="chapter-list" id="chapterList">
-            <!-- 动态生成 -->
-        </div>
-    </div>
-
-    <!-- 筛选面板 -->
-    <div class="filter-panel" id="filterPanel">
-        <h3 style="margin-bottom: 20px;">筛选消息</h3>
-        <div class="filter-section">
-            <h4>按角色筛选</h4>
-            <div id="characterFilters">
-                <!-- 动态生成 -->
-            </div>
-        </div>
-        <div class="filter-section">
-            <h4>按频道筛选</h4>
-            <div id="channelFilters">
-                <!-- 动态生成 -->
-            </div>
-        </div>
-        <div style="margin-top: 20px;">
-            <button class="control-btn" onclick="applyFilters()" style="width: 100%;">应用筛选</button>
-            <button class="control-btn" onclick="clearFilters()" style="width: 100%; margin-top: 10px; background: #95a5a6;">清除筛选</button>
-        </div>
-    </div>
-
-    <!-- 主内容区 -->
-    <div class="main-container">
-        <!-- 日志消息区域 -->
-        <div id="logContainer">
+        
+        <!-- 日志区域 -->
+        <div class="log-area">
             <div class="loading" id="loadingState">正在加载日志数据...</div>
-            <div class="log-messages" id="logMessages" style="display: none;">
-                <!-- 消息将动态渲染在这里 -->
+            <div id="logContent" style="display: none;">
+                <!-- 日志内容将动态渲染在这里 -->
             </div>
         </div>
-
+        
         <!-- 分页控件 -->
         <div class="pagination-container" id="paginationContainer" style="display: none;">
             <button class="pagination-btn" id="prevPageBtn" onclick="prevPage()">上一页</button>
             <div class="pagination-info">
                 第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">1</span> 页
-                <span style="margin-left: 10px;">(每页 <span id="pageSize">50</span> 条消息)</span>
+                <span style="margin-left: 10px; font-weight: normal;">(每页50条消息)</span>
             </div>
             <div class="pagination-jump">
                 <input type="number" id="jumpInput" min="1" value="1">
@@ -436,6 +586,40 @@
             </div>
             <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">下一页</button>
         </div>
+    </div>
+    
+    <!-- 悬浮章节导航 -->
+    <div class="floating-chapter-nav" id="chapterNav">
+        <div class="chapter-nav-header">
+            <h3>📚 章节导航</h3>
+        </div>
+        <div class="chapter-nav-list" id="chapterList">
+            <!-- 章节将动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 筛选面板 -->
+    <div class="filter-panel" id="filterPanel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0;">🔍 筛选搜索</h3>
+            <button onclick="clearFilters()" style="background: #95a5a6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">清除</button>
+        </div>
+        
+        <div class="filter-section">
+            <h4>角色筛选</h4>
+            <div id="characterFilters">
+                <!-- 角色复选框将动态生成 -->
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <h4>频道筛选</h4>
+            <div id="channelFilters">
+                <!-- 频道复选框将动态生成 -->
+            </div>
+        </div>
+        
+        <button class="control-btn" onclick="applyFilters()" style="width: 100%; margin-top: 10px;">应用筛选</button>
     </div>
 
     <script>
@@ -470,8 +654,12 @@
                 logData = await response.json();
                 console.log('日志数据加载成功:', logData);
                 
-                // 设置标题
-                document.getElementById('logTitle').textContent = logData.title || '血色毡帽';
+                // 设置模组标题
+                document.getElementById('moduleTitle').textContent = logData.title || '血色毡帽';
+                if (logData.date) {
+                    document.getElementById('moduleSubtitle').textContent = 
+                        `TRPG跑团日志 | ${logData.date} | ${logData.logs?.length || 0}条消息`;
+                }
                 
                 // 初始化数据
                 filteredLogs = logData.logs || [];
@@ -479,8 +667,8 @@
                 // 隐藏加载状态
                 document.getElementById('loadingState').style.display = 'none';
                 
-                // 显示消息区域和分页
-                document.getElementById('logMessages').style.display = 'block';
+                // 显示内容区域
+                document.getElementById('logContent').style.display = 'block';
                 document.getElementById('paginationContainer').style.display = 'flex';
                 
                 // 渲染章节导航
@@ -514,9 +702,9 @@
             }
             
             chapterList.innerHTML = chapters.map((chapter, index) => `
-                <div class="chapter-item" onclick="jumpToChapter(${index})">
-                    <div style="font-weight: bold; margin-bottom: 3px;">${chapter.name}</div>
-                    <div style="font-size: 0.85rem; color: #666;">消息 #${chapter.position}</div>
+                <div class="chapter-nav-item" onclick="jumpToChapter(${index})">
+                    <div style="font-weight: bold;">${chapter.name}</div>
+                    <div style="font-size: 0.85rem; color: #666; margin-top: 3px;">消息 #${chapter.position}</div>
                 </div>
             `).join('');
         }
@@ -528,15 +716,22 @@
             const logs = logData.logs;
             
             // 提取所有角色
-            const characters = [...new Set(logs.map(msg => msg.name).filter(name => name && name.toLowerCase() !== 'system'))];
+            const characters = [...new Set(logs
+                .map(msg => msg.name)
+                .filter(name => name && name.toLowerCase() !== 'system')
+            )].sort();
             
             // 提取所有频道
-            const channels = [...new Set(logs.map(msg => msg.channel).filter(channel => channel))];
+            const channels = [...new Set(logs
+                .map(msg => msg.channel)
+                .filter(channel => channel)
+            )].sort();
             
             // 渲染角色筛选
             document.getElementById('characterFilters').innerHTML = characters.map(character => `
-                <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" value="${character}" onchange="updateCharacterFilter('${character}', this.checked)" 
+                <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer; padding: 5px 0;">
+                    <input type="checkbox" value="${character}" 
+                           onchange="updateCharacterFilter('${character}', this.checked)"
                            style="margin-right: 8px;">
                     ${character}
                 </label>
@@ -544,8 +739,9 @@
             
             // 渲染频道筛选
             document.getElementById('channelFilters').innerHTML = channels.map(channel => `
-                <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" value="${channel}" onchange="updateChannelFilter('${channel}', this.checked)" 
+                <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer; padding: 5px 0;">
+                    <input type="checkbox" value="${channel}" 
+                           onchange="updateChannelFilter('${channel}', this.checked)"
                            style="margin-right: 8px;">
                     ${channel}
                 </label>
@@ -624,7 +820,6 @@
             filteredLogs = logData.logs || [];
             currentPage = 1;
             renderCurrentPage();
-            closeFilterPanel();
         }
         
         // 渲染当前页
@@ -634,7 +829,7 @@
             const pageLogs = filteredLogs.slice(startIndex, endIndex);
             
             // 渲染消息
-            const container = document.getElementById('logMessages');
+            const container = document.getElementById('logContent');
             container.innerHTML = renderLogMessages(pageLogs);
             
             // 更新分页信息
@@ -644,13 +839,13 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
-        // 渲染日志消息
+        // 渲染日志消息 - 修复频道背景问题
         function renderLogMessages(logs) {
             if (logs.length === 0) {
                 return '<div class="empty-state">没有找到匹配的消息</div>';
             }
             
-            // 按频道分组
+            // 按频道分组（同频道连续消息为一组）
             const groups = [];
             let currentGroup = null;
             
@@ -699,27 +894,30 @@
             return html;
         }
         
-        // 渲染章节
+        // 渲染章节 - 使用编辑器的章节设置
         function renderChapter(chapter) {
-            const chapterStyle = getChapterStyle(chapter);
+            const style = getChapterStyle(chapter);
             const chapterName = chapter.text.replace('=== ', '').replace(' ===', '');
             
             return `
-                <div class="chapter-title" style="${chapterStyle}">
-                    ${chapterName}
+                <div class="chapter-title" style="${style}">
+                    <div class="chapter-title-text">${chapterName}</div>
                 </div>
             `;
         }
         
-        // 渲染频道组
+        // 渲染频道组 - 修复：整个组使用相同背景
         function renderChannelGroup(group) {
             const channelStyle = getChannelBackgroundStyle(group.channel);
+            const channelNameStyle = getChannelNameStyle(group.channel);
             const messagesHtml = group.messages.map(msg => renderMessage(msg)).join('');
             
             return `
-                <div class="channel-group">
-                    <div class="channel-name" style="${channelStyle}">${group.channel}</div>
-                    ${messagesHtml}
+                <div class="channel-group" style="${channelStyle}">
+                    <div class="channel-group-content">
+                        <div class="channel-name" style="${channelNameStyle}">${group.channel}</div>
+                        ${messagesHtml}
+                    </div>
                 </div>
             `;
         }
@@ -738,7 +936,10 @@
             // 获取样式
             const nameStyle = getCharacterNameStyle(msg.name);
             const bubbleStyle = getCharacterBubbleStyle(msg.name);
-            const avatarHtml = msg.icon ? `<img src="${msg.icon}" class="avatar" alt="${msg.name}">` : '';
+            const textStyle = getDialogTextStyle();
+            const avatarHtml = msg.icon ? 
+                `<img src="${msg.icon}" class="avatar" alt="${msg.name}" onerror="this.style.display='none';">` : 
+                '';
             
             return `
                 <div class="message-row">
@@ -751,14 +952,14 @@
                             ${msg.to ? `<span class="to-name"> > @${msg.to}</span>` : ''}
                         </div>
                         <div class="message-bubble" style="${bubbleStyle}">
-                            <div class="message-text">${msg.text}</div>
+                            <div class="message-text" style="${textStyle}">${msg.text}</div>
                             ${msg.messageImage ? `
-                                <div style="margin-top: 10px; text-align: center;">
-                                    <img src="${msg.messageImage}" style="max-width: 100%; max-height: 300px; border-radius: 6px;">
+                                <div class="message-image">
+                                    <img src="${msg.messageImage}" alt="消息图片">
                                 </div>
                             ` : ''}
                             ${msg.dice || msg.extend ? `
-                                <div class="dice-result">${formatExtendContent(msg)}</div>
+                                <div class="dice-result" style="${getExtendStyle(msg)}">${formatExtendContent(msg)}</div>
                             ` : ''}
                         </div>
                     </div>
@@ -766,7 +967,7 @@
             `;
         }
         
-        // 样式获取函数
+        // 样式获取函数 - 使用编辑器的设置
         function getChapterStyle(chapter) {
             const settings = logData.chapterSettings || {};
             let style = '';
@@ -778,20 +979,26 @@
             if (settings.bold) style += `font-weight: bold;`;
             if (settings.shadow) style += `text-shadow: 1px 1px 3px rgba(0,0,0,0.5);`;
             
-            // 背景
+            // 背景 - 支持图片和颜色
             if (settings.useImage && settings.image) {
-                style += `background-image: url(${settings.image});`;
+                const opacity = settings.imageOpacity || 1.0;
+                style += `background-image: url('${settings.image}');`;
                 style += `background-size: ${settings.imageSize || 'cover'};`;
                 style += `background-position: center;`;
-                if (settings.imageOpacity !== undefined) style += `opacity: ${settings.imageOpacity};`;
+                style += `opacity: ${opacity};`;
             } else if (settings.backgroundColor) {
                 const opacity = settings.backgroundOpacity || 0.9;
-                style += `background-color: rgba(${hexToRgb(settings.backgroundColor)}, ${opacity});`;
+                const rgba = hexToRgba(settings.backgroundColor, opacity);
+                style += `background-color: ${rgba};`;
+            } else {
+                // 默认背景
+                style += 'background: linear-gradient(135deg, #3498db, #2c3e50);';
             }
             
             return style;
         }
         
+        // 获取频道背景样式 - 应用到整个频道组
         function getChannelBackgroundStyle(channel) {
             const rules = logData.channelRules || {};
             const defaultRule = logData.defaultChannelRule || {};
@@ -800,14 +1007,34 @@
             let style = '';
             
             if (rule.useImage && rule.image) {
-                style += `background-image: url(${rule.image});`;
+                const opacity = rule.imageOpacity !== undefined ? rule.imageOpacity : 1.0;
+                style += `background-image: url('${rule.image}');`;
                 style += `background-size: ${rule.imageSize || 'cover'};`;
                 style += `background-position: center;`;
-                if (rule.imageOpacity !== undefined) style += `opacity: ${rule.imageOpacity};`;
+                style += `opacity: ${opacity};`;
             } else if (rule.color) {
-                const opacity = rule.opacity || 0.1;
-                style += `background-color: rgba(${hexToRgb(rule.color)}, ${opacity});`;
+                const opacity = rule.opacity !== undefined ? rule.opacity : 0.1;
+                const rgba = hexToRgba(rule.color, opacity);
+                style += `background-color: ${rgba};`;
+            } else {
+                // 使用默认设置
+                const opacity = defaultRule.opacity || 0.1;
+                const rgba = hexToRgba(defaultRule.color, opacity);
+                style += `background-color: ${rgba};`;
             }
+            
+            return style;
+        }
+        
+        // 获取频道名字体样式
+        function getChannelNameStyle(channel) {
+            const fontSettings = logData.fontSettings || {};
+            let style = '';
+            
+            // 字体
+            if (fontSettings.channelName) style += `font-family: ${fontSettings.channelName};`;
+            if (fontSettings.channelNameColor) style += `color: ${fontSettings.channelNameColor};`;
+            if (fontSettings.channelNameSize) style += `font-size: ${fontSettings.channelNameSize}px;`;
             
             return style;
         }
@@ -824,18 +1051,26 @@
             if (fontSettings.characterName) style += `font-family: ${fontSettings.characterName};`;
             if (fontSettings.characterNameSize) style += `font-size: ${fontSettings.characterNameSize}px;`;
             
-            // 颜色
-            if (rule.nameColor) style += `color: ${rule.nameColor};`;
+            // 颜色 - 优先使用角色规则中的颜色
+            if (rule.nameColor) {
+                style += `color: ${rule.nameColor};`;
+            }
             
             // 背景
             if (rule.nameUseImage && rule.nameImage) {
-                style += `background-image: url(${rule.nameImage});`;
+                const opacity = rule.nameImageOpacity !== undefined ? rule.nameImageOpacity : 1.0;
+                style += `background-image: url('${rule.nameImage}');`;
                 style += `background-size: ${rule.nameImageSize || 'cover'};`;
                 style += `background-position: center;`;
-                if (rule.nameImageOpacity !== undefined) style += `opacity: ${rule.nameImageOpacity};`;
+                style += `opacity: ${opacity};`;
             } else if (rule.nameBackground) {
-                const opacity = rule.nameOpacity || 0.85;
-                style += `background-color: rgba(${hexToRgb(rule.nameBackground)}, ${opacity});`;
+                const opacity = rule.nameOpacity !== undefined ? rule.nameOpacity : 0.85;
+                const rgba = hexToRgba(rule.nameBackground, opacity);
+                style += `background-color: ${rgba};`;
+            } else if (defaultRule.nameBackground) {
+                const opacity = defaultRule.nameOpacity || 0.85;
+                const rgba = hexToRgba(defaultRule.nameBackground, opacity);
+                style += `background-color: ${rgba};`;
             }
             
             return style;
@@ -848,21 +1083,63 @@
             
             let style = '';
             
-            // 字体设置
+            // 背景
+            if (rule.bubbleUseImage && rule.bubbleImage) {
+                const opacity = rule.bubbleImageOpacity !== undefined ? rule.bubbleImageOpacity : 1.0;
+                style += `background-image: url('${rule.bubbleImage}');`;
+                style += `background-size: ${rule.bubbleImageSize || 'cover'};`;
+                style += `background-position: center;`;
+                style += `opacity: ${opacity};`;
+            } else if (rule.bubbleColor) {
+                const opacity = rule.bubbleOpacity !== undefined ? rule.bubbleOpacity : 0.85;
+                const rgba = hexToRgba(rule.bubbleColor, opacity);
+                style += `background-color: ${rgba};`;
+                
+                // 气泡尖角
+                style += `--bubble-color: ${rgba};`;
+            } else if (defaultRule.bubbleColor) {
+                const opacity = defaultRule.bubbleOpacity || 0.85;
+                const rgba = hexToRgba(defaultRule.bubbleColor, opacity);
+                style += `background-color: ${rgba};`;
+                style += `--bubble-color: ${rgba};`;
+            } else {
+                // 默认气泡颜色
+                style += 'background-color: rgba(255, 255, 255, 0.95);';
+                style += '--bubble-color: rgba(255, 255, 255, 0.95);';
+            }
+            
+            return style;
+        }
+        
+        function getDialogTextStyle() {
             const fontSettings = logData.fontSettings || {};
+            let style = '';
+            
             if (fontSettings.dialogText) style += `font-family: ${fontSettings.dialogText};`;
             if (fontSettings.dialogTextColor) style += `color: ${fontSettings.dialogTextColor};`;
             if (fontSettings.dialogTextSize) style += `font-size: ${fontSettings.dialogTextSize}px;`;
             
-            // 背景
-            if (rule.bubbleUseImage && rule.bubbleImage) {
-                style += `background-image: url(${rule.bubbleImage});`;
-                style += `background-size: ${rule.bubbleImageSize || 'cover'};`;
-                style += `background-position: center;`;
-                if (rule.bubbleImageOpacity !== undefined) style += `opacity: ${rule.bubbleImageOpacity};`;
-            } else if (rule.bubbleColor) {
-                const opacity = rule.bubbleOpacity || 0.85;
-                style += `background-color: rgba(${hexToRgb(rule.bubbleColor)}, ${opacity});`;
+            return style;
+        }
+        
+        function getExtendStyle(msg) {
+            const resultType = getExtendResultType(msg);
+            const extendFormats = logData.extendFormats || {};
+            let style = '';
+            
+            // 基础extend设置
+            const fontSettings = logData.fontSettings || {};
+            if (fontSettings.extendText) style += `font-family: ${fontSettings.extendText};`;
+            if (fontSettings.extendTextColor) style += `color: ${fontSettings.extendTextColor};`;
+            if (fontSettings.extendTextSize) style += `font-size: ${fontSettings.extendTextSize}px;`;
+            
+            // 根据结果类型应用特殊格式
+            if (resultType !== 'normal' && extendFormats[resultType]) {
+                const format = extendFormats[resultType];
+                if (format.color) style += `color: ${format.color};`;
+                if (format.fontFamily) style += `font-family: ${format.fontFamily};`;
+                if (format.fontSize) style += `font-size: ${format.fontSize}px;`;
+                if (format.bold) style += `font-weight: bold;`;
             }
             
             return style;
@@ -887,8 +1164,37 @@
             return msg.dice || '';
         }
         
-        function hexToRgb(hex) {
-            if (!hex) return '0, 0, 0';
+        function getExtendResultType(msg) {
+            const extendText = formatExtendContent(msg);
+            if (!extendText) return 'normal';
+            
+            const text = extendText.toLowerCase();
+            
+            // 检查大失败
+            if (text.includes('大失败') || text.includes('critical failure')) {
+                return 'criticalFailure';
+            }
+            
+            // 检查大成功
+            if (text.includes('大成功') || text.includes('critical success')) {
+                return 'criticalSuccess';
+            }
+            
+            // 检查普通成功
+            if (text.includes('成功') || text.includes('success')) {
+                return 'success';
+            }
+            
+            // 检查普通失败
+            if (text.includes('失败') || text.includes('failure')) {
+                return 'failure';
+            }
+            
+            return 'normal';
+        }
+        
+        function hexToRgba(hex, opacity) {
+            if (!hex) return `rgba(255, 255, 255, ${opacity})`;
             
             hex = hex.replace(/^#/, '');
             if (hex.length === 3) {
@@ -899,7 +1205,7 @@
             const g = parseInt(hex.substring(2, 4), 16);
             const b = parseInt(hex.substring(4, 6), 16);
             
-            return `${r}, ${g}, ${b}`;
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
         }
         
         // 分页功能
@@ -907,11 +1213,10 @@
             const totalPages = Math.ceil(filteredLogs.length / pageSize);
             document.getElementById('currentPage').textContent = currentPage;
             document.getElementById('totalPages').textContent = totalPages;
-            document.getElementById('pageSize').textContent = pageSize;
+            document.getElementById('jumpInput').value = currentPage;
             
             document.getElementById('prevPageBtn').disabled = currentPage === 1;
             document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-            document.getElementById('jumpInput').value = currentPage;
         }
         
         function prevPage() {
@@ -961,28 +1266,30 @@
                     if (filteredIndex !== -1) {
                         currentPage = Math.floor(filteredIndex / pageSize) + 1;
                         renderCurrentPage();
-                        closeChapterSidebar();
+                        closeChapterNav();
                     }
                 }
             }
         }
         
         // UI控制函数
-        function toggleChapterSidebar() {
-            document.getElementById('chapterSidebar').classList.toggle('show');
+        function toggleChapterNav() {
+            const nav = document.getElementById('chapterNav');
+            nav.classList.toggle('show');
             if (document.getElementById('filterPanel').classList.contains('show')) {
                 closeFilterPanel();
             }
         }
         
-        function closeChapterSidebar() {
-            document.getElementById('chapterSidebar').classList.remove('show');
+        function closeChapterNav() {
+            document.getElementById('chapterNav').classList.remove('show');
         }
         
         function toggleFilterPanel() {
-            document.getElementById('filterPanel').classList.toggle('show');
-            if (document.getElementById('chapterSidebar').classList.contains('show')) {
-                closeChapterSidebar();
+            const panel = document.getElementById('filterPanel');
+            panel.classList.toggle('show');
+            if (document.getElementById('chapterNav').classList.contains('show')) {
+                closeChapterNav();
             }
         }
         
@@ -999,13 +1306,13 @@
         
         // 点击外部关闭面板
         document.addEventListener('click', function(event) {
-            const chapterSidebar = document.getElementById('chapterSidebar');
+            const chapterNav = document.getElementById('chapterNav');
             const filterPanel = document.getElementById('filterPanel');
-            const chapterBtn = document.querySelector('[onclick="toggleChapterSidebar()"]');
+            const chapterBtn = document.querySelector('[onclick="toggleChapterNav()"]');
             const filterBtn = document.querySelector('[onclick="toggleFilterPanel()"]');
             
-            if (!chapterSidebar.contains(event.target) && !chapterBtn.contains(event.target)) {
-                closeChapterSidebar();
+            if (!chapterNav.contains(event.target) && !chapterBtn.contains(event.target)) {
+                closeChapterNav();
             }
             
             if (!filterPanel.contains(event.target) && !filterBtn.contains(event.target)) {
