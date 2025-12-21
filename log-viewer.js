@@ -4,18 +4,17 @@ createApp({
     data() {
         return {
             // 日志数据
-            title: '',
+            title: '加载中...',
             date: '',
             logs: [],
             chapters: [],
             
-            // 设置（从JSON导入）
+            // 设置（完全从JSON导入，不覆盖）
             fontSettings: {},
             systemSettings: {},
             chapterSettings: {},
             channelRules: {},
             characterRules: {},
-            globalChannelSettings: {},
             defaultChannelRule: {},
             defaultCharacterRule: {},
             extendFormats: {},
@@ -25,29 +24,21 @@ createApp({
             pageSize: 50,
             jumpPage: null,
             totalPages: 1,
-            viewMode: 'paginated', // 'paginated' 或 'continuous'
             
-            // 筛选和搜索
+            // 搜索
             searchQuery: '',
-            selectedCharacters: [],
-            selectedChannels: [],
-            dateRange: {
-                start: '',
-                end: ''
-            },
-            showFilterPanel: false,
             
             // 界面状态
             sidebarOpen: true,
             showImagePreview: false,
             previewImageUrl: '',
-            
-            // 频道折叠状态
-            collapsedChannels: {},
-            
-            // 加载状态
             isLoading: true,
-            errorMessage: ''
+            errorMessage: '',
+            
+            // 页面背景设置
+            pageBackground: '',
+            navBackground: '',
+            sidebarBackground: ''
         }
     },
     computed: {
@@ -65,35 +56,9 @@ createApp({
             return Math.min(this.startIndex + this.pageSize, this.logs.length);
         },
         
-        // 当前页的消息（已筛选）
+        // 当前页的消息
         paginatedLogs() {
-            let filtered = this.filteredLogs;
-            
-            // 分页
-            if (this.viewMode === 'paginated') {
-                return filtered.slice(this.startIndex, this.endIndex);
-            }
-            
-            return filtered;
-        },
-        
-        // 筛选后的日志（不分页）
-        filteredLogs() {
             let filtered = this.logs;
-            
-            // 应用角色筛选
-            if (this.selectedCharacters.length > 0) {
-                filtered = filtered.filter(msg => 
-                    this.selectedCharacters.includes(msg.name)
-                );
-            }
-            
-            // 应用频道筛选
-            if (this.selectedChannels.length > 0) {
-                filtered = filtered.filter(msg => 
-                    this.selectedChannels.includes(msg.channel)
-                );
-            }
             
             // 应用搜索
             if (this.searchQuery) {
@@ -101,38 +66,14 @@ createApp({
                 filtered = filtered.filter(msg => 
                     msg.text.toLowerCase().includes(query) ||
                     msg.name.toLowerCase().includes(query) ||
-                    (msg.dice && msg.dice.toLowerCase().includes(query)) ||
-                    (msg.extend && typeof msg.extend === 'string' && msg.extend.toLowerCase().includes(query)) ||
-                    (msg.extend && typeof msg.extend === 'object' && JSON.stringify(msg.extend).toLowerCase().includes(query))
+                    (msg.dice && msg.dice.toLowerCase().includes(query))
                 );
             }
             
-            return filtered;
+            return filtered.slice(this.startIndex, this.endIndex);
         },
         
-        // 角色列表
-        characterList() {
-            const characters = new Set();
-            this.logs.forEach(msg => {
-                if (msg.name && msg.name.toLowerCase() !== 'system' && !msg.isChapter) {
-                    characters.add(msg.name);
-                }
-            });
-            return Array.from(characters).sort();
-        },
-        
-        // 频道列表
-        channelList() {
-            const channels = new Set();
-            this.logs.forEach(msg => {
-                if (msg.channel && !msg.isChapter) {
-                    channels.add(msg.channel);
-                }
-            });
-            return Array.from(channels).sort();
-        },
-        
-        // 频道分组（使用你的编辑器逻辑）
+        // 频道分组
         channelGroups() {
             const groups = [];
             let currentGroup = null;
@@ -176,26 +117,6 @@ createApp({
             }
             
             return groups;
-        },
-        
-        // 活跃筛选数量
-        activeFiltersCount() {
-            let count = 0;
-            if (this.searchQuery) count++;
-            count += this.selectedCharacters.length;
-            count += this.selectedChannels.length;
-            if (this.dateRange.start || this.dateRange.end) count++;
-            return count;
-        },
-        
-        // 是否有筛选
-        isFiltered() {
-            return this.activeFiltersCount > 0;
-        },
-        
-        // 角色数量
-        characterCount() {
-            return this.characterList.length;
         }
     },
     mounted() {
@@ -212,183 +133,104 @@ createApp({
                 const urlParams = new URLSearchParams(window.location.search);
                 let logFile = urlParams.get('log');
                 
-                // 如果没有指定log参数，尝试默认路径
                 if (!logFile) {
-                    logFile = 'data/log-demo.json';
+                    // 如果没有指定，尝试默认路径
+                    const cards = document.querySelectorAll('.log-card');
+                    if (cards.length > 0) {
+                        logFile = cards[0].dataset.logFile;
+                    } else {
+                        logFile = 'data/log.json';
+                    }
                 }
                 
                 console.log('正在加载日志文件:', logFile);
                 
                 const response = await fetch(logFile);
                 if (!response.ok) {
-                    throw new Error(`HTTP错误 ${response.status}: ${response.statusText}`);
+                    throw new Error(`文件加载失败: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                console.log('日志数据加载成功:', data);
+                console.log('日志数据加载成功', data);
                 
-                // 导入数据 - 兼容不同格式
-                this.title = data.title || '未命名模组';
-                this.date = data.date || new Date().toISOString().split('T')[0];
+                // 设置页面标题
+                this.title = data.title || 'TRPG跑团日志';
+                document.title = this.title;
                 
-                // 处理日志数组 - 兼容多种格式
+                // 导入日志数据
                 if (Array.isArray(data.logs)) {
                     this.logs = this.processLogArray(data.logs);
                 } else if (Array.isArray(data)) {
-                    // 如果data本身就是数组（可能是旧的格式）
                     this.logs = this.processLogArray(data);
                 } else {
-                    throw new Error('日志数据格式不正确：缺少logs数组');
+                    throw new Error('日志数据格式不正确');
                 }
                 
-                // 导入设置 - 提供默认值
-                this.fontSettings = data.fontSettings || {
-                    channelName: '',
-                    channelNameColor: '#2c3e50',
-                    channelNameSize: 14,
-                    characterName: '',
-                    characterNameColor: '#000000',
-                    characterNameSize: 13,
-                    dialogText: '',
-                    dialogTextColor: '#000000',
-                    dialogTextSize: 14,
-                    extendText: 'Consolas, Monaco, monospace',
-                    extendTextColor: '#000000',
-                    extendTextSize: 13
-                };
-                
-                this.systemSettings = data.systemSettings || {
-                    fontFamily: 'Consolas, Monaco, monospace',
-                    color: '#7f8c8d',
-                    fontSize: 12,
-                    italic: false,
-                    bold: false,
-                    underline: false,
-                    prefix: 'system:'
-                };
-                
-                this.chapterSettings = data.chapterSettings || {
-                    fontFamily: 'Microsoft YaHei, 微软雅黑',
-                    color: '#ffffff',
-                    fontSize: 20,
-                    useImage: false,
-                    image: '',
-                    imageSize: 'cover',
-                    imageOpacity: 1.0,
-                    backgroundColor: '#3498db',
-                    backgroundOpacity: 0.9,
-                    bold: true,
-                    shadow: true
-                };
-                
+                // 导入所有设置 - 完全按照JSON的，不覆盖
+                this.fontSettings = data.fontSettings || {};
+                this.systemSettings = data.systemSettings || {};
+                this.chapterSettings = data.chapterSettings || {};
                 this.channelRules = data.channelRules || {};
                 this.characterRules = data.characterRules || {};
-                this.globalChannelSettings = data.globalChannelSettings || {
-                    autoCollapseOther: false,
-                    showCollapseButtons: true,
-                    collapsedChannels: {}
-                };
-                
-                this.defaultChannelRule = data.defaultChannelRule || {
-                    useImage: false,
-                    color: '#2c3e50',
-                    opacity: 0.1,
-                    image: '',
-                    imageSize: 'cover',
-                    imageOpacity: 1.0,
-                    useMask: false,
-                    maskColor: '#cccccc',
-                    maskOpacity: 0.3,
-                    collapsed: false
-                };
-                
-                this.defaultCharacterRule = data.defaultCharacterRule || {
-                    nameColor: '#000000',
-                    nameUseImage: false,
-                    nameBackground: '#ffffff',
-                    nameOpacity: 0.85,
-                    nameImage: '',
-                    nameImageSize: 'cover',
-                    nameImageOpacity: 1.0,
-                    bubbleUseImage: false,
-                    bubbleColor: '#ffffff',
-                    bubbleOpacity: 0.85,
-                    bubbleImage: '',
-                    bubbleImageSize: 'cover',
-                    bubbleImageOpacity: 1.0
-                };
-                
-                this.extendFormats = data.extendFormats || {
-                    success: { color: '#27ae60', fontFamily: '', fontSize: 13, bold: true },
-                    failure: { color: '#e74c3c', fontFamily: '', fontSize: 13, bold: true },
-                    criticalFailure: { color: '#c0392b', fontFamily: '', fontSize: 14, bold: true, image: '', imageOpacity: 1.0 },
-                    criticalSuccess: { color: '#f39c12', fontFamily: '', fontSize: 14, bold: true, image: '', imageOpacity: 1.0 }
-                };
+                this.defaultChannelRule = data.defaultChannelRule || {};
+                this.defaultCharacterRule = data.defaultCharacterRule || {};
+                this.extendFormats = data.extendFormats || {};
                 
                 // 章节数据
                 this.chapters = data.chapters || [];
                 
-                // 处理章节：如果没有章节数据，从日志中提取章节标记
+                // 如果没有章节数据，从日志中提取
                 if (this.chapters.length === 0) {
                     this.extractChaptersFromLogs();
                 }
                 
-                // 计算总页数
-                this.totalPages = Math.ceil(this.logs.length / this.pageSize) || 1;
+                // 计算章节所在的页面
+                this.calculateChapterPages();
                 
-                console.log('日志处理完成:', this.logs.length, '条消息');
+                // 计算总页数
+                this.totalPages = Math.ceil(this.logs.length / this.pageSize);
+                
+                // 应用背景设置（如果JSON中有）
+                this.applyBackgroundSettings(data);
+                
                 this.isLoading = false;
                 
             } catch (error) {
                 console.error('加载日志失败:', error);
-                this.errorMessage = `加载日志失败：${error.message}`;
+                this.errorMessage = error.message;
                 this.isLoading = false;
-                
-                // 显示错误信息
-                alert(this.errorMessage + '\n请检查：\n1. JSON文件路径是否正确\n2. JSON文件格式是否正确\n3. 浏览器控制台查看详细错误');
             }
         },
         
         // 处理日志数组
         processLogArray(logArray) {
-            return logArray.map((log, index) => {
-                // 确保所有必需字段都有默认值
-                const processedLog = {
-                    id: log.id || `msg-${Date.now()}-${index}`,
-                    name: log.name || '未知角色',
-                    text: log.text || '',
-                    color: log.color || '#000000',
-                    channel: log.channel || '默认频道',
-                    icon: log.icon || null,
-                    dice: log.dice || null,
-                    extend: log.extend || null,
-                    to: log.to || null,
-                    time: log.time || new Date().toISOString(),
-                    messageImage: log.messageImage || null,
-                    isChapter: log.isChapter || false,
-                    
-                    // 处理图像设置
-                    nameUseImage: log.nameUseImage || false,
-                    nameBackground: log.nameBackground || null,
-                    nameOpacity: log.nameOpacity !== undefined ? log.nameOpacity : 0.85,
-                    nameImage: log.nameImage || '',
-                    nameImageSize: log.nameImageSize || 'cover',
-                    nameImageOpacity: log.nameImageOpacity !== undefined ? log.nameImageOpacity : 1.0,
-                    bubbleUseImage: log.bubbleUseImage || false,
-                    bubbleColor: log.bubbleColor || null,
-                    bubbleOpacity: log.bubbleOpacity !== undefined ? log.bubbleOpacity : 0.85,
-                    bubbleImage: log.bubbleImage || '',
-                    bubbleImageSize: log.bubbleImageSize || 'cover',
-                    bubbleImageOpacity: log.bubbleImageOpacity !== undefined ? log.bubbleImageOpacity : 1.0
-                };
-                
-                // 如果是章节消息，确保频道为"系统"
-                if (processedLog.isChapter) {
-                    processedLog.channel = '系统';
-                }
-                
-                return processedLog;
-            });
+            return logArray.map((log, index) => ({
+                id: log.id || `msg-${index}`,
+                name: log.name || '未知角色',
+                text: log.text || '',
+                color: log.color || '#000000',
+                channel: log.channel || '默认频道',
+                icon: log.icon || null, // 没有头像就保持null
+                dice: log.dice || null,
+                extend: log.extend || null,
+                to: log.to || null,
+                time: log.time || '',
+                messageImage: log.messageImage || null,
+                isChapter: log.isChapter || false,
+                // 消息级别的设置
+                nameUseImage: log.nameUseImage || false,
+                nameBackground: log.nameBackground || null,
+                nameOpacity: log.nameOpacity,
+                nameImage: log.nameImage || '',
+                nameImageSize: log.nameImageSize || 'cover',
+                nameImageOpacity: log.nameImageOpacity,
+                bubbleUseImage: log.bubbleUseImage || false,
+                bubbleColor: log.bubbleColor || null,
+                bubbleOpacity: log.bubbleOpacity,
+                bubbleImage: log.bubbleImage || '',
+                bubbleImageSize: log.bubbleImageSize || 'cover',
+                bubbleImageOpacity: log.bubbleImageOpacity
+            }));
         },
         
         // 从日志中提取章节信息
@@ -396,9 +238,8 @@ createApp({
             const chapters = [];
             
             this.logs.forEach((msg, index) => {
-                // 检查是否是章节标记（根据你的编辑器格式）
                 if (msg.isChapter || 
-                    (msg.name.toLowerCase() === 'system' && 
+                    (msg.name === '系统' && 
                      msg.text && 
                      msg.text.startsWith('===') && 
                      msg.text.endsWith('==='))) {
@@ -408,8 +249,7 @@ createApp({
                     chapters.push({
                         id: msg.id || `chapter-${index}`,
                         name: chapterName || `章节 ${chapters.length + 1}`,
-                        position: index + 1,
-                        page: Math.floor(index / this.pageSize) + 1
+                        position: index + 1
                     });
                 }
             });
@@ -417,9 +257,36 @@ createApp({
             this.chapters = chapters;
         },
         
+        // 计算章节所在的页面
+        calculateChapterPages() {
+            this.chapters.forEach(chapter => {
+                const position = chapter.position || 1;
+                chapter.page = Math.ceil(position / this.pageSize);
+            });
+        },
+        
+        // 应用背景设置
+        applyBackgroundSettings(data) {
+            // 检查是否有背景设置
+            if (data.pageBackground) {
+                this.pageBackground = data.pageBackground;
+                document.documentElement.style.setProperty('--bg-image', `url(${data.pageBackground})`);
+            }
+            
+            if (data.navBackground) {
+                this.navBackground = data.navBackground;
+                document.documentElement.style.setProperty('--nav-bg-image', `url(${data.navBackground})`);
+            }
+            
+            if (data.sidebarBackground) {
+                this.sidebarBackground = data.sidebarBackground;
+                document.documentElement.style.setProperty('--sidebar-bg-image', `url(${data.sidebarBackground})`);
+            }
+        },
+        
         // 获取系统消息频道
         getSystemMessageChannel(msg) {
-            if (msg.isChapter || msg.channel === '系统') return '系统';
+            if (msg.isChapter) return '系统';
             
             const msgIndex = this.logs.findIndex(log => log.id === msg.id);
             if (msgIndex === -1) return '系统';
@@ -435,20 +302,28 @@ createApp({
             return '系统';
         },
         
-        // 判断是否为非主频道
-        isNonMainChannel(channel) {
-            if (!channel) return false;
+        // 标题样式
+        getTitleStyle() {
+            const style = {};
             
-            const otherChannels = ['闲聊', 'other', '其他', '聊天', '杂谈', '闲谈'];
-            return otherChannels.some(otherChannel => 
-                channel.toLowerCase().includes(otherChannel.toLowerCase()));
+            if (this.fontSettings.channelName) {
+                style.fontFamily = this.fontSettings.channelName;
+            }
+            if (this.fontSettings.channelNameColor) {
+                style.color = this.fontSettings.channelNameColor;
+            }
+            if (this.fontSettings.channelNameSize) {
+                style.fontSize = `${this.fontSettings.channelNameSize}px`;
+            }
+            
+            return style;
         },
         
         // 章节样式
         getChapterStyle(chapterMsg) {
             const style = {};
             
-            // 应用章节设置
+            // 完全按照JSON中的章节设置
             if (this.chapterSettings.fontFamily) {
                 style.fontFamily = this.chapterSettings.fontFamily;
             }
@@ -465,7 +340,7 @@ createApp({
                 style.textShadow = '1px 1px 2px rgba(0,0,0,0.3)';
             }
             
-            // 背景设置
+            // 背景
             if (this.chapterSettings.useImage && this.chapterSettings.image) {
                 const opacity = this.chapterSettings.imageOpacity || 1.0;
                 style.backgroundImage = `url(${this.chapterSettings.image})`;
@@ -473,29 +348,18 @@ createApp({
                 style.backgroundPosition = 'center';
                 style.backgroundRepeat = this.chapterSettings.imageSize === 'repeat' ? 'repeat' : 'no-repeat';
                 style.opacity = opacity;
-            } else {
+            } else if (this.chapterSettings.backgroundColor) {
                 const opacity = this.chapterSettings.backgroundOpacity || 0.9;
-                const bgColor = this.chapterSettings.backgroundColor || '#3498db';
-                style.backgroundColor = this.hexToRgba(bgColor, opacity);
+                style.backgroundColor = this.hexToRgba(this.chapterSettings.backgroundColor, opacity);
             }
             
             return style;
         },
         
-        // 跳转到章节
-        jumpToChapter(chapter) {
-            const chapterIndex = this.logs.findIndex(msg => msg.id === chapter.id);
-            if (chapterIndex !== -1) {
-                const targetPage = Math.floor(chapterIndex / this.pageSize) + 1;
-                this.currentPage = targetPage;
-                this.scrollToTop();
-            }
-        },
-        
         // 频道背景样式
         getChannelBackgroundStyle(channel) {
             const rule = this.channelRules[channel];
-            let style = {};
+            const style = {};
             
             if (rule) {
                 if (rule.useImage && rule.image) {
@@ -509,17 +373,10 @@ createApp({
                     const opacity = rule.opacity !== undefined ? rule.opacity : 0.1;
                     style.backgroundColor = this.hexToRgba(rule.color, opacity);
                 }
-            }
-            
-            // 默认样式
-            if (!style.backgroundColor && !style.backgroundImage) {
+            } else if (this.defaultChannelRule.color) {
                 const opacity = this.defaultChannelRule.opacity !== undefined ? this.defaultChannelRule.opacity : 0.1;
-                style.backgroundColor = this.hexToRgba(this.defaultChannelRule.color || '#2c3e50', opacity);
+                style.backgroundColor = this.hexToRgba(this.defaultChannelRule.color, opacity);
             }
-            
-            // 添加边框
-            style.border = '1px solid rgba(45, 45, 66, 0.5)';
-            style.borderRadius = '8px';
             
             return style;
         },
@@ -528,6 +385,7 @@ createApp({
         getChannelNameStyle(channel) {
             const style = {};
             
+            // 使用字体设置
             if (this.fontSettings.channelName) {
                 style.fontFamily = this.fontSettings.channelName;
             }
@@ -545,6 +403,7 @@ createApp({
         getCharacterNameStyle(characterName) {
             const style = {};
             
+            // 使用字体设置
             if (this.fontSettings.characterName) {
                 style.fontFamily = this.fontSettings.characterName;
             }
@@ -552,30 +411,45 @@ createApp({
                 style.fontSize = `${this.fontSettings.characterNameSize}px`;
             }
             
-            // 颜色：从角色规则、消息颜色或默认设置获取
+            // 颜色：优先使用角色规则中的颜色
             const rule = this.characterRules[characterName];
-            let nameColor = '#e6e6e6'; // 默认浅色
-            
             if (rule && rule.nameColor) {
-                nameColor = rule.nameColor;
+                style.color = rule.nameColor;
             } else {
-                // 查找该角色的第一条消息的颜色
-                const firstMsg = this.logs.find(msg => msg.name === characterName);
-                if (firstMsg && firstMsg.color && firstMsg.color !== '#000000') {
-                    nameColor = firstMsg.color;
-                } else if (this.defaultCharacterRule.nameColor) {
-                    nameColor = this.defaultCharacterRule.nameColor;
+                // 否则使用消息中的颜色
+                const message = this.logs.find(msg => msg.name === characterName);
+                if (message && message.color) {
+                    style.color = message.color;
                 }
             }
-            
-            style.color = nameColor;
-            style.fontWeight = 'bold';
             
             return style;
         },
         
-        // 气泡样式
-        getBubbleStyle(characterName) {
+        // 角色名背景样式
+        getCharacterNameBackgroundStyle(characterName) {
+            const rule = this.characterRules[characterName];
+            const style = {};
+            
+            if (rule) {
+                if (rule.nameUseImage && rule.nameImage) {
+                    const opacity = rule.nameImageOpacity !== undefined ? rule.nameImageOpacity : 1.0;
+                    style.backgroundImage = `url(${rule.nameImage})`;
+                    style.backgroundSize = rule.nameImageSize || 'cover';
+                    style.backgroundPosition = 'center';
+                    style.backgroundRepeat = rule.nameImageSize === 'repeat' ? 'repeat' : 'no-repeat';
+                    style.opacity = opacity;
+                } else if (rule.nameBackground) {
+                    const opacity = rule.nameOpacity !== undefined ? rule.nameOpacity : 0.85;
+                    style.backgroundColor = this.hexToRgba(rule.nameBackground, opacity);
+                }
+            }
+            
+            return style;
+        },
+        
+        // 角色气泡背景样式
+        getCharacterBubbleBackgroundStyle(characterName) {
             const rule = this.characterRules[characterName];
             const style = {};
             
@@ -593,24 +467,11 @@ createApp({
                 }
             }
             
-            // 默认样式
-            if (!style.backgroundColor && !style.backgroundImage) {
-                const opacity = this.defaultCharacterRule.bubbleOpacity !== undefined ? this.defaultCharacterRule.bubbleOpacity : 0.85;
-                style.backgroundColor = this.hexToRgba(this.defaultCharacterRule.bubbleColor || '#ffffff', opacity);
-            }
-            
-            // 通用样式
-            style.border = '1px solid rgba(45, 45, 66, 0.5)';
-            style.borderRadius = '8px';
-            style.padding = '1rem';
-            style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
-            style.maxWidth = '600px';
-            
             return style;
         },
         
-        // 文字样式
-        getTextStyle() {
+        // 对话文本样式
+        getDialogTextStyle() {
             const style = {};
             
             if (this.fontSettings.dialogText) {
@@ -652,112 +513,53 @@ createApp({
             return style;
         },
         
-        // 骰子样式
-        getDiceStyle(msg) {
+        // extend样式
+        getExtendStyle(msg) {
+            const resultType = this.getExtendResultType(msg);
             const style = {};
             
-            // 基础样式
-            style.display = 'flex';
-            style.alignItems = 'center';
-            style.gap = '0.75rem';
-            style.marginTop = '1rem';
-            style.padding = '0.75rem';
-            style.borderRadius = '6px';
-            
-            // 获取骰子结果类型
-            const resultType = this.getExtendResultType(msg);
-            const format = this.extendFormats[resultType] || {};
-            
-            // 根据结果类型设置样式
-            switch(resultType) {
-                case 'criticalSuccess':
-                    style.background = 'rgba(243, 156, 18, 0.1)';
-                    style.borderLeft = '3px solid #f39c12';
-                    break;
-                case 'criticalFailure':
-                    style.background = 'rgba(192, 57, 43, 0.1)';
-                    style.borderLeft = '3px solid #c0392b';
-                    break;
-                case 'success':
-                    style.background = 'rgba(39, 174, 96, 0.1)';
-                    style.borderLeft = '3px solid #27ae60';
-                    break;
-                case 'failure':
-                    style.background = 'rgba(231, 76, 60, 0.1)';
-                    style.borderLeft = '3px solid #e74c3c';
-                    break;
-                default:
-                    style.background = 'rgba(0, 0, 0, 0.2)';
-                    style.borderLeft = '3px solid #8b0000';
-            }
-            
-            // 应用字体设置
+            // 基础字体设置
             if (this.fontSettings.extendText) {
                 style.fontFamily = this.fontSettings.extendText;
             }
-            if (this.fontSettings.extendTextColor && resultType === 'normal') {
+            if (this.fontSettings.extendTextColor) {
                 style.color = this.fontSettings.extendTextColor;
             }
             if (this.fontSettings.extendTextSize) {
                 style.fontSize = `${this.fontSettings.extendTextSize}px`;
             }
             
-            // 应用特殊格式
-            if (format.color) {
-                style.color = format.color;
-            }
-            if (format.fontFamily) {
-                style.fontFamily = format.fontFamily;
-            }
-            if (format.fontSize) {
-                style.fontSize = `${format.fontSize}px`;
-            }
-            if (format.bold) {
-                style.fontWeight = 'bold';
+            // 根据结果类型应用特殊格式
+            if (resultType !== 'normal') {
+                const format = this.extendFormats[resultType];
+                if (format) {
+                    if (format.color) {
+                        style.color = format.color;
+                    }
+                    if (format.fontFamily) {
+                        style.fontFamily = format.fontFamily;
+                    }
+                    if (format.fontSize) {
+                        style.fontSize = `${format.fontSize}px`;
+                    }
+                    if (format.bold) {
+                        style.fontWeight = 'bold';
+                    }
+                }
             }
             
             return style;
         },
         
         // 获取骰子文本
-        getDiceText(msg) {
-            if (msg.extend) {
-                // 处理你的编辑器格式：extend可能是字符串或对象
-                if (typeof msg.extend === 'string') {
-                    try {
-                        const parsed = JSON.parse(msg.extend);
-                        if (parsed && parsed.roll && parsed.roll.result) {
-                            return parsed.roll.result;
-                        }
-                        return msg.extend;
-                    } catch (e) {
-                        // 不是JSON，直接返回字符串
-                        return msg.extend;
-                    }
-                } else if (typeof msg.extend === 'object') {
-                    // 如果是对象，提取roll.result
-                    if (msg.extend.roll && msg.extend.roll.result) {
-                        return msg.extend.roll.result;
-                    }
-                    // 尝试转换为字符串
-                    try {
-                        return JSON.stringify(msg.extend);
-                    } catch (e) {
-                        return String(msg.extend);
-                    }
-                }
-            }
-            return msg.dice || '';
-        },
-        
-        // 获取extend结果类型
-        getExtendResultType(msg) {
-            const extendText = this.getDiceText(msg);
-            if (!extendText) return 'normal';
+        getFormattedExtendText(msg) {
+            const extendText = this.formatExtendContent(msg);
+            if (!extendText) return '';
             
+            const resultType = this.getExtendResultType(msg);
             let text = extendText;
             
-            // 繁简转换处理
+            // 繁简转换
             const mapping = {
                 '極限': '极限',
                 '成功': '成功',
@@ -770,7 +572,69 @@ createApp({
                 text = text.replace(new RegExp(traditional, 'g'), simple);
             }
             
-            // 清理文本（移除空格）
+            // 根据结果类型进行转换
+            if (resultType === 'criticalSuccess') {
+                text = text.replace('极限成功', '大成功');
+                text = text.replace(/(\d+)\s*[＞>]\s*极限成功/, '大成功');
+            } else if (resultType === 'criticalFailure') {
+                text = text.replace(/(\d+)\s*[＞>]\s*失败/, (match, number) => {
+                    if (parseInt(number) >= 96) {
+                        return '大失败';
+                    }
+                    return match;
+                });
+            }
+            
+            return text;
+        },
+        
+        // 格式化extend内容
+        formatExtendContent(msg) {
+            if (msg.extend) {
+                if (typeof msg.extend === 'string') {
+                    try {
+                        const parsed = JSON.parse(msg.extend);
+                        if (parsed && parsed.roll && parsed.roll.result) {
+                            return parsed.roll.result;
+                        }
+                        return msg.extend;
+                    } catch (e) {
+                        return msg.extend;
+                    }
+                } else if (typeof msg.extend === 'object') {
+                    if (msg.extend.roll && msg.extend.roll.result) {
+                        return msg.extend.roll.result;
+                    }
+                    try {
+                        return JSON.stringify(msg.extend);
+                    } catch (e) {
+                        return String(msg.extend);
+                    }
+                }
+            }
+            return msg.dice || '';
+        },
+        
+        // 获取extend结果类型
+        getExtendResultType(msg) {
+            const extendText = this.formatExtendContent(msg);
+            if (!extendText) return 'normal';
+            
+            let text = extendText;
+            
+            // 繁简转换
+            const mapping = {
+                '極限': '极限',
+                '成功': '成功',
+                '失敗': '失败',
+                '大成功': '大成功',
+                '大失败': '大失败'
+            };
+            
+            for (const [traditional, simple] of Object.entries(mapping)) {
+                text = text.replace(new RegExp(traditional, 'g'), simple);
+            }
+            
             const cleanText = text.replace(/\s+/g, '');
             
             // 检查大失败
@@ -814,65 +678,13 @@ createApp({
             return 'normal';
         },
         
-        // 检查频道是否折叠
-        isChannelCollapsed(channel) {
-            // 首先检查频道规则中的折叠设置
-            if (this.channelRules[channel] && this.channelRules[channel].collapsed !== undefined) {
-                return this.channelRules[channel].collapsed;
-            }
+        // 跳转到章节（确保章节在新的一页开始）
+        jumpToChapter(chapter) {
+            if (!chapter.page) return;
             
-            // 然后检查全局折叠设置
-            if (this.globalChannelSettings.collapsedChannels && 
-                this.globalChannelSettings.collapsedChannels[channel] !== undefined) {
-                return this.globalChannelSettings.collapsedChannels[channel];
-            }
-            
-            // 如果启用了自动折叠other/闲聊频道
-            if (this.globalChannelSettings.autoCollapseOther && this.isNonMainChannel(channel)) {
-                return true;
-            }
-            
-            return false;
-        },
-        
-        // 切换频道折叠
-        toggleChannelCollapse(channel) {
-            if (!this.collapsedChannels[channel]) {
-                this.collapsedChannels[channel] = {};
-            }
-            
-            this.collapsedChannels[channel] = !this.isChannelCollapsed(channel);
-        },
-        
-        // 检查消息是否高亮（搜索结果）
-        isMessageHighlighted(msg) {
-            if (!this.searchQuery) return false;
-            const query = this.searchQuery.toLowerCase();
-            return msg.text.toLowerCase().includes(query) ||
-                   msg.name.toLowerCase().includes(query);
-        },
-        
-        // 检查角色是否选中
-        isCharacterActive(character) {
-            return this.selectedCharacters.includes(character);
-        },
-        
-        // 切换角色筛选
-        toggleCharacterFilter(character) {
-            const index = this.selectedCharacters.indexOf(character);
-            if (index === -1) {
-                this.selectedCharacters.push(character);
-            } else {
-                this.selectedCharacters.splice(index, 1);
-            }
-        },
-        
-        // 移除角色筛选
-        removeCharacterFilter(character) {
-            const index = this.selectedCharacters.indexOf(character);
-            if (index !== -1) {
-                this.selectedCharacters.splice(index, 1);
-            }
+            this.currentPage = chapter.page;
+            this.sidebarOpen = false;
+            this.scrollToTop();
         },
         
         // 切换侧边栏
@@ -880,39 +692,14 @@ createApp({
             this.sidebarOpen = !this.sidebarOpen;
         },
         
-        // 切换筛选面板
-        toggleFilterDropdown() {
-            this.showFilterPanel = !this.showFilterPanel;
-        },
-        
-        // 应用筛选
-        applyFilters() {
-            this.currentPage = 1;
-            this.showFilterPanel = false;
-        },
-        
-        // 清空筛选
-        clearFilters() {
-            this.selectedCharacters = [];
-            this.selectedChannels = [];
-            this.dateRange = { start: '', end: '' };
+        // 执行搜索
+        performSearch() {
             this.currentPage = 1;
         },
         
         // 清空搜索
         clearSearch() {
             this.searchQuery = '';
-        },
-        
-        // 清空所有筛选
-        clearAllFilters() {
-            this.clearFilters();
-            this.clearSearch();
-        },
-        
-        // 执行搜索
-        performSearch() {
-            this.currentPage = 1;
         },
         
         // 分页方法
@@ -928,14 +715,6 @@ createApp({
                 this.currentPage++;
                 this.scrollToTop();
             }
-        },
-        
-        jumpToPage() {
-            if (this.jumpPage && this.jumpPage >= 1 && this.jumpPage <= this.totalPages) {
-                this.currentPage = this.jumpPage;
-                this.scrollToTop();
-            }
-            this.jumpPage = null;
         },
         
         // 图片预览
@@ -954,45 +733,17 @@ createApp({
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         
-        scrollToBottom() {
-            window.scrollTo({ 
-                top: document.documentElement.scrollHeight, 
-                behavior: 'smooth' 
-            });
-        },
-        
-        // 格式化时间
-        formatTime(timeString) {
-            if (!timeString) return '';
-            
-            try {
-                const date = new Date(timeString);
-                if (isNaN(date.getTime())) {
-                    return timeString; // 如果无法解析，返回原字符串
-                }
-                
-                return date.toLocaleTimeString('zh-CN', { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: false
-                });
-            } catch (e) {
-                return timeString;
-            }
+        // 图片加载错误处理
+        handleImageError(event) {
+            event.target.style.display = 'none';
         },
         
         // HEX转RGBA
         hexToRgba(hex, opacity) {
-            if (!hex) {
-                return `rgba(255, 255, 255, ${opacity})`;
-            }
+            if (!hex) return `rgba(255, 255, 255, ${opacity})`;
             
-            // 如果已经是rgba格式，直接返回
-            if (hex.startsWith('rgba')) {
-                return hex;
-            }
+            if (hex.startsWith('rgba')) return hex;
             
-            // 处理简写HEX
             hex = hex.replace(/^#/, '');
             
             if (hex.length === 3) {
@@ -1008,13 +759,6 @@ createApp({
         
         // 事件监听器设置
         setupEventListeners() {
-            // 点击外部关闭筛选面板
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.filter-dropdown')) {
-                    this.showFilterPanel = false;
-                }
-            });
-            
             // ESC键关闭图片预览
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
