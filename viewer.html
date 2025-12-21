@@ -34,10 +34,10 @@
         /* ========== 右侧悬浮图片 ========== */
 .floating-image-right {
     position: fixed;
-    right: 10px; /* 离右边更近，原来是20px */
+    right: 5px; /* 离右边更近，原来是20px */
     top: 120px;
-    width: 450px; /* 保持大尺寸 */
-    height: 450px; /* 保持大尺寸 */
+    width: 475px; /* 保持大尺寸 */
+    height: 475px; /* 保持大尺寸 */
     background-image: url('images/map1.png'); /* 改为相对路径 */
     background-size: contain;
     background-repeat: no-repeat;
@@ -550,11 +550,11 @@
             <button class="control-btn" onclick="toggleChapterSidebar()">章节导航</button>
         </div>
         <div class="log-title" id="logTitle">
-    <span class="title-character" style="color: #8b0000;">血</span>
-    <span class="title-character">色</span>
-    <span class="title-character">毡</span>
-    <span class="title-character">帽</span>
-</div>
+            <span class="title-character" style="color: #8b0000;">血</span>
+            <span class="title-character">色</span>
+            <span class="title-character">毡</span>
+            <span class="title-character">帽</span>
+        </div>
         <div class="top-controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="搜索消息内容..." autocomplete="off">
@@ -577,6 +577,11 @@
 <div class="filter-panel" id="filterPanel">
     <h3 style="margin-bottom: 15px; color: #2c3e50;">筛选消息</h3>
     <div class="filter-section">
+            <h4>频道折叠</h4>
+    <label style="display: block; margin: 4px 0; font-size: 12px;">
+        <input type="checkbox" id="collapseChatCheckbox" onchange="toggleChatCollapse()">
+        折叠所有"闲聊"频道
+    </label>
         <h4>按频道筛选</h4>
         <div id="channelFilters">
             <!-- 动态生成 -->
@@ -627,7 +632,14 @@
             searchText: ''
         };
         let chapters = [];
-        
+        let collapseChatChannels = false;
+        const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
+
+        // 切换折叠状态
+function toggleChatCollapse() {
+    collapseChatChannels = document.getElementById('collapseChatCheckbox').checked;
+    renderCurrentPage(); // 重新渲染当前页
+}
         // 从URL获取日志文件
         function getLogFileFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -944,23 +956,34 @@ function renderCurrentPage() {
         }
         
         // 渲染频道组
-        function renderChannelGroup(group) {
-            const channelBackgroundStyle = getChannelBackgroundStyle(group.channel);
-            const channelMaskStyle = getChannelMaskStyle(group.channel);
-            const channelNameTextStyle = getChannelNameTextStyle(group.channel);
-            
-            const messagesHtml = group.messages.map(msg => renderMessage(msg)).join('');
-            
-            return `
-                <div class="channel-group" style="${channelBackgroundStyle}">
-                    ${channelMaskStyle ? `<div class="channel-mask" style="${channelMaskStyle}"></div>` : ''}
-                    <div class="channel-name" style="${channelNameTextStyle}">${group.channel}</div>
-                    <div class="channel-messages">
-                        ${messagesHtml}
-                    </div>
-                </div>
-            `;
-        }
+function renderChannelGroup(group) {
+    const channelBackgroundStyle = getChannelBackgroundStyle(group.channel);
+    const channelMaskStyle = getChannelMaskStyle(group.channel);
+    const channelNameTextStyle = getChannelNameTextStyle(group.channel);
+    
+    // 判断是否为闲聊频道
+    const isChatChannel = chatChannelKeywords.some(keyword => 
+        group.channel.includes(keyword)
+    );
+    
+    // 判断是否应该折叠
+    const shouldCollapse = collapseChatChannels && isChatChannel;
+    
+    const messagesHtml = shouldCollapse ? '' : group.messages.map(msg => renderMessage(msg)).join('');
+    
+    return `
+        <div class="channel-group" style="${channelBackgroundStyle}">
+            ${channelMaskStyle ? `<div class="channel-mask" style="${channelMaskStyle}"></div>` : ''}
+            <div class="channel-name" style="${channelNameTextStyle}">
+                ${group.channel}
+                ${isChatChannel ? '<span style="font-size: 10px; color: #8b0000; margin-left: 5px;">[可折叠]</span>' : ''}
+            </div>
+            <div class="channel-messages">
+                ${messagesHtml}
+            </div>
+        </div>
+    `;
+}
         
         // 渲染单条消息
 function renderMessage(msg) {
