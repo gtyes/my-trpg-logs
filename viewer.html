@@ -814,13 +814,14 @@ function applyFilters() {
     }
     
     // 按搜索文本筛选
-    if (searchText) {
-        filtered = filtered.filter(msg => 
-            (msg.text && msg.text.toLowerCase().includes(searchText)) ||
-            (msg.name && msg.name.toLowerCase().includes(searchText)) ||
-            (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText))
-        );
-    }
+if (searchText) {
+    filtered = filtered.filter(msg => 
+        (msg.text && msg.text.toLowerCase().includes(searchText)) ||
+        (msg.name && msg.name.toLowerCase().includes(searchText)) ||
+        (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
+        (msg.dice && msg.dice.toLowerCase().includes(searchText)) // 添加dice字段
+    );
+}
     
     filteredLogs = filtered;
     currentPage = 1;
@@ -895,12 +896,76 @@ function renderCurrentPage() {
     // 渲染消息
     const container = document.getElementById('logMessages');
     container.innerHTML = renderLogMessages(pageLogs);
+    addMessageDoubleClickHandlers();
     
     // 更新分页信息
     updatePaginationInfo();
     
     // 滚动到顶部
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+// 添加双击事件处理函数
+function addMessageDoubleClickHandlers() {
+    const messageRows = document.querySelectorAll('.message-row');
+    messageRows.forEach(row => {
+        row.addEventListener('dblclick', function() {
+            const messageId = this.getAttribute('data-id');
+            if (messageId) {
+                jumpToMessage(messageId);
+            }
+        });
+    });
+}
+// 跳转到指定消息
+function jumpToMessage(messageId) {
+    // 在filteredLogs中查找消息
+    const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+    if (messageIndex !== -1) {
+        // 计算消息所在的页数
+        let page = 1;
+        let messagesProcessed = 0;
+        
+        for (let i = 0; i <= messageIndex; i++) {
+            const msg = filteredLogs[i];
+            messagesProcessed++;
+            
+            // 如果是章节标记，且不是本页第一条，则结束当前页
+            if (msg.isChapter && messagesProcessed > 1 && i > 0) {
+                page++;
+                messagesProcessed = 1;
+            }
+            
+            // 如果本页已满，翻页
+            if (messagesProcessed >= pageSize) {
+                page++;
+                messagesProcessed = 0;
+            }
+            
+            // 如果找到了目标消息
+            if (i === messageIndex) {
+                currentPage = page;
+                renderCurrentPage();
+                
+                // 高亮显示该消息
+                setTimeout(() => {
+                    const targetRow = document.querySelector(`[data-id="${messageId}"]`);
+                    if (targetRow) {
+                        targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
+                        targetRow.style.borderLeft = '3px solid #8b0000';
+                        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // 3秒后清除高亮
+                        setTimeout(() => {
+                            targetRow.style.backgroundColor = '';
+                            targetRow.style.borderLeft = '';
+                        }, 3000);
+                    }
+                }, 100);
+                
+                break;
+            }
+        }
+    }
 }
 
         // 渲染日志消息
@@ -1024,7 +1089,7 @@ function renderMessage(msg) {
     const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
     
     return `
-        <div class="message-row">
+        <div class="message-row" data-id="${msg.id}">
             <div class="avatar-box">
                 ${avatarHtml}
             </div>
