@@ -34,7 +34,7 @@
         /* ========== 右侧悬浮图片 ========== */
 .floating-image-right {
     position: fixed;
-    right: -10px; /* 离右边更近，原来是20px */
+    right: -20px; /* 离右边更近，原来是20px */
     top: 120px;
     width: 450px; /* 保持大尺寸 */
     height: 450px; /* 保持大尺寸 */
@@ -70,16 +70,37 @@
             backdrop-filter: blur(5px);
         }
         
-        .log-title {
-            font-size: 1.8rem;
-            font-weight: normal;
-            color: white;
-            font-family: 'STZhongsong', '华文中宋', serif;
-            text-align: center;
-            flex: 1;
-            margin: 0 20px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
+.log-title {
+    font-size: 2.2rem;
+    font-weight: normal;
+    text-align: center;
+    flex: 1;
+    margin: 0 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    font-family: 'Microsoft YaHei', '微软雅黑', 'STZhongsong', '华文中宋', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title-character {
+    color: white;
+    transition: all 0.3s;
+}
+
+.title-character:first-child {
+    color: #8b0000;
+}
+
+/* 可选：添加悬停效果 */
+.log-title:hover .title-character:first-child {
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+}
+
+.log-title:hover .title-character:not(:first-child) {
+    color: #f0f0f0;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
         
         .top-controls {
             display: flex;
@@ -528,7 +549,12 @@
         <div class="top-controls">
             <button class="control-btn" onclick="toggleChapterSidebar()">章节导航</button>
         </div>
-        <div class="log-title" id="logTitle">血色毡帽</div>
+        <div class="log-title" id="logTitle">
+    <span class="title-character" style="color: #8b0000;">血</span>
+    <span class="title-character">色</span>
+    <span class="title-character">毡</span>
+    <span class="title-character">帽</span>
+</div>
         <div class="top-controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="搜索消息内容..." autocomplete="off">
