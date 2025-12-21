@@ -4,15 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRPG跑团日志</title>
-    <link rel="stylesheet" href="css/viewer.css">
     <style>
-        /* 这里先放关键样式，完整的viewer.css文件建议单独创建 */
-        :root {
-            --sidebar-width: 280px;
-            --header-height: 70px;
-            --primary-color: #2c3e50;
-        }
-        
         * {
             margin: 0;
             padding: 0;
@@ -21,82 +13,30 @@
         
         body {
             font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
+            background: #f5f7f9;
+            color: #333;
         }
         
-        /* 左侧章节导航 */
-        .chapter-sidebar {
-            width: var(--sidebar-width);
-            background: #2c3e50;
-            color: white;
-            height: 100vh;
-            overflow-y: auto;
-            position: fixed;
-            left: 0;
+        /* 顶部标题栏 */
+        .top-header {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
             top: 0;
             z-index: 1000;
-            transition: transform 0.3s ease;
-        }
-        
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .sidebar-header h2 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
-        
-        .chapter-list {
-            padding: 10px 0;
-        }
-        
-        .chapter-item {
-            padding: 12px 20px;
-            cursor: pointer;
-            transition: background 0.2s;
-            border-left: 3px solid transparent;
-        }
-        
-        .chapter-item:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        
-        .chapter-item.active {
-            background: rgba(52, 152, 219, 0.2);
-            border-left-color: #3498db;
-        }
-        
-        /* 主内容区 */
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* 顶部控制栏 */
-        .top-controls {
-            height: var(--header-height);
-            background: white;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            justify-content: space-between;
         }
         
         .log-title {
             font-size: 1.8rem;
             font-weight: bold;
-            color: var(--primary-color);
+            color: #2c3e50;
         }
         
-        .search-filter {
+        .top-controls {
             display: flex;
             align-items: center;
             gap: 15px;
@@ -121,152 +61,335 @@
             color: #999;
         }
         
-        .filter-btn, .sidebar-toggle {
-            background: none;
-            border: 1px solid #ddd;
-            padding: 8px 15px;
+        .control-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            font-size: 14px;
         }
         
-        /* 日志显示区 */
-        .log-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background: #f5f7f9;
+        .control-btn:hover {
+            background: #2980b9;
         }
         
-        /* 频道组样式 - 从你的编辑器复制并调整 */
-        .channel-group {
-            margin-bottom: 25px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .chapter-title {
-            text-align: center;
-            font-weight: bold;
-            margin: 0 0 20px 0;
-            padding: 25px;
-            border-radius: 8px;
-            color: white;
-            position: relative;
-            background-size: cover;
-            background-position: center;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-            break-inside: avoid; /* 防止分页时被切断 */
-            page-break-inside: avoid;
-        }
-        
-        /* 分页控制 */
-        .pagination-controls {
+        /* 悬浮章节导航 */
+        .floating-sidebar {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            left: 20px;
+            top: 100px;
+            width: 250px;
             background: white;
-            padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 999;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+            display: none; /* 默认隐藏，点击按钮显示 */
         }
         
-        .pagination-controls input {
+        .floating-sidebar.show {
+            display: block;
+        }
+        
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: #2c3e50;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .chapter-list {
+            padding: 10px 0;
+        }
+        
+        .chapter-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .chapter-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .chapter-item.active {
+            background: #e3f2fd;
+            border-left-color: #3498db;
+        }
+        
+        /* 主内容区 */
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* 分页控件 - 居中，在内容后面 */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0 50px 0;
+            flex-wrap: wrap;
+        }
+        
+        .pagination-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .pagination-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .pagination-info {
+            font-size: 14px;
+            color: #666;
+            margin: 0 10px;
+        }
+        
+        .pagination-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-jump input {
             width: 60px;
-            padding: 5px;
-            text-align: center;
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            text-align: center;
         }
         
         /* 筛选面板 */
         .filter-panel {
             position: fixed;
-            top: var(--header-height);
             right: -350px;
-            width: 350px;
-            height: calc(100vh - var(--header-height));
+            top: 100px;
+            width: 300px;
             background: white;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             padding: 20px;
+            z-index: 999;
             transition: right 0.3s ease;
-            z-index: 900;
         }
         
         .filter-panel.show {
-            right: 0;
+            right: 20px;
         }
         
-        @media (max-width: 1024px) {
-            .chapter-sidebar {
-                transform: translateX(-100%);
+        .filter-section {
+            margin-bottom: 20px;
+        }
+        
+        .filter-section h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        /* 日志消息样式 */
+        .log-messages {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        /* 频道组样式 */
+        .channel-group {
+            margin-bottom: 25px;
+        }
+        
+        .channel-name {
+            text-align: center;
+            font-weight: 600;
+            margin: 15px 0;
+            padding: 8px;
+            color: #2c3e50;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 6px;
+        }
+        
+        /* 章节标题样式 */
+        .chapter-title {
+            text-align: center;
+            font-weight: bold;
+            margin: 30px 0 20px 0;
+            padding: 30px;
+            border-radius: 10px;
+            color: white;
+            background-size: cover;
+            background-position: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            break-before: page; /* 强制分页 */
+        }
+        
+        /* 消息样式 */
+        .message-row {
+            display: flex;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .avatar-box {
+            width: 50px;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+        
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .content-box {
+            flex-grow: 1;
+        }
+        
+        .character-name-box {
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 6px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .character-name {
+            font-weight: bold;
+        }
+        
+        .to-name {
+            color: #666;
+            font-weight: normal;
+            margin-left: 5px;
+            font-size: 0.9em;
+        }
+        
+        .message-bubble {
+            padding: 10px 14px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .message-text {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .dice-result {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #eee;
+            font-family: 'Consolas, Monaco, monospace';
+        }
+        
+        .system-message {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            color: #7f8c8d;
+            background: rgba(0,0,0,0.03);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #7f8c8d;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .top-header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
             }
             
-            .chapter-sidebar.show {
-                transform: translateX(0);
+            .search-box input {
+                width: 100%;
             }
             
-            .main-content {
-                margin-left: 0;
+            .floating-sidebar {
+                width: 90%;
+                left: 5%;
+                top: 80px;
+            }
+            
+            .main-container {
+                padding: 10px;
+            }
+            
+            .pagination-container {
+                flex-direction: column;
+                gap: 10px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 左侧章节导航 -->
-    <div class="chapter-sidebar" id="chapterSidebar">
+    <!-- 顶部标题栏 -->
+    <div class="top-header">
+        <div class="log-title" id="logTitle">血色毡帽</div>
+        <div class="top-controls">
+            <button class="control-btn" onclick="toggleChapterSidebar()">📖 章节导航</button>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索消息内容...">
+                <span class="search-icon">🔍</span>
+            </div>
+            <button class="control-btn" onclick="toggleFilterPanel()">筛选</button>
+        </div>
+    </div>
+
+    <!-- 悬浮章节导航 -->
+    <div class="floating-sidebar" id="chapterSidebar">
         <div class="sidebar-header">
             <h2>章节导航</h2>
-            <div style="font-size: 0.9rem; opacity: 0.8;">点击跳转到指定章节</div>
         </div>
         <div class="chapter-list" id="chapterList">
-            <!-- 章节将通过JavaScript动态生成 -->
+            <!-- 动态生成 -->
         </div>
-    </div>
-
-    <!-- 主内容区 -->
-    <div class="main-content">
-        <!-- 顶部控制栏 -->
-        <div class="top-controls">
-            <div>
-                <button class="sidebar-toggle" onclick="toggleSidebar()">☰ 章节</button>
-            </div>
-            <div class="log-title" id="logTitle">血色毡帽</div>
-            <div class="search-filter">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="搜索消息内容...">
-                    <span class="search-icon">🔍</span>
-                </div>
-                <button class="filter-btn" onclick="toggleFilterPanel()">筛选</button>
-            </div>
-        </div>
-
-        <!-- 日志显示区 -->
-        <div class="log-container" id="logContainer">
-            <!-- 日志将通过JavaScript动态渲染 -->
-        </div>
-    </div>
-
-    <!-- 分页控制 -->
-    <div class="pagination-controls">
-        <button id="prevPageBtn" onclick="prevPage()">上一页</button>
-        <span>第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">1</span> 页</span>
-        <input type="number" id="jumpInput" min="1" value="1">
-        <button onclick="jumpToPage()">跳转</button>
-        <button id="nextPageBtn" onclick="nextPage()">下一页</button>
     </div>
 
     <!-- 筛选面板 -->
@@ -275,35 +398,59 @@
         <div class="filter-section">
             <h4>按角色筛选</h4>
             <div id="characterFilters">
-                <!-- 角色复选框将通过JavaScript动态生成 -->
+                <!-- 动态生成 -->
             </div>
         </div>
         <div class="filter-section">
             <h4>按频道筛选</h4>
             <div id="channelFilters">
-                <!-- 频道复选框将通过JavaScript动态生成 -->
+                <!-- 动态生成 -->
             </div>
         </div>
         <div style="margin-top: 20px;">
-            <button onclick="applyFilters()" style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; width: 100%;">应用筛选</button>
-            <button onclick="clearFilters()" style="background: #95a5a6; color: white; border: none; padding: 10px 20px; border-radius: 4px; width: 100%; margin-top: 10px;">清除筛选</button>
+            <button class="control-btn" onclick="applyFilters()" style="width: 100%;">应用筛选</button>
+            <button class="control-btn" onclick="clearFilters()" style="width: 100%; margin-top: 10px; background: #95a5a6;">清除筛选</button>
         </div>
     </div>
 
-    <script src="js/viewer.js"></script>
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <!-- 日志消息区域 -->
+        <div id="logContainer">
+            <div class="loading" id="loadingState">正在加载日志数据...</div>
+            <div class="log-messages" id="logMessages" style="display: none;">
+                <!-- 消息将动态渲染在这里 -->
+            </div>
+        </div>
+
+        <!-- 分页控件 -->
+        <div class="pagination-container" id="paginationContainer" style="display: none;">
+            <button class="pagination-btn" id="prevPageBtn" onclick="prevPage()">上一页</button>
+            <div class="pagination-info">
+                第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">1</span> 页
+                <span style="margin-left: 10px;">(每页 <span id="pageSize">50</span> 条消息)</span>
+            </div>
+            <div class="pagination-jump">
+                <input type="number" id="jumpInput" min="1" value="1">
+                <button class="control-btn" onclick="jumpToPage()">跳转</button>
+            </div>
+            <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">下一页</button>
+        </div>
+    </div>
+
     <script>
-        // 主要的JavaScript逻辑
-        let currentData = null;
+        // 全局变量
+        let logData = null;
+        let filteredLogs = [];
         let currentPage = 1;
         const pageSize = 50;
-        let filteredLogs = [];
         let currentFilters = {
             characters: [],
             channels: [],
             searchText: ''
         };
         
-        // 从URL获取日志文件路径
+        // 从URL获取日志文件
         function getLogFileFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('log') || 'data/log1.json';
@@ -313,14 +460,28 @@
         async function loadLogData() {
             try {
                 const logFile = getLogFileFromUrl();
+                console.log('正在加载日志文件:', logFile);
+                
                 const response = await fetch(logFile);
-                currentData = await response.json();
+                if (!response.ok) {
+                    throw new Error(`HTTP错误: ${response.status}`);
+                }
+                
+                logData = await response.json();
+                console.log('日志数据加载成功:', logData);
                 
                 // 设置标题
-                document.getElementById('logTitle').textContent = currentData.title || '血色毡帽';
+                document.getElementById('logTitle').textContent = logData.title || '血色毡帽';
                 
                 // 初始化数据
-                filteredLogs = currentData.logs || [];
+                filteredLogs = logData.logs || [];
+                
+                // 隐藏加载状态
+                document.getElementById('loadingState').style.display = 'none';
+                
+                // 显示消息区域和分页
+                document.getElementById('logMessages').style.display = 'block';
+                document.getElementById('paginationContainer').style.display = 'flex';
                 
                 // 渲染章节导航
                 renderChapterNavigation();
@@ -333,11 +494,11 @@
                 
             } catch (error) {
                 console.error('加载日志数据失败:', error);
-                document.getElementById('logContainer').innerHTML = `
-                    <div style="text-align: center; padding: 50px; color: #e74c3c;">
-                        <h3>加载失败</h3>
-                        <p>无法加载日志数据，请检查文件路径是否正确</p>
-                    </div>
+                document.getElementById('loadingState').innerHTML = `
+                    <h3>加载失败</h3>
+                    <p>无法加载日志数据：${error.message}</p>
+                    <p>请检查文件路径是否正确，并确保文件已上传到正确位置。</p>
+                    <p style="font-size: 0.9rem; color: #999;">预期路径: ${getLogFileFromUrl()}</p>
                 `;
             }
         }
@@ -345,7 +506,7 @@
         // 渲染章节导航
         function renderChapterNavigation() {
             const chapterList = document.getElementById('chapterList');
-            const chapters = currentData.chapters || [];
+            const chapters = logData.chapters || [];
             
             if (chapters.length === 0) {
                 chapterList.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">暂无章节信息</div>';
@@ -354,17 +515,17 @@
             
             chapterList.innerHTML = chapters.map((chapter, index) => `
                 <div class="chapter-item" onclick="jumpToChapter(${index})">
-                    <div style="font-weight: bold;">${chapter.name}</div>
-                    <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 5px;">
-                        消息 #${chapter.position}
-                    </div>
+                    <div style="font-weight: bold; margin-bottom: 3px;">${chapter.name}</div>
+                    <div style="font-size: 0.85rem; color: #666;">消息 #${chapter.position}</div>
                 </div>
             `).join('');
         }
         
         // 渲染筛选选项
         function renderFilterOptions() {
-            const logs = currentData.logs || [];
+            if (!logData || !logData.logs) return;
+            
+            const logs = logData.logs;
             
             // 提取所有角色
             const characters = [...new Set(logs.map(msg => msg.name).filter(name => name && name.toLowerCase() !== 'system'))];
@@ -374,16 +535,18 @@
             
             // 渲染角色筛选
             document.getElementById('characterFilters').innerHTML = characters.map(character => `
-                <label style="display: block; margin: 5px 0;">
-                    <input type="checkbox" value="${character}" onchange="updateCharacterFilter('${character}', this.checked)">
+                <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" value="${character}" onchange="updateCharacterFilter('${character}', this.checked)" 
+                           style="margin-right: 8px;">
                     ${character}
                 </label>
             `).join('');
             
             // 渲染频道筛选
             document.getElementById('channelFilters').innerHTML = channels.map(channel => `
-                <label style="display: block; margin: 5px 0;">
-                    <input type="checkbox" value="${channel}" onchange="updateChannelFilter('${channel}', this.checked)">
+                <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" value="${channel}" onchange="updateChannelFilter('${channel}', this.checked)" 
+                           style="margin-right: 8px;">
                     ${channel}
                 </label>
             `).join('');
@@ -415,7 +578,7 @@
             const searchText = document.getElementById('searchInput').value.toLowerCase();
             currentFilters.searchText = searchText;
             
-            let filtered = currentData.logs || [];
+            let filtered = logData.logs || [];
             
             // 按角色筛选
             if (currentFilters.characters.length > 0) {
@@ -434,8 +597,8 @@
             // 按搜索文本筛选
             if (searchText) {
                 filtered = filtered.filter(msg => 
-                    msg.text && msg.text.toLowerCase().includes(searchText) ||
-                    msg.name && msg.name.toLowerCase().includes(searchText) ||
+                    (msg.text && msg.text.toLowerCase().includes(searchText)) ||
+                    (msg.name && msg.name.toLowerCase().includes(searchText)) ||
                     (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText))
                 );
             }
@@ -458,7 +621,7 @@
                 checkbox.checked = false;
             });
             
-            filteredLogs = currentData.logs || [];
+            filteredLogs = logData.logs || [];
             currentPage = 1;
             renderCurrentPage();
             closeFilterPanel();
@@ -470,18 +633,21 @@
             const endIndex = startIndex + pageSize;
             const pageLogs = filteredLogs.slice(startIndex, endIndex);
             
-            // 分组显示（按频道分组，章节单独处理）
-            const container = document.getElementById('logContainer');
-            container.innerHTML = renderLogs(pageLogs);
+            // 渲染消息
+            const container = document.getElementById('logMessages');
+            container.innerHTML = renderLogMessages(pageLogs);
             
             // 更新分页信息
             updatePaginationInfo();
+            
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
-        // 渲染日志消息（从你的编辑器复制并修改）
-        function renderLogs(logs) {
+        // 渲染日志消息
+        function renderLogMessages(logs) {
             if (logs.length === 0) {
-                return '<div style="text-align: center; padding: 50px; color: #7f8c8d;">没有找到匹配的消息</div>';
+                return '<div class="empty-state">没有找到匹配的消息</div>';
             }
             
             // 按频道分组
@@ -489,20 +655,25 @@
             let currentGroup = null;
             
             logs.forEach((msg, index) => {
-                // 章节消息单独处理
+                // 章节消息特殊处理
                 if (msg.isChapter) {
-                    if (currentGroup) groups.push(currentGroup);
+                    if (currentGroup) {
+                        groups.push(currentGroup);
+                        currentGroup = null;
+                    }
+                    
+                    // 章节作为独立元素
                     groups.push({
                         isChapter: true,
                         chapter: msg
                     });
-                    currentGroup = null;
                     return;
                 }
                 
+                // 频道分组
                 const channel = msg.channel || '默认频道';
                 
-                if (!currentGroup || channel !== currentGroup.channel) {
+                if (!currentGroup || currentGroup.channel !== channel) {
                     if (currentGroup) groups.push(currentGroup);
                     currentGroup = {
                         channel: channel,
@@ -515,36 +686,45 @@
             
             if (currentGroup) groups.push(currentGroup);
             
-            return groups.map(group => {
+            // 生成HTML
+            let html = '';
+            groups.forEach(group => {
                 if (group.isChapter) {
-                    const chapter = group.chapter;
-                    // 获取章节样式设置
-                    const chapterStyle = getChapterStyle(chapter);
-                    return `
-                        <div class="chapter-title" style="${chapterStyle}">
-                            ${chapter.text.replace('=== ', '').replace(' ===', '')}
-                        </div>
-                    `;
+                    html += renderChapter(group.chapter);
                 } else {
-                    // 获取频道背景样式
-                    const channelStyle = getChannelBackgroundStyle(group.channel);
-                    const messagesHtml = group.messages.map(msg => renderMessage(msg)).join('');
-                    
-                    return `
-                        <div class="channel-group" style="${channelStyle}">
-                            <div class="channel-name">
-                                ${group.channel}
-                            </div>
-                            <div class="messages">
-                                ${messagesHtml}
-                            </div>
-                        </div>
-                    `;
+                    html += renderChannelGroup(group);
                 }
-            }).join('');
+            });
+            
+            return html;
         }
         
-        // 渲染单条消息（从你的编辑器复制并修改）
+        // 渲染章节
+        function renderChapter(chapter) {
+            const chapterStyle = getChapterStyle(chapter);
+            const chapterName = chapter.text.replace('=== ', '').replace(' ===', '');
+            
+            return `
+                <div class="chapter-title" style="${chapterStyle}">
+                    ${chapterName}
+                </div>
+            `;
+        }
+        
+        // 渲染频道组
+        function renderChannelGroup(group) {
+            const channelStyle = getChannelBackgroundStyle(group.channel);
+            const messagesHtml = group.messages.map(msg => renderMessage(msg)).join('');
+            
+            return `
+                <div class="channel-group">
+                    <div class="channel-name" style="${channelStyle}">${group.channel}</div>
+                    ${messagesHtml}
+                </div>
+            `;
+        }
+        
+        // 渲染单条消息
         function renderMessage(msg) {
             // 系统消息特殊处理
             if (msg.name.toLowerCase() === 'system' && !msg.isChapter) {
@@ -555,27 +735,30 @@
                 `;
             }
             
-            // 获取样式设置
+            // 获取样式
             const nameStyle = getCharacterNameStyle(msg.name);
             const bubbleStyle = getCharacterBubbleStyle(msg.name);
+            const avatarHtml = msg.icon ? `<img src="${msg.icon}" class="avatar" alt="${msg.name}">` : '';
             
             return `
-                <div class="message">
-                    <div class="avatar">
-                        ${msg.icon ? `<img src="${msg.icon}" alt="${msg.name}">` : ''}
+                <div class="message-row">
+                    <div class="avatar-box">
+                        ${avatarHtml}
                     </div>
-                    <div class="message-content">
-                        <div class="character-name" style="${nameStyle}">
-                            ${msg.name}
+                    <div class="content-box">
+                        <div class="character-name-box" style="${nameStyle}">
+                            <span class="character-name">${msg.name}</span>
                             ${msg.to ? `<span class="to-name"> > @${msg.to}</span>` : ''}
                         </div>
-                        <div class="bubble" style="${bubbleStyle}">
-                            <div class="text">${msg.text}</div>
-                            ${msg.messageImage ? `<img src="${msg.messageImage}" class="message-image">` : ''}
-                            ${msg.dice || msg.extend ? `
-                                <div class="dice-result">
-                                    ${formatExtendContent(msg)}
+                        <div class="message-bubble" style="${bubbleStyle}">
+                            <div class="message-text">${msg.text}</div>
+                            ${msg.messageImage ? `
+                                <div style="margin-top: 10px; text-align: center;">
+                                    <img src="${msg.messageImage}" style="max-width: 100%; max-height: 300px; border-radius: 6px;">
                                 </div>
+                            ` : ''}
+                            ${msg.dice || msg.extend ? `
+                                <div class="dice-result">${formatExtendContent(msg)}</div>
                             ` : ''}
                         </div>
                     </div>
@@ -583,22 +766,24 @@
             `;
         }
         
-        // 样式获取函数（从你的编辑器复制）
+        // 样式获取函数
         function getChapterStyle(chapter) {
-            const settings = currentData.chapterSettings || {};
+            const settings = logData.chapterSettings || {};
             let style = '';
             
+            // 字体样式
+            if (settings.fontFamily) style += `font-family: ${settings.fontFamily};`;
             if (settings.color) style += `color: ${settings.color};`;
             if (settings.fontSize) style += `font-size: ${settings.fontSize}px;`;
-            if (settings.fontFamily) style += `font-family: ${settings.fontFamily};`;
             if (settings.bold) style += `font-weight: bold;`;
+            if (settings.shadow) style += `text-shadow: 1px 1px 3px rgba(0,0,0,0.5);`;
             
             // 背景
             if (settings.useImage && settings.image) {
                 style += `background-image: url(${settings.image});`;
                 style += `background-size: ${settings.imageSize || 'cover'};`;
                 style += `background-position: center;`;
-                if (settings.imageOpacity) style += `opacity: ${settings.imageOpacity};`;
+                if (settings.imageOpacity !== undefined) style += `opacity: ${settings.imageOpacity};`;
             } else if (settings.backgroundColor) {
                 const opacity = settings.backgroundOpacity || 0.9;
                 style += `background-color: rgba(${hexToRgb(settings.backgroundColor)}, ${opacity});`;
@@ -608,8 +793,8 @@
         }
         
         function getChannelBackgroundStyle(channel) {
-            const rules = currentData.channelRules || {};
-            const defaultRule = currentData.defaultChannelRule || {};
+            const rules = logData.channelRules || {};
+            const defaultRule = logData.defaultChannelRule || {};
             const rule = rules[channel] || defaultRule;
             
             let style = '';
@@ -618,7 +803,7 @@
                 style += `background-image: url(${rule.image});`;
                 style += `background-size: ${rule.imageSize || 'cover'};`;
                 style += `background-position: center;`;
-                if (rule.imageOpacity) style += `opacity: ${rule.imageOpacity};`;
+                if (rule.imageOpacity !== undefined) style += `opacity: ${rule.imageOpacity};`;
             } else if (rule.color) {
                 const opacity = rule.opacity || 0.1;
                 style += `background-color: rgba(${hexToRgb(rule.color)}, ${opacity});`;
@@ -628,11 +813,18 @@
         }
         
         function getCharacterNameStyle(character) {
-            const rules = currentData.characterRules || {};
-            const defaultRule = currentData.defaultCharacterRule || {};
+            const rules = logData.characterRules || {};
+            const defaultRule = logData.defaultCharacterRule || {};
             const rule = rules[character] || defaultRule;
             
             let style = '';
+            
+            // 字体设置
+            const fontSettings = logData.fontSettings || {};
+            if (fontSettings.characterName) style += `font-family: ${fontSettings.characterName};`;
+            if (fontSettings.characterNameSize) style += `font-size: ${fontSettings.characterNameSize}px;`;
+            
+            // 颜色
             if (rule.nameColor) style += `color: ${rule.nameColor};`;
             
             // 背景
@@ -640,32 +832,34 @@
                 style += `background-image: url(${rule.nameImage});`;
                 style += `background-size: ${rule.nameImageSize || 'cover'};`;
                 style += `background-position: center;`;
-                if (rule.nameImageOpacity) style += `opacity: ${rule.nameImageOpacity};`;
+                if (rule.nameImageOpacity !== undefined) style += `opacity: ${rule.nameImageOpacity};`;
             } else if (rule.nameBackground) {
                 const opacity = rule.nameOpacity || 0.85;
                 style += `background-color: rgba(${hexToRgb(rule.nameBackground)}, ${opacity});`;
             }
             
-            // 字体设置
-            const fontSettings = currentData.fontSettings || {};
-            if (fontSettings.characterName) style += `font-family: ${fontSettings.characterName};`;
-            if (fontSettings.characterNameSize) style += `font-size: ${fontSettings.characterNameSize}px;`;
-            
             return style;
         }
         
         function getCharacterBubbleStyle(character) {
-            const rules = currentData.characterRules || {};
-            const defaultRule = currentData.defaultCharacterRule || {};
+            const rules = logData.characterRules || {};
+            const defaultRule = logData.defaultCharacterRule || {};
             const rule = rules[character] || defaultRule;
             
             let style = '';
             
+            // 字体设置
+            const fontSettings = logData.fontSettings || {};
+            if (fontSettings.dialogText) style += `font-family: ${fontSettings.dialogText};`;
+            if (fontSettings.dialogTextColor) style += `color: ${fontSettings.dialogTextColor};`;
+            if (fontSettings.dialogTextSize) style += `font-size: ${fontSettings.dialogTextSize}px;`;
+            
+            // 背景
             if (rule.bubbleUseImage && rule.bubbleImage) {
                 style += `background-image: url(${rule.bubbleImage});`;
                 style += `background-size: ${rule.bubbleImageSize || 'cover'};`;
                 style += `background-position: center;`;
-                if (rule.bubbleImageOpacity) style += `opacity: ${rule.bubbleImageOpacity};`;
+                if (rule.bubbleImageOpacity !== undefined) style += `opacity: ${rule.bubbleImageOpacity};`;
             } else if (rule.bubbleColor) {
                 const opacity = rule.bubbleOpacity || 0.85;
                 style += `background-color: rgba(${hexToRgb(rule.bubbleColor)}, ${opacity});`;
@@ -694,13 +888,17 @@
         }
         
         function hexToRgb(hex) {
+            if (!hex) return '0, 0, 0';
+            
             hex = hex.replace(/^#/, '');
             if (hex.length === 3) {
                 hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
             }
+            
             const r = parseInt(hex.substring(0, 2), 16);
             const g = parseInt(hex.substring(2, 4), 16);
             const b = parseInt(hex.substring(4, 6), 16);
+            
             return `${r}, ${g}, ${b}`;
         }
         
@@ -709,16 +907,17 @@
             const totalPages = Math.ceil(filteredLogs.length / pageSize);
             document.getElementById('currentPage').textContent = currentPage;
             document.getElementById('totalPages').textContent = totalPages;
+            document.getElementById('pageSize').textContent = pageSize;
             
             document.getElementById('prevPageBtn').disabled = currentPage === 1;
             document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+            document.getElementById('jumpInput').value = currentPage;
         }
         
         function prevPage() {
             if (currentPage > 1) {
                 currentPage--;
                 renderCurrentPage();
-                scrollToTop();
             }
         }
         
@@ -727,7 +926,6 @@
             if (currentPage < totalPages) {
                 currentPage++;
                 renderCurrentPage();
-                scrollToTop();
             }
         }
         
@@ -742,38 +940,50 @@
             currentPage = page;
             input.value = page;
             renderCurrentPage();
-            scrollToTop();
         }
         
         // 章节跳转
         function jumpToChapter(chapterIndex) {
-            const chapters = currentData.chapters || [];
+            const chapters = logData.chapters || [];
             if (chapters[chapterIndex]) {
                 const chapter = chapters[chapterIndex];
-                // 查找章节消息在过滤后的日志中的位置
-                const chapterMsgIndex = filteredLogs.findIndex(msg => 
+                // 查找章节消息在日志中的位置
+                const chapterMsgIndex = logData.logs.findIndex(msg => 
                     msg.isChapter && msg.text.includes(chapter.name)
                 );
                 
                 if (chapterMsgIndex !== -1) {
-                    currentPage = Math.floor(chapterMsgIndex / pageSize) + 1;
-                    renderCurrentPage();
-                    scrollToTop();
+                    // 查找在筛选后的日志中的位置
+                    const filteredIndex = filteredLogs.findIndex(msg => 
+                        msg.isChapter && msg.text.includes(chapter.name)
+                    );
+                    
+                    if (filteredIndex !== -1) {
+                        currentPage = Math.floor(filteredIndex / pageSize) + 1;
+                        renderCurrentPage();
+                        closeChapterSidebar();
+                    }
                 }
             }
         }
         
-        // 工具函数
-        function scrollToTop() {
-            document.querySelector('.log-container').scrollTop = 0;
+        // UI控制函数
+        function toggleChapterSidebar() {
+            document.getElementById('chapterSidebar').classList.toggle('show');
+            if (document.getElementById('filterPanel').classList.contains('show')) {
+                closeFilterPanel();
+            }
         }
         
-        function toggleSidebar() {
-            document.getElementById('chapterSidebar').classList.toggle('show');
+        function closeChapterSidebar() {
+            document.getElementById('chapterSidebar').classList.remove('show');
         }
         
         function toggleFilterPanel() {
             document.getElementById('filterPanel').classList.toggle('show');
+            if (document.getElementById('chapterSidebar').classList.contains('show')) {
+                closeChapterSidebar();
+            }
         }
         
         function closeFilterPanel() {
@@ -787,17 +997,23 @@
             }
         });
         
-        // 点击外部关闭筛选面板
+        // 点击外部关闭面板
         document.addEventListener('click', function(event) {
+            const chapterSidebar = document.getElementById('chapterSidebar');
             const filterPanel = document.getElementById('filterPanel');
-            const filterBtn = document.querySelector('.filter-btn');
+            const chapterBtn = document.querySelector('[onclick="toggleChapterSidebar()"]');
+            const filterBtn = document.querySelector('[onclick="toggleFilterPanel()"]');
+            
+            if (!chapterSidebar.contains(event.target) && !chapterBtn.contains(event.target)) {
+                closeChapterSidebar();
+            }
             
             if (!filterPanel.contains(event.target) && !filterBtn.contains(event.target)) {
                 closeFilterPanel();
             }
         });
         
-        // 初始化
+        // 初始化加载
         window.addEventListener('DOMContentLoaded', loadLogData);
     </script>
 </body>
