@@ -1399,19 +1399,34 @@ function hexToRgba(hex, opacity) {
         }
         
         // 获取频道遮罩样式
-        function getChannelMaskStyle(channel) {
-            const rules = logData.channelRules || {};
-            const defaultRule = logData.defaultChannelRule || {};
-            const rule = rules[channel] || defaultRule;
-            
-            if (rule.useMask) {
-                const maskOpacity = rule.maskOpacity !== undefined ? rule.maskOpacity : 0.3;
-                const maskColor = rule.maskColor || '#cccccc';
-                return `background-color: rgba(${hexToRgb(maskColor)}, ${maskOpacity});`;
-            }
-            
-            return null;
-        }
+function getChannelMaskStyle(channel) {
+    const rules = logData.channelRules || {};
+    const defaultRule = logData.defaultChannelRule || {};
+    const rule = rules[channel] || defaultRule;
+    
+    // 调试输出
+    console.log(`频道 "${channel}" 的遮罩设置:`, {
+        useMask: rule.useMask,
+        maskColor: rule.maskColor,
+        maskOpacity: rule.maskOpacity,
+        hasChannelRules: rules[channel] !== undefined,
+        hasDefaultRule: rule === defaultRule
+    });
+    
+    if (rule.useMask) {
+        const maskOpacity = rule.maskOpacity !== undefined ? rule.maskOpacity : 0.3;
+        const maskColor = rule.maskColor || '#cccccc';
+        
+        // 使用hexToRgb函数转换颜色
+        const rgbColor = hexToRgb(maskColor);
+        const style = `background-color: rgba(${rgbColor}, ${maskOpacity});`;
+        
+        console.log(`频道 "${channel}" 的遮罩样式:`, style);
+        return style;
+    }
+    
+    return null;
+}
         
         // 获取频道名文字样式
         function getChannelNameTextStyle(channel) {
