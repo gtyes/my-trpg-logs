@@ -32,7 +32,7 @@
         /* ========== 右侧悬浮图片 ========== */
 .floating-image-container {
     position: fixed;
-    right: 3;
+    right: 0;
     top: 120px;
     z-index: 800;
     display: flex;
@@ -484,26 +484,68 @@
         }
         
         /* ========== 筛选面板 ========== */
-        .filter-panel {
-            position: fixed;
-            right: -350px;
-            top: 100px;
-            width: 280px;
-            /* 背景设置 */
-            background: rgba(255, 255, 255, 0.8);
-            /* 图片背景示例: */
-            /*
-            background-image: url('https://example.com/filter-bg.jpg');
-            background-size: cover;
-            */
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 15px;
-            z-index: 999;
-            transition: right 0.3s;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-        
+.filter-panel {
+    position: fixed;
+    right: -350px;
+    top: 100px;
+    width: 280px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 15px;
+    z-index: 999;
+    transition: right 0.3s;
+    border: 1px solid rgba(139, 0, 0, 0.2);
+}
+/* 频道筛选部分添加滚动条 */
+#channelFilters {
+    max-height: 200px; /* 固定高度 */
+    overflow-y: auto; /* 垂直滚动 */
+    padding-right: 5px; /* 给滚动条留空间 */
+}
+
+/* 自定义滚动条样式 */
+#channelFilters::-webkit-scrollbar {
+    width: 6px;
+}
+
+#channelFilters::-webkit-scrollbar-track {
+    background: rgba(139, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+#channelFilters::-webkit-scrollbar-thumb {
+    background: rgba(139, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+#channelFilters::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 0, 0, 0.5);
+}
+/* 筛选选项样式 */
+#channelFilters label {
+    display: flex;
+    align-items: center;
+    padding: 8px 5px;
+    margin: 2px 0;
+    border-radius: 4px;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+#channelFilters label:hover {
+    background: rgba(139, 0, 0, 0.05);
+}
+
+#channelFilters input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+#channelFilters span {
+    font-size: 13px;
+    color: #333;
+}        
         .filter-panel.show {
             right: 20px;
         }
@@ -553,7 +595,17 @@
         font-size: 12px;
     }
 }
-
+@media (max-width: 768px) {
+    .filter-panel {
+        width: 90%;
+        right: -95%;
+        top: 80px;
+    }
+    
+    #channelFilters {
+        max-height: 150px; /* 手机端稍矮一些 */
+    }
+}
 
         
         @media (max-width: 768px) {
