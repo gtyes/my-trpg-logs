@@ -3,92 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRPG跑团日志</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="home-page">
-    <!-- 背景装饰元素 -->
-    <div class="background-elements">
-        <div class="tentacle"></div>
-        <div class="tentacle tentacle-2"></div>
-        <div class="eldritch-symbol"></div>
-    </div>
-
-    <div class="container">
-        <header class="main-header">
-            <h1 class="site-title">
-                <i class="fas fa-book-dead"></i>
-                柑的跑团记录
-                <span class="subtitle">TRPG 跑团日志</span>
-            </h1>
-            <p class="site-description">
-                Call of Cthulhu
-            </p>
-        </header>
-
-        <main class="logs-grid">
-            <!-- 单个日志卡片 -->
-            <div class="log-card" data-log-file="data/log001.json">
-                <div class="card-header">
-                    <div class="card-badge">
-                        <span class="badge-campaign">COC 7th</span>
-                        <span class="badge-status">已结团</span>
-                    </div>
-                    <div class="card-date">2023-10-27</div>
-                </div>
-                
-                <div class="card-body">
-                    <h3 class="card-title">血色毡帽</h3>
-                    <p class="card-summary">
-                        故事发生在█████████的三十年前，一组调查员们乘坐东方快车前往了君士坦丁堡，去阻止一场诞生自一顶受诅咒的毡帽的邪恶仪式。
-                    </p>
-                    
-                    <div class="card-stats">
-                        <div class="stat">
-                            <i class="fas fa-comments"></i>
-                            <span>消息数：<strong>342</strong></span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-users"></i>
-                            <span>角色数：<strong>5</strong></span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-clock"></i>
-                            <span>时长：<strong>12小时</strong></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card-footer">
-                    <a href="log-viewer.html?log=data/log001.json" class="btn-view">
-                        <i class="fas fa-eye"></i> 进入日志
-                    </a>
-                    <button class="btn-info" title="日志信息">
-                        <i class="fas fa-info-circle"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- 可以添加更多日志卡片 -->
-            <div class="add-new-card">
-                <div class="add-icon">
-                    <i class="fas fa-plus"></i>
-                </div>
-                <h3>添加新日志</h3>
-                <p>上传新的跑团记录</p>
-            </div>
-        </main>
+    <title>TRPG跑团日志库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-        <footer class="main-footer">
-            <p>© 2025 LOG | 使用 Vue.js + JSON 构建</p>
-            <p class="footer-note">
-                <i class="fas fa-exclamation-triangle"></i>
-                tip：本网站为个人网站
-            </p>
-        </footer>
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .log-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .log-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .log-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .card-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .card-content {
+            padding: 25px;
+        }
+        
+        .log-info {
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .info-label {
+            font-weight: bold;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .card-footer {
+            padding: 15px 25px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+        
+        .view-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .view-btn:hover {
+            background: #2980b9;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: white;
+            padding: 50px;
+        }
+        
+        .empty-state h2 {
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .log-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TRPG跑团日志库</h1>
+            <p>记录每一次冒险的精彩瞬间</p>
+        </div>
+        
+        <div class="log-cards" id="logCards">
+            <!-- 日志卡片将通过JavaScript动态生成 -->
+        </div>
+        
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h2>暂无日志</h2>
+            <p>快来上传你的第一个跑团记录吧！</p>
+        </div>
     </div>
 
-    <script src="scripts.js"></script>
+    <script>
+        // 日志数据配置
+        const logs = [
+            {
+                id: '1',
+                title: '血色毡帽',
+                description: '克苏鲁神话背景的恐怖冒险',
+                date: '2023-10-27',
+                totalMessages: 350,
+                characters: 4,
+                tags: ['克苏鲁', '恐怖', '推理'],
+                dataFile: 'data/log1.json'  // 对应你导出的JSON文件
+            }
+            // 未来可以添加更多日志
+        ];
+
+        // 渲染日志卡片
+        function renderLogCards() {
+            const container = document.getElementById('logCards');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (logs.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            container.innerHTML = logs.map(log => `
+                <div class="log-card" data-log-id="${log.id}">
+                    <div class="card-header">
+                        <h3>${log.title}</h3>
+                        <div class="card-subtitle">${log.description}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="log-info">
+                            <div class="info-item">
+                                <span class="info-label">跑团日期：</span>
+                                <span>${log.date}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">消息总数：</span>
+                                <span>${log.totalMessages}条</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">参与角色：</span>
+                                <span>${log.characters}人</span>
+                            </div>
+                        </div>
+                        <div class="tags">
+                            ${log.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="view-btn" onclick="viewLog('${log.id}')">查看日志</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 查看日志
+        function viewLog(logId) {
+            const log = logs.find(l => l.id === logId);
+            if (log) {
+                // 跳转到查看页面，传递日志文件路径
+                window.location.href = `viewer.html?log=${encodeURIComponent(log.dataFile)}`;
+            }
+        }
+
+        // 页面加载完成后渲染
+        document.addEventListener('DOMContentLoaded', renderLogCards);
+    </script>
 </body>
 </html>
