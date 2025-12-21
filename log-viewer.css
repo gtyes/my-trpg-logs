@@ -1,15 +1,91 @@
-/* 顶部导航栏简化 */
+/* 日志查看器专用样式 - 克苏鲁暗黑风格 */
+:root {
+    --color-bg: #0a0a15;
+    --color-nav-bg: #1a1a2e;
+    --color-sidebar-bg: rgba(26, 26, 46, 0.95);
+    --color-text: #e6e6e6;
+    --color-text-dim: #b3b3b3;
+    --color-border: #2d2d42;
+    --color-accent: #8b0000;
+    --color-accent-light: #b22222;
+    --color-shadow: rgba(0, 0, 0, 0.8);
+}
+
+/* 基础样式 */
+.log-viewer-page {
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    background-image: var(--bg-image, none); /* 背景图在JS中设置 */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* 加载动画 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.eldritch-spinner {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(139, 0, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--color-accent);
+    animation: spin 2s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-content {
+    text-align: center;
+}
+
+/* 顶部导航栏 */
 .top-nav {
-    background: rgba(26, 26, 46, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid #2d2d42;
+    background: var(--color-nav-bg);
+    border-bottom: 1px solid var(--color-border);
     padding: 1rem 2rem;
     display: flex;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
-    height: 70px; /* 固定高度 */
+    backdrop-filter: blur(10px);
+    background-image: var(--nav-bg-image, none); /* 导航栏背景图 */
+    background-size: cover;
+    background-position: center;
+}
+
+.nav-toggle {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: all 0.3s;
+}
+
+.nav-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
 }
 
 .nav-center {
@@ -18,43 +94,124 @@
 }
 
 .campaign-title {
-    font-family: 'Cinzel', serif;
-    font-size: 2rem;
-    color: #e6e6e6;
+    font-size: 1.8rem;
+    color: var(--color-text);
     margin: 0;
-    text-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-/* 侧边栏简化 */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* 搜索框 */
+.search-box {
+    position: relative;
+    display: flex;
+}
+
+.search-box input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--color-border);
+    border-radius: 6px 0 0 6px;
+    padding: 0.5rem 1rem;
+    color: var(--color-text);
+    width: 200px;
+    transition: all 0.3s;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.search-btn {
+    background: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    border-radius: 0 6px 6px 0;
+    color: white;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.search-btn:hover {
+    background: var(--color-accent-light);
+}
+
+.btn-home {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-home:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+/* 主要内容区域 */
+.main-container {
+    display: flex;
+    min-height: calc(100vh - 70px);
+}
+
+/* 侧边栏 */
 .sidebar {
-    width: 280px;
-    background: rgba(26, 26, 46, 0.8);
-    border-right: 1px solid #2d2d42;
+    width: 250px;
+    background: var(--color-sidebar-bg);
+    border-right: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     transition: all 0.3s;
     position: sticky;
-    top: 70px; /* 与导航栏高度一致 */
+    top: 70px;
     height: calc(100vh - 70px);
     overflow-y: auto;
+    backdrop-filter: blur(10px);
+}
+
+.sidebarCollapsed .sidebar {
+    transform: translateX(-250px);
 }
 
 .sidebar-header {
     padding: 1.5rem;
-    border-bottom: 1px solid #2d2d42;
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .sidebar-header h3 {
-    font-family: 'Cinzel', serif;
     font-size: 1.2rem;
-    color: #e6e6e6;
+    color: var(--color-text);
     margin: 0;
 }
 
-/* 章节列表简化 */
+.sidebar-close {
+    background: transparent;
+    border: none;
+    color: var(--color-text-dim);
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.sidebar-close:hover {
+    color: var(--color-accent);
+}
+
+/* 章节列表 */
 .chapter-list {
     padding: 1rem;
     flex: 1;
@@ -77,99 +234,180 @@
 
 .chapter-item.active {
     background: rgba(139, 0, 0, 0.2);
-    border-color: #8b0000;
+    border-color: var(--color-accent);
 }
 
-.chapter-content h4 {
-    font-size: 1rem;
-    margin: 0;
-    color: #e6e6e6;
-    font-weight: normal;
+.chapter-content {
+    display: flex;
+    flex-direction: column;
 }
 
-/* 角色名样式 - 恢复编辑器的样式 */
-.character-name-box {
-    padding: 4px 10px;
+.chapter-name {
+    font-size: 0.95rem;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+}
+
+.chapter-position {
+    font-size: 0.8rem;
+    color: var(--color-text-dim);
+}
+
+/* 日志内容区域 */
+.log-content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* 分页控制 */
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(26, 26, 46, 0.5);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-border);
+    gap: 2rem;
+}
+
+.pagination-controls button {
+    background: transparent;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    display: inline-block;
-    margin-bottom: 6px;
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    color: var(--color-text);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
 }
 
-.character-name {
+.pagination-controls button:hover:not(:disabled) {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.page-info {
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+/* 搜索状态 */
+.search-status {
+    background: rgba(139, 0, 0, 0.1);
+    border: 1px solid rgba(139, 0, 0, 0.3);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.search-status button {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-dim);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.search-status button:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+/* 消息展示区域 */
+.messages-container {
+    margin-bottom: 2rem;
+}
+
+.loading-state, .error-state, .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--color-text-dim);
+}
+
+.error-state {
+    background: rgba(139, 0, 0, 0.1);
+    border: 1px solid rgba(139, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+.error-state h3 {
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+}
+
+/* 章节标题 */
+.chapter-title-section {
+    text-align: center;
+    margin: 3rem 0;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.chapter-title-content {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 2;
+}
+
+/* 频道组 */
+.channel-group {
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.channel-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(45, 45, 66, 0.5);
     font-weight: bold;
 }
 
-.mention {
-    color: #888;
-    font-weight: normal;
-    margin-left: 5px;
-    font-size: 12px;
+/* 消息行 */
+.message-row {
+    display: flex;
+    margin-bottom: 1rem;
 }
 
-/* 消息气泡 - 恢复编辑器的样式 */
-.message-bubble {
-    padding: 10px 14px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    position: relative;
-    min-height: 20px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+/* 系统消息 */
+.system-message {
+    justify-content: center;
+    margin: 1rem 0;
 }
 
-/* 消息图片 */
-.message-image {
-    margin-top: 8px;
-    text-align: center;
-}
-
-.message-image img {
-    max-width: 100%;
-    max-height: 400px;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.message-image img:hover {
-    transform: scale(1.01);
-}
-
-/* extend结果图片 */
-.extend-image {
-    margin-top: 8px;
-    text-align: center;
-}
-
-.extend-image img {
-    max-width: 300px;
-    max-height: 150px;
-    border-radius: 6px;
-}
-
-/* 骰子结果样式 */
-.dice-result {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px dashed #eee;
-}
-
-/* 系统消息样式 - 居中无框 */
 .system-message-content {
+    padding: 0.5rem 1rem;
+    background: rgba(15, 52, 96, 0.2);
+    border-radius: 20px;
+    max-width: 80%;
     text-align: center;
-    margin: 10px 0;
-    padding: 8px;
-    background: none;
-    border: none;
 }
 
-/* 头像样式 - 恢复编辑器的样式 */
+/* 头像列 */
 .avatar-column {
-    margin-right: 12px;
+    margin-right: 1rem;
     flex-shrink: 0;
 }
 
@@ -180,31 +418,196 @@
     object-fit: cover;
 }
 
-.avatar-placeholder {
-    width: 48px;
-    height: 48px;
+/* 消息内容 */
+.message-content {
+    flex: 1;
+}
+
+.message-header {
+    margin-bottom: 0.5rem;
+}
+
+.character-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.mention {
+    color: var(--color-accent);
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
+
+/* 消息气泡 */
+.message-bubble {
+    padding: 1rem;
     border-radius: 8px;
-    background: linear-gradient(135deg, #8b0000, #1a1a2e);
+    border: 1px solid rgba(45, 45, 66, 0.5);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+}
+
+.message-text {
+    line-height: 1.6;
+}
+
+/* 消息图片 */
+.message-image {
+    margin-top: 1rem;
+}
+
+.message-image img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.message-image img:hover {
+    transform: scale(1.01);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* 骰子结果 */
+.dice-result {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    border-left: 3px solid var(--color-accent);
+    font-family: monospace;
+}
+
+/* 底部分页 */
+.pagination-bottom {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Cinzel', serif;
-    font-size: 1.2rem;
-    color: #e6e6e6;
-    border: 1px solid #2d2d42;
+    gap: 2rem;
+    padding: 1.5rem;
+    background: rgba(26, 26, 46, 0.5);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
 }
 
-/* 消息头部 */
-.message-header {
+.page-indicator {
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+/* 图片预览模态框 */
+.image-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 21, 0.95);
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
+    justify-content: center;
+    z-index: 2000;
 }
 
-.message-time {
-    color: #b3b3b3;
-    font-size: 0.85rem;
+.modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
 }
 
-/* 其他样式保持不变 */
+.modal-content img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+}
+
+.modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.modal-close:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+/* 快速导航按钮 */
+.quick-nav {
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 1000;
+}
+
+.quick-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(26, 26, 46, 0.8);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+    backdrop-filter: blur(5px);
+}
+
+.quick-btn:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .top-nav {
+        padding: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .nav-center {
+        order: 3;
+        flex: 100%;
+        margin-top: 1rem;
+    }
+    
+    .search-box input {
+        width: 150px;
+    }
+    
+    .sidebar {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .sidebarCollapsed .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .log-content {
+        padding: 1rem;
+    }
+}
