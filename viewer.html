@@ -30,18 +30,19 @@
         /* ========== 右侧悬浮图片 ========== */
 .floating-image-right {
     position: fixed;
-    right: 0px;
-    top: 100px;
-    width: 500px;  /* 增大尺寸 */
-    height: 500px; /* 增大尺寸 */
+    right: 5px; /* 离右边更近，原来是20px */
+    top: 120px;
+    width: 450px; /* 保持大尺寸 */
+    height: 450px; /* 保持大尺寸 */
     background-image: url('images/map1.png'); /* 改为相对路径 */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     z-index: 800;
-    opacity: 0.9; /* 增加透明度 */
+    opacity: 0.9;
     pointer-events: none;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    /* 添加阴影效果让图片更清晰 */
+    filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
 }
 
         
@@ -67,8 +68,9 @@
         
         .log-title {
             font-size: 1.8rem;
-            font-weight: bold;
+            font-weight: normal;
             color: white;
+            font-family: 'STZhongsong', '华文中宋', serif;
             text-align: center;
             flex: 1;
             margin: 0 20px;
@@ -333,12 +335,13 @@
             border-radius: 4px;
         }
         /* 搜索标红 */
-        .search-highlight {
-    background-color: #ffeb3b;
-    color: #d32f2f;
+.search-highlight {
+    background-color: #8b0000; /* 暗红色背景 */
+    color: #000000; /* 黑色字体 */
     font-weight: bold;
     padding: 1px 3px;
     border-radius: 3px;
+    border: 1px solid #660000; /* 深红色边框 */
 }
         
         /* 骰子结果样式 */
@@ -464,6 +467,7 @@
         @media (max-width: 1100px) {
             .floating-image-right {
                 display: none;
+                right: 5px;
             }
         }
         
@@ -799,29 +803,37 @@ function renderCurrentPage() {
     let count = 0;
     let currentIndex = startIndex;
     
-    // 先检查当前页起始位置是否正好是章节消息
-    if (currentIndex < filteredLogs.length) {
-        const firstMsg = filteredLogs[currentIndex];
-        // 如果是章节消息，直接加入
-        if (firstMsg.isChapter) {
-            pageLogs.push(firstMsg);
-            count++;
-            currentIndex++;
+    // 先向前查找，看看起始位置之前有没有章节消息
+    for (let i = startIndex - 1; i >= 0; i--) {
+        const msg = filteredLogs[i];
+        if (msg.isChapter) {
+            // 如果前一条是章节，且当前页第一条不是章节，则将章节也加入本页
+            if (currentIndex < filteredLogs.length && !filteredLogs[currentIndex].isChapter) {
+                pageLogs.push(msg);
+                count++;
+                // 调整当前索引，跳过已经加入的章节
+                // 不调整，因为章节在前一页
+            }
+            break;
         }
     }
     
-    // 继续收集本页其他消息
+    // 收集当前页消息
     while (count < pageSize && currentIndex < filteredLogs.length) {
         const msg = filteredLogs[currentIndex];
-        
-        // 如果是章节标记，且不是本页第一条，则结束当前页
-        if (msg.isChapter && count > 0) {
-            break;
-        }
-        
         pageLogs.push(msg);
         count++;
         currentIndex++;
+        
+        // 如果是章节标记，且不是本页第一条，则结束当前页
+        // 修改这里：章节应该在新的一页开始
+        if (msg.isChapter && count > 1) {
+            // 如果章节不是本页第一条，我们撤销这次添加
+            pageLogs.pop(); // 移除这个章节
+            count--; // 减少计数
+            currentIndex--; // 回退索引
+            break; // 结束当前页，章节将在下一页显示
+        }
     }
     
     // 渲染消息
@@ -1321,13 +1333,12 @@ function updatePaginationInfo() {
         // 计算这一页能放多少消息
         for (let i = pageStart; i < filteredLogs.length && pageCount < pageSize; i++) {
             const msg = filteredLogs[i];
-            
-            // 如果是章节标记，且不是本页第一条，则结束当前页
-            if (msg.isChapter && pageCount > 0 && i > pageStart) {
-                break;
-            }
-            
             pageCount++;
+            
+            // 关键修改：如果是章节标记，且不是本页第一条，则结束当前页
+            if (msg.isChapter && pageCount > 1) {
+                break; // 章节在新的一页开始
+            }
         }
         
         remainingMessages -= pageCount;
@@ -1376,53 +1387,33 @@ function updatePaginationInfo() {
         function jumpToChapter(chapterIndex) {
     if (chapters[chapterIndex]) {
         const chapter = chapters[chapterIndex];
-        console.log('跳转到章节:', chapter.name, '位置:', chapter.position);
         
-        // 查找章节消息在filteredLogs中的位置
+        // 查找章节消息在日志中的位置
         const chapterMsgIndex = filteredLogs.findIndex(msg => 
             msg.isChapter && msg.text.includes(chapter.name)
         );
         
         if (chapterMsgIndex !== -1) {
-            console.log('找到章节消息在位置:', chapterMsgIndex);
-            
-            // 计算该消息应该在哪一页
+            // 计算章节消息所在的页数
             let page = 1;
             let messagesProcessed = 0;
-            let pageMessages = 0;
-            let foundPage = 1;
             
-            // 模拟分页过程找到章节所在的页
-            for (let i = 0; i < filteredLogs.length; i++) {
+            for (let i = 0; i <= chapterMsgIndex; i++) {
                 const msg = filteredLogs[i];
-                pageMessages++;
                 
-                // 如果是章节消息，且不是本页第一条，且页内已有消息，则应该从新的一页开始
-                if (msg.isChapter && pageMessages > 1 && i > 0) {
-                    // 这个章节应该在新的一页开始
+                // 如果当前页已满，或遇到章节需要新开一页
+                if (messagesProcessed >= pageSize || 
+                    (msg.isChapter && messagesProcessed > 0 && i > 0)) {
                     page++;
-                    pageMessages = 1;
+                    messagesProcessed = 0;
                 }
                 
-                // 找到目标章节消息
-                if (i === chapterMsgIndex) {
-                    foundPage = page;
-                    break;
-                }
-                
-                // 如果本页已满，翻页
-                if (pageMessages >= pageSize) {
-                    page++;
-                    pageMessages = 0;
-                }
+                messagesProcessed++;
             }
             
-            console.log('章节在第', foundPage, '页');
-            currentPage = foundPage;
+            currentPage = page;
             renderCurrentPage();
             closeChapterSidebar();
-        } else {
-            console.error('未找到章节消息:', chapter.name);
         }
     }
 }
