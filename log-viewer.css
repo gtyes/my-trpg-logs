@@ -98,8 +98,7 @@
     font-style: italic;
     margin-top: 0.5rem;
 }
-
-/* 顶部导航栏 */
+/* 顶部导航栏样式 - 简化版 */
 .top-nav {
     background: rgba(26, 26, 46, 0.95);
     backdrop-filter: blur(10px);
@@ -110,23 +109,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-}
-
-.nav-toggle {
-    background: transparent;
-    border: 1px solid #2d2d42;
-    color: #e6e6e6;
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-right: 1rem;
-    transition: all 0.3s;
-}
-
-.nav-toggle:hover {
-    border-color: #8b0000;
-    color: #8b0000;
+    height: 60px; /* 固定高度 */
 }
 
 .nav-center {
@@ -138,28 +121,14 @@
     font-family: 'Cinzel', serif;
     font-size: 1.8rem;
     color: #e6e6e6;
-    margin-bottom: 0.5rem;
+    margin: 0;
 }
 
+/* 移除campaign-meta相关样式 */
 .campaign-meta {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    font-size: 0.9rem;
-    color: #b3b3b3;
+    display: none;
 }
 
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
 
 /* 搜索框 */
 .search-box {
@@ -416,15 +385,9 @@
 }
 
 /* 章节列表 */
-.chapter-list {
-    padding: 1rem;
-    flex: 1;
-    overflow-y: auto;
-}
-
+/* 章节导航样式 - 简化版 */
 .chapter-item {
-    display: flex;
-    align-items: center;
+    display: block;
     padding: 0.75rem;
     border-radius: 6px;
     margin-bottom: 0.5rem;
@@ -435,24 +398,11 @@
 
 .chapter-item:hover {
     background: rgba(139, 0, 0, 0.1);
-    border-color: rgba(139, 0, 0, 0.3);
 }
 
 .chapter-item.active {
     background: rgba(139, 0, 0, 0.2);
     border-color: #8b0000;
-}
-
-.chapter-icon {
-    width: 40px;
-    height: 40px;
-    background: rgba(139, 0, 0, 0.2);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 0.75rem;
-    color: #8b0000;
 }
 
 .chapter-content h4 {
@@ -464,6 +414,11 @@
 .chapter-info {
     font-size: 0.8rem;
     color: #b3b3b3;
+}
+
+/* 移除之前的章节图标样式 */
+.chapter-icon {
+    display: none;
 }
 
 /* 角色列表 */
