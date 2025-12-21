@@ -221,43 +221,32 @@
                                         
                                         <div class="message-content">
                                             <!-- 角色名 -->
-                                            <div class="message-header">
-                                                <span class="character-name" 
-                                                      :style="getCharacterNameStyle(msg.name)">
-                                                    {{ msg.name }}
-                                                    <span v-if="msg.to" class="mention">
-                                                        → @{{ msg.to }}
-                                                    </span>
-                                                </span>
-                                                <span class="message-time">
-                                                    {{ formatTime(msg.time) }}
-                                                </span>
-                                            </div>
+<div class="character-name-box" :style="getCharacterNameBackgroundStyle(msg)">
+    <span class="character-name" :style="getCharacterNameStyle(msg)">
+        {{ msg.name }}
+        <span v-if="msg.to" class="to-name"> > @{{ msg.to }}</span>
+    </span>
+</div>
                                             
                                             <!-- 消息气泡 -->
-                                            <div class="message-bubble" :style="getBubbleStyle(msg.name)">
-                                                <div class="message-text" :style="getTextStyle()">
-                                                    {{ msg.text }}
-                                                </div>
+    <div class="bubble" :style="getCharacterBubbleBackgroundStyle(msg)">
+    <div class="msg-text" :style="getDialogTextStyle()">{{ msg.text }}</div>
                                                 
                                                 <!-- 消息图片 -->
-                                                <div v-if="msg.messageImage" class="message-image">
-                                                    <img :src="msg.messageImage" 
-                                                         @click="previewImage(msg.messageImage)"
-                                                         :alt="'来自' + msg.name + '的图片'">
-                                                </div>
+    <div v-if="msg.messageImage" class="message-image">
+        <img :src="msg.messageImage" 
+             @click="previewImage(msg.messageImage)"
+             :alt="msg.name + '的图片'">
+    </div>
                                                 
                                                 <!-- 骰子结果 -->
-                                                <div v-if="msg.dice || msg.extend" 
-                                                     class="dice-result"
-                                                     :style="getDiceStyle(msg)">
-                                                    <div class="dice-icon">
-                                                        <i class="fas fa-dice-d20"></i>
-                                                    </div>
-                                                    <div class="dice-text">
-                                                        {{ getDiceText(msg) }}
-                                                    </div>
-                                                </div>
+    <div v-if="msg.dice || msg.extend" class="dice" :style="getExtendStyle(msg)">
+        {{ getFormattedExtendText(msg) }}
+        <!-- 特殊extend图片 -->
+        <div v-if="getExtendImage(msg)" class="extend-image">
+            <img :src="getExtendImage(msg)" :alt="getExtendResultType(msg) + '图片'">
+        </div>
+    </div>
                                             </div>
                                         </div>
                                     </template>
