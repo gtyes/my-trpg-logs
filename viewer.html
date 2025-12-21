@@ -464,7 +464,7 @@
         
         .pagination-info {
             font-size: 13px;
-            color: #2c3e50;
+            color: #bdc3c7;
             margin: 0 8px;
         }
         
@@ -619,6 +619,19 @@
                 margin: 10px 0;
                 order: 1;
             }
+    .top-controls.left-controls {
+        position: static;
+        order: 0; /* 左侧按钮在上方 */
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .top-controls.right-controls {
+        position: static;
+        order: 2; /* 右侧按钮在下方 */
+        justify-content: flex-end;
+        width: 100%;
+    }
             
             .search-box input {
                 width: 100%;
@@ -663,46 +676,29 @@
 </div>
 
     <!-- 顶部标题栏 -->
-    <div class="top-header">
-        <div class="top-controls">
-            <button class="control-btn" onclick="toggleChapterSidebar()">章节导航</button>
-        </div>
-        <div class="log-title" id="logTitle">
-            <span class="title-character" style="color: #8b0000;">血</span>
-            <span class="title-character">色</span>
-            <span class="title-character">毡</span>
-            <span class="title-character">帽</span>
-        </div>
-        <div class="top-controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="搜索消息内容..." autocomplete="off">
-                <button class="clear-search-btn" onclick="clearSearch()" style="display: none;">×</button>
-            </div>
-            <!-- 添加样式 -->
-<style>
-.clear-search-btn {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #8b0000;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-</style>
-            <button class="control-btn" onclick="toggleFilterPanel()">筛选</button>
-        </div>
+<div class="top-header">
+    <!-- 左侧控制按钮 -->
+    <div class="top-controls left-controls">
+        <button class="control-btn" onclick="toggleChapterSidebar()">章节导航</button>
     </div>
-
+    
+    <!-- 标题 -->
+    <div class="log-title" id="logTitle">
+        <span class="title-character" style="color: #8b0000;">血</span>
+        <span class="title-character">色</span>
+        <span class="title-character">毡</span>
+        <span class="title-character">帽</span>
+    </div>
+    
+    <!-- 右侧控制按钮 -->
+    <div class="top-controls right-controls">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索消息内容..." autocomplete="off">
+            <button class="clear-search-btn" onclick="clearSearch()" style="display: none;">×</button>
+        </div>
+        <button class="control-btn" onclick="toggleFilterPanel()">筛选</button>
+    </div>
+</div>
     <!-- 悬浮章节导航 -->
     <div class="floating-sidebar" id="chapterSidebar">
         <div class="sidebar-header">
