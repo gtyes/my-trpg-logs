@@ -153,7 +153,7 @@
     <div class="container">
         <div class="header">
             <h1>TRPG跑团日志库</h1>
-            <p>记录每一次冒险的精彩瞬间</p>
+            <p>Call of Cthulhu</p>
         </div>
         
         <div class="log-cards" id="logCards">
@@ -162,7 +162,7 @@
         
         <div class="empty-state" id="emptyState" style="display: none;">
             <h2>暂无日志</h2>
-            <p>快来上传你的第一个跑团记录吧！</p>
+            <p>上传跑团记录</p>
         </div>
     </div>
 
@@ -176,7 +176,6 @@
                 date: '2023-10-27',
                 totalMessages: 350,
                 characters: 4,
-                tags: ['克苏鲁', '恐怖', '推理'],
                 dataFile: 'data/log1.json'  // 对应你导出的JSON文件
             }
             // 未来可以添加更多日志
@@ -213,9 +212,6 @@
                                 <span class="info-label">参与角色：</span>
                                 <span>${log.characters}人</span>
                             </div>
-                        </div>
-                        <div class="tags">
-                            ${log.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                         </div>
                     </div>
                     <div class="card-footer">
