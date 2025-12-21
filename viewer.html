@@ -34,7 +34,7 @@
         /* ========== 右侧悬浮图片 ========== */
 .floating-image-right {
     position: fixed;
-    right: 5px; /* 离右边更近，原来是20px */
+    right: -10px; /* 离右边更近，原来是20px */
     top: 120px;
     width: 450px; /* 保持大尺寸 */
     height: 450px; /* 保持大尺寸 */
@@ -696,7 +696,7 @@
                 <div class="chapter-item" onclick="jumpToChapter(${index})">
                     <div style="font-weight: bold; margin-bottom: 2px;">${chapter.name}</div>
                     <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 1px;">
-                        消息 #${chapter.position}
+                        消息 ${chapter.position} <!-- 移除#号 -->
                     </div>
                 </div>
             `).join('');
