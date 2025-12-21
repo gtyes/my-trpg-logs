@@ -3,94 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日志查看器 - 旧日档案馆</title>
+    <title>{{ title }} - TRPG日志</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="log-viewer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body class="log-viewer-page">
-    <!-- 加载遮罩 -->
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-content">
             <div class="eldritch-spinner"></div>
             <p>正在加载日志数据...</p>
-            <p class="loading-sub">请保持理智值</p>
         </div>
     </div>
 
     <div id="app">
-        <!-- 顶部导航栏 -->
         <!-- 顶部导航栏 - 简化版 -->
-<nav class="top-nav">
-    <button class="nav-toggle" @click="toggleSidebar">
-        <i class="fas fa-bars"></i>
-    </button>
-    
-    <div class="nav-center">
-        <h1 class="campaign-title">{{ title }}</h1>
-    </div>
-    
-    <div class="nav-actions">
-        <!-- 搜索框 -->
-        <div class="search-box">
-            <input type="text" 
-                   v-model="searchQuery" 
-                   @input="performSearch"
-                   placeholder="搜索消息内容...">
-            <button class="search-btn">
-                <i class="fas fa-search"></i>
+        <nav class="top-nav">
+            <button class="nav-toggle" @click="toggleSidebar">
+                <i class="fas fa-bars"></i>
             </button>
-        </div>
-        
-        <!-- 显示模式切换 -->
-        <div class="view-toggle">
-            <button :class="{active: viewMode === 'paginated'}" 
-                    @click="viewMode = 'paginated'"
-                    title="分页模式">
-                <i class="fas fa-file-alt"></i>
-            </button>
-            <button :class="{active: viewMode === 'continuous'}" 
-                    @click="viewMode = 'continuous'"
-                    title="连续模式">
-                <i class="fas fa-scroll"></i>
-            </button>
-        </div>
-        
-        <!-- 返回首页 -->
-        <a href="index.html" class="btn-home" title="返回首页">
-            <i class="fas fa-home"></i>
-        </a>
-    </div>
-</nav>
+            
+            <div class="nav-center">
+                <h1 class="campaign-title">{{ title }}</h1>
+                <!-- 移除时间、消息数、角色数等元信息 -->
+            </div>
+            
+            <div class="nav-actions">
+                <!-- 搜索框 -->
+                <div class="search-box">
+                    <input type="text" 
+                           v-model="searchQuery" 
+                           @input="performSearch"
+                           placeholder="搜索消息内容...">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <!-- 筛选按钮 -->
+                <div class="filter-dropdown">
+                    <button class="filter-btn" @click="toggleFilterDropdown">
+                        <i class="fas fa-filter"></i>
+                        筛选
+                        <span v-if="activeFiltersCount > 0" class="filter-badge">
+                            {{ activeFiltersCount }}
+                        </span>
+                    </button>
+                    
+                    <div class="filter-panel" v-show="showFilterPanel">
+                        <div class="filter-section">
+                            <h4>按角色筛选</h4>
+                            <div class="filter-options">
+                                <label v-for="character in characterList" :key="character">
+                                    <input type="checkbox" 
+                                           :value="character"
+                                           v-model="selectedCharacters">
+                                    {{ character }}
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <h4>按频道筛选</h4>
+                            <div class="filter-options">
+                                <label v-for="channel in channelList" :key="channel">
+                                    <input type="checkbox" 
+                                           :value="channel"
+                                           v-model="selectedChannels">
+                                    {{ channel }}
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button @click="applyFilters" class="btn-apply">应用筛选</button>
+                            <button @click="clearFilters" class="btn-clear">清空</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 显示模式切换 -->
+                <div class="view-toggle">
+                    <button :class="{active: viewMode === 'paginated'}" 
+                            @click="viewMode = 'paginated'"
+                            title="分页模式">
+                        <i class="fas fa-file-alt"></i>
+                    </button>
+                    <button :class="{active: viewMode === 'continuous'}" 
+                            @click="viewMode = 'continuous'"
+                            title="连续模式">
+                        <i class="fas fa-scroll"></i>
+                    </button>
+                </div>
+                
+                <!-- 返回首页 -->
+                <a href="index.html" class="btn-home" title="返回首页">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+        </nav>
         
         <!-- 主要内容区域 -->
         <div class="main-container" :class="{sidebarCollapsed: !sidebarOpen}">
-            <!-- 左侧章节导航栏 -->
-            <!-- 左侧章节导航栏 -->
-<aside class="sidebar" v-show="sidebarOpen">
-    <div class="sidebar-header">
-        <h3>章节导航</h3>
-        <button class="sidebar-close" @click="toggleSidebar">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    
-    <div class="chapter-list">
-        <div v-for="chapter in chapters" 
-             :key="chapter.id"
-             class="chapter-item"
-             :class="{active: currentChapter === chapter.id}"
-             @click="jumpToChapter(chapter)">
-            <div class="chapter-content">
-                <h4>{{ chapter.name }}</h4>
-                <p class="chapter-info">
-                    从第 {{ chapter.position }} 条消息开始
-                </p>
-            </div>
-        </div>
-    </div>
-</aside>
+            <!-- 左侧章节导航栏 - 简化版 -->
+            <aside class="sidebar" v-show="sidebarOpen">
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-bookmark"></i> 章节导航</h3>
+                    <button class="sidebar-close" @click="toggleSidebar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="chapter-list">
+                    <div v-for="chapter in chapters" 
+                         :key="chapter.id"
+                         class="chapter-item"
+                         :class="{active: currentChapter === chapter.id}"
+                         @click="jumpToChapter(chapter)">
+                        <!-- 移除图标，只显示纯文本 -->
+                        <div class="chapter-content">
+                            <h4>{{ chapter.name }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </aside>
             
             <!-- 右侧日志内容 -->
             <main class="log-content">
@@ -133,25 +170,21 @@
                         <button @click="clearAllFilters" class="btn-clear-all">清除所有筛选</button>
                     </span>
                 </div>
-                <!-- 在log-viewer.html的messages-container部分之前添加 -->
-<div v-if="isLoading" class="loading-state">
-    <div class="eldritch-spinner"></div>
-    <p>正在加载日志数据...</p>
-</div>
-
-<div v-else-if="errorMessage" class="error-state">
-    <h3><i class="fas fa-exclamation-triangle"></i> 加载失败</h3>
-    <p>{{ errorMessage }}</p>
-    <p>请检查：</p>
-    <ul>
-        <li>JSON文件路径是否正确</li>
-        <li>JSON文件格式是否正确</li>
-        <li>打开浏览器控制台(F12)查看详细错误</li>
-    </ul>
-</div>
+                
+                <!-- 加载状态 -->
+                <div v-if="isLoading" class="loading-state">
+                    <div class="eldritch-spinner"></div>
+                    <p>正在加载日志数据...</p>
+                </div>
+                
+                <!-- 错误状态 -->
+                <div v-else-if="errorMessage" class="error-state">
+                    <h3><i class="fas fa-exclamation-triangle"></i> 加载失败</h3>
+                    <p>{{ errorMessage }}</p>
+                </div>
+                
                 <!-- 日志消息展示 -->
-                <div class="messages-container">
-                    <!-- 使用你原来的日志渲染逻辑，但应用暗黑主题 -->
+                <div v-else class="messages-container">
                     <template v-for="(group, groupIndex) in channelGroups" :key="groupIndex">
                         <!-- 章节标题 -->
                         <div v-if="group.channel === '系统' && group.messages[0] && group.messages[0].isChapter" 
@@ -159,11 +192,6 @@
                              :style="getChapterStyle(group.messages[0])">
                             <div class="chapter-title-content">
                                 {{ group.messages[0].text.replace('=== ', '').replace(' ===', '') }}
-                                <div class="chapter-divider">
-                                    <div class="divider-line"></div>
-                                    <div class="divider-symbol">✵</div>
-                                    <div class="divider-line"></div>
-                                </div>
                             </div>
                         </div>
                         
@@ -198,12 +226,7 @@
                                     <!-- 系统消息 -->
                                     <template v-if="msg.name.toLowerCase() === 'system'">
                                         <div class="system-message-content" :style="getSystemMessageStyle()">
-                                            <div class="system-icon">
-                                                <i class="fas fa-cog"></i>
-                                            </div>
-                                            <div class="system-text">
-                                                {{ systemSettings.prefix ? systemSettings.prefix + ' ' : '' }}{{ msg.text }}
-                                            </div>
+                                            {{ systemSettings.prefix ? systemSettings.prefix + ' ' : '' }}{{ msg.text }}
                                         </div>
                                     </template>
                                     
@@ -221,32 +244,45 @@
                                         
                                         <div class="message-content">
                                             <!-- 角色名 -->
-<div class="character-name-box" :style="getCharacterNameBackgroundStyle(msg)">
-    <span class="character-name" :style="getCharacterNameStyle(msg)">
-        {{ msg.name }}
-        <span v-if="msg.to" class="to-name"> > @{{ msg.to }}</span>
-    </span>
-</div>
+                                            <div class="message-header">
+                                                <div class="character-name-box" :style="getCharacterNameBackgroundStyle(msg.name)">
+                                                    <span class="character-name" :style="getCharacterNameStyle(msg.name)">
+                                                        {{ msg.name }}
+                                                        <span v-if="msg.to" class="mention">
+                                                            > @{{ msg.to }}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <span class="message-time">
+                                                    {{ formatTime(msg.time) }}
+                                                </span>
+                                            </div>
                                             
                                             <!-- 消息气泡 -->
-    <div class="bubble" :style="getCharacterBubbleBackgroundStyle(msg)">
-    <div class="msg-text" :style="getDialogTextStyle()">{{ msg.text }}</div>
+                                            <div class="message-bubble" :style="getBubbleStyle(msg.name)">
+                                                <div class="message-text" :style="getTextStyle()">
+                                                    {{ msg.text }}
+                                                </div>
                                                 
                                                 <!-- 消息图片 -->
-    <div v-if="msg.messageImage" class="message-image">
-        <img :src="msg.messageImage" 
-             @click="previewImage(msg.messageImage)"
-             :alt="msg.name + '的图片'">
-    </div>
+                                                <div v-if="msg.messageImage" class="message-image">
+                                                    <img :src="msg.messageImage" 
+                                                         @click="previewImage(msg.messageImage)"
+                                                         :alt="'来自' + msg.name + '的图片'">
+                                                </div>
                                                 
                                                 <!-- 骰子结果 -->
-    <div v-if="msg.dice || msg.extend" class="dice" :style="getExtendStyle(msg)">
-        {{ getFormattedExtendText(msg) }}
-        <!-- 特殊extend图片 -->
-        <div v-if="getExtendImage(msg)" class="extend-image">
-            <img :src="getExtendImage(msg)" :alt="getExtendResultType(msg) + '图片'">
-        </div>
-    </div>
+                                                <div v-if="msg.dice || msg.extend" 
+                                                     class="dice-result"
+                                                     :style="getDiceStyle(msg)">
+                                                    <div class="dice-text">
+                                                        {{ getDiceText(msg) }}
+                                                    </div>
+                                                    <!-- 特殊extend图片 -->
+                                                    <div v-if="getExtendImage(msg)" class="extend-image">
+                                                        <img :src="getExtendImage(msg)" :alt="getExtendResultType(msg) + '图片'">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </template>
@@ -257,7 +293,7 @@
                 </div>
                 
                 <!-- 底部翻页控制 -->
-                <div class="pagination-bottom" v-if="viewMode === 'paginated'">
+                <div class="pagination-bottom" v-if="viewMode === 'paginated' && !isLoading && !errorMessage">
                     <button @click="prevPage" :disabled="currentPage === 1">
                         <i class="fas fa-chevron-left"></i> 上一页
                     </button>
@@ -295,13 +331,8 @@
         </div>
     </div>
 
-    <!-- 单独的日志查看器样式 -->
-    <link rel="stylesheet" href="log-viewer.css">
-    
-    <!-- 脚本 -->
     <script src="log-viewer.js"></script>
     <script>
-        // 隐藏加载动画
         window.addEventListener('load', function() {
             document.getElementById('loading-overlay').style.display = 'none';
         });
