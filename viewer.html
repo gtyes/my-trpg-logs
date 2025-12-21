@@ -14,10 +14,8 @@
         /* ========== 网站背景（网站底） ========== */
         body {
             font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
-            /* 
-            background: #f5f7f9; /* 网站背景颜色，可修改 
-            */
-            /* 如果需要图片背景：*/
+ 
+            background: #f5f7f9; /* 网站背景颜色，可修改 如果需要图片背景：*/
             background-image: https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/67cba0a1bf15d396fdde0fb120e84110213a1b9a4800673311185029353e14d7?t=1760585674253;
             background-size: cover;
             background-attachment: fixed;
@@ -194,7 +192,7 @@
         }
         
         .channel-name::before {
-            content: '#';
+            content: '';
             margin-right: 6px;
             opacity: 0.7;
         }
@@ -605,7 +603,7 @@
     <!-- 顶部标题栏 -->
     <div class="top-header">
         <div class="top-controls">
-            <button class="control-btn" onclick="toggleChapterSidebar()">📖 章节导航</button>
+            <button class="control-btn" onclick="toggleChapterSidebar()">章节导航</button>
         </div>
         <div class="log-title" id="logTitle">血色毡帽</div>
         <div class="top-controls">
@@ -620,7 +618,7 @@
     <!-- 悬浮章节导航 -->
     <div class="floating-sidebar" id="chapterSidebar">
         <div class="sidebar-header">
-            <h2>📚 章节导航</h2>
+            <h2>章节导航</h2>
         </div>
         <div class="chapter-list" id="chapterList">
             <!-- 动态生成 -->
@@ -631,13 +629,13 @@
     <div class="filter-panel" id="filterPanel">
         <h3 style="margin-bottom: 20px; color: #2c3e50;">🎯 筛选消息</h3>
         <div class="filter-section">
-            <h4>👤 按角色筛选</h4>
+            <h4>按角色筛选</h4>
             <div id="characterFilters">
                 <!-- 动态生成 -->
             </div>
         </div>
         <div class="filter-section">
-            <h4>💬 按频道筛选</h4>
+            <h4>按频道筛选</h4>
             <div id="channelFilters">
                 <!-- 动态生成 -->
             </div>
