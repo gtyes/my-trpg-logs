@@ -30,19 +30,19 @@
         }
         
         /* ========== 右侧悬浮图片 ========== */
-        .floating-image-container {
+.floating-image-container {
     position: fixed;
     right: 0;
     top: 120px;
+    z-index: 800;
     display: flex;
     align-items: flex-start;
-    z-index: 800;
     transition: all 0.3s ease;
 }
 .floating-image-right {
     width: 400px;
     height: 400px;
-    background-image: url('https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/d24f64a123a47f14f686c6d03b17cc11a6968850a747e6fe96389f67e16c4dd9?t=1766305539579');
+    background-image: url('images/map1.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -54,13 +54,14 @@
 }
 .floating-image-right.collapsed {
     width: 0;
-    height: 0;
     opacity: 0;
-    margin-right: -10px;
+    transform: translateX(100%);
 }
-
 /* 控制按钮样式 */
 .image-toggle-btn {
+    position: fixed;
+    right: 0;
+    top: 120px;
     width: 30px;
     height: 40px;
     background: rgba(139, 0, 0, 0.9);
@@ -73,13 +74,19 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    margin-left: -1px;
     box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+    z-index: 801;
+    margin: 0 !important; /* 确保没有外边距影响位置 */
 }
 
 .image-toggle-btn:hover {
     background: rgba(178, 34, 34, 0.9);
     transform: scale(1.05);
+}
+/* 图片收起时按钮位置调整 */
+.image-toggle-btn.collapsed {
+    right: 0; /* 仍然保持在屏幕最右侧 */
+    transform: none;
 }
         
         /* ========== 顶部标题栏 ========== */
@@ -524,32 +531,29 @@
         
         /* ========== 响应式设计 ========== */
         @media (max-width: 1100px) {
-    .floating-image-container {
-        top: 100px;
-    }
-    
     .floating-image-right {
         width: 300px;
         height: 300px;
     }
-}
-
-@media (max-width: 768px) {
-    .floating-image-container {
-        top: 80px;
-    }
     
+    .image-toggle-btn {
+        top: 100px;
+    }
+}
+@media (max-width: 768px) {
     .floating-image-right {
         width: 200px;
         height: 200px;
     }
     
     .image-toggle-btn {
+        top: 80px;
         width: 25px;
         height: 35px;
         font-size: 12px;
     }
 }
+
         @media (max-width: 1100px) {
             .floating-image-right {
                 display: none;
@@ -603,7 +607,8 @@
 </head>
 <body>
     <!-- 右侧悬浮图片 -->
-    <div class="floating-image-container" id="rightImageContainer">
+<!-- 修改右侧悬浮图片部分 -->
+<div class="floating-image-container" id="rightImageContainer">
     <div class="floating-image-right" id="rightFloatingImage"></div>
     <button class="image-toggle-btn" id="toggleImageBtn" onclick="toggleRightImage()" title="收起/展开图片">
         ◀
@@ -726,35 +731,26 @@
 function toggleRightImage() {
     const image = document.getElementById('rightFloatingImage');
     const button = document.getElementById('toggleImageBtn');
-    const container = document.getElementById('rightImageContainer');
     
     isImageCollapsed = !isImageCollapsed;
     
     if (isImageCollapsed) {
         // 收起图片
         image.classList.add('collapsed');
-        button.innerHTML = '▶'; // 改为向右箭头
+        button.innerHTML = '▶';
         button.title = "展开图片";
-        
-        // 保存状态到localStorage
-        localStorage.setItem('rightImageCollapsed', 'true');
-        
-        // 添加收起动画效果
-        setTimeout(() => {
-            container.style.right = '-380px'; // 移动到屏幕外
-        }, 300);
+        button.classList.add('collapsed');
     } else {
         // 展开图片
-        container.style.right = '0'; // 移回原位
         image.classList.remove('collapsed');
-        button.innerHTML = '◀'; // 改为向左箭头
+        button.innerHTML = '◀';
         button.title = "收起图片";
-        
-        // 保存状态到localStorage
-        localStorage.setItem('rightImageCollapsed', 'false');
+        button.classList.remove('collapsed');
     }
+    
+    // 保存状态到localStorage
+    localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
 }
-
 // 页面加载时检查之前的状态
 function loadImageState() {
     const savedState = localStorage.getItem('rightImageCollapsed');
@@ -762,19 +758,17 @@ function loadImageState() {
         // 如果之前是收起状态，应用收起状态
         const image = document.getElementById('rightFloatingImage');
         const button = document.getElementById('toggleImageBtn');
-        const container = document.getElementById('rightImageContainer');
         
         isImageCollapsed = true;
         image.classList.add('collapsed');
         button.innerHTML = '▶';
         button.title = "展开图片";
-        container.style.right = '-380px';
+        button.classList.add('collapsed');
     }
 }
 
 // 在页面加载完成后调用
 window.addEventListener('DOMContentLoaded', function() {
-    // 等待页面其他内容加载完成
     setTimeout(loadImageState, 100);
 });
         // 切换折叠状态
