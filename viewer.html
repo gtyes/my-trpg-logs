@@ -45,7 +45,7 @@
     background-image: url('images/map1.png');
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: right center;
+    background-position: center;
     opacity: 0.9;
     pointer-events: none;
     filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
@@ -1397,7 +1397,22 @@ function hexToRgba(hex, opacity) {
             
             return style;
         }
-        
+        // HEX转RGB
+        function hexToRgb(hex) {
+            if (!hex) return '0, 0, 0';
+            
+            hex = hex.replace(/^#/, '');
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            return `${r}, ${g}, ${b}`;
+        }
+              
         // 获取频道遮罩样式
 function getChannelMaskStyle(channel) {
     const rules = logData.channelRules || {};
@@ -1711,22 +1726,7 @@ function getExtendStyle(resultType) {
             return format.image || null;
         }
         
-        // HEX转RGB
-        function hexToRgb(hex) {
-            if (!hex) return '0, 0, 0';
-            
-            hex = hex.replace(/^#/, '');
-            if (hex.length === 3) {
-                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-            }
-            
-            const r = parseInt(hex.substring(0, 2), 16);
-            const g = parseInt(hex.substring(2, 4), 16);
-            const b = parseInt(hex.substring(4, 6), 16);
-            
-            return `${r}, ${g}, ${b}`;
-        }
-        
+
         // ========== 分页功能 ==========
 function updatePaginationInfo() {
     // 计算总页数（考虑章节分页）
