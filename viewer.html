@@ -75,7 +75,7 @@
     flex: 1;
     margin: 0 20px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-    font-family: 'Microsoft YaHei', '微软雅黑', 'STZhongsong', '华文中宋', serif;
+    font-family:  'STZhongsong', '华文中宋', serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -685,13 +685,7 @@ function toggleChatCollapse() {
                 // 设置标题
                 document.title = '血色毡帽 - TRPG跑团日志';
                 // 改为内联方式设置标题字符
-        const titleHTML = `
-            <span style="color: #8b0000 !important;">血</span>
-            <span style="color: white !important;">色</span>
-            <span style="color: white !important;">毡</span>
-            <span style="color: white !important;">帽</span>
-        `;
-        document.getElementById('logTitle').innerHTML = titleHTML;
+        document.getElementById('logTitle').innerHTML = '血色毡帽';
                 
                 // 设置右侧悬浮图片
                 const rightImageUrl = logData.rightFloatingImage || 'https://example.com/default-image.png';
