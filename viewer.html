@@ -673,7 +673,14 @@ function toggleChatCollapse() {
                 
                 // 设置标题
                 document.title = '血色毡帽 - TRPG跑团日志';
-                document.getElementById('logTitle').textContent = '血色毡帽';
+                // 改为内联方式设置标题字符
+        const titleHTML = `
+            <span style="color: #8b0000 !important;">血</span>
+            <span style="color: white !important;">色</span>
+            <span style="color: white !important;">毡</span>
+            <span style="color: white !important;">帽</span>
+        `;
+        document.getElementById('logTitle').innerHTML = titleHTML;
                 
                 // 设置右侧悬浮图片
                 const rightImageUrl = logData.rightFloatingImage || 'https://example.com/default-image.png';
@@ -915,20 +922,28 @@ function addMessageDoubleClickHandlers() {
     });
 }
 // 跳转到指定消息
+// 简化jumpToMessage函数，确保按filteredLogs的顺序计算
+// 修改jumpToMessage函数
 function jumpToMessage(messageId) {
+    console.log('尝试跳转到消息:', messageId);
+    
     // 在filteredLogs中查找消息
     const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+    console.log('消息索引位置:', messageIndex);
+    
     if (messageIndex !== -1) {
-        // 计算消息所在的页数
+        // 直接使用已有的分页计算逻辑
+        // 参考jumpToChapter函数的计算方式
         let page = 1;
         let messagesProcessed = 0;
         
         for (let i = 0; i <= messageIndex; i++) {
             const msg = filteredLogs[i];
+            
             messagesProcessed++;
             
-            // 如果是章节标记，且不是本页第一条，则结束当前页
-            if (msg.isChapter && messagesProcessed > 1 && i > 0) {
+            // 如果是章节标记，且不是本页第一条，则新开一页
+            if (msg.isChapter && messagesProcessed > 1) {
                 page++;
                 messagesProcessed = 1;
             }
@@ -939,33 +954,43 @@ function jumpToMessage(messageId) {
                 messagesProcessed = 0;
             }
             
-            // 如果找到了目标消息
+            // 找到目标消息
             if (i === messageIndex) {
                 currentPage = page;
+                console.log('消息在第', page, '页');
                 renderCurrentPage();
                 
-                // 高亮显示该消息
+                // 等待渲染完成后高亮显示
                 setTimeout(() => {
-                    const targetRow = document.querySelector(`[data-id="${messageId}"]`);
-                    if (targetRow) {
-                        targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
-                        targetRow.style.borderLeft = '3px solid #8b0000';
-                        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        
-                        // 3秒后清除高亮
-                        setTimeout(() => {
-                            targetRow.style.backgroundColor = '';
-                            targetRow.style.borderLeft = '';
-                        }, 3000);
-                    }
+                    highlightMessage(messageId);
                 }, 100);
-                
                 break;
             }
         }
+    } else {
+        console.error('未找到消息:', messageId);
+        alert('未找到该消息');
     }
 }
-
+// 添加高亮函数
+function highlightMessage(messageId) {
+    const targetRow = document.querySelector(`.message-row[data-id="${messageId}"]`);
+    if (targetRow) {
+        // 添加高亮样式
+        targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
+        targetRow.style.borderLeft = '3px solid #8b0000';
+        targetRow.style.transition = 'all 0.3s ease';
+        
+        // 滚动到该消息位置
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // 5秒后清除高亮
+        setTimeout(() => {
+            targetRow.style.backgroundColor = '';
+            targetRow.style.borderLeft = '';
+        }, 5000);
+    }
+}
         // 渲染日志消息
         function renderLogMessages(logs) {
             if (logs.length === 0) {
