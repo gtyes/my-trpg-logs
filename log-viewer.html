@@ -2,188 +2,460 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">加载中...</title>
-    <link rel="stylesheet" href="log-viewer.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>TRPG 跑团日志查看器</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-</head>
-<body class="log-viewer-page">
-    <!-- 加载遮罩 -->
-    <div id="loading-overlay" class="loading-overlay">
-        <div class="loading-content">
-            <div class="eldritch-spinner"></div>
-            <p>正在加载日志数据...</p>
-        </div>
-    </div>
-
-    <div id="app">
-        <!-- 顶部导航栏 -->
-        <nav class="top-nav">
-            <button class="nav-toggle" @click="toggleSidebar">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <div class="nav-center">
-                <h1 class="campaign-title" :style="getTitleStyle()">{{ title }}</h1>
-            </div>
-            
-            <div class="nav-actions">
-                <!-- 搜索框 -->
-                <div class="search-box">
-                    <input type="text" 
-                           v-model="searchQuery" 
-                           @input="performSearch"
-                           placeholder="搜索消息内容...">
-                    <button class="search-btn">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-                
-                <!-- 返回首页 -->
-                <a href="index.html" class="btn-home" title="返回首页">
-                    <i class="fas fa-home"></i>
-                </a>
-            </div>
-        </nav>
+    <style>
+        /* 暗黑克苏鲁主题样式 - 基于你的编辑器样式修改 */
+        :root { 
+            --primary-bg: #0a0a15; 
+            --text-primary: #e6e6e6;
+            --text-secondary: #b3b3b3;
+            --accent-red: #8b0000;
+            --accent-dark: #1a1a2e;
+            --border-color: #2d2d42;
+        }
         
-        <!-- 主要内容区域 -->
-        <div class="main-container" :class="{sidebarCollapsed: !sidebarOpen}">
-            <!-- 左侧章节导航栏 -->
-            <aside class="sidebar" v-show="sidebarOpen">
-                <div class="sidebar-header">
-                    <h3>章节导航</h3>
-                    <button class="sidebar-close" @click="toggleSidebar">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="chapter-list">
-                    <div v-for="(chapter, index) in chapters" 
-                         :key="chapter.id"
-                         class="chapter-item"
-                         :class="{active: currentChapter === chapter.id}"
-                         @click="jumpToChapter(chapter)">
-                        <div class="chapter-content">
-                            <div class="chapter-name">{{ chapter.name }}</div>
-                            <div class="chapter-position">第 {{ chapter.page }} 页</div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
+        body { 
+            background: var(--primary-bg); 
+            color: var(--text-primary);
+            font-family: 'Microsoft YaHei', '微软雅黑', sans-serif; 
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        /* 头部样式 */
+        .header { 
+            background: rgba(26, 26, 46, 0.9); 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 { 
+            margin: 0; 
+            font-size: 2rem;
+            font-family: 'Cinzel', serif;
+            color: var(--accent-red);
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
+        }
+        
+        /* 主容器 */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* 左侧章节导航 - 简化版 */
+        .sidebar {
+            width: 250px;
+            background: rgba(26, 26, 46, 0.8);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 80px);
+            position: sticky;
+            top: 80px;
+        }
+        
+        .sidebar h3 {
+            color: var(--accent-red);
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'Cinzel', serif;
+        }
+        
+        .chapter-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .chapter-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+        }
+        
+        .chapter-item:hover {
+            background: rgba(139, 0, 0, 0.1);
+            color: var(--text-primary);
+            border-color: rgba(139, 0, 0, 0.3);
+        }
+        
+        .chapter-item.active {
+            background: rgba(139, 0, 0, 0.2);
+            color: var(--accent-red);
+            border-color: var(--accent-red);
+            font-weight: bold;
+        }
+        
+        /* 主内容区 */
+        .content-area {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* 分页控制 */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(26, 26, 46, 0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .pagination-controls button {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination-controls button:hover:not(:disabled) {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+        
+        .pagination-controls button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .page-info {
+            color: var(--text-secondary);
+        }
+        
+        /* 消息容器 - 使用你编辑器的样式但应用暗黑主题 */
+        .log-container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            min-height: 400px;
+        }
+        
+        /* 频道组样式 */
+        .channel-group {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* 频道名居中 */
+        .channel-name-center {
+            text-align: center;
+            font-weight: 600;
+            margin: 5px 0 15px 0;
+            padding: 0;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+        }
+        
+        /* 每一行消息的布局 */
+        .msg-row { 
+            display: flex; 
+            margin-bottom: 15px;
+            position: relative; 
+            transition: all 0.3s; 
+        }
+        
+        /* 头像：圆角方框 - 保持你的编辑器样式 */
+        .avatar-box { 
+            width: 50px; 
+            flex-shrink: 0; 
+            margin-right: 12px; 
+            position: relative;
+        }
+        
+        .avatar { 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 8px; 
+            object-fit: cover;
+        }
+        
+        .avatar-empty { 
+            width: 48px; 
+            height: 48px; 
+            visibility: hidden; 
+        }
+        
+        /* 角色名样式 */
+        .character-name-box {
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .character-name {
+            font-weight: bold;
+        }
+        
+        .to-name { 
+            color: var(--text-secondary); 
+            font-weight: normal; 
+            margin-left: 5px; 
+            font-size: 12px;
+        }
+        
+        /* 内容区域 */
+        .content-box { 
+            flex-grow: 1; 
+            position: relative; 
+        }
+        
+        /* 气泡样式 */
+        .bubble { 
+            padding: 12px 16px;
+            border-radius: 8px; 
+            position: relative; 
+            min-height: 20px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 消息文本 */
+        .msg-text { 
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        /* 消息中的图片 */
+        .message-image {
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .message-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        
+        /* 骰子结果样式 */
+        .dice { 
+            margin-top: 10px; 
+            padding-top: 10px; 
+            border-top: 1px dashed var(--border-color); 
+            font-family: 'Consolas', monospace;
+        }
+        
+        /* 系统消息样式 */
+        .system-message {
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        /* 章节标题样式 */
+        .chapter-title {
+            text-align: center;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 8px;
+            color: white;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--accent-red);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-secondary);
+        }
+        
+        /* 错误状态 */
+        .error {
+            text-align: center;
+            padding: 50px;
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            border-radius: 8px;
+            margin: 20px;
+            background: rgba(139, 0, 0, 0.1);
+        }
+        
+        /* 返回按钮 */
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(139, 0, 0, 0.4);
+        }
+    </style>
+    
+    <!-- 导入字体 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>{{ title }}</h1>
+        </div>
+        
+        <!-- 主容器 -->
+        <div class="main-container">
+            <!-- 左侧章节导航 -->
+            <div class="sidebar">
+                <h3>章节导航</h3>
+                <ul class="chapter-list">
+                    <li v-for="chapter in chapters" 
+                        :key="chapter.id"
+                        class="chapter-item"
+                        :class="{active: currentChapterId === chapter.id}"
+                        @click="jumpToChapter(chapter)">
+                        {{ chapter.name }}
+                    </li>
+                </ul>
+            </div>
             
-            <!-- 右侧日志内容 -->
-            <main class="log-content">
+            <!-- 主内容区 -->
+            <div class="content-area">
                 <!-- 分页控制 -->
-                <div class="pagination-controls" v-if="viewMode === 'paginated'">
+                <div class="pagination-controls" v-if="totalPages > 1">
                     <button @click="prevPage" :disabled="currentPage === 1">
-                        <i class="fas fa-chevron-left"></i>
+                        <i class="fas fa-chevron-left"></i> 上一页
                     </button>
-                    
-                    <div class="page-info">
-                        第 {{ currentPage }} 页 / 共 {{ totalPages }} 页
-                    </div>
-                    
+                    <span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
                     <button @click="nextPage" :disabled="currentPage === totalPages">
-                        <i class="fas fa-chevron-right"></i>
+                        下一页 <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
                 
-                <!-- 搜索状态 -->
-                <div class="search-status" v-if="searchQuery">
-                    <span>搜索: "{{ searchQuery }}"</span>
-                    <button @click="clearSearch">清除</button>
+                <!-- 加载状态 -->
+                <div v-if="loading" class="loading">
+                    <p>正在加载日志数据...</p>
                 </div>
                 
-                <!-- 日志消息展示 -->
-                <div class="messages-container">
-                    <div v-if="isLoading" class="loading-state">
-                        <div class="eldritch-spinner"></div>
-                        <p>正在加载日志数据...</p>
-                    </div>
-                    
-                    <div v-else-if="errorMessage" class="error-state">
-                        <h3><i class="fas fa-exclamation-triangle"></i> 加载失败</h3>
-                        <p>{{ errorMessage }}</p>
-                    </div>
-                    
-                    <div v-else-if="!paginatedLogs.length" class="empty-state">
-                        <p>暂无消息</p>
-                    </div>
-                    
-                    <template v-else>
-                        <template v-for="(group, groupIndex) in channelGroups" :key="groupIndex">
-                            <!-- 章节标题 - 独立显示 -->
-                            <div v-if="group.channel === '系统' && group.messages[0] && group.messages[0].isChapter" 
-                                 class="chapter-title-section"
-                                 :style="getChapterStyle(group.messages[0])">
-                                <div class="chapter-title-content">
-                                    {{ group.messages[0].text.replace('=== ', '').replace(' ===', '') }}
-                                </div>
-                            </div>
-                            
-                            <!-- 普通频道组 -->
-                            <div v-else class="channel-group"
+                <!-- 错误状态 -->
+                <div v-else-if="error" class="error">
+                    <p>{{ error }}</p>
+                </div>
+                
+                <!-- 日志内容 -->
+                <div v-else class="log-container">
+                    <!-- 按频道分组显示消息 -->
+                    <template v-for="(group, groupIndex) in channelGroups" :key="groupIndex">
+                        <!-- 章节标题 -->
+                        <div v-if="group.channel === '系统' && group.messages[0] && group.messages[0].isChapter" 
+                             class="chapter-title"
+                             :style="getChapterStyle(group.messages[0])">
+                            {{ group.messages[0].text.replace('=== ', '').replace(' ===', '') }}
+                        </div>
+                        
+                        <!-- 普通频道背景组 -->
+                        <template v-else>
+                            <div class="channel-group" 
                                  :style="getChannelBackgroundStyle(group.channel)">
                                 
-                                <!-- 频道名 -->
-                                <div class="channel-header" :style="getChannelNameStyle(group.channel)">
+                                <!-- 居中显示的频道名 -->
+                                <div class="channel-name-center" :style="getChannelNameStyle(group.channel)">
                                     {{ group.channel }}
                                 </div>
                                 
-                                <!-- 消息列表 -->
+                                <!-- 频道消息区域 -->
                                 <div class="channel-messages">
                                     <div v-for="(msg, msgIndex) in group.messages" 
-                                         :key="msg.id"
-                                         class="message-row"
-                                         :class="{'system-message': msg.name.toLowerCase() === 'system'}">
+                                         :key="msg.id" 
+                                         class="msg-row"
+                                         :class="{'system-message-row': msg.name.toLowerCase() === 'system'}">
                                         
-                                        <!-- 系统消息 -->
-                                        <template v-if="msg.name.toLowerCase() === 'system'">
-                                            <div class="system-message-content" :style="getSystemMessageStyle()">
+                                        <!-- 系统消息特殊处理 -->
+                                        <template v-if="msg.name.toLowerCase() === 'system' && !msg.isChapter">
+                                            <div class="system-message" :style="getSystemMessageStyle()">
                                                 {{ systemSettings.prefix ? systemSettings.prefix + ' ' : '' }}{{ msg.text }}
                                             </div>
                                         </template>
                                         
                                         <!-- 普通消息 -->
                                         <template v-else>
-                                            <!-- 只有有头像时才显示头像 -->
-                                            <div class="avatar-column" v-if="msg.icon && msg.icon.trim()">
-                                                <img :src="msg.icon" 
-                                                     class="avatar"
-                                                     :alt="msg.name + '的头像'"
-                                                     @error="handleImageError">
+                                            <!-- 头像区域 - 始终占位 -->
+                                            <div class="avatar-box">
+                                                <img v-if="msg.icon" :src="msg.icon" class="avatar" @error="handleImageError">
+                                                <div v-else class="avatar-empty"></div>
                                             </div>
-                                            
-                                            <div class="message-content">
-                                                <!-- 角色名 -->
-                                                <div class="message-header">
-                                                    <span class="character-name" 
-                                                          :style="getCharacterNameStyle(msg.name)">
+
+                                            <div class="content-box">
+                                                <!-- 显示模式 -->
+                                                <div class="character-name-box" :style="getCharacterNameBackgroundStyle(msg)">
+                                                    <span class="character-name" :style="getCharacterNameFontStyle(msg)">
                                                         {{ msg.name }}
-                                                        <span v-if="msg.to" class="mention">
-                                                            → @{{ msg.to }}
-                                                        </span>
+                                                        <span v-if="msg.to" class="to-name"> > @{{ msg.to }}</span>
                                                     </span>
                                                 </div>
                                                 
-                                                <!-- 消息气泡 -->
-                                                <div class="message-bubble" :style="getCharacterBubbleBackgroundStyle(msg.name)">
-                                                    <div class="message-text" :style="getDialogTextStyle()">
-                                                        {{ msg.text }}
-                                                    </div>
+                                                <div class="bubble" :style="getCharacterBubbleBackgroundStyle(msg)">
+                                                    <div class="msg-text" :style="getDialogTextStyle()">{{ msg.text }}</div>
                                                     
-                                                    <!-- 消息图片 -->
+                                                    <!-- 显示消息中的图片 -->
                                                     <div v-if="msg.messageImage" class="message-image">
                                                         <img :src="msg.messageImage" 
                                                              @click="previewImage(msg.messageImage)"
-                                                             :alt="'来自' + msg.name + '的图片'">
+                                                             :alt="msg.name + '的图片'">
                                                     </div>
                                                     
-                                                    <!-- 骰子结果 -->
-                                                    <div v-if="msg.dice || msg.extend" 
-                                                         class="dice-result"
-                                                         :style="getExtendStyle(msg)">
+                                                    <!-- 显示extend内容 -->
+                                                    <div v-if="msg.dice || msg.extend" class="dice" :style="getExtendStyle(msg)">
                                                         {{ getFormattedExtendText(msg) }}
                                                     </div>
                                                 </div>
@@ -195,50 +467,714 @@
                         </template>
                     </template>
                 </div>
-                
-                <!-- 底部分页控制 -->
-                <div class="pagination-bottom" v-if="viewMode === 'paginated'">
-                    <button @click="prevPage" :disabled="currentPage === 1">
-                        <i class="fas fa-chevron-left"></i> 上一页
-                    </button>
-                    <div class="page-indicator">
-                        第 {{ currentPage }} 页 / 共 {{ totalPages }} 页
-                    </div>
-                    <button @click="nextPage" :disabled="currentPage === totalPages">
-                        下一页 <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </main>
-        </div>
-        
-        <!-- 图片预览模态框 -->
-        <div class="image-modal" v-show="showImagePreview" @click.self="closeImagePreview">
-            <div class="modal-content">
-                <button class="modal-close" @click="closeImagePreview">
-                    <i class="fas fa-times"></i>
-                </button>
-                <img :src="previewImageUrl" alt="图片预览">
             </div>
         </div>
         
-        <!-- 快速导航悬浮按钮 -->
-        <div class="quick-nav">
-            <button class="quick-btn" @click="scrollToTop" title="回到顶部">
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            <button class="quick-btn" @click="toggleSidebar" title="切换侧边栏">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
+        <!-- 返回首页按钮 -->
+        <button class="back-button" onclick="location.href='index.html'">
+            <i class="fas fa-home"></i>
+        </button>
     </div>
 
-    <!-- 脚本 -->
-    <script src="log-viewer.js"></script>
     <script>
-        // 隐藏加载动画
-        window.addEventListener('load', function() {
-            document.getElementById('loading-overlay').style.display = 'none';
-        });
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    // 日志数据
+                    title: '',
+                    logs: [],
+                    
+                    // 设置（从JSON导入）
+                    fontSettings: {},
+                    systemSettings: {},
+                    chapterSettings: {},
+                    channelRules: {},
+                    characterRules: {},
+                    defaultChannelRule: {},
+                    defaultCharacterRule: {},
+                    extendFormats: {},
+                    
+                    // 分页
+                    currentPage: 1,
+                    pageSize: 50,
+                    totalPages: 1,
+                    
+                    // 章节
+                    chapters: [],
+                    currentChapterId: null,
+                    
+                    // 状态
+                    loading: true,
+                    error: null
+                }
+            },
+            computed: {
+                // 当前页的日志
+                paginatedLogs() {
+                    // 按章节分页：确保章节在新页开始
+                    const pages = [];
+                    let currentPage = [];
+                    let chapterStarted = false;
+                    
+                    for (let i = 0; i < this.logs.length; i++) {
+                        const msg = this.logs[i];
+                        
+                        // 如果是章节消息，且不是当前页的第一条消息，则开始新页
+                        if (msg.isChapter && currentPage.length > 0) {
+                            pages.push(currentPage);
+                            currentPage = [];
+                        }
+                        
+                        currentPage.push(msg);
+                        
+                        // 如果达到页面大小，且下一个消息不是章节消息，则开始新页
+                        if (currentPage.length >= this.pageSize && i + 1 < this.logs.length) {
+                            const nextMsg = this.logs[i + 1];
+                            if (!nextMsg.isChapter) {
+                                pages.push(currentPage);
+                                currentPage = [];
+                            }
+                        }
+                    }
+                    
+                    // 添加最后一页
+                    if (currentPage.length > 0) {
+                        pages.push(currentPage);
+                    }
+                    
+                    return pages[this.currentPage - 1] || [];
+                },
+                
+                // 按频道分组（使用你的编辑器逻辑）
+                channelGroups() {
+                    const groups = [];
+                    let currentGroup = null;
+                    
+                    this.paginatedLogs.forEach((msg) => {
+                        let msgChannel = msg.channel || '默认频道';
+                        
+                        // 系统消息处理
+                        if (msg.name.toLowerCase() === 'system' && !msg.isChapter) {
+                            msgChannel = this.getSystemMessageChannel(msg);
+                        }
+                        
+                        // 章节消息
+                        if (msg.isChapter) {
+                            if (currentGroup) {
+                                groups.push(currentGroup);
+                            }
+                            
+                            currentGroup = {
+                                channel: '系统',
+                                messages: [msg]
+                            };
+                        }
+                        // 新频道组
+                        else if (!currentGroup || msgChannel !== currentGroup.channel) {
+                            if (currentGroup) {
+                                groups.push(currentGroup);
+                            }
+                            
+                            currentGroup = {
+                                channel: msgChannel,
+                                messages: [msg]
+                            };
+                        } else {
+                            currentGroup.messages.push(msg);
+                        }
+                    });
+                    
+                    if (currentGroup) {
+                        groups.push(currentGroup);
+                    }
+                    
+                    return groups;
+                }
+            },
+            async mounted() {
+                await this.loadLogData();
+            },
+            methods: {
+                // 加载日志数据
+                async loadLogData() {
+                    try {
+                        this.loading = true;
+                        
+                        // 从URL获取日志文件名
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const logFile = urlParams.get('log') || 'data/log.json';
+                        
+                        const response = await fetch(logFile);
+                        const data = await response.json();
+                        
+                        // 导入数据
+                        this.title = data.title || '未命名模组';
+                        this.logs = this.processLogArray(data.logs || []);
+                        
+                        // 导入设置
+                        this.fontSettings = data.fontSettings || {};
+                        this.systemSettings = data.systemSettings || {};
+                        this.chapterSettings = data.chapterSettings || {};
+                        this.channelRules = data.channelRules || {};
+                        this.characterRules = data.characterRules || {};
+                        this.defaultChannelRule = data.defaultChannelRule || {};
+                        this.defaultCharacterRule = data.defaultCharacterRule || {};
+                        this.extendFormats = data.extendFormats || {};
+                        
+                        // 提取章节
+                        this.chapters = this.extractChapters();
+                        
+                        // 计算总页数
+                        this.calculatePages();
+                        
+                        this.loading = false;
+                        
+                    } catch (error) {
+                        console.error('加载日志失败:', error);
+                        this.error = '加载日志失败，请检查控制台获取详细信息';
+                        this.loading = false;
+                    }
+                },
+                
+                // 处理日志数组
+                processLogArray(logArray) {
+                    return logArray.map((log, index) => ({
+                        ...log,
+                        id: log.id || `msg-${index}`,
+                        channel: log.channel || '默认频道',
+                        name: log.name || '未知角色',
+                        text: log.text || '',
+                        color: log.color || '#000000',
+                        icon: log.icon || null,
+                        dice: log.dice || null,
+                        extend: log.extend || null,
+                        to: log.to || null,
+                        time: log.time || new Date().toISOString(),
+                        messageImage: log.messageImage || null,
+                        isChapter: log.isChapter || false,
+                        
+                        // 确保消息级别的设置存在
+                        nameUseImage: log.nameUseImage || false,
+                        nameBackground: log.nameBackground || null,
+                        nameOpacity: log.nameOpacity !== undefined ? log.nameOpacity : 0.85,
+                        nameImage: log.nameImage || '',
+                        nameImageSize: log.nameImageSize || 'cover',
+                        nameImageOpacity: log.nameImageOpacity !== undefined ? log.nameImageOpacity : 1.0,
+                        bubbleUseImage: log.bubbleUseImage || false,
+                        bubbleColor: log.bubbleColor || null,
+                        bubbleOpacity: log.bubbleOpacity !== undefined ? log.bubbleOpacity : 0.85,
+                        bubbleImage: log.bubbleImage || '',
+                        bubbleImageSize: log.bubbleImageSize || 'cover',
+                        bubbleImageOpacity: log.bubbleImageOpacity !== undefined ? log.bubbleImageOpacity : 1.0
+                    }));
+                },
+                
+                // 提取章节
+                extractChapters() {
+                    const chapters = [];
+                    
+                    this.logs.forEach((msg, index) => {
+                        if (msg.isChapter) {
+                            const chapterName = msg.text.replace(/===/g, '').trim();
+                            chapters.push({
+                                id: msg.id,
+                                name: chapterName,
+                                position: index + 1,
+                                page: this.getPageForMessageIndex(index)
+                            });
+                        }
+                    });
+                    
+                    return chapters;
+                },
+                
+                // 计算消息所在的页
+                getPageForMessageIndex(index) {
+                    // 简化计算：每pageSize条消息一页
+                    return Math.floor(index / this.pageSize) + 1;
+                },
+                
+                // 计算分页（按章节分页）
+                calculatePages() {
+                    // 找到所有章节消息的位置
+                    const chapterIndices = this.logs
+                        .map((msg, index) => msg.isChapter ? index : -1)
+                        .filter(index => index !== -1);
+                    
+                    // 如果没有章节，按固定大小分页
+                    if (chapterIndices.length === 0) {
+                        this.totalPages = Math.ceil(this.logs.length / this.pageSize);
+                        return;
+                    }
+                    
+                    // 按章节分页：每个章节开始新页
+                    const pages = [];
+                    let currentPage = [];
+                    
+                    for (let i = 0; i < this.logs.length; i++) {
+                        const msg = this.logs[i];
+                        
+                        // 如果是章节消息，且当前页不为空，则开始新页
+                        if (msg.isChapter && currentPage.length > 0) {
+                            pages.push(currentPage);
+                            currentPage = [];
+                        }
+                        
+                        currentPage.push(msg);
+                        
+                        // 如果达到页面大小，且下一个消息不是章节消息，则开始新页
+                        if (currentPage.length >= this.pageSize && i + 1 < this.logs.length) {
+                            const nextMsg = this.logs[i + 1];
+                            if (!nextMsg.isChapter) {
+                                pages.push(currentPage);
+                                currentPage = [];
+                            }
+                        }
+                    }
+                    
+                    // 添加最后一页
+                    if (currentPage.length > 0) {
+                        pages.push(currentPage);
+                    }
+                    
+                    this.totalPages = pages.length;
+                },
+                
+                // 获取系统消息频道
+                getSystemMessageChannel(msg) {
+                    if (msg.isChapter) return '系统';
+                    
+                    const msgIndex = this.logs.findIndex(log => log.id === msg.id);
+                    if (msgIndex === -1) return '系统';
+                    
+                    for (let i = msgIndex - 1; i >= 0; i--) {
+                        const prevMsg = this.logs[i];
+                        if (prevMsg.name.toLowerCase() === 'system') continue;
+                        
+                        return prevMsg.channel || '默认频道';
+                    }
+                    
+                    return '系统';
+                },
+                
+                // 章节样式
+                getChapterStyle(chapterMsg) {
+                    const style = {};
+                    
+                    // 使用章节设置
+                    if (this.chapterSettings.fontFamily) {
+                        style.fontFamily = this.chapterSettings.fontFamily;
+                    }
+                    if (this.chapterSettings.color) {
+                        style.color = this.chapterSettings.color;
+                    }
+                    if (this.chapterSettings.fontSize) {
+                        style.fontSize = `${this.chapterSettings.fontSize}px`;
+                    }
+                    if (this.chapterSettings.bold) {
+                        style.fontWeight = 'bold';
+                    }
+                    
+                    // 背景
+                    if (this.chapterSettings.useImage && this.chapterSettings.image) {
+                        const opacity = this.chapterSettings.imageOpacity || 1.0;
+                        style.backgroundImage = `url(${this.chapterSettings.image})`;
+                        style.backgroundSize = this.chapterSettings.imageSize || 'cover';
+                        style.backgroundPosition = 'center';
+                        style.backgroundRepeat = 'no-repeat';
+                        style.opacity = opacity;
+                    } else {
+                        const opacity = this.chapterSettings.backgroundOpacity || 0.9;
+                        style.backgroundColor = this.hexToRgba(this.chapterSettings.backgroundColor || '#8b0000', opacity);
+                    }
+                    
+                    return style;
+                },
+                
+                // 频道背景样式
+                getChannelBackgroundStyle(channel) {
+                    const rule = this.channelRules[channel];
+                    const style = {};
+                    
+                    if (rule) {
+                        if (rule.useImage && rule.image) {
+                            const opacity = rule.imageOpacity !== undefined ? rule.imageOpacity : 1.0;
+                            style.backgroundImage = `url(${rule.image})`;
+                            style.backgroundSize = rule.imageSize || 'cover';
+                            style.backgroundPosition = 'center';
+                            style.backgroundRepeat = 'no-repeat';
+                            style.opacity = opacity;
+                        } else if (rule.color) {
+                            const opacity = rule.opacity !== undefined ? rule.opacity : 0.1;
+                            style.backgroundColor = this.hexToRgba(rule.color, opacity);
+                        }
+                    }
+                    
+                    // 默认样式
+                    if (!style.backgroundColor && !style.backgroundImage) {
+                        const opacity = this.defaultChannelRule.opacity !== undefined ? this.defaultChannelRule.opacity : 0.1;
+                        style.backgroundColor = this.hexToRgba(this.defaultChannelRule.color || '#2c3e50', opacity);
+                    }
+                    
+                    return style;
+                },
+                
+                // 频道名字体样式
+                getChannelNameStyle(channel) {
+                    const style = {};
+                    
+                    if (this.fontSettings.channelName) {
+                        style.fontFamily = this.fontSettings.channelName;
+                    }
+                    if (this.fontSettings.channelNameColor) {
+                        style.color = this.fontSettings.channelNameColor;
+                    }
+                    if (this.fontSettings.channelNameSize) {
+                        style.fontSize = `${this.fontSettings.channelNameSize}px`;
+                    }
+                    
+                    return style;
+                },
+                
+                // 角色名字体样式
+                getCharacterNameFontStyle(msg) {
+                    const style = {};
+                    
+                    // 字体
+                    if (this.fontSettings.characterName) {
+                        style.fontFamily = this.fontSettings.characterName;
+                    }
+                    if (this.fontSettings.characterNameSize) {
+                        style.fontSize = `${this.fontSettings.characterNameSize}px`;
+                    }
+                    
+                    // 颜色
+                    if (msg.color) {
+                        style.color = msg.color;
+                    }
+                    
+                    return style;
+                },
+                
+                // 角色名背景样式
+                getCharacterNameBackgroundStyle(msg) {
+                    const rule = this.characterRules[msg.name];
+                    const style = {};
+                    
+                    // 优先使用消息级别的设置
+                    if (msg.nameUseImage && msg.nameImage) {
+                        const opacity = msg.nameImageOpacity !== undefined ? msg.nameImageOpacity : 1.0;
+                        style.backgroundImage = `url(${msg.nameImage})`;
+                        style.backgroundSize = msg.nameImageSize || 'cover';
+                        style.backgroundPosition = 'center';
+                        style.backgroundRepeat = 'no-repeat';
+                        style.opacity = opacity;
+                    } else if (msg.nameBackground) {
+                        const opacity = msg.nameOpacity !== undefined ? msg.nameOpacity : 0.85;
+                        style.backgroundColor = this.hexToRgba(msg.nameBackground, opacity);
+                    }
+                    // 使用角色规则
+                    else if (rule) {
+                        if (rule.nameUseImage && rule.nameImage) {
+                            const opacity = rule.nameImageOpacity !== undefined ? rule.nameImageOpacity : 1.0;
+                            style.backgroundImage = `url(${rule.nameImage})`;
+                            style.backgroundSize = rule.nameImageSize || 'cover';
+                            style.backgroundPosition = 'center';
+                            style.backgroundRepeat = 'no-repeat';
+                            style.opacity = opacity;
+                        } else if (rule.nameBackground) {
+                            const opacity = rule.nameOpacity !== undefined ? rule.nameOpacity : 0.85;
+                            style.backgroundColor = this.hexToRgba(rule.nameBackground, opacity);
+                        }
+                    }
+                    // 默认设置
+                    else {
+                        if (this.defaultCharacterRule.nameUseImage && this.defaultCharacterRule.nameImage) {
+                            const opacity = this.defaultCharacterRule.nameImageOpacity !== undefined ? this.defaultCharacterRule.nameImageOpacity : 1.0;
+                            style.backgroundImage = `url(${this.defaultCharacterRule.nameImage})`;
+                            style.backgroundSize = this.defaultCharacterRule.nameImageSize || 'cover';
+                            style.backgroundPosition = 'center';
+                            style.backgroundRepeat = 'no-repeat';
+                            style.opacity = opacity;
+                        } else {
+                            const opacity = this.defaultCharacterRule.nameOpacity !== undefined ? this.defaultCharacterRule.nameOpacity : 0.85;
+                            style.backgroundColor = this.hexToRgba(this.defaultCharacterRule.nameBackground || '#ffffff', opacity);
+                        }
+                    }
+                    
+                    return style;
+                },
+                
+                // 角色气泡背景样式
+                getCharacterBubbleBackgroundStyle(msg) {
+                    const rule = this.characterRules[msg.name];
+                    const style = {};
+                    
+                    // 优先使用消息级别的设置
+                    if (msg.bubbleUseImage && msg.bubbleImage) {
+                        const opacity = msg.bubbleImageOpacity !== undefined ? msg.bubbleImageOpacity : 1.0;
+                        style.backgroundImage = `url(${msg.bubbleImage})`;
+                        style.backgroundSize = msg.bubbleImageSize || 'cover';
+                        style.backgroundPosition = 'center';
+                        style.backgroundRepeat = 'no-repeat';
+                        style.opacity = opacity;
+                    } else if (msg.bubbleColor) {
+                        const opacity = msg.bubbleOpacity !== undefined ? msg.bubbleOpacity : 0.85;
+                        style.backgroundColor = this.hexToRgba(msg.bubbleColor, opacity);
+                    }
+                    // 使用角色规则
+                    else if (rule) {
+                        if (rule.bubbleUseImage && rule.bubbleImage) {
+                            const opacity = rule.bubbleImageOpacity !== undefined ? rule.bubbleImageOpacity : 1.0;
+                            style.backgroundImage = `url(${rule.bubbleImage})`;
+                            style.backgroundSize = rule.bubbleImageSize || 'cover';
+                            style.backgroundPosition = 'center';
+                            style.backgroundRepeat = 'no-repeat';
+                            style.opacity = opacity;
+                        } else if (rule.bubbleColor) {
+                            const opacity = rule.bubbleOpacity !== undefined ? rule.bubbleOpacity : 0.85;
+                            style.backgroundColor = this.hexToRgba(rule.bubbleColor, opacity);
+                        }
+                    }
+                    // 默认设置
+                    else {
+                        if (this.defaultCharacterRule.bubbleUseImage && this.defaultCharacterRule.bubbleImage) {
+                            const opacity = this.defaultCharacterRule.bubbleImageOpacity !== undefined ? this.defaultCharacterRule.bubbleImageOpacity : 1.0;
+                            style.backgroundImage = `url(${this.defaultCharacterRule.bubbleImage})`;
+                            style.backgroundSize = this.defaultCharacterRule.bubbleImageSize || 'cover';
+                            style.backgroundPosition = 'center';
+                            style.backgroundRepeat = 'no-repeat';
+                            style.opacity = opacity;
+                        } else {
+                            const opacity = this.defaultCharacterRule.bubbleOpacity !== undefined ? this.defaultCharacterRule.bubbleOpacity : 0.85;
+                            style.backgroundColor = this.hexToRgba(this.defaultCharacterRule.bubbleColor || '#ffffff', opacity);
+                        }
+                    }
+                    
+                    return style;
+                },
+                
+                // 对话文本样式
+                getDialogTextStyle() {
+                    const style = {};
+                    
+                    if (this.fontSettings.dialogText) {
+                        style.fontFamily = this.fontSettings.dialogText;
+                    }
+                    if (this.fontSettings.dialogTextColor) {
+                        style.color = this.fontSettings.dialogTextColor;
+                    }
+                    if (this.fontSettings.dialogTextSize) {
+                        style.fontSize = `${this.fontSettings.dialogTextSize}px`;
+                    }
+                    
+                    return style;
+                },
+                
+                // 系统消息样式
+                getSystemMessageStyle() {
+                    const style = {};
+                    
+                    if (this.systemSettings.fontFamily) {
+                        style.fontFamily = this.systemSettings.fontFamily;
+                    }
+                    if (this.systemSettings.color) {
+                        style.color = this.systemSettings.color;
+                    }
+                    if (this.systemSettings.fontSize) {
+                        style.fontSize = `${this.systemSettings.fontSize}px`;
+                    }
+                    if (this.systemSettings.italic) {
+                        style.fontStyle = 'italic';
+                    }
+                    if (this.systemSettings.bold) {
+                        style.fontWeight = 'bold';
+                    }
+                    if (this.systemSettings.underline) {
+                        style.textDecoration = 'underline';
+                    }
+                    
+                    return style;
+                },
+                
+                // extend样式
+                getExtendStyle(msg) {
+                    const resultType = this.getExtendResultType(msg);
+                    const style = {};
+                    
+                    // 基础extend设置
+                    if (this.fontSettings.extendText) {
+                        style.fontFamily = this.fontSettings.extendText;
+                    }
+                    if (this.fontSettings.extendTextColor) {
+                        style.color = this.fontSettings.extendTextColor;
+                    }
+                    if (this.fontSettings.extendTextSize) {
+                        style.fontSize = `${this.fontSettings.extendTextSize}px`;
+                    }
+                    
+                    // 根据结果类型应用特殊格式
+                    if (resultType !== 'normal') {
+                        const format = this.extendFormats[resultType];
+                        if (format) {
+                            if (format.color) {
+                                style.color = format.color;
+                            }
+                            if (format.fontFamily) {
+                                style.fontFamily = format.fontFamily;
+                            }
+                            if (format.fontSize) {
+                                style.fontSize = `${format.fontSize}px`;
+                            }
+                            if (format.bold) {
+                                style.fontWeight = 'bold';
+                            }
+                        }
+                    }
+                    
+                    return style;
+                },
+                
+                // 获取extend结果类型
+                getExtendResultType(msg) {
+                    const extendText = this.getFormattedExtendText(msg);
+                    if (!extendText) return 'normal';
+                    
+                    let text = extendText;
+                    
+                    // 繁简转换
+                    const mapping = {
+                        '極限': '极限',
+                        '成功': '成功',
+                        '失敗': '失败',
+                        '大成功': '大成功',
+                        '大失败': '大失败'
+                    };
+                    
+                    for (const [traditional, simple] of Object.entries(mapping)) {
+                        text = text.replace(new RegExp(traditional, 'g'), simple);
+                    }
+                    
+                    // 检查大失败
+                    if (text.includes('大失败')) {
+                        return 'criticalFailure';
+                    }
+                    
+                    // 检查大成功
+                    if (text.includes('大成功')) {
+                        return 'criticalSuccess';
+                    }
+                    
+                    // 检查普通成功
+                    if (text.trim().endsWith('成功')) {
+                        return 'success';
+                    }
+                    
+                    // 检查普通失败
+                    if (text.trim().endsWith('失败')) {
+                        return 'failure';
+                    }
+                    
+                    return 'normal';
+                },
+                
+                // 获取格式化的extend文本
+                getFormattedExtendText(msg) {
+                    if (msg.extend) {
+                        if (typeof msg.extend === 'string') {
+                            try {
+                                const parsed = JSON.parse(msg.extend);
+                                if (parsed && parsed.roll && parsed.roll.result) {
+                                    return parsed.roll.result;
+                                }
+                                return msg.extend;
+                            } catch (e) {
+                                return msg.extend;
+                            }
+                        } else if (typeof msg.extend === 'object') {
+                            if (msg.extend.roll && msg.extend.roll.result) {
+                                return msg.extend.roll.result;
+                            }
+                            try {
+                                return JSON.stringify(msg.extend);
+                            } catch (e) {
+                                return String(msg.extend);
+                            }
+                        }
+                    }
+                    return msg.dice || '';
+                },
+                
+                // HEX转RGBA
+                hexToRgba(hex, opacity) {
+                    if (!hex) {
+                        return `rgba(255, 255, 255, ${opacity})`;
+                    }
+                    
+                    if (hex.startsWith('rgba')) {
+                        return hex;
+                    }
+                    
+                    hex = hex.replace(/^#/, '');
+                    
+                    if (hex.length === 3) {
+                        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+                    }
+                    
+                    const r = parseInt(hex.substring(0, 2), 16);
+                    const g = parseInt(hex.substring(2, 4), 16);
+                    const b = parseInt(hex.substring(4, 6), 16);
+                    
+                    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+                },
+                
+                // 跳转到章节
+                jumpToChapter(chapter) {
+                    this.currentChapterId = chapter.id;
+                    
+                    // 找到章节消息在日志中的索引
+                    const chapterIndex = this.logs.findIndex(msg => msg.id === chapter.id);
+                    if (chapterIndex !== -1) {
+                        // 计算章节所在的页
+                        const page = Math.floor(chapterIndex / this.pageSize) + 1;
+                        this.currentPage = page;
+                        this.scrollToTop();
+                    }
+                },
+                
+                // 分页方法
+                prevPage() {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                        this.scrollToTop();
+                    }
+                },
+                
+                nextPage() {
+                    if (this.currentPage < this.totalPages) {
+                        this.currentPage++;
+                        this.scrollToTop();
+                    }
+                },
+                
+                // 滚动到顶部
+                scrollToTop() {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+                
+                // 图片预览
+                previewImage(imageUrl) {
+                    window.open(imageUrl, '_blank');
+                },
+                
+                // 处理图片加载错误
+                handleImageError(event) {
+                    event.target.style.display = 'none';
+                }
+            }
+        }).mount('#app');
     </script>
 </body>
 </html>
