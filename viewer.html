@@ -69,25 +69,26 @@
         }
         
 .log-title {
-    font-size: 2.2rem;
-    font-weight: 900;
-    text-align: center;
+    font-size: 2.2rem !important;
+    font-weight: normal !important;
+    color: white !important;
+    text-align: center !important;
     flex: 1;
-    margin: 0 20px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-    font-family: 'STZhongsong', '华文中宋', serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0 20px !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7) !important;
+    font-family: 'Microsoft YaHei', '微软雅黑', 'STZhongsong', '华文中宋', serif !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 .title-character {
-    color: white;
-
+    color: white !important;
 }
 
 .title-character:first-child {
-    color: #8b0000;
+    color: #8b0000 !important;
+    text-shadow: 0 0 8px rgba(139, 0, 0, 0.5) !important;
 }
 
         
@@ -1064,6 +1065,7 @@ function renderChannelGroup(group) {
         
         // 渲染单条消息
 function renderMessage(msg) {
+    
     // 系统消息特殊处理
     if (msg.name.toLowerCase() === 'system' && !msg.isChapter) {
         const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
