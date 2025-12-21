@@ -664,17 +664,23 @@
     <!-- 筛选面板 -->
 <div class="filter-panel" id="filterPanel">
     <h3 style="margin-bottom: 15px; color: #2c3e50;">筛选消息</h3>
+    
+    <!-- 添加闲聊折叠选项 -->
     <div class="filter-section">
-            <h4>频道折叠</h4>
-    <label style="display: block; margin: 4px 0; font-size: 12px;">
-        <input type="checkbox" id="collapseChatCheckbox" onchange="toggleChatCollapse()">
-        折叠所有"闲聊"频道
-    </label>
+        <h4>频道折叠</h4>
+        <label style="display: block; margin: 4px 0; font-size: 12px;">
+            <input type="checkbox" id="collapseChatCheckbox" onchange="toggleChatCollapse()">
+            折叠所有"闲聊"频道
+        </label>
+    </div>
+    
+    <div class="filter-section">
         <h4>按频道筛选</h4>
         <div id="channelFilters">
             <!-- 动态生成 -->
         </div>
     </div>
+    
     <div style="margin-top: 15px;">
         <button class="control-btn" onclick="applyFilters()" style="width: 100%;">应用筛选</button>
         <button class="control-btn" onclick="clearFilters()" style="width: 100%; margin-top: 8px;">清除筛选</button>
@@ -766,10 +772,13 @@ function loadImageState() {
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(loadImageState, 100);
 });
-        // 切换折叠状态
+// 闲聊折叠功能
 function toggleChatCollapse() {
-    collapseChatChannels = document.getElementById('collapseChatCheckbox').checked;
-    renderCurrentPage(); // 重新渲染当前页
+    const checkbox = document.getElementById('collapseChatCheckbox');
+    if (checkbox) {
+        collapseChatChannels = checkbox.checked;
+        renderCurrentPage(); // 重新渲染当前页
+    }
 }
         // 从URL获取日志文件
         function getLogFileFromUrl() {
@@ -885,7 +894,7 @@ function renderFilterOptions() {
     const logs = logData.logs;
     
     // 提取所有频道
-    const channels = [...new Set(logs.map(msg => msg.channel).filter(channel => channel))];
+    const channels = [...new Set(logs.map(msg => msg.channel).filter(channel => channel))].sort();
     
     // 渲染频道筛选
     document.getElementById('channelFilters').innerHTML = channels.map(channel => `
@@ -922,14 +931,16 @@ function renderFilterOptions() {
 function applyFilters() {
     const searchText = document.getElementById('searchInput').value.toLowerCase();
     currentFilters.searchText = searchText;
-    currentFilters.channels = []; // 重置频道筛选
     
-    let filtered = logData.logs || [];
+    // 重置频道筛选数组
+    currentFilters.channels = [];
     
     // 收集选中的频道
     document.querySelectorAll('#channelFilters input[type="checkbox"]:checked').forEach(checkbox => {
         currentFilters.channels.push(checkbox.value);
     });
+    
+    let filtered = logData.logs || [];
     
     // 按频道筛选
     if (currentFilters.channels.length > 0) {
@@ -939,24 +950,22 @@ function applyFilters() {
     }
     
     // 按搜索文本筛选
-if (searchText) {
-    filtered = filtered.filter(msg => 
-        (msg.text && msg.text.toLowerCase().includes(searchText)) ||
-        (msg.name && msg.name.toLowerCase().includes(searchText)) ||
-        (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
-        (msg.dice && msg.dice.toLowerCase().includes(searchText)) // 添加dice字段
-    );
-}
+    if (searchText) {
+        filtered = filtered.filter(msg => 
+            (msg.text && msg.text.toLowerCase().includes(searchText)) ||
+            (msg.name && msg.name.toLowerCase().includes(searchText)) ||
+            (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
+            (msg.dice && msg.dice && msg.dice.toLowerCase().includes(searchText))
+        );
+    }
     
     filteredLogs = filtered;
     currentPage = 1;
     renderCurrentPage();
     closeFilterPanel();
-}
-        
+}      
         // 清除筛选
 function clearFilters() {
-    // 完全重置所有筛选状态
     currentFilters = {
         channels: [],
         searchText: ''
@@ -965,10 +974,6 @@ function clearFilters() {
     // 清空搜索框
     document.getElementById('searchInput').value = '';
     
-    // 隐藏清除搜索按钮
-    const clearBtn = document.querySelector('.clear-search-btn');
-    if (clearBtn) clearBtn.style.display = 'none';
-    
     // 取消所有频道筛选复选框
     document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
@@ -976,20 +981,19 @@ function clearFilters() {
     
     // 取消闲聊折叠复选框
     const collapseCheckbox = document.getElementById('collapseChatCheckbox');
-    if (collapseCheckbox) collapseCheckbox.checked = false;
+    if (collapseCheckbox) {
+        collapseCheckbox.checked = false;
+    }
     collapseChatChannels = false;
     
     // 恢复为原始日志数据
     filteredLogs = logData.logs || [];
     currentPage = 1;
-    
-    // 重新渲染页面
     renderCurrentPage();
     closeFilterPanel();
-    
-    console.log('已清除所有筛选，恢复原始日志');
 }
-        // 渲染当前页
+      
+// 渲染当前页
         // 替换原来的renderCurrentPage函数
 function renderCurrentPage() {
     // 计算开始和结束索引
@@ -1213,7 +1217,9 @@ function renderChannelGroup(group) {
     // 判断是否应该折叠
     const shouldCollapse = collapseChatChannels && isChatChannel;
     
-    const messagesHtml = shouldCollapse ? '' : group.messages.map(msg => renderMessage(msg)).join('');
+    // 根据折叠状态决定显示哪些消息
+    const messagesToShow = shouldCollapse ? [] : group.messages;
+    const messagesHtml = messagesToShow.map(msg => renderMessage(msg)).join('');
     
     return `
         <div class="channel-group" style="${channelBackgroundStyle}">
@@ -1224,11 +1230,11 @@ function renderChannelGroup(group) {
             </div>
             <div class="channel-messages">
                 ${messagesHtml}
+                ${shouldCollapse ? '<div style="text-align: center; padding: 10px; color: #666; font-style: italic;">频道内容已折叠</div>' : ''}
             </div>
         </div>
     `;
-}
-        
+}     
         // 渲染单条消息
 function renderMessage(msg) {
     
