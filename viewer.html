@@ -92,15 +92,6 @@
     color: #8b0000;
 }
 
-/* 可选：添加悬停效果 */
-.log-title:hover .title-character:first-child {
-    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
-}
-
-.log-title:hover .title-character:not(:first-child) {
-    color: #f0f0f0;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
         
         .top-controls {
             display: flex;
@@ -558,7 +549,29 @@
         <div class="top-controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="搜索消息内容..." autocomplete="off">
+                <button class="clear-search-btn" onclick="clearSearch()" style="display: none;">×</button>
             </div>
+            <!-- 添加样式 -->
+<style>
+.clear-search-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #8b0000;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+</style>
             <button class="control-btn" onclick="toggleFilterPanel()">筛选</button>
         </div>
     </div>
@@ -822,6 +835,7 @@ function clearFilters() {
         searchText: ''
     };
     document.getElementById('searchInput').value = '';
+    document.querySelector('.clear-search-btn').style.display = 'none';
     document.querySelectorAll('#filterPanel input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
     });
@@ -1528,7 +1542,16 @@ function updatePaginationInfo() {
             
             document.body.appendChild(modal);
         }
-        
+        // 搜索框输入时显示清除按钮
+document.getElementById('searchInput').addEventListener('input', function() {
+    const clearBtn = document.querySelector('.clear-search-btn');
+    clearBtn.style.display = this.value ? 'block' : 'none';
+});
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.querySelector('.clear-search-btn').style.display = 'none';
+    clearFilters(); // 使用已有的清除筛选函数
+}
         // 搜索框回车事件
         document.getElementById('searchInput').addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
