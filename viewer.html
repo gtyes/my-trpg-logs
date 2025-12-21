@@ -12,11 +12,9 @@
         }
         
         /* ========== 网站背景 ========== */
-        html, body {
+        body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
             font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
             /* 网站背景设置 - 这里可以设置颜色或图片 */
             /*background-color: #f0f2f5;
@@ -34,8 +32,8 @@
         /* ========== 右侧悬浮图片 ========== */
 .floating-image-right {
     position: fixed;
-    right: 5px; /* 离右边更近，原来是20px */
-    top: 120px;
+    right: 3px; /* 离右边更近，原来是20px */
+    top: 100px;
     width: 475px; /* 保持大尺寸 */
     height: 475px; /* 保持大尺寸 */
     background-image: url('images/map1.png'); /* 改为相对路径 */
@@ -85,7 +83,7 @@
 
 .title-character {
     color: white;
-    transition: all 0.3s;
+
 }
 
 .title-character:first-child {
@@ -1254,35 +1252,46 @@ function hexToRgba(hex, opacity) {
         }
         
         // 获取角色名样式
-        function getCharacterNameStyle(character) {
-            const rules = logData.characterRules || {};
-            const defaultRule = logData.defaultCharacterRule || {};
-            const rule = rules[character] || defaultRule;
-            
-            let style = '';
-            
-            const fontSettings = logData.fontSettings || {};
-            if (fontSettings.characterName) style += `font-family: ${fontSettings.characterName};`;
-            if (fontSettings.characterNameSize) style += `font-size: ${fontSettings.characterNameSize}px;`;
-            
-            if (rule.nameColor) style += `color: ${rule.nameColor};`;
-            
-            // 背景
-            if (rule.nameUseImage && rule.nameImage) {
-                const opacity = rule.nameImageOpacity !== undefined ? rule.nameImageOpacity : 1.0;
-                style += `background-image: url(${rule.nameImage});`;
-                style += `background-size: ${rule.nameImageSize || 'cover'};`;
-                style += `background-position: center;`;
-                style += `background-repeat: ${rule.nameImageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
-                style += `opacity: ${opacity};`;
-            } else if (rule.nameBackground) {
-                const opacity = rule.nameOpacity !== undefined ? rule.nameOpacity : 0.85;
-                style += `background-color: rgba(${hexToRgb(rule.nameBackground)}, ${opacity});`;
-            }
-            
-            return style;
-        }
-        
+// 修改getCharacterNameStyle函数
+function getCharacterNameStyle(character) {
+    const rules = logData.characterRules || {};
+    const defaultRule = logData.defaultCharacterRule || {};
+    const rule = rules[character] || defaultRule;
+    
+    let style = '';
+    
+    const fontSettings = logData.fontSettings || {};
+    
+    // 添加角色名字体设置
+    if (fontSettings.characterName) {
+        style += `font-family: ${fontSettings.characterName};`;
+    }
+    
+    // 添加角色名字号设置 - 确保这里正确读取
+    if (fontSettings.characterNameSize) {
+        style += `font-size: ${fontSettings.characterNameSize}px;`;
+    } else {
+        // 如果没有设置，使用默认大小
+        style += `font-size: 14px;`;
+    }
+    
+    if (rule.nameColor) style += `color: ${rule.nameColor};`;
+    
+    // 背景
+    if (rule.nameUseImage && rule.nameImage) {
+        const opacity = rule.nameImageOpacity !== undefined ? rule.nameImageOpacity : 1.0;
+        style += `background-image: url(${rule.nameImage});`;
+        style += `background-size: ${rule.nameImageSize || 'cover'};`;
+        style += `background-position: center;`;
+        style += `background-repeat: ${rule.nameImageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
+        style += `opacity: ${opacity};`;
+    } else if (rule.nameBackground) {
+        const opacity = rule.nameOpacity !== undefined ? rule.nameOpacity : 0.85;
+        style += `background-color: rgba(${hexToRgb(rule.nameBackground)}, ${opacity});`;
+    }
+    
+    return style;
+}
         // 获取角色气泡样式
         function getCharacterBubbleStyle(character) {
             const rules = logData.characterRules || {};
