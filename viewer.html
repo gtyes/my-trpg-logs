@@ -666,13 +666,33 @@
     <h3 style="margin-bottom: 15px; color: #2c3e50;">筛选消息</h3>
     <div class="filter-section">
             <h4>频道折叠</h4>
-    <label style="display: block; margin: 4px 0; font-size: 12px;">
-        <input type="checkbox" id="collapseChatCheckbox" onchange="toggleChatCollapse()">
-        折叠所有"闲聊"频道
-    </label>
-        <h4>按频道筛选</h4>
-        <div id="channelFilters">
-            <!-- 动态生成 -->
+            <label style="display: block; margin: 4px 0; font-size: 12px;">
+                <input type="checkbox" id="collapseChatCheckbox" onchange="toggleChatCollapse()">
+                折叠所有"闲聊"频道
+            </label>
+<h4>按频道筛选</h4>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- 频道搜索框 -->
+        <input type="text" id="channelSearch" placeholder="搜索频道..." 
+               style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;"
+               oninput="filterChannelOptions()">
+        
+        <!-- 下拉选择框 -->
+        <select id="channelFilters" multiple 
+                style="width: 100%; height: 150px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; overflow-y: auto;">
+            <!-- 动态生成选项 -->
+        </select>
+        
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button onclick="selectAllChannels()" class="control-btn" style="padding: 6px 12px; font-size: 12px;">
+                全选
+            </button>
+            <button onclick="deselectAllChannels()" class="control-btn" style="padding: 6px 12px; font-size: 12px;">
+                全不选
+            </button>
+            <span style="font-size: 12px; color: #666;">
+                按住 Ctrl 可多选
+            </span>
         </div>
     </div>
     <div style="margin-top: 15px;">
@@ -746,10 +766,25 @@ function toggleRightImage() {
     // 保存状态到localStorage
     localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
 }
+
 // 页面加载时检查之前的状态
 function loadImageState() {
     const savedState = localStorage.getItem('rightImageCollapsed');
-    if (savedState === 'true') {
+    
+    // 如果之前没有保存过状态，或者保存的状态是false（展开），或者我们想默认展开
+    if (savedState === null || savedState === 'false') {
+        // 默认展开状态，不需要做任何事
+        isImageCollapsed = false;
+        // 确保图片和按钮都是展开状态
+        const image = document.getElementById('rightFloatingImage');
+        const button = document.getElementById('toggleImageBtn');
+        
+        image.classList.remove('collapsed');
+        button.innerHTML = '◀';
+        button.title = "收起图片";
+        button.classList.remove('collapsed');
+    } 
+    else if (savedState === 'true') {
         // 如果之前是收起状态，应用收起状态
         const image = document.getElementById('rightFloatingImage');
         const button = document.getElementById('toggleImageBtn');
@@ -761,7 +796,6 @@ function loadImageState() {
         button.classList.add('collapsed');
     }
 }
-
 // 在页面加载完成后调用
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(loadImageState, 100);
@@ -884,17 +918,43 @@ function renderFilterOptions() {
     
     const logs = logData.logs;
     
-    // 提取所有频道
-    const channels = [...new Set(logs.map(msg => msg.channel).filter(channel => channel))];
+    // 提取所有频道并排序
+    const channels = [...new Set(logs.map(msg => msg.channel).filter(channel => channel))].sort();
     
-    // 渲染频道筛选
-    document.getElementById('channelFilters').innerHTML = channels.map(channel => `
-        <label style="display: block; margin: 4px 0; font-size: 12px;">
-            <input type="checkbox" value="${channel}" 
-                   style="margin-right: 6px;">
-            ${channel}
-        </label>
-    `).join('');
+    // 渲染频道筛选下拉框
+    const channelFilters = document.getElementById('channelFilters');
+    channelFilters.innerHTML = channels.map(channel => 
+        `<option value="${channel}">${channel}</option>`
+    ).join('');
+}
+function filterChannelOptions() {
+    const searchInput = document.getElementById('channelSearch').value.toLowerCase();
+    const options = document.querySelectorAll('#channelFilters option');
+    
+    options.forEach(option => {
+        const channelName = option.textContent.toLowerCase();
+        if (channelName.includes(searchInput)) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+}
+// 全选频道
+function selectAllChannels() {
+    const options = document.querySelectorAll('#channelFilters option');
+    options.forEach(option => {
+        if (option.style.display !== 'none') {
+            option.selected = true;
+        }
+    });
+}
+// 取消全选
+function deselectAllChannels() {
+    const options = document.querySelectorAll('#channelFilters option');
+    options.forEach(option => {
+        option.selected = false;
+    });
 }
         
         // 更新筛选器
@@ -922,14 +982,14 @@ function renderFilterOptions() {
 function applyFilters() {
     const searchText = document.getElementById('searchInput').value.toLowerCase();
     currentFilters.searchText = searchText;
-    currentFilters.channels = []; // 重置频道筛选
+    
+    // 获取选中的频道
+    const channelSelect = document.getElementById('channelFilters');
+    const selectedOptions = Array.from(channelSelect.selectedOptions);
+    const selectedChannels = selectedOptions.map(option => option.value);
+    currentFilters.channels = selectedChannels;
     
     let filtered = logData.logs || [];
-    
-    // 收集选中的频道
-    document.querySelectorAll('#channelFilters input[type="checkbox"]:checked').forEach(checkbox => {
-        currentFilters.channels.push(checkbox.value);
-    });
     
     // 按频道筛选
     if (currentFilters.channels.length > 0) {
@@ -939,56 +999,57 @@ function applyFilters() {
     }
     
     // 按搜索文本筛选
-if (searchText) {
-    filtered = filtered.filter(msg => 
-        (msg.text && msg.text.toLowerCase().includes(searchText)) ||
-        (msg.name && msg.name.toLowerCase().includes(searchText)) ||
-        (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
-        (msg.dice && msg.dice.toLowerCase().includes(searchText)) // 添加dice字段
-    );
-}
+    if (searchText) {
+        filtered = filtered.filter(msg => 
+            (msg.text && msg.text.toLowerCase().includes(searchText)) ||
+            (msg.name && msg.name.toLowerCase().includes(searchText)) ||
+            (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText))
+        );
+    }
     
     filteredLogs = filtered;
     currentPage = 1;
     renderCurrentPage();
     closeFilterPanel();
-}
-        
+}  
         // 清除筛选
 function clearFilters() {
-    // 完全重置所有筛选状态
     currentFilters = {
         channels: [],
         searchText: ''
     };
-    
-    // 清空搜索框
     document.getElementById('searchInput').value = '';
+    document.getElementById('channelSearch').value = '';
     
-    // 隐藏清除搜索按钮
-    const clearBtn = document.querySelector('.clear-search-btn');
-    if (clearBtn) clearBtn.style.display = 'none';
-    
-    // 取消所有频道筛选复选框
-    document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
+    // 取消所有频道选择
+    const channelSelect = document.getElementById('channelFilters');
+    Array.from(channelSelect.options).forEach(option => {
+        option.selected = false;
     });
     
-    // 取消闲聊折叠复选框
-    const collapseCheckbox = document.getElementById('collapseChatCheckbox');
-    if (collapseCheckbox) collapseCheckbox.checked = false;
-    collapseChatChannels = false;
+    // 显示所有选项
+    const options = document.querySelectorAll('#channelFilters option');
+    options.forEach(option => {
+        option.style.display = 'block';
+    });
     
-    // 恢复为原始日志数据
     filteredLogs = logData.logs || [];
     currentPage = 1;
-    
-    // 重新渲染页面
     renderCurrentPage();
     closeFilterPanel();
-    
-    console.log('已清除所有筛选，恢复原始日志');
 }
+function optimizeForMobile() {
+    if (window.innerWidth <= 768) {
+        const filterPanel = document.getElementById('filterPanel');
+        if (filterPanel) {
+            filterPanel.style.width = '90%';
+            filterPanel.style.right = '-95%';
+        }
+    }
+}
+
+window.addEventListener('resize', optimizeForMobile);
+window.addEventListener('DOMContentLoaded', optimizeForMobile);
         // 渲染当前页
         // 替换原来的renderCurrentPage函数
 function renderCurrentPage() {
