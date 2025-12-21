@@ -847,23 +847,39 @@ if (searchText) {
         
         // 清除筛选
 function clearFilters() {
+    // 完全重置所有筛选状态
     currentFilters = {
         channels: [],
         searchText: ''
     };
+    
+    // 清空搜索框
     document.getElementById('searchInput').value = '';
-    document.querySelector('.clear-search-btn').style.display = 'none';
-    document.querySelectorAll('#filterPanel input[type="checkbox"]').forEach(checkbox => {
+    
+    // 隐藏清除搜索按钮
+    const clearBtn = document.querySelector('.clear-search-btn');
+    if (clearBtn) clearBtn.style.display = 'none';
+    
+    // 取消所有频道筛选复选框
+    document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
     });
     
+    // 取消闲聊折叠复选框
+    const collapseCheckbox = document.getElementById('collapseChatCheckbox');
+    if (collapseCheckbox) collapseCheckbox.checked = false;
+    collapseChatChannels = false;
+    
+    // 恢复为原始日志数据
     filteredLogs = logData.logs || [];
     currentPage = 1;
+    
+    // 重新渲染页面
     renderCurrentPage();
     closeFilterPanel();
+    
+    console.log('已清除所有筛选，恢复原始日志');
 }
-
-        
         // 渲染当前页
         // 替换原来的renderCurrentPage函数
 function renderCurrentPage() {
@@ -938,51 +954,57 @@ function addMessageDoubleClickHandlers() {
 function jumpToMessage(messageId) {
     console.log('尝试跳转到消息:', messageId);
     
-    // 在filteredLogs中查找消息
-    const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
-    console.log('消息索引位置:', messageIndex);
+    // 先清除所有筛选和搜索，回到原始日志
+    clearFilters(); // 这会重置filteredLogs为原始日志
     
-    if (messageIndex !== -1) {
-        // 直接使用已有的分页计算逻辑
-        // 参考jumpToChapter函数的计算方式
-        let page = 1;
-        let messagesProcessed = 0;
+    // 等待清空筛选完成，再查找消息
+    setTimeout(() => {
+        // 在原始日志中查找消息
+        const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+        console.log('在原始日志中的消息索引位置:', messageIndex);
         
-        for (let i = 0; i <= messageIndex; i++) {
-            const msg = filteredLogs[i];
+        if (messageIndex !== -1) {
+            // 计算消息所在的页数
+            let page = 1;
+            let messagesProcessed = 0;
             
-            messagesProcessed++;
-            
-            // 如果是章节标记，且不是本页第一条，则新开一页
-            if (msg.isChapter && messagesProcessed > 1) {
-                page++;
-                messagesProcessed = 1;
-            }
-            
-            // 如果本页已满，翻页
-            if (messagesProcessed >= pageSize) {
-                page++;
-                messagesProcessed = 0;
-            }
-            
-            // 找到目标消息
-            if (i === messageIndex) {
-                currentPage = page;
-                console.log('消息在第', page, '页');
-                renderCurrentPage();
+            for (let i = 0; i <= messageIndex; i++) {
+                const msg = filteredLogs[i];
                 
-                // 等待渲染完成后高亮显示
-                setTimeout(() => {
-                    highlightMessage(messageId);
-                }, 100);
-                break;
+                messagesProcessed++;
+                
+                // 如果是章节标记，且不是本页第一条，则新开一页
+                if (msg.isChapter && messagesProcessed > 1) {
+                    page++;
+                    messagesProcessed = 1;
+                }
+                
+                // 如果本页已满，翻页
+                if (messagesProcessed >= pageSize) {
+                    page++;
+                    messagesProcessed = 0;
+                }
+                
+                // 找到目标消息
+                if (i === messageIndex) {
+                    currentPage = page;
+                    console.log('消息在第', page, '页');
+                    renderCurrentPage();
+                    
+                    // 等待渲染完成后高亮显示
+                    setTimeout(() => {
+                        highlightMessage(messageId);
+                    }, 500); // 延长等待时间确保渲染完成
+                    break;
+                }
             }
+        } else {
+            console.error('未找到消息:', messageId);
+            alert('未找到该消息，可能消息已被删除或修改');
         }
-    } else {
-        console.error('未找到消息:', messageId);
-        alert('未找到该消息');
-    }
+    }, 100);
 }
+
 // 添加高亮函数
 function highlightMessage(messageId) {
     const targetRow = document.querySelector(`.message-row[data-id="${messageId}"]`);
@@ -1166,30 +1188,30 @@ function escapeRegExp(string) {
         }
         
         // 渲染扩展内容（骰子结果）
-        function renderExtendContent(msg) {
-            const extendText = formatExtendContent(msg);
-            if (!extendText) return '';
-            
-            const extendResultType = getExtendResultType(msg);
-            const extendStyle = getExtendStyle(extendResultType);
-            const extendImage = getExtendImage(extendResultType);
-            
-            let imageHtml = '';
-            if (extendImage) {
-                imageHtml = `
-                    <div class="extend-image">
-                        <img src="${extendImage}" alt="${extendResultType}图片">
-                    </div>
-                `;
-            }
-            
-            return `
-                <div class="dice-result" style="${extendStyle}">
-                    ${extendText}
-                    ${imageHtml}
-                </div>
-            `;
-        }
+function renderExtendContent(msg) {
+    const extendText = getFormattedExtendText(msg); // 使用新的格式化函数
+    if (!extendText) return '';
+    
+    const extendResultType = getExtendResultType(msg);
+    const extendStyle = getExtendStyle(extendResultType);
+    const extendImage = getExtendImage(extendResultType);
+    
+    let imageHtml = '';
+    if (extendImage) {
+        imageHtml = `
+            <div class="extend-image">
+                <img src="${extendImage}" alt="${extendResultType}图片">
+            </div>
+        `;
+    }
+    
+    return `
+        <div class="dice-result" style="${extendStyle}">
+            ${extendText}
+            ${imageHtml}
+        </div>
+    `;
+}
         
         // ========== 样式获取函数 ==========
         
@@ -1374,84 +1396,162 @@ function getCharacterNameStyle(character) {
             
             return style;
         }
-        
+        // 添加繁简转换函数
+function traditionalToSimple(text) {
+    if (!text) return text;
+    
+    // 简繁转换表（仅处理需要的词汇）
+    const mapping = {
+        '極限': '极限',
+        '成功': '成功',
+        '失敗': '失败',
+        '大成功': '大成功',
+        '大失败': '大失败'
+    };
+    
+    let result = text;
+    // 替换词汇
+    for (const [traditional, simple] of Object.entries(mapping)) {
+        result = result.replace(new RegExp(traditional, 'g'), simple);
+    }
+    
+    return result;
+}
         // 格式化扩展内容
-        function formatExtendContent(msg) {
-            if (msg.extend) {
-                if (typeof msg.extend === 'string') {
-                    try {
-                        const parsed = JSON.parse(msg.extend);
-                        if (parsed.roll && parsed.roll.result) {
-                            return parsed.roll.result;
-                        }
-                        return msg.extend;
-                    } catch (e) {
-                        return msg.extend;
-                    }
-                } else if (msg.extend.roll && msg.extend.roll.result) {
-                    return msg.extend.roll.result;
+        // 重新实现formatExtendContent函数
+function formatExtendContent(msg) {
+    // 优先使用extend字段
+    if (msg.extend) {
+        if (typeof msg.extend === 'string') {
+            try {
+                // 尝试解析JSON字符串
+                const parsed = JSON.parse(msg.extend);
+                if (parsed && parsed.roll && parsed.roll.result) {
+                    return parsed.roll.result;
                 }
+                return msg.extend;
+            } catch (e) {
+                // 如果不是JSON，直接返回字符串
+                return msg.extend;
             }
-            return msg.dice || '';
+        } else if (typeof msg.extend === 'object') {
+            // 如果是对象，提取roll.result
+            if (msg.extend.roll && msg.extend.roll.result) {
+                return msg.extend.roll.result;
+            }
+            // 尝试转换为字符串
+            try {
+                return JSON.stringify(msg.extend);
+            } catch (e) {
+                return String(msg.extend);
+            }
         }
-        
+    }
+    // 如果没有extend，使用dice字段
+    return msg.dice || '';
+}     
         // 获取扩展结果类型
 function getExtendResultType(msg) {
     const extendText = formatExtendContent(msg);
     if (!extendText) return 'normal';
     
-    console.log('检查extend文本:', extendText);
+    console.log('原始extend文本:', extendText);
     
-    // 清理文本，移除空格等
-    const cleanText = extendText.replace(/\s+/g, '');
+    // 先进行繁简转换
+    let text = traditionalToSimple(extendText);
+    console.log('繁简转换后:', text);
     
-    // 检查大失败
-    if (extendText.includes('大失败')) {
-        console.log('识别为大失败');
+    // 去除空格以便匹配
+    const cleanText = text.replace(/\s+/g, '');
+    console.log('去除空格后:', cleanText);
+    
+    // 检查大失败（简体）- 支持多种格式
+    if (text.includes('大失败')) {
+        console.log('识别为大失败（包含"大失败"文本）');
         return 'criticalFailure';
     }
     
-    // 检查大成功
-    if (extendText.includes('大成功')) {
-        console.log('识别为大成功');
+    // 检查大成功（简体）- 支持多种格式
+    if (text.includes('大成功')) {
+        console.log('识别为大成功（包含"大成功"文本）');
         return 'criticalSuccess';
     }
     
-    // 检查数字格式：{数字}＞失败 且数字≥96
+    // 检查"{数字}＞失败"且数字≥96（支持各种空格和符号变体）
+    // 匹配格式如: "96 ＞ 失败", "96＞失败", "96 > 失败"
     const failureMatch = cleanText.match(/(\d+)[＞>]失败/);
     if (failureMatch) {
         const number = parseInt(failureMatch[1]);
         console.log('失败匹配到数字:', number);
         if (number >= 96) {
+            console.log('数字≥96，识别为大失败');
             return 'criticalFailure';
         }
+        console.log('数字<96，识别为普通失败');
         return 'failure';
     }
     
-    // 检查数字格式：{数字}＞极限成功 且数字≤5
+    // 检查"{数字}＞极限成功"且数字≤5（支持各种空格和符号变体）
+    // 匹配格式如: "5 ＞ 极限成功", "5＞极限成功", "5 > 极限成功"
     const successMatch = cleanText.match(/(\d+)[＞>]极限成功/);
     if (successMatch) {
         const number = parseInt(successMatch[1]);
         console.log('成功匹配到数字:', number);
         if (number <= 5) {
+            console.log('数字≤5，识别为大成功');
             return 'criticalSuccess';
         }
+        console.log('数字>5，识别为普通成功');
         return 'success';
     }
     
     // 检查普通成功（以"成功"结尾）
-    if (extendText.trim().endsWith('成功')) {
+    if (text.trim().endsWith('成功')) {
+        console.log('识别为普通成功（以"成功"结尾）');
         return 'success';
     }
     
     // 检查普通失败（以"失败"结尾）
-    if (extendText.trim().endsWith('失败')) {
+    if (text.trim().endsWith('失败')) {
+        console.log('识别为普通失败（以"失败"结尾）');
         return 'failure';
     }
     
+    console.log('未识别特殊格式，返回normal');
     return 'normal';
 }
-        
+// 重新实现getFormattedExtendText函数
+function getFormattedExtendText(msg) {
+    const extendText = formatExtendContent(msg);
+    if (!extendText) return '';
+    
+    const resultType = getExtendResultType(msg);
+    let text = traditionalToSimple(extendText);
+    
+    console.log('格式化前文本:', text, '结果类型:', resultType);
+    
+    // 根据结果类型进行转换
+    if (resultType === 'criticalSuccess') {
+        // 将"极限成功"转为"大成功"
+        text = text.replace('极限成功', '大成功');
+        // 如果匹配到数字格式，也进行转换
+        text = text.replace(/(\d+)\s*[＞>]\s*极限成功/, '大成功');
+        console.log('格式化后（大成功）:', text);
+    } else if (resultType === 'criticalFailure') {
+        // 如果是数字≥96的失败，转换为大失败
+        text = text.replace(/(\d+)\s*[＞>]\s*失败/, (match, number) => {
+            if (parseInt(number) >= 96) {
+                return '大失败';
+            }
+            return match;
+        });
+        console.log('格式化后（大失败）:', text);
+    }
+    
+    return text;
+}
+
+
         // 获取扩展内容样式
 function getExtendStyle(resultType) {
     const formats = logData.extendFormats || {};
