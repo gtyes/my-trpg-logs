@@ -30,7 +30,7 @@
         /* ========== 右侧悬浮图片 ========== */
 .floating-image-right {
     position: fixed;
-    right: 5px; /* 离右边更近，原来是20px */
+    right: 0px !important; /* 离右边更近，原来是20px */
     top: 120px;
     width: 450px; /* 保持大尺寸 */
     height: 450px; /* 保持大尺寸 */
@@ -66,16 +66,33 @@
             backdrop-filter: blur(5px);
         }
         
-        .log-title {
-            font-size: 1.8rem;
-            font-weight: normal;
-            color: white;
-            font-family: 'STZhongsong', '华文中宋', serif;
-            text-align: center;
-            flex: 1;
-            margin: 0 20px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
+.log-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    text-align: center;
+    flex: 1;
+    margin: 0 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    font-family: 'STZhongsong', '华文中宋', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+        .title-character {
+    color: white;
+    transition: all 0.3s;
+}
+        .title-character:first-child {
+    color: #8b0000;
+}
+        .log-title:hover .title-character:first-child {
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+}
+
+.log-title:hover .title-character:not(:first-child) {
+    color: #f0f0f0;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
         
         .top-controls {
             display: flex;
@@ -524,11 +541,37 @@
         <div class="top-controls">
             <button class="control-btn" onclick="toggleChapterSidebar()">章节导航</button>
         </div>
-        <div class="log-title" id="logTitle">血色毡帽</div>
+        <div class="log-title" id="logTitle">
+            <span class="title-character" style="color: #8b0000;">血</span>
+            <span class="title-character">色</span>
+            <span class="title-character">毡</span>
+            <span class="title-character">帽</span>
+        </div>
         <div class="top-controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="搜索消息内容..." autocomplete="off">
+                <button class="clear-search-btn" onclick="clearSearch()" style="display: none;">×</button>
             </div>
+            <style>
+.clear-search-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #8b0000;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+</style>
             <button class="control-btn" onclick="toggleFilterPanel()">筛选</button>
         </div>
     </div>
@@ -547,10 +590,16 @@
 <div class="filter-panel" id="filterPanel">
     <h3 style="margin-bottom: 15px; color: #2c3e50;">筛选消息</h3>
     <div class="filter-section">
+        <h4>频道折叠</h4>
+        <label style="display: block; margin: 4px 0; font-size: 12px;">
+            <input type="checkbox" id="collapseChatCheckbox" onchange="toggleChatCollapse()">
+            折叠所有"闲聊"频道
+        </label>
         <h4>按频道筛选</h4>
         <div id="channelFilters">
             <!-- 动态生成 -->
         </div>
+
     </div>
     <div style="margin-top: 15px;">
         <button class="control-btn" onclick="applyFilters()" style="width: 100%;">应用筛选</button>
@@ -587,6 +636,8 @@
 
     <script>
         // 全局变量
+        let collapseChatChannels = false;
+        const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
         let logData = null;
         let filteredLogs = [];
         let currentPage = 1;
@@ -597,7 +648,11 @@
             searchText: ''
         };
         let chapters = [];
-        
+        // 切换折叠状态
+        function toggleChatCollapse() {
+    collapseChatChannels = document.getElementById('collapseChatCheckbox').checked;
+    renderCurrentPage(); // 重新渲染当前页
+}
         // 从URL获取日志文件
         function getLogFileFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -763,7 +818,8 @@ function applyFilters() {
         filtered = filtered.filter(msg => 
             (msg.text && msg.text.toLowerCase().includes(searchText)) ||
             (msg.name && msg.name.toLowerCase().includes(searchText)) ||
-            (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText))
+            (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
+            (msg.dice && msg.dice.toLowerCase().includes(searchText)) // 添加dice字段
         );
     }
     
@@ -771,6 +827,17 @@ function applyFilters() {
     currentPage = 1;
     renderCurrentPage();
     closeFilterPanel();
+}
+        document.getElementById('searchInput').addEventListener('input', function() {
+    const clearBtn = document.querySelector('.clear-search-btn');
+    clearBtn.style.display = this.value ? 'block' : 'none';
+});
+
+// 清除搜索函数
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.querySelector('.clear-search-btn').style.display = 'none';
+    clearFilters(); // 使用已有的清除筛选函数
 }
         
         // 清除筛选
@@ -780,6 +847,7 @@ function clearFilters() {
         searchText: ''
     };
     document.getElementById('searchInput').value = '';
+    document.querySelector('.clear-search-btn').style.display = 'none';
     document.querySelectorAll('#filterPanel input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
     });
@@ -845,8 +913,75 @@ function renderCurrentPage() {
     
     // 滚动到顶部
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    const container = document.getElementById('logMessages');
+    container.innerHTML = renderLogMessages(pageLogs);
+    
+    // 添加双击消息跳转功能
+    addMessageDoubleClickHandlers();
+}
+function addMessageDoubleClickHandlers() {
+    const messageRows = document.querySelectorAll('.message-row');
+    messageRows.forEach(row => {
+        row.addEventListener('dblclick', function() {
+            const messageId = this.getAttribute('data-id');
+            if (messageId) {
+                jumpToMessage(messageId);
+            }
+        });
+    });
 }
 
+// 跳转到指定消息
+function jumpToMessage(messageId) {
+    // 在filteredLogs中查找消息
+    const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+    if (messageIndex !== -1) {
+        // 计算消息所在的页数
+        let page = 1;
+        let messagesProcessed = 0;
+        
+        for (let i = 0; i <= messageIndex; i++) {
+            const msg = filteredLogs[i];
+            messagesProcessed++;
+            
+            // 如果是章节标记，且不是本页第一条，则结束当前页
+            if (msg.isChapter && messagesProcessed > 1 && i > 0) {
+                page++;
+                messagesProcessed = 1;
+            }
+            
+            // 如果本页已满，翻页
+            if (messagesProcessed >= pageSize) {
+                page++;
+                messagesProcessed = 0;
+            }
+            
+            // 如果找到了目标消息
+            if (i === messageIndex) {
+                currentPage = page;
+                renderCurrentPage();
+                
+                // 高亮显示该消息
+                setTimeout(() => {
+                    const targetRow = document.querySelector(`[data-id="${messageId}"]`);
+                    if (targetRow) {
+                        targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
+                        targetRow.style.borderLeft = '3px solid #8b0000';
+                        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // 3秒后清除高亮
+                        setTimeout(() => {
+                            targetRow.style.backgroundColor = '';
+                            targetRow.style.borderLeft = '';
+                        }, 3000);
+                    }
+                }, 100);
+                
+                break;
+            }
+        }
+    }
+}
         // 渲染日志消息
         function renderLogMessages(logs) {
             if (logs.length === 0) {
@@ -914,23 +1049,34 @@ function renderCurrentPage() {
         }
         
         // 渲染频道组
-        function renderChannelGroup(group) {
-            const channelBackgroundStyle = getChannelBackgroundStyle(group.channel);
-            const channelMaskStyle = getChannelMaskStyle(group.channel);
-            const channelNameTextStyle = getChannelNameTextStyle(group.channel);
-            
-            const messagesHtml = group.messages.map(msg => renderMessage(msg)).join('');
-            
-            return `
-                <div class="channel-group" style="${channelBackgroundStyle}">
-                    ${channelMaskStyle ? `<div class="channel-mask" style="${channelMaskStyle}"></div>` : ''}
-                    <div class="channel-name" style="${channelNameTextStyle}">${group.channel}</div>
-                    <div class="channel-messages">
-                        ${messagesHtml}
-                    </div>
-                </div>
-            `;
-        }
+function renderChannelGroup(group) {
+    const channelBackgroundStyle = getChannelBackgroundStyle(group.channel);
+    const channelMaskStyle = getChannelMaskStyle(group.channel);
+    const channelNameTextStyle = getChannelNameTextStyle(group.channel);
+    
+    // 判断是否为闲聊频道
+    const isChatChannel = chatChannelKeywords.some(keyword => 
+        group.channel.includes(keyword)
+    );
+    
+    // 判断是否应该折叠
+    const shouldCollapse = collapseChatChannels && isChatChannel;
+    
+    const messagesHtml = shouldCollapse ? '' : group.messages.map(msg => renderMessage(msg)).join('');
+    
+    return `
+        <div class="channel-group" style="${channelBackgroundStyle}">
+            ${channelMaskStyle ? `<div class="channel-mask" style="${channelMaskStyle}"></div>` : ''}
+            <div class="channel-name" style="${channelNameTextStyle}">
+                ${group.channel}
+                ${isChatChannel ? '<span style="font-size: 10px; color: #8b0000; margin-left: 5px;">[可折叠]</span>' : ''}
+            </div>
+            <div class="channel-messages">
+                ${messagesHtml}
+            </div>
+        </div>
+    `;
+}
         
         // 渲染单条消息
 function renderMessage(msg) {
@@ -957,7 +1103,7 @@ function renderMessage(msg) {
     const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
     
     return `
-        <div class="message-row">
+        <div class="message-row" data-id="${msg.id}">
             <div class="avatar-box">
                 ${avatarHtml}
             </div>
@@ -1122,34 +1268,45 @@ function hexToRgba(hex, opacity) {
         }
         
         // 获取角色名样式
-        function getCharacterNameStyle(character) {
-            const rules = logData.characterRules || {};
-            const defaultRule = logData.defaultCharacterRule || {};
-            const rule = rules[character] || defaultRule;
-            
-            let style = '';
-            
-            const fontSettings = logData.fontSettings || {};
-            if (fontSettings.characterName) style += `font-family: ${fontSettings.characterName};`;
-            if (fontSettings.characterNameSize) style += `font-size: ${fontSettings.characterNameSize}px;`;
-            
-            if (rule.nameColor) style += `color: ${rule.nameColor};`;
-            
-            // 背景
-            if (rule.nameUseImage && rule.nameImage) {
-                const opacity = rule.nameImageOpacity !== undefined ? rule.nameImageOpacity : 1.0;
-                style += `background-image: url(${rule.nameImage});`;
-                style += `background-size: ${rule.nameImageSize || 'cover'};`;
-                style += `background-position: center;`;
-                style += `background-repeat: ${rule.nameImageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
-                style += `opacity: ${opacity};`;
-            } else if (rule.nameBackground) {
-                const opacity = rule.nameOpacity !== undefined ? rule.nameOpacity : 0.85;
-                style += `background-color: rgba(${hexToRgb(rule.nameBackground)}, ${opacity});`;
-            }
-            
-            return style;
-        }
+function getCharacterNameStyle(character) {
+    const rules = logData.characterRules || {};
+    const defaultRule = logData.defaultCharacterRule || {};
+    const rule = rules[character] || defaultRule;
+    
+    let style = '';
+    
+    const fontSettings = logData.fontSettings || {};
+    
+    // 添加角色名字体设置
+    if (fontSettings.characterName) {
+        style += `font-family: ${fontSettings.characterName};`;
+    }
+    
+    // 添加角色名字号设置 - 确保这里正确读取
+    if (fontSettings.characterNameSize) {
+        style += `font-size: ${fontSettings.characterNameSize}px;`;
+    } else {
+        // 如果没有设置，使用默认大小
+        style += `font-size: 14px;`;
+    }
+    
+    if (rule.nameColor) style += `color: ${rule.nameColor};`;
+    
+    // 背景
+    if (rule.nameUseImage && rule.nameImage) {
+        const opacity = rule.nameImageOpacity !== undefined ? rule.nameImageOpacity : 1.0;
+        style += `background-image: url(${rule.nameImage});`;
+        style += `background-size: ${rule.nameImageSize || 'cover'};`;
+        style += `background-position: center;`;
+        style += `background-repeat: ${rule.nameImageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
+        style += `opacity: ${opacity};`;
+    } else if (rule.nameBackground) {
+        const opacity = rule.nameOpacity !== undefined ? rule.nameOpacity : 0.85;
+        style += `background-color: rgba(${hexToRgb(rule.nameBackground)}, ${opacity});`;
+    }
+    
+    return style;
+}
         
         // 获取角色气泡样式
         function getCharacterBubbleStyle(character) {
