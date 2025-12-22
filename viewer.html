@@ -780,7 +780,8 @@
 
     <script>
         // 全局变量
-        let isImageCollapsed = false;
+        let chapterImageMap = {}; // 章节名 -> 右侧图片URL
+        let chapterBackgroundMap = {}; // 章节名 -> 背景图片URL
         let logData = null;
         let filteredLogs = [];
         let currentPage = 1;
@@ -793,6 +794,142 @@
         let chapters = [];
         let collapseChatChannels = false;
         const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
+    function initChapterImages() {
+        // 这里设置每个章节对应的右侧图片和背景图片
+        // 格式：章节名: {rightImage: 'url', background: 'url'}
+        chapterImageMap = {
+        "来自白教堂区的纸条": {rightImage: "images/map3.png", background: "images/scene1.png"},
+        "史密斯的请求": {rightImage: "images/map2.png", background: "images/scene2.png"},
+        "在伦敦的调查": {rightImage: "images/map2.png", background: "images/scene3.png"},
+        "穿越欧洲的快车": {rightImage: "images/map5.png", background: "images/scene4.png"},
+        "午夜暗影": {rightImage: "images/map5.png", background: "images/scene5.png"},
+        "床底下的影子": {rightImage: "images/map5.png", background: "images/scene6.png"},
+        "冯·霍夫勒男爵": {rightImage: "images/map5.png", background: "images/scene7.png"},
+        "插曲": {rightImage: "images/map5.png", background: "images/scene8.png"},
+        "不友善的谈判": {rightImage: "images/map5.png", background: "images/scene9.png"},
+        "抵达前的黎明": {rightImage: "images/map5.png", background: "images/scene10.png"},
+        "君士坦丁堡": {rightImage: "images/map1.png", background: "images/scene11.png"},
+        "低语毡帽最终章": {rightImage: "images/map1.png", background: "images/scene12.png"},
+        "厄运王子之岛": {rightImage: "images/map4.png", background: "images/scene13.png"},
+        "战斗后的余声": {rightImage: "images/map4.png", background: "images/scene14.png"}
+        };
+        
+        // 如果没有设置某章节的图片，使用默认图片
+        const defaultImage = logData.rightFloatingImage || "images/scene8.png";
+        const defaultBackground = "images/scene8.png";
+        
+        // 确保每个章节都有默认图片
+        chapters.forEach(chapter => {
+            if (!chapterImageMap[chapter.name]) {
+                chapterImageMap[chapter.name] = {
+                    rightImage: defaultImage,
+                    background: defaultBackground
+                };
+            }
+        });
+    }
+
+    
+    function getCurrentChapter() {
+        if (!chapters || chapters.length === 0) return null;
+        
+        // 按位置排序章节
+        const sortedChapters = [...chapters].sort((a, b) => a.position - b.position);
+        
+        // 获取当前页第一条消息的索引
+        let currentPageStartIndex = 0;
+        
+        // 计算当前页的起始消息索引
+        let messagesProcessed = 0;
+        let pageStartIndex = 0;
+        
+        for (let i = 0; i < currentPage - 1; i++) {
+            let pageMessages = 0;
+            for (let j = pageStartIndex; j < filteredLogs.length && pageMessages < pageSize; j++) {
+                pageMessages++;
+            }
+            pageStartIndex += pageMessages;
+        }
+        
+        currentPageStartIndex = pageStartIndex;
+        
+        // 查找当前页第一条消息所属的章节
+        for (let i = sortedChapters.length - 1; i >= 0; i--) {
+            const chapter = sortedChapters[i];
+            if (currentPageStartIndex + 1 >= chapter.position) {
+                return chapter;
+            }
+        }
+        
+        // 如果没有章节，返回第一个章节或null
+        return sortedChapters[0] || null;
+    }
+
+    function updateChapterImages() {
+        const currentChapter = getCurrentChapter();
+        
+        if (currentChapter && chapterImageMap[currentChapter.name]) {
+            const images = chapterImageMap[currentChapter.name];
+            
+            // 更新右侧图片
+            const rightImageElement = document.getElementById('rightFloatingImage');
+            if (images.rightImage) {
+                // 添加淡入淡出效果
+                rightImageElement.style.transition = 'opacity 0.5s ease';
+                rightImageElement.style.opacity = '0';
+                
+                setTimeout(() => {
+                    rightImageElement.style.backgroundImage = `url('${images.rightImage}')`;
+                    rightImageElement.style.opacity = '0.9';
+                }, 300);
+            }
+            
+            // 更新网页背景
+            if (images.background) {
+                // 添加过渡效果
+                document.body.style.transition = 'background-image 0.8s ease';
+                document.body.style.backgroundImage = `url('${images.background}')`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundAttachment = 'fixed';
+                document.body.style.backgroundPosition = 'center';
+            }
+        }
+    }
+
+// 添加背景图片切换的CSS过渡效果
+function addBackgroundTransitions() {
+    // 在CSS中添加过渡效果
+    const style = document.createElement('style');
+    style.textContent = `
+        body {
+            transition: background-image 0.8s ease !important;
+        }
+        .floating-image-right {
+            transition: background-image 0.5s ease, opacity 0.5s ease !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function saveChapterImages() {
+    try {
+        localStorage.setItem('chapterImages', JSON.stringify(chapterImages));
+    } catch (e) {
+        console.error('保存章节图片失败:', e);
+    }
+}
+
+// 加载章节图片配置
+function loadChapterImages() {
+    try {
+        const saved = localStorage.getItem('chapterImages');
+        if (saved) {
+            chapterImages = JSON.parse(saved);
+        }
+    } catch (e) {
+        console.error('加载章节图片失败:', e);
+    }
+}
 function toggleRightImage() {
     const image = document.getElementById('rightFloatingImage');
     const button = document.getElementById('toggleImageBtn');
@@ -900,7 +1037,15 @@ function toggleChatCollapse() {
                 
                 // 渲染当前页
                 renderCurrentPage();
-                
+                        initChapterImages();
+        
+        // 添加背景过渡效果
+        addBackgroundTransitions();
+        
+        // 加载完成后更新图片
+        setTimeout(() => {
+            updateChapterImages();
+        }, 500);
             } catch (error) {
                 console.error('加载日志数据失败:', error);
                 document.getElementById('loadingState').innerHTML = `
@@ -1027,6 +1172,9 @@ function applyFilters() {
     currentPage = 1;
     renderCurrentPage();
     closeFilterPanel();
+        setTimeout(() => {
+        updateChapterImages();
+    }, 100);
 }      
         // 清除筛选
 function clearFilters() {
@@ -1055,6 +1203,9 @@ function clearFilters() {
     currentPage = 1;
     renderCurrentPage();
     closeFilterPanel();
+        setTimeout(() => {
+        updateChapterImages();
+    }, 100);
 }
       
 // 渲染当前页
@@ -1085,6 +1236,9 @@ function renderCurrentPage() {
         }
         
         messagesProcessed++;
+            setTimeout(() => {
+        updateChapterImages();
+    }, 100);
     }
     
     // 收集当前页的消息
@@ -1792,46 +1946,49 @@ function getExtendStyle(resultType) {
         
 
         // ========== 分页功能 ==========
-function updatePaginationInfo() {
-    // 计算总页数（考虑章节分页）
-    let totalPages = 0;
-    let remainingMessages = filteredLogs.length;
-    let pageStart = 0;
-    
-    while (remainingMessages > 0) {
-        totalPages++;
-        let pageCount = 0;
-        
-        // 计算这一页能放多少消息
-        for (let i = pageStart; i < filteredLogs.length && pageCount < pageSize; i++) {
-            const msg = filteredLogs[i];
-            pageCount++;
+        function updatePaginationInfo() {
+            // 计算总页数（考虑章节分页）
+            let totalPages = 0;
+            let remainingMessages = filteredLogs.length;
+            let pageStart = 0;
             
-            // 关键修改：如果是章节标记，且不是本页第一条，则结束当前页
-            if (msg.isChapter && pageCount > 1) {
-                break; // 章节在新的一页开始
+            while (remainingMessages > 0) {
+                totalPages++;
+                let pageCount = 0;
+                
+                // 计算这一页能放多少消息
+                for (let i = pageStart; i < filteredLogs.length && pageCount < pageSize; i++) {
+                    const msg = filteredLogs[i];
+                    pageCount++;
+                    
+                    // 关键修改：如果是章节标记，且不是本页第一条，则结束当前页
+                    if (msg.isChapter && pageCount > 1) {
+                        break; // 章节在新的一页开始
+                    }
+                }
+                
+                remainingMessages -= pageCount;
+                pageStart += pageCount;
             }
+            
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('totalPages').textContent = totalPages;
+            document.getElementById('pageSize').textContent = pageSize;
+            
+            document.getElementById('prevPageBtn').disabled = currentPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+            document.getElementById('jumpInput').value = currentPage;
+            document.getElementById('jumpInput').max = totalPages;
         }
-        
-        remainingMessages -= pageCount;
-        pageStart += pageCount;
-    }
-    
-    document.getElementById('currentPage').textContent = currentPage;
-    document.getElementById('totalPages').textContent = totalPages;
-    document.getElementById('pageSize').textContent = pageSize;
-    
-    document.getElementById('prevPageBtn').disabled = currentPage === 1;
-    document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-    document.getElementById('jumpInput').value = currentPage;
-    document.getElementById('jumpInput').max = totalPages;
-}
         
         function prevPage() {
             if (currentPage > 1) {
                 currentPage--;
                 renderCurrentPage();
             }
+                setTimeout(() => {
+        updateChapterImages();
+    }, 100);
         }
         
         function nextPage() {
@@ -1840,6 +1997,9 @@ function updatePaginationInfo() {
                 currentPage++;
                 renderCurrentPage();
             }
+                setTimeout(() => {
+        updateChapterImages();
+    }, 100);
         }
         
         function jumpToPage() {
@@ -1853,6 +2013,9 @@ function updatePaginationInfo() {
             currentPage = page;
             input.value = page;
             renderCurrentPage();
+                setTimeout(() => {
+        updateChapterImages();
+    }, 100);
         }
 function calculatePageForMessage(messageIndex) {
     let page = 1;
@@ -1895,7 +2058,11 @@ function jumpToChapter(chapterIndex) {
             closeChapterSidebar();
         }
     }
+        setTimeout(() => {
+        updateChapterImages();
+    }, 100);
 }
+
         // ========== UI控制函数 ==========
         function toggleChapterSidebar() {
             document.getElementById('chapterSidebar').classList.toggle('show');
