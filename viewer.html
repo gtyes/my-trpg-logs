@@ -42,7 +42,6 @@
 .floating-image-right {
     width: 475px;
     height: 475px;
-    background-image: url('images/map1.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: right center;
@@ -794,6 +793,9 @@
         let chapters = [];
         let collapseChatChannels = false;
         const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
+        let currentRightImageUrl = ''; // 记录当前右侧图片URL
+        let isImageCollapsed = false; // 记录图片是否收起
+        
     function initChapterImages() {
         // 这里设置每个章节对应的右侧图片和背景图片
         // 格式：章节名: {rightImage: 'url', background: 'url'}
@@ -871,29 +873,49 @@
         if (currentChapter && chapterImageMap[currentChapter.name]) {
             const images = chapterImageMap[currentChapter.name];
             
-            // 更新右侧图片
-            const rightImageElement = document.getElementById('rightFloatingImage');
-            if (images.rightImage) {
-                // 添加淡入淡出效果
-                rightImageElement.style.transition = 'opacity 0.5s ease';
-                rightImageElement.style.opacity = '0';
-                
-                setTimeout(() => {
-                    rightImageElement.style.backgroundImage = `url('${images.rightImage}')`;
-                    rightImageElement.style.opacity = '0.9';
-                    rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
-                    rightImageElement.style.right = '3px';
-                }, 300);
-            }
-            
             // 更新网页背景
             if (images.background) {
-                // 添加过渡效果
-                document.body.style.transition = 'background-image 0.8s ease';
-                document.body.style.backgroundImage = `url('${images.background}')`;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundAttachment = 'fixed';
-                document.body.style.backgroundPosition = 'center';
+                // 检查是否是同一张背景图片
+                const bodyStyle = window.getComputedStyle(document.body);
+                const currentBg = bodyStyle.backgroundImage;
+                const newBg = `url('${images.background}')`;
+                
+                // 如果不是同一张图片，才应用过渡效果
+                if (currentBg !== newBg && currentBg !== `url("${images.background}")`) {
+                    // 添加过渡效果
+                    document.body.style.transition = 'background-image 0.8s ease';
+                    document.body.style.backgroundImage = `url('${images.background}')`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    document.body.style.backgroundPosition = 'center';
+                }
+            }
+            
+            // 更新右侧图片（只有在图片展开状态下才更新）
+            if (!isImageCollapsed && images.rightImage) {
+                const rightImageElement = document.getElementById('rightFloatingImage');
+                const newImageUrl = `url('${images.rightImage}')`;
+                const currentImageUrl = rightImageElement.style.backgroundImage;
+                
+                // 检查是否是同一张图片
+                if (newImageUrl !== currentImageUrl && 
+                    newImageUrl !== rightImageElement.style.backgroundImage) {
+                    
+                    // 如果不是同一张图片，添加淡入淡出效果
+                    rightImageElement.style.transition = 'opacity 0.5s ease';
+                    rightImageElement.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        rightImageElement.style.backgroundImage = newImageUrl;
+                        rightImageElement.style.opacity = '0.9';
+                        rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
+                    }, 300);
+                } else {
+                    // 如果是同一张图片，直接设置不透明度（确保可见）
+                    rightImageElement.style.opacity = '0.9';
+                }
+                
+                currentRightImageUrl = images.rightImage;
             }
         }
     }
@@ -932,6 +954,7 @@ function loadChapterImages() {
         console.error('加载章节图片失败:', e);
     }
 }
+
 function toggleRightImage() {
     const image = document.getElementById('rightFloatingImage');
     const button = document.getElementById('toggleImageBtn');
@@ -944,17 +967,32 @@ function toggleRightImage() {
         button.innerHTML = '▶';
         button.title = "展开图片";
         button.classList.add('collapsed');
+        // 收起时降低不透明度
+        image.style.opacity = '0';
     } else {
         // 展开图片
         image.classList.remove('collapsed');
         button.innerHTML = '◀';
         button.title = "收起图片";
         button.classList.remove('collapsed');
+        // 展开时恢复不透明度，并更新当前章节图片
+        setTimeout(() => {
+            image.style.opacity = '0.9';
+            // 确保显示当前章节的图片
+            const currentChapter = getCurrentChapter();
+            if (currentChapter && chapterImageMap[currentChapter.name]) {
+                const images = chapterImageMap[currentChapter.name];
+                if (images.rightImage) {
+                    image.style.backgroundImage = `url('${images.rightImage}')`;
+                }
+            }
+        }, 100);
     }
     
     // 保存状态到localStorage
     localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
 }
+
 // 页面加载时检查之前的状态
 function loadImageState() {
     const savedState = localStorage.getItem('rightImageCollapsed');
@@ -968,6 +1006,9 @@ function loadImageState() {
         button.innerHTML = '▶';
         button.title = "展开图片";
         button.classList.add('collapsed');
+        image.style.opacity = '0';
+    } else {
+        isImageCollapsed = false;
     }
 }
 
@@ -975,6 +1016,7 @@ function loadImageState() {
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(loadImageState, 100);
 });
+
 // 闲聊折叠功能
 function toggleChatCollapse() {
     const checkbox = document.getElementById('collapseChatCheckbox');
@@ -1039,15 +1081,16 @@ function toggleChatCollapse() {
                 
                 // 渲染当前页
                 renderCurrentPage();
-                        initChapterImages();
+                
+                initChapterImages();
         
-        // 添加背景过渡效果
-        addBackgroundTransitions();
+                // 添加背景过渡效果
+                addBackgroundTransitions();
         
-        // 加载完成后更新图片
-        setTimeout(() => {
-            updateChapterImages();
-        }, 500);
+                // 加载完成后更新图片
+                setTimeout(() => {
+                    updateChapterImages();
+                }, 500);
             } catch (error) {
                 console.error('加载日志数据失败:', error);
                 document.getElementById('loadingState').innerHTML = `
@@ -1174,7 +1217,7 @@ function applyFilters() {
     currentPage = 1;
     renderCurrentPage();
     closeFilterPanel();
-        setTimeout(() => {
+    setTimeout(() => {
         updateChapterImages();
     }, 100);
 }      
@@ -1205,7 +1248,7 @@ function clearFilters() {
     currentPage = 1;
     renderCurrentPage();
     closeFilterPanel();
-        setTimeout(() => {
+    setTimeout(() => {
         updateChapterImages();
     }, 100);
 }
@@ -1238,9 +1281,6 @@ function renderCurrentPage() {
         }
         
         messagesProcessed++;
-            setTimeout(() => {
-        updateChapterImages();
-    }, 100);
     }
     
     // 收集当前页的消息
@@ -1268,6 +1308,11 @@ function renderCurrentPage() {
     
     // 滚动到顶部
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // 更新章节图片
+    setTimeout(() => {
+        updateChapterImages();
+    }, 100);
 }
 // 添加双击事件处理函数
 function addMessageDoubleClickHandlers() {
@@ -1988,9 +2033,6 @@ function getExtendStyle(resultType) {
                 currentPage--;
                 renderCurrentPage();
             }
-                setTimeout(() => {
-        updateChapterImages();
-    }, 100);
         }
         
         function nextPage() {
@@ -1999,9 +2041,6 @@ function getExtendStyle(resultType) {
                 currentPage++;
                 renderCurrentPage();
             }
-                setTimeout(() => {
-        updateChapterImages();
-    }, 100);
         }
         
         function jumpToPage() {
@@ -2015,9 +2054,6 @@ function getExtendStyle(resultType) {
             currentPage = page;
             input.value = page;
             renderCurrentPage();
-                setTimeout(() => {
-        updateChapterImages();
-    }, 100);
         }
 function calculatePageForMessage(messageIndex) {
     let page = 1;
@@ -2060,9 +2096,6 @@ function jumpToChapter(chapterIndex) {
             closeChapterSidebar();
         }
     }
-        setTimeout(() => {
-        updateChapterImages();
-    }, 100);
 }
 
         // ========== UI控制函数 ==========
