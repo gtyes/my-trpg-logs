@@ -1060,52 +1060,52 @@ function clearFilters() {
 // 渲染当前页
         // 替换原来的renderCurrentPage函数
 function renderCurrentPage() {
-    // 计算开始和结束索引
-    const startIndex = (currentPage - 1) * pageSize;
-    let endIndex = startIndex + pageSize;
+    // 计算当前页应该从哪条消息开始
+    let messagesProcessed = 0;
+    let currentStartIndex = 0;
     
-    // 确保章节开始在新的一页
-    const pageLogs = [];
-    let count = 0;
-    let currentIndex = startIndex;
-    
-    // 先向前查找，看看起始位置之前有没有章节消息
-    for (let i = startIndex - 1; i >= 0; i--) {
+    // 找到当前页的起始位置
+    for (let i = 0; i < filteredLogs.length; i++) {
         const msg = filteredLogs[i];
-        if (msg.isChapter) {
-            // 如果前一条是章节，且当前页第一条不是章节，则将章节也加入本页
-            if (currentIndex < filteredLogs.length && !filteredLogs[currentIndex].isChapter) {
-                pageLogs.push(msg);
-                count++;
-                // 调整当前索引，跳过已经加入的章节
-                // 不调整，因为章节在前一页
+        
+        // 如果已经收集了足够多的消息，或者遇到章节需要新开一页
+        if ((messagesProcessed >= pageSize) || 
+            (msg.isChapter && messagesProcessed > 0)) {
+            // 我们已经找到了一页，看看这是不是我们要的那一页
+            const pageNumber = calculatePageForMessage(currentStartIndex);
+            
+            if (pageNumber === currentPage) {
+                // 这就是我们要渲染的页
+                break;
             }
-            break;
+            
+            // 这不是我们要的页，重置计数器，继续查找
+            currentStartIndex = i;
+            messagesProcessed = 0;
         }
+        
+        messagesProcessed++;
     }
     
-    // 收集当前页消息
-    while (count < pageSize && currentIndex < filteredLogs.length) {
-        const msg = filteredLogs[currentIndex];
-        pageLogs.push(msg);
-        count++;
-        currentIndex++;
+    // 收集当前页的消息
+    const pageMessages = [];
+    let pageCount = 0;
+    
+    for (let i = currentStartIndex; i < filteredLogs.length && pageCount < pageSize; i++) {
+        const msg = filteredLogs[i];
         
-        // 如果是章节标记，且不是本页第一条，则结束当前页
-        // 修改这里：章节应该在新的一页开始
-        if (msg.isChapter && count > 1) {
-            // 如果章节不是本页第一条，我们撤销这次添加
-            pageLogs.pop(); // 移除这个章节
-            count--; // 减少计数
-            currentIndex--; // 回退索引
-            break; // 结束当前页，章节将在下一页显示
+        // 如果是章节消息，且不是本页第一条，则停止收集
+        if (msg.isChapter && pageCount > 0) {
+            break;
         }
+        
+        pageMessages.push(msg);
+        pageCount++;
     }
     
     // 渲染消息
     const container = document.getElementById('logMessages');
-    container.innerHTML = renderLogMessages(pageLogs);
-    addMessageDoubleClickHandlers();
+    container.innerHTML = renderLogMessages(pageMessages);
     
     // 更新分页信息
     updatePaginationInfo();
@@ -1854,9 +1854,31 @@ function updatePaginationInfo() {
             input.value = page;
             renderCurrentPage();
         }
+function calculatePageForMessage(messageIndex) {
+    let page = 1;
+    let messagesProcessed = 0;
+    
+    for (let i = 0; i <= messageIndex; i++) {
+        const msg = filteredLogs[i];
+        messagesProcessed++;
         
+        // 如果这是章节消息，且不是本页第一条，则需要新开一页
+        if (msg.isChapter && messagesProcessed > 1) {
+            page++;
+            messagesProcessed = 1; // 章节消息算在新的一页
+        }
+        
+        // 如果当前页已满，新开一页
+        if (messagesProcessed > pageSize) {
+            page++;
+            messagesProcessed = 1; // 当前消息算在新的一页
+        }
+    }
+    
+    return page;
+}
         // 章节跳转
-        function jumpToChapter(chapterIndex) {
+function jumpToChapter(chapterIndex) {
     if (chapters[chapterIndex]) {
         const chapter = chapters[chapterIndex];
         
@@ -1866,24 +1888,9 @@ function updatePaginationInfo() {
         );
         
         if (chapterMsgIndex !== -1) {
-            // 计算章节消息所在的页数
-            let page = 1;
-            let messagesProcessed = 0;
-            
-            for (let i = 0; i <= chapterMsgIndex; i++) {
-                const msg = filteredLogs[i];
-                
-                // 如果当前页已满，或遇到章节需要新开一页
-                if (messagesProcessed >= pageSize || 
-                    (msg.isChapter && messagesProcessed > 0 && i > 0)) {
-                    page++;
-                    messagesProcessed = 0;
-                }
-                
-                messagesProcessed++;
-            }
-            
-            currentPage = page;
+            // 计算章节所在的页
+            const targetPage = calculatePageForMessage(chapterMsgIndex);
+            currentPage = targetPage;
             renderCurrentPage();
             closeChapterSidebar();
         }
