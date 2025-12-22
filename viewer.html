@@ -1060,52 +1060,45 @@ function clearFilters() {
 // 渲染当前页
         // 替换原来的renderCurrentPage函数
 function renderCurrentPage() {
-    // 计算开始和结束索引
+    // 计算当前页应该显示哪些消息
     const startIndex = (currentPage - 1) * pageSize;
     let endIndex = startIndex + pageSize;
     
-    // 确保章节开始在新的一页
-    const pageLogs = [];
-    let count = 0;
-    let currentIndex = startIndex;
+    // 查找当前页的实际起始位置（考虑章节）
+    let actualStartIndex = startIndex;
+    let pageMessages = [];
     
-    // 先向前查找，看看起始位置之前有没有章节消息
-    for (let i = startIndex - 1; i >= 0; i--) {
-        const msg = filteredLogs[i];
-        if (msg.isChapter) {
-            // 如果前一条是章节，且当前页第一条不是章节，则将章节也加入本页
-            if (currentIndex < filteredLogs.length && !filteredLogs[currentIndex].isChapter) {
-                pageLogs.push(msg);
-                count++;
-                // 调整当前索引，跳过已经加入的章节
-                // 不调整，因为章节在前一页
+    // 向前查找，看看起始位置之前有没有章节
+    for (let i = actualStartIndex - 1; i >= 0; i--) {
+        if (filteredLogs[i].isChapter) {
+            // 如果找到了章节，且这个章节不是上一页的第一条
+            // 那么我们需要检查这个章节是否应该在本页显示
+            if (i > 0 && !filteredLogs[i-1].isChapter) {
+                // 章节前面有普通消息，这个章节可能是上一页的最后一条
+                // 这里我们不做调整，因为章节应该在它自己的页开始
             }
             break;
         }
     }
     
-    // 收集当前页消息
-    while (count < pageSize && currentIndex < filteredLogs.length) {
-        const msg = filteredLogs[currentIndex];
-        pageLogs.push(msg);
-        count++;
-        currentIndex++;
+    // 收集当前页的消息
+    let messageCount = 0;
+    for (let i = actualStartIndex; i < filteredLogs.length && messageCount < pageSize; i++) {
+        const msg = filteredLogs[i];
         
         // 如果是章节标记，且不是本页第一条，则结束当前页
-        // 修改这里：章节应该在新的一页开始
-        if (msg.isChapter && count > 1) {
-            // 如果章节不是本页第一条，我们撤销这次添加
-            pageLogs.pop(); // 移除这个章节
-            count--; // 减少计数
-            currentIndex--; // 回退索引
-            break; // 结束当前页，章节将在下一页显示
+        if (msg.isChapter && messageCount > 0 && i > actualStartIndex) {
+            // 这个章节应该在下ー页开始
+            break;
         }
+        
+        pageMessages.push(msg);
+        messageCount++;
     }
     
     // 渲染消息
     const container = document.getElementById('logMessages');
-    container.innerHTML = renderLogMessages(pageLogs);
-    addMessageDoubleClickHandlers();
+    container.innerHTML = renderLogMessages(pageMessages);
     
     // 更新分页信息
     updatePaginationInfo();
@@ -1793,7 +1786,7 @@ function getExtendStyle(resultType) {
 
         // ========== 分页功能 ==========
 function updatePaginationInfo() {
-    // 计算总页数（考虑章节分页）
+    // 计算总页数
     let totalPages = 0;
     let remainingMessages = filteredLogs.length;
     let pageStart = 0;
@@ -1805,12 +1798,13 @@ function updatePaginationInfo() {
         // 计算这一页能放多少消息
         for (let i = pageStart; i < filteredLogs.length && pageCount < pageSize; i++) {
             const msg = filteredLogs[i];
-            pageCount++;
             
-            // 关键修改：如果是章节标记，且不是本页第一条，则结束当前页
-            if (msg.isChapter && pageCount > 1) {
-                break; // 章节在新的一页开始
+            // 如果是章节标记，且不是本页第一条，则结束当前页
+            if (msg.isChapter && pageCount > 0) {
+                break;
             }
+            
+            pageCount++;
         }
         
         remainingMessages -= pageCount;
@@ -1857,38 +1851,44 @@ function updatePaginationInfo() {
         
         // 章节跳转
         function jumpToChapter(chapterIndex) {
-    if (chapters[chapterIndex]) {
-        const chapter = chapters[chapterIndex];
-        
-        // 查找章节消息在日志中的位置
-        const chapterMsgIndex = filteredLogs.findIndex(msg => 
-            msg.isChapter && msg.text.includes(chapter.name)
-        );
-        
-        if (chapterMsgIndex !== -1) {
-            // 计算章节消息所在的页数
-            let page = 1;
-            let messagesProcessed = 0;
-            
-            for (let i = 0; i <= chapterMsgIndex; i++) {
-                const msg = filteredLogs[i];
+            if (chapters[chapterIndex]) {
+                const chapter = chapters[chapterIndex];
                 
-                // 如果当前页已满，或遇到章节需要新开一页
-                if (messagesProcessed >= pageSize || 
-                    (msg.isChapter && messagesProcessed > 0 && i > 0)) {
-                    page++;
-                    messagesProcessed = 0;
+                // 查找章节消息在日志中的位置
+                const chapterMsgIndex = filteredLogs.findIndex(msg => 
+                    msg.isChapter && msg.text.includes(chapter.name)
+                );
+                
+                if (chapterMsgIndex !== -1) {
+                    // 计算章节消息所在的页数
+                    let page = 1;
+                    let messagesProcessed = 0;
+                    
+                    for (let i = 0; i < filteredLogs.length; i++) {
+                        const msg = filteredLogs[i];
+                        
+                        // 每处理一条消息增加计数
+                        messagesProcessed++;
+                        
+                        // 如果当前页已满，或者遇到章节需要新开一页
+                        if (messagesProcessed > pageSize || 
+                            (msg.isChapter && messagesProcessed > 1 && i > 0)) {
+                            page++;
+                            // 重置计数，但如果是章节消息，这条章节消息要算在新的一页
+                            messagesProcessed = 1;
+                        }
+                        
+                        // 找到目标章节
+                        if (i === chapterMsgIndex) {
+                            currentPage = page;
+                            renderCurrentPage();
+                            closeChapterSidebar();
+                            break;
+                        }
+                    }
                 }
-                
-                messagesProcessed++;
             }
-            
-            currentPage = page;
-            renderCurrentPage();
-            closeChapterSidebar();
         }
-    }
-}
         // ========== UI控制函数 ==========
         function toggleChapterSidebar() {
             document.getElementById('chapterSidebar').classList.toggle('show');
