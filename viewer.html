@@ -899,114 +899,29 @@
         return sortedChapters[0] || null;
     }
 
-        function updateChapterImages() {
-            function ensureImageUrl(url, defaultUrl) {
-                if (!url || url === 'undefined' || url === 'null') {
-                    return defaultUrl;
-                }
-                return url;
-            }
-            const currentChapter = getCurrentChapter();
-            
-            console.log('当前章节:', currentChapter?.name);
-            console.log('章节图片映射:', chapterImageMap);
-            
-            // 获取当前背景和右侧图片URL
-            const bodyStyle = window.getComputedStyle(document.body);
-            const currentBackground = bodyStyle.backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/, '$1');
-            const rightImageElement = document.getElementById('rightFloatingImage');
-            const currentRightImage = rightImageElement.style.backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/, '$1');
-            
-            if (currentChapter && chapterImageMap[currentChapter.name]) {
-                const images = chapterImageMap[currentChapter.name];
-                
-                console.log('获取到的图片:', images);
-                console.log('当前背景:', currentBackground);
-                console.log('新背景:', images.background);
-                console.log('当前右侧图片:', currentRightImage);
-                console.log('新右侧图片:', images.rightImage);
-                
-                // 背景切换动画
-                if (images.background && images.background !== currentBackground) {
-                    // 使用遮罩实现淡出-切换-淡入效果
-                    const overlay = document.getElementById('backgroundOverlay');
-                    
-                    // 第一步：淡出当前背景
-                    overlay.style.transition = 'opacity 0.4s ease';
-                    overlay.style.opacity = '0.7'; // 半透明黑色
-                    
-                    // 第二步：切换背景图（在淡出期间）
-                    setTimeout(() => {
-                        document.body.style.backgroundImage = `url('${images.background}')`;
-                        document.body.style.backgroundSize = 'cover';
-                        document.body.style.backgroundAttachment = 'fixed';
-                        document.body.style.backgroundPosition = 'center';
-                        
-                        // 第三步：淡入新背景
-                        setTimeout(() => {
-                            overlay.style.opacity = '0';
-                            console.log('背景切换完成');
-                        }, 100);
-                    }, 400); // 等待淡出完成
-                }
-                
-                // 右侧图片切换动画（只有在图片展开状态下才更新）
-                if (!isImageCollapsed && images.rightImage && images.rightImage !== currentRightImage) {
-                    // 第一步：淡出当前图片
-                    rightImageElement.style.transition = 'opacity 0.4s ease';
-                    rightImageElement.style.opacity = '0';
-                    
-                    // 第二步：切换图片（在淡出期间）
-                    setTimeout(() => {
-                        rightImageElement.style.backgroundImage = `url('${images.rightImage}')`;
-                        rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
-                        
-                        // 第三步：淡入新图片
-                        setTimeout(() => {
-                            rightImageElement.style.opacity = '0.9';
-                            console.log('右侧图片切换完成');
-                        }, 100);
-                    }, 400); // 等待淡出完成
-                    
-                    currentRightImageUrl = images.rightImage;
-                } else if (!isImageCollapsed && images.rightImage === currentRightImage) {
-                    // 如果是同一张图片，确保不透明度正确
-                    rightImageElement.style.opacity = '0.9';
-                }
-            } else {
-                console.log('未找到当前章节或章节图片映射');
-                
-                // 如果没有章节图片，使用默认图片
-                const defaultImage = logData.websiteSettings?.rightFloatingImage || logData.rightFloatingImage || "images/scene8.png";
-                const defaultBackground = "images/scene8.png";
-                
-                // 检查是否需要更新背景
-                if (defaultBackground !== currentBackground) {
-                    const overlay = document.getElementById('backgroundOverlay');
-                    overlay.style.transition = 'opacity 0.4s ease';
-                    overlay.style.opacity = '0.7';
-                    
-                    setTimeout(() => {
-                        document.body.style.backgroundImage = `url('${defaultBackground}')`;
-                        setTimeout(() => {
-                            overlay.style.opacity = '0';
-                        }, 100);
-                    }, 400);
-                }
-                
-                // 检查是否需要更新右侧图片
-                if (!isImageCollapsed && defaultImage !== currentRightImage) {
-                    rightImageElement.style.opacity = '0';
-                    setTimeout(() => {
-                        rightImageElement.style.backgroundImage = `url('${defaultImage}')`;
-                        setTimeout(() => {
-                            rightImageElement.style.opacity = '0.9';
-                        }, 100);
-                    }, 400);
-                }
-            }
+function updateChapterImages() {
+    const currentChapter = getCurrentChapter();
+    
+    if (currentChapter && chapterImageMap[currentChapter.name]) {
+        const images = chapterImageMap[currentChapter.name];
+        
+        // 更新网页背景
+        if (images.background) {
+            document.body.style.backgroundImage = `url('${images.background}')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundAttachment = 'fixed';
+            document.body.style.backgroundPosition = 'center';
         }
-
+        
+        // 更新右侧图片（只有在图片展开状态下才更新）
+        if (!isImageCollapsed && images.rightImage) {
+            const rightImageElement = document.getElementById('rightFloatingImage');
+            rightImageElement.style.backgroundImage = `url('${images.rightImage}')`;
+            rightImageElement.style.opacity = '0.9';
+            currentRightImageUrl = images.rightImage;
+        }
+    }
+}
         // 添加背景图片切换的CSS过渡效果
         function addBackgroundTransitions() {
             // 在CSS中添加过渡效果
@@ -1352,226 +1267,159 @@ function renderFilterOptions() {
         }
         
         // 应用筛选
-function applyFilters() {
-    const searchText = document.getElementById('searchInput').value.toLowerCase();
-    currentFilters.searchText = searchText;
-    
-    // 重置频道筛选数组
-    currentFilters.channels = [];
-    
-    // 收集选中的频道
-    document.querySelectorAll('#channelFilters input[type="checkbox"]:checked').forEach(checkbox => {
-        currentFilters.channels.push(checkbox.value);
-    });
-    
-    let filtered = logData.logs || [];
-    
-    // 按频道筛选
-    if (currentFilters.channels.length > 0) {
-        filtered = filtered.filter(msg => 
-            currentFilters.channels.includes(msg.channel)
-        );
-    }
-    
-    // 按搜索文本筛选
-    if (searchText) {
-        filtered = filtered.filter(msg => 
-            (msg.text && msg.text.toLowerCase().includes(searchText)) ||
-            (msg.name && msg.name.toLowerCase().includes(searchText)) ||
-            (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
-            (msg.dice && msg.dice && msg.dice.toLowerCase().includes(searchText))
-        );
-    }
-    
-    filteredLogs = filtered;
-    currentPage = 1;
-    renderCurrentPage();
-    closeFilterPanel();
-    setTimeout(() => {
-        updateChapterImages();
-    }, 100);
-}      
+        function applyFilters() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            currentFilters.searchText = searchText;
+            
+            // 重置频道筛选数组
+            currentFilters.channels = [];
+            
+            // 收集选中的频道
+            document.querySelectorAll('#channelFilters input[type="checkbox"]:checked').forEach(checkbox => {
+                currentFilters.channels.push(checkbox.value);
+            });
+            
+            let filtered = logData.logs || [];
+            
+            // 按频道筛选
+            if (currentFilters.channels.length > 0) {
+                filtered = filtered.filter(msg => 
+                    currentFilters.channels.includes(msg.channel)
+                );
+            }
+            
+            // 按搜索文本筛选
+            if (searchText) {
+                filtered = filtered.filter(msg => 
+                    (msg.text && msg.text.toLowerCase().includes(searchText)) ||
+                    (msg.name && msg.name.toLowerCase().includes(searchText)) ||
+                    (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
+                    (msg.dice && msg.dice && msg.dice.toLowerCase().includes(searchText))
+                );
+            }
+            
+            filteredLogs = filtered;
+            currentPage = 1;
+            renderCurrentPage();
+            closeFilterPanel();
+            setTimeout(() => {
+                updateChapterImages();
+            }, 100);
+        }      
         // 清除筛选
-function clearFilters() {
-    currentFilters = {
-        channels: [],
-        searchText: ''
-    };
-    
-    // 清空搜索框
-    document.getElementById('searchInput').value = '';
-    
-    // 取消所有频道筛选复选框
-    document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    
-    // 取消闲聊折叠复选框
-    const collapseCheckbox = document.getElementById('collapseChatCheckbox');
-    if (collapseCheckbox) {
-        collapseCheckbox.checked = false;
-    }
-    collapseChatChannels = false;
-    
-    // 恢复为原始日志数据
-    filteredLogs = logData.logs || [];
-    currentPage = 1;
-    renderCurrentPage();
-    closeFilterPanel();
-    setTimeout(() => {
-        updateChapterImages();
-    }, 100);
-}
-      
-// 渲染当前页
-        // 替换原来的renderCurrentPage函数
-function renderCurrentPage() {
-    // 计算当前页应该从哪条消息开始
-    let messagesProcessed = 0;
-    let currentStartIndex = 0;
-    
-    // 找到当前页的起始位置
-    for (let i = 0; i < filteredLogs.length; i++) {
-        const msg = filteredLogs[i];
-        
-        // 如果已经收集了足够多的消息，或者遇到章节需要新开一页
-        if ((messagesProcessed >= pageSize) || 
-            (msg.isChapter && messagesProcessed > 0)) {
-            // 我们已经找到了一页，看看这是不是我们要的那一页
-            const pageNumber = calculatePageForMessage(currentStartIndex);
+        function clearFilters() {
+            currentFilters = {
+                channels: [],
+                searchText: ''
+            };
             
-            if (pageNumber === currentPage) {
-                // 这就是我们要渲染的页
-                break;
-            }
+            // 清空搜索框
+            document.getElementById('searchInput').value = '';
             
-            // 这不是我们要的页，重置计数器，继续查找
-            currentStartIndex = i;
-            messagesProcessed = 0;
-        }
-        
-        messagesProcessed++;
-    }
-    
-    // 收集当前页的消息
-    const pageMessages = [];
-    let pageCount = 0;
-    
-    for (let i = currentStartIndex; i < filteredLogs.length && pageCount < pageSize; i++) {
-        const msg = filteredLogs[i];
-        
-        // 如果是章节消息，且不是本页第一条，则停止收集
-        if (msg.isChapter && pageCount > 0) {
-            break;
-        }
-        
-        pageMessages.push(msg);
-        pageCount++;
-    }
-    
-    // 渲染消息
-    const container = document.getElementById('logMessages');
-    container.innerHTML = renderLogMessages(pageMessages);
-    
-    // 更新分页信息
-    updatePaginationInfo();
-    
-    // 滚动到顶部
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // 更新章节图片
-    setTimeout(() => {
-        updateChapterImages();
-    }, 100);
-}
-// 添加双击事件处理函数
-function addMessageDoubleClickHandlers() {
-    const messageRows = document.querySelectorAll('.message-row');
-    messageRows.forEach(row => {
-        row.addEventListener('dblclick', function() {
-            const messageId = this.getAttribute('data-id');
-            if (messageId) {
-                jumpToMessage(messageId);
-            }
-        });
-    });
-}
-// 跳转到指定消息
-// 简化jumpToMessage函数，确保按filteredLogs的顺序计算
-// 修改jumpToMessage函数
-function jumpToMessage(messageId) {
-    console.log('尝试跳转到消息:', messageId);
-    
-    // 先清除所有筛选和搜索，回到原始日志
-    clearFilters(); // 这会重置filteredLogs为原始日志
-    
-    // 等待清空筛选完成，再查找消息
-    setTimeout(() => {
-        // 在原始日志中查找消息
-        const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
-        console.log('在原始日志中的消息索引位置:', messageIndex);
-        
-        if (messageIndex !== -1) {
-            // 计算消息所在的页数
-            let page = 1;
-            let messagesProcessed = 0;
+            // 取消所有频道筛选复选框
+            document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
             
-            for (let i = 0; i <= messageIndex; i++) {
-                const msg = filteredLogs[i];
-                
-                messagesProcessed++;
-                
-                // 如果是章节标记，且不是本页第一条，则新开一页
-                if (msg.isChapter && messagesProcessed > 1) {
-                    page++;
-                    messagesProcessed = 1;
-                }
-                
-                // 如果本页已满，翻页
-                if (messagesProcessed >= pageSize) {
-                    page++;
-                    messagesProcessed = 0;
-                }
-                
-                // 找到目标消息
-                if (i === messageIndex) {
-                    currentPage = page;
-                    console.log('消息在第', page, '页');
-                    renderCurrentPage();
-                    
-                    // 等待渲染完成后高亮显示
-                    setTimeout(() => {
-                        highlightMessage(messageId);
-                    }, 500); // 延长等待时间确保渲染完成
-                    break;
-                }
+            // 取消闲聊折叠复选框
+            const collapseCheckbox = document.getElementById('collapseChatCheckbox');
+            if (collapseCheckbox) {
+                collapseCheckbox.checked = false;
             }
-        } else {
-            console.error('未找到消息:', messageId);
-            alert('未找到该消息，可能消息已被删除或修改');
+            collapseChatChannels = false;
+            
+            // 恢复为原始日志数据
+            filteredLogs = logData.logs || [];
+            currentPage = 1;
+            renderCurrentPage();
+            closeFilterPanel();
+            setTimeout(() => {
+                updateChapterImages();
+            }, 100);
         }
-    }, 100);
-}
+            
+        // 渲染当前页
+                // 替换原来的renderCurrentPage函数
+        function renderCurrentPage() {
+            // 计算当前页应该从哪条消息开始
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, filteredLogs.length);
+            const pageMessages = filteredLogs.slice(startIndex, endIndex);
+            
+            // 渲染消息
+            const container = document.getElementById('logMessages');
+            container.innerHTML = renderLogMessages(pageMessages);
+            
+            // 更新分页信息
+            updatePaginationInfo();
+            
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 更新章节图片（延迟一点确保DOM更新完成）
+            setTimeout(() => {
+                updateChapterImages();
+            }, 100);
+        }
+        // 添加双击事件处理函数
+        function addMessageDoubleClickHandlers() {
+            const messageRows = document.querySelectorAll('.message-row');
+            messageRows.forEach(row => {
+                row.addEventListener('dblclick', function() {
+                    const messageId = this.getAttribute('data-id');
+                    if (messageId) {
+                        jumpToMessage(messageId);
+                    }
+                });
+            });
+        }
+        // 跳转到指定消息
+        // 简化jumpToMessage函数，确保按filteredLogs的顺序计算
+        // 修改jumpToMessage函数
+        function jumpToMessage(messageId) {
+            console.log('尝试跳转到消息:', messageId);
+            
+            // 在原始日志中查找消息
+            const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+            console.log('在原始日志中的消息索引位置:', messageIndex);
+            
+            if (messageIndex !== -1) {
+                // 计算消息所在的页数
+                const page = calculatePageForMessage(messageIndex);
+                console.log('消息在第', page, '页');
+                
+                currentPage = page;
+                renderCurrentPage();
+                
+                // 等待渲染完成后高亮显示
+                setTimeout(() => {
+                    highlightMessage(messageId);
+                }, 500);
+            } else {
+                console.error('未找到消息:', messageId);
+                alert('未找到该消息，可能消息已被删除或修改');
+            }
+        }
 
-// 添加高亮函数
-function highlightMessage(messageId) {
-    const targetRow = document.querySelector(`.message-row[data-id="${messageId}"]`);
-    if (targetRow) {
-        // 添加高亮样式
-        targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
-        targetRow.style.borderLeft = '3px solid #8b0000';
-        targetRow.style.transition = 'all 0.3s ease';
-        
-        // 滚动到该消息位置
-        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // 5秒后清除高亮
-        setTimeout(() => {
-            targetRow.style.backgroundColor = '';
-            targetRow.style.borderLeft = '';
-        }, 5000);
-    }
-}
+        // 添加高亮函数
+        function highlightMessage(messageId) {
+            const targetRow = document.querySelector(`.message-row[data-id="${messageId}"]`);
+            if (targetRow) {
+                // 添加高亮样式
+                targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
+                targetRow.style.borderLeft = '3px solid #8b0000';
+                targetRow.style.transition = 'all 0.3s ease';
+                
+                // 滚动到该消息位置
+                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // 5秒后清除高亮
+                setTimeout(() => {
+                    targetRow.style.backgroundColor = '';
+                    targetRow.style.borderLeft = '';
+                }, 5000);
+            }
+        }
         // 渲染日志消息
         function renderLogMessages(logs) {
             if (logs.length === 0) {
@@ -2164,29 +2012,7 @@ function getExtendStyle(resultType) {
 
         // ========== 分页功能 ==========
         function updatePaginationInfo() {
-            // 计算总页数（考虑章节分页）
-            let totalPages = 0;
-            let remainingMessages = filteredLogs.length;
-            let pageStart = 0;
-            
-            while (remainingMessages > 0) {
-                totalPages++;
-                let pageCount = 0;
-                
-                // 计算这一页能放多少消息
-                for (let i = pageStart; i < filteredLogs.length && pageCount < pageSize; i++) {
-                    const msg = filteredLogs[i];
-                    pageCount++;
-                    
-                    // 关键修改：如果是章节标记，且不是本页第一条，则结束当前页
-                    if (msg.isChapter && pageCount > 1) {
-                        break; // 章节在新的一页开始
-                    }
-                }
-                
-                remainingMessages -= pageCount;
-                pageStart += pageCount;
-            }
+            const totalPages = Math.ceil(filteredLogs.length / pageSize);
             
             document.getElementById('currentPage').textContent = currentPage;
             document.getElementById('totalPages').textContent = totalPages;
@@ -2225,48 +2051,28 @@ function getExtendStyle(resultType) {
             input.value = page;
             renderCurrentPage();
         }
-function calculatePageForMessage(messageIndex) {
-    let page = 1;
-    let messagesProcessed = 0;
-    
-    for (let i = 0; i <= messageIndex; i++) {
-        const msg = filteredLogs[i];
-        messagesProcessed++;
-        
-        // 如果这是章节消息，且不是本页第一条，则需要新开一页
-        if (msg.isChapter && messagesProcessed > 1) {
-            page++;
-            messagesProcessed = 1; // 章节消息算在新的一页
+        function calculatePageForMessage(messageIndex) {
+            return Math.floor(messageIndex / pageSize) + 1;
         }
-        
-        // 如果当前页已满，新开一页
-        if (messagesProcessed > pageSize) {
-            page++;
-            messagesProcessed = 1; // 当前消息算在新的一页
-        }
-    }
-    
-    return page;
-}
         // 章节跳转
-function jumpToChapter(chapterIndex) {
-    if (chapters[chapterIndex]) {
-        const chapter = chapters[chapterIndex];
-        
-        // 查找章节消息在日志中的位置
-        const chapterMsgIndex = filteredLogs.findIndex(msg => 
-            msg.isChapter && msg.text.includes(chapter.name)
-        );
-        
-        if (chapterMsgIndex !== -1) {
-            // 计算章节所在的页
-            const targetPage = calculatePageForMessage(chapterMsgIndex);
-            currentPage = targetPage;
-            renderCurrentPage();
-            closeChapterSidebar();
+        function jumpToChapter(chapterIndex) {
+            if (chapters[chapterIndex]) {
+                const chapter = chapters[chapterIndex];
+                
+                // 查找章节消息在日志中的位置
+                const chapterMsgIndex = filteredLogs.findIndex(msg => 
+                    msg.isChapter && msg.text.includes(chapter.name)
+                );
+                
+                if (chapterMsgIndex !== -1) {
+                    // 计算章节所在的页（使用原始的计算方法）
+                    const targetPage = calculatePageForMessage(chapterMsgIndex);
+                    currentPage = targetPage;
+                    renderCurrentPage();
+                    closeChapterSidebar();
+                }
+            }
         }
-    }
-}
 
         // ========== UI控制函数 ==========
         function toggleChapterSidebar() {
