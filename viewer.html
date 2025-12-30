@@ -114,31 +114,19 @@
     text-align: center;
     flex: 1;
     margin: 0 auto;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
     font-family: 'STZhongsong', '华文中宋', serif;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-
 .title-character {
-    color: white;
     transition: all 0.3s;
 }
 
-.title-character:first-child {
-    color: #8b0000;
-}
-
 /* 可选：添加悬停效果 */
-.log-title:hover .title-character:first-child {
-    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
-}
-
-.log-title:hover .title-character:not(:first-child) {
-    color: #f0f0f0;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+.log-title:hover .title-character {
+    transform: translateY(-2px);
 }
 
      /* 左侧控制按钮容器 */
@@ -1064,12 +1052,37 @@ function loadImageState() {
                 
                 // 设置标题
                 document.title = logData.title || '血色毡帽 - TRPG跑团日志';
-                // 改为从网站设置中获取标题
+
+                // 从网站设置中获取标题和颜色设置
                 const siteTitle = logData.websiteSettings?.title || '血色毡帽';
-                const titleHTML = `
-                    <span style="color: ${logData.websiteSettings?.theme?.lightColor || '#8b0000'};">${siteTitle[0] || '血'}</span>
-                    <span style="color: white;">${siteTitle.substring(1) || '色毡帽'}</span>
-                `;
+                const titleColors = logData.websiteSettings?.titleColors || [];
+
+                // 生成标题HTML
+                let titleHTML = '';
+                if (titleColors && titleColors.length > 0) {
+                    // 使用设置的颜色渲染每个字
+                    const chars = siteTitle.split('');
+                    titleHTML = chars.map((char, index) => {
+                        const colorSetting = titleColors[index] || titleColors[titleColors.length - 1] || {
+                            color: '#ffffff',
+                            shadowColor: '#000000',
+                            shadowSize: '1px 1px 2px'
+                        };
+                        
+                        const style = `color: ${colorSetting.color};`;
+                        const shadowStyle = colorSetting.shadowColor && colorSetting.shadowSize ? 
+                            `text-shadow: ${colorSetting.shadowSize} ${colorSetting.shadowColor};` : '';
+                        
+                        return `<span class="title-character" style="${style} ${shadowStyle}">${char}</span>`;
+                    }).join('');
+                } else {
+                    // 回退到旧的逻辑（第一个字红色，其余白色）
+                    const titleHTML = `
+                        <span class="title-character" style="color: #8b0000;">${siteTitle[0] || '血'}</span>
+                        <span class="title-character" style="color: white;">${siteTitle.substring(1) || '色毡帽'}</span>
+                    `;
+                }
+
                 document.getElementById('logTitle').innerHTML = titleHTML;
                 
                 // 设置右侧悬浮图片
