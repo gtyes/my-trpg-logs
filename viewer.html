@@ -120,13 +120,11 @@
     align-items: center;
 }
 
-.title-character {
-    transition: all 0.3s;
-}
-
-/* 可选：添加悬停效果 */
-.log-title:hover .title-character {
-    transform: translateY(-2px);
+/* 移除可能覆盖内联样式的规则 */
+.log-title .title-character {
+    /* 这里不要设置颜色或阴影，完全由内联样式控制 */
+    display: inline-block; /* 确保每个字都是独立的块 */
+    line-height: 1; /* 确保行高一致 */
 }
 
      /* 左侧控制按钮容器 */
@@ -1057,27 +1055,52 @@ function loadImageState() {
                 const siteTitle = logData.websiteSettings?.title || '血色毡帽';
                 const titleColors = logData.websiteSettings?.titleColors || [];
 
+                console.log('标题:', siteTitle);
+                console.log('标题颜色设置:', titleColors);
+
                 // 生成标题HTML
                 let titleHTML = '';
                 if (titleColors && titleColors.length > 0) {
                     // 使用设置的颜色渲染每个字
                     const chars = siteTitle.split('');
+                    console.log('标题字符:', chars);
+                    
                     titleHTML = chars.map((char, index) => {
-                        const colorSetting = titleColors[index] || titleColors[titleColors.length - 1] || {
-                            color: '#ffffff',
-                            shadowColor: '#000000',
-                            shadowSize: '1px 1px 2px'
-                        };
+                        // 获取对应的颜色设置
+                        let colorSetting;
+                        if (index < titleColors.length) {
+                            colorSetting = titleColors[index];
+                        } else {
+                            // 如果没有对应的设置，使用第一个设置或默认值
+                            colorSetting = titleColors[0] || {
+                                color: '#ffffff',
+                                shadowColor: '#000000',
+                                shadowSize: '1px 1px 2px'
+                            };
+                        }
                         
-                        const style = `color: ${colorSetting.color};`;
-                        const shadowStyle = colorSetting.shadowColor && colorSetting.shadowSize ? 
-                            `text-shadow: ${colorSetting.shadowSize} ${colorSetting.shadowColor};` : '';
+                        console.log(`字符 "${char}" 的样式设置:`, colorSetting);
                         
-                        return `<span class="title-character" style="${style} ${shadowStyle}">${char}</span>`;
+                        // 构建样式字符串
+                        const styles = [];
+                        styles.push(`color: ${colorSetting.color}`);
+                        
+                        // 如果有阴影设置
+                        if (colorSetting.shadowColor && colorSetting.shadowSize && colorSetting.shadowSize !== '') {
+                            styles.push(`text-shadow: ${colorSetting.shadowSize} ${colorSetting.shadowColor}`);
+                        }
+                        
+                        // 添加一些基础样式
+                        styles.push('transition: all 0.3s');
+                        
+                        return `<span class="title-character" style="${styles.join('; ')}">${char}</span>`;
                     }).join('');
+                    
+                    console.log('生成的标题HTML:', titleHTML);
                 } else {
                     // 回退到旧的逻辑（第一个字红色，其余白色）
-                    const titleHTML = `
+                    console.log('使用回退逻辑');
+                    titleHTML = `
                         <span class="title-character" style="color: #8b0000;">${siteTitle[0] || '血'}</span>
                         <span class="title-character" style="color: white;">${siteTitle.substring(1) || '色毡帽'}</span>
                     `;
@@ -1144,6 +1167,7 @@ function loadImageState() {
             const settings = logData.websiteSettings;
             
             console.log('应用网站设置:', settings);
+            console.log('标题颜色设置:', settings.titleColors);
             
             // 应用左侧章节导航背景
             const sidebar = document.querySelector('.floating-sidebar');
