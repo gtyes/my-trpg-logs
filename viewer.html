@@ -1377,10 +1377,17 @@ function renderFilterOptions() {
         // 简化jumpToMessage函数，确保按filteredLogs的顺序计算
         // 修改jumpToMessage函数
         function jumpToMessage(messageId) {
+            console.log('尝试跳转到消息:', messageId);
+            
+            // 在原始日志中查找消息
             const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+            console.log('在原始日志中的消息索引位置:', messageIndex);
             
             if (messageIndex !== -1) {
+                // 计算消息所在的页数
                 const page = calculatePageForMessage(messageIndex);
+                console.log('消息在第', page, '页');
+                
                 currentPage = page;
                 renderCurrentPage();
                 
@@ -1388,6 +1395,9 @@ function renderFilterOptions() {
                 setTimeout(() => {
                     highlightMessage(messageId);
                 }, 500);
+            } else {
+                console.error('未找到消息:', messageId);
+                alert('未找到该消息，可能消息已被删除或修改');
             }
         }
 
