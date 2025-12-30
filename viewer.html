@@ -1405,29 +1405,58 @@ function renderFilterOptions() {
         // 简化jumpToMessage函数，确保按filteredLogs的顺序计算
         // 修改jumpToMessage函数
         function jumpToMessage(messageId) {
-    console.log('尝试跳转到消息:', messageId);
-    
-    // 在原始日志中查找消息
-    const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
-    console.log('在原始日志中的消息索引位置:', messageIndex);
-    
-    if (messageIndex !== -1) {
-        // 计算消息所在的页数
-        const page = calculatePageForMessage(messageIndex);
-        console.log('消息在第', page, '页');
-        
-        currentPage = page;
-        renderCurrentPage();
-        
-        // 等待渲染完成后高亮显示
-        setTimeout(() => {
-            highlightMessage(messageId);
-        }, 500);
-    } else {
-        console.error('未找到消息:', messageId);
-        alert('未找到该消息，可能消息已被删除或修改');
-    }
-}
+            console.log('尝试跳转到消息:', messageId);
+            
+            // 先清除所有筛选和搜索，回到原始日志
+            clearFilters(); // 这会重置filteredLogs为原始日志
+            
+            // 等待清空筛选完成，再查找消息
+            setTimeout(() => {
+                // 在原始日志中查找消息
+                const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+                console.log('在原始日志中的消息索引位置:', messageIndex);
+                
+                if (messageIndex !== -1) {
+                    // 计算消息所在的页数
+                    let page = 1;
+                    let messagesProcessed = 0;
+                    
+                    for (let i = 0; i <= messageIndex; i++) {
+                        const msg = filteredLogs[i];
+                        
+                        messagesProcessed++;
+                        
+                        // 如果是章节标记，且不是本页第一条，则新开一页
+                        if (msg.isChapter && messagesProcessed > 1) {
+                            page++;
+                            messagesProcessed = 1;
+                        }
+                        
+                        // 如果本页已满，翻页
+                        if (messagesProcessed >= pageSize) {
+                            page++;
+                            messagesProcessed = 0;
+                        }
+                        
+                        // 找到目标消息
+                        if (i === messageIndex) {
+                            currentPage = page;
+                            console.log('消息在第', page, '页');
+                            renderCurrentPage();
+                            
+                            // 等待渲染完成后高亮显示
+                            setTimeout(() => {
+                                highlightMessage(messageId);
+                            }, 500); // 延长等待时间确保渲染完成
+                            break;
+                        }
+                    }
+                } else {
+                    console.error('未找到消息:', messageId);
+                    alert('未找到该消息，可能消息已被删除或修改');
+                }
+            }, 100);
+        }
 
         // 添加高亮函数
         function highlightMessage(messageId) {
@@ -2110,7 +2139,7 @@ function getExtendStyle(resultType) {
                 const msg = filteredLogs[i];
                 messagesProcessed++;
                 
-                // 如果是章节标记，且不是本页第一条，则新开一页
+                // 如果这是章节消息，且不是本页第一条，则需要新开一页
                 if (msg.isChapter && messagesProcessed > 1) {
                     page++;
                     messagesProcessed = 1; // 章节消息算在新的一页
@@ -2120,11 +2149,6 @@ function getExtendStyle(resultType) {
                 if (messagesProcessed > pageSize) {
                     page++;
                     messagesProcessed = 1; // 当前消息算在新的一页
-                }
-                
-                // 找到目标消息
-                if (i === messageIndex) {
-                    return page;
                 }
             }
             
