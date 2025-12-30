@@ -30,63 +30,63 @@
         }
         
         /* ========== 右侧悬浮图片 ========== */
-.floating-image-container {
-    position: fixed;
-    right: 0;
-    top: 120px;
-    z-index: 800;
-    display: flex;
-    align-items: flex-start;
-    transition: all 0.3s ease;
-}
-.floating-image-right {
-    width: 475px;
-    height: 475px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: right center;
-    opacity: 0.9;
-    pointer-events: none;
-    filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
-    transition: all 0.3s ease;
-    border-radius: 8px;
-}
-.floating-image-right.collapsed {
-    width: 0;
-    opacity: 0;
-    transform: translateX(100%);
-}
-/* 控制按钮样式 */
-.image-toggle-btn {
-    position: fixed;
-    right: 0;
-    top: 120px;
-    width: 30px;
-    height: 40px;
-    background: rgba(139, 0, 0, 0.9);
-    color: white;
-    border: none;
-    border-radius: 8px 0 0 8px;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: -2px 0 8px rgba(0,0,0,0.2);
-    z-index: 801;
-    margin: 0 !important; /* 确保没有外边距影响位置 */
-}
+        .floating-image-container {
+            position: fixed;
+            right: 0;
+            top: 120px;
+            z-index: 800;
+            display: flex;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+        .floating-image-right {
+            width: 475px;
+            height: 475px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: right center;
+            opacity: 0.9;
+            pointer-events: none;
+            filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        .floating-image-right.collapsed {
+            width: 0;
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        /* 控制按钮样式 */
+        .image-toggle-btn {
+            position: fixed;
+            right: 0;
+            top: 120px;
+            width: 30px;
+            height: 40px;
+            background: rgba(139, 0, 0, 0.9);
+            color: white;
+            border: none;
+            border-radius: 8px 0 0 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+            z-index: 801;
+            margin: 0 !important; /* 确保没有外边距影响位置 */
+        }
 
-.image-toggle-btn:hover {
-    background: rgba(178, 34, 34, 0.9);
-    transform: scale(1.05);
-}
-/* 图片收起时按钮位置调整 */
-.image-toggle-btn.collapsed {
-    right: 0; /* 仍然保持在屏幕最右侧 */
-    transform: none;
-}
+        .image-toggle-btn:hover {
+            background: rgba(178, 34, 34, 0.9);
+            transform: scale(1.05);
+        }
+        /* 图片收起时按钮位置调整 */
+        .image-toggle-btn.collapsed {
+            right: 0; /* 仍然保持在屏幕最右侧 */
+            transform: none;
+        }
         
         /* ========== 顶部标题栏 ========== */
         .top-header {
@@ -107,55 +107,55 @@
             z-index: 1000;
             backdrop-filter: blur(5px);
         }
-        
-.log-title {
-    font-size: 2.4rem;
-    font-weight: normal;
-    text-align: center;
-    flex: 1;
-    margin: 0 auto;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-    font-family: 'STZhongsong', '华文中宋', serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+                
+        .log-title {
+            font-size: 2.4rem;
+            font-weight: normal;
+            text-align: center;
+            flex: 1;
+            margin: 0 auto;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            font-family: 'STZhongsong', '华文中宋', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
 
-.title-character {
-    color: white;
-    transition: all 0.3s;
-}
+        .title-character {
+            color: white;
+            transition: all 0.3s;
+        }
 
-.title-character:first-child {
-    color: #8b0000;
-}
+        .title-character:first-child {
+            color: #8b0000;
+        }
 
-/* 可选：添加悬停效果 */
-.log-title:hover .title-character:first-child {
-    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
-}
+        /* 可选：添加悬停效果 */
+        .log-title:hover .title-character:first-child {
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+        }
 
-.log-title:hover .title-character:not(:first-child) {
-    color: #f0f0f0;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
+        .log-title:hover .title-character:not(:first-child) {
+            color: #f0f0f0;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
 
-     /* 左侧控制按钮容器 */
-.top-controls.left-controls {
-    position: absolute;
-    left: 20px;
-    display: flex;
-    align-items: center;
-}
+            /* 左侧控制按钮容器 */
+        .top-controls.left-controls {
+            position: absolute;
+            left: 20px;
+            display: flex;
+            align-items: center;
+        }
 
-/* 右侧控制按钮容器 */
-.top-controls.right-controls {
-    position: absolute;
-    right: 20px;
-    display: flex;
-    align-items: center;
-}   
+        /* 右侧控制按钮容器 */
+        .top-controls.right-controls {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }   
         .top-controls {
             display: flex;
             align-items: center;
@@ -178,21 +178,21 @@
         .search-box input::placeholder {
             color: rgba(255,255,255,0.7);
         }
-        
-.control-btn {
-    background: rgba(139, 0, 0, 0.9); /* 暗红色 */
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
-}
-        
-.control-btn:hover {
-    background: rgba(178, 34, 34, 0.9); /* 稍微亮一点的暗红色 */
-}
+                
+        .control-btn {
+            background: rgba(139, 0, 0, 0.9); /* 暗红色 */
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+                
+        .control-btn:hover {
+            background: rgba(178, 34, 34, 0.9); /* 稍微亮一点的暗红色 */
+        }
         
         /* ========== 悬浮章节导航 ========== */
         .floating-sidebar {
@@ -262,14 +262,14 @@
         }
         
         /* ========== 日志容器 ========== */
-.log-container {
-    margin-top: 20px;
-    background: rgba(0, 0, 0, 0.3);;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.8);
-    padding: 15px;
-    font-size: 16px; /* 增加基础字号 */
-}
+        .log-container {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            padding: 15px;
+            font-size: 16px; /* 增加基础字号 */
+        }
         
         /* ========== 频道组样式 ========== */
         .channel-group {
@@ -360,10 +360,10 @@
             background-position: center;
         }
         
-.character-name {
-    font-weight: bold;
-    font-size: 1.1em; /* 相对大小 */
-}
+        .character-name {
+            font-weight: bold;
+            font-size: 1.1em; /* 相对大小 */
+        }
         
         .to-name {
             color: #666;
@@ -381,11 +381,11 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         
-.message-text {
-    margin-bottom: 6px;
-    line-height: 1.5; /* 增加行高 */
-    font-size: 1em; /* 使用相对单位 */
-}
+        .message-text {
+            margin-bottom: 6px;
+            line-height: 1.5; /* 增加行高 */
+            font-size: 1em; /* 使用相对单位 */
+        }
         
         .message-image {
             margin-top: 6px; /* 减小间距 */
@@ -414,23 +414,23 @@
             border-radius: 4px;
         }
         /* 搜索标红 */
-.search-highlight {
-    background-color: #8b0000; /* 暗红色背景 */
-    color: #000000; /* 黑色字体 */
-    font-weight: bold;
-    padding: 1px 3px;
-    border-radius: 3px;
-    border: 1px solid #660000; /* 深红色边框 */
-}
-        
-        /* 骰子结果样式 */
-.dice-result {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px dashed rgba(0,0,0,0.1);
-    font-family: 'Consolas, Monaco, monospace';
-    font-size: 1em; /* 相对大小 */
-}
+        .search-highlight {
+            background-color: #8b0000; /* 暗红色背景 */
+            color: #000000; /* 黑色字体 */
+            font-weight: bold;
+            padding: 1px 3px;
+            border-radius: 3px;
+            border: 1px solid #660000; /* 深红色边框 */
+        }
+                
+                /* 骰子结果样式 */
+        .dice-result {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+            font-family: 'Consolas, Monaco, monospace';
+            font-size: 1em; /* 相对大小 */
+        }
         
         /* ========== 系统消息样式 ========== */
         .system-message {
@@ -456,24 +456,24 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             flex-wrap: wrap;
         }
-        
-.pagination-btn {
-    background: #8b0000; /* 暗红色 */
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-}
-        
-.pagination-btn:hover:not(:disabled) {
-    background: #a52a2a; /* 更亮的暗红色 */
-}
-        .pagination-btn:disabled {
-    background: #bdc3c7;
-    cursor: not-allowed;
-}
+                
+        .pagination-btn {
+            background: #8b0000; /* 暗红色 */
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+                
+        .pagination-btn:hover:not(:disabled) {
+            background: #a52a2a; /* 更亮的暗红色 */
+        }
+                .pagination-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
         
         .pagination-info {
             font-size: 13px;
@@ -497,68 +497,68 @@
         }
         
         /* ========== 筛选面板 ========== */
-.filter-panel {
-    position: fixed;
-    right: -350px;
-    top: 100px;
-    width: 280px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    padding: 15px;
-    z-index: 999;
-    transition: right 0.3s;
-    border: 1px solid rgba(139, 0, 0, 0.2);
-}
-/* 频道筛选部分添加滚动条 */
-#channelFilters {
-    max-height: 200px; /* 固定高度 */
-    overflow-y: auto; /* 垂直滚动 */
-    padding-right: 5px; /* 给滚动条留空间 */
-}
+        .filter-panel {
+            position: fixed;
+            right: -350px;
+            top: 100px;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 15px;
+            z-index: 999;
+            transition: right 0.3s;
+            border: 1px solid rgba(139, 0, 0, 0.2);
+        }
+        /* 频道筛选部分添加滚动条 */
+        #channelFilters {
+            max-height: 200px; /* 固定高度 */
+            overflow-y: auto; /* 垂直滚动 */
+            padding-right: 5px; /* 给滚动条留空间 */
+        }
 
-/* 自定义滚动条样式 */
-#channelFilters::-webkit-scrollbar {
-    width: 6px;
-}
+        /* 自定义滚动条样式 */
+        #channelFilters::-webkit-scrollbar {
+            width: 6px;
+        }
 
-#channelFilters::-webkit-scrollbar-track {
-    background: rgba(139, 0, 0, 0.1);
-    border-radius: 3px;
-}
+        #channelFilters::-webkit-scrollbar-track {
+            background: rgba(139, 0, 0, 0.1);
+            border-radius: 3px;
+        }
 
-#channelFilters::-webkit-scrollbar-thumb {
-    background: rgba(139, 0, 0, 0.3);
-    border-radius: 3px;
-}
+        #channelFilters::-webkit-scrollbar-thumb {
+            background: rgba(139, 0, 0, 0.3);
+            border-radius: 3px;
+        }
 
-#channelFilters::-webkit-scrollbar-thumb:hover {
-    background: rgba(139, 0, 0, 0.5);
-}
-/* 筛选选项样式 */
-#channelFilters label {
-    display: flex;
-    align-items: center;
-    padding: 8px 5px;
-    margin: 2px 0;
-    border-radius: 4px;
-    transition: background 0.2s;
-    cursor: pointer;
-}
+        #channelFilters::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 0, 0, 0.5);
+        }
+        /* 筛选选项样式 */
+        #channelFilters label {
+            display: flex;
+            align-items: center;
+            padding: 8px 5px;
+            margin: 2px 0;
+            border-radius: 4px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
 
-#channelFilters label:hover {
-    background: rgba(139, 0, 0, 0.05);
-}
+        #channelFilters label:hover {
+            background: rgba(139, 0, 0, 0.05);
+        }
 
-#channelFilters input[type="checkbox"] {
-    margin-right: 8px;
-    cursor: pointer;
-}
+        #channelFilters input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
 
-#channelFilters span {
-    font-size: 13px;
-    color: #333;
-}        
+        #channelFilters span {
+            font-size: 13px;
+            color: #333;
+        }        
         .filter-panel.show {
             right: 20px;
         }
@@ -586,39 +586,39 @@
         
         /* ========== 响应式设计 ========== */
         @media (max-width: 1100px) {
-    .floating-image-right {
-        width: 300px;
-        height: 300px;
-    }
-    
-    .image-toggle-btn {
-        top: 100px;
-    }
-}
-@media (max-width: 768px) {
-    .floating-image-right {
-        width: 200px;
-        height: 200px;
-    }
-    
-    .image-toggle-btn {
-        top: 80px;
-        width: 25px;
-        height: 35px;
-        font-size: 12px;
-    }
-}
-@media (max-width: 768px) {
-    .filter-panel {
-        width: 90%;
-        right: -95%;
-        top: 80px;
-    }
-    
-    #channelFilters {
-        max-height: 150px; /* 手机端稍矮一些 */
-    }
-}
+            .floating-image-right {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .image-toggle-btn {
+                top: 100px;
+            }
+        }
+        @media (max-width: 768px) {
+            .floating-image-right {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .image-toggle-btn {
+                top: 80px;
+                width: 25px;
+                height: 35px;
+                font-size: 12px;
+            }
+        }
+        @media (max-width: 768px) {
+            .filter-panel {
+                width: 90%;
+                right: -95%;
+                top: 80px;
+            }
+            
+            #channelFilters {
+                max-height: 150px; /* 手机端稍矮一些 */
+            }
+        }
 
         
         @media (max-width: 768px) {
@@ -634,19 +634,19 @@
                 margin: 10px 0;
                 order: 1;
             }
-    .top-controls.left-controls {
-        position: static;
-        order: 0; /* 左侧按钮在上方 */
-        justify-content: flex-start;
-        width: 100%;
-    }
-    
-    .top-controls.right-controls {
-        position: static;
-        order: 2; /* 右侧按钮在下方 */
-        justify-content: flex-end;
-        width: 100%;
-    }
+            .top-controls.left-controls {
+                position: static;
+                order: 0; /* 左侧按钮在上方 */
+                justify-content: flex-start;
+                width: 100%;
+            }
+            
+            .top-controls.right-controls {
+                position: static;
+                order: 2; /* 右侧按钮在下方 */
+                justify-content: flex-end;
+                width: 100%;
+            }
             
             .search-box input {
                 width: 100%;
@@ -678,10 +678,40 @@
                 padding: 12px;
             }
         }
+        /* ========== 背景切换动画 ========== */
+        #backgroundOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000; /* 黑色遮罩 */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            z-index: -1; /* 在背景之下，内容之上 */
+        }
+
+        #rightFloatingImage {
+            transition: opacity 0.8s ease, transform 0.3s ease !important;
+        }
+
+        /* 背景图淡入淡出动画 */
+        @keyframes backgroundFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes backgroundFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
 </head>
 <body>
     <!-- 右侧悬浮图片 -->
+     <!-- 背景遮罩，用于淡入淡出动画 -->
+<div id="backgroundOverlay"></div>
 <!-- 修改右侧悬浮图片部分 -->
 <div class="floating-image-container" id="rightImageContainer">
     <div class="floating-image-right" id="rightFloatingImage"></div>
@@ -817,8 +847,8 @@
         chapters.forEach(chapter => {
             if (!chapterImageMap[chapter.name]) {
                 chapterImageMap[chapter.name] = {
-                    rightImage: defaultImage,
-                    background: defaultBackground
+                    rightImage: ensureImageUrl(chapter.rightImage, defaultImage),
+                    background: ensureImageUrl(chapter.backgroundImage, defaultBackground)
                 };
             } else {
                 // 如果章节设置了图片但为空，使用默认
@@ -869,165 +899,223 @@
         return sortedChapters[0] || null;
     }
 
-    function updateChapterImages() {
-        const currentChapter = getCurrentChapter();
-        
-        console.log('当前章节:', currentChapter?.name);
-        console.log('章节图片映射:', chapterImageMap);
-        
-        if (currentChapter && chapterImageMap[currentChapter.name]) {
-            const images = chapterImageMap[currentChapter.name];
-            
-            console.log('获取到的图片:', images);
-            
-            // 更新网页背景
-            if (images.background) {
-                // 检查是否是同一张背景图片
-                const bodyStyle = window.getComputedStyle(document.body);
-                const currentBg = bodyStyle.backgroundImage;
-                const newBg = `url('${images.background}')`;
-                
-                console.log('当前背景:', currentBg);
-                console.log('新背景:', newBg);
-                
-                // 如果不是同一张图片，才应用过渡效果
-                if (currentBg !== newBg && currentBg !== `url("${images.background}")`) {
-                    // 添加过渡效果
-                    document.body.style.transition = 'background-image 0.8s ease';
-                    document.body.style.backgroundImage = `url('${images.background}')`;
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundAttachment = 'fixed';
-                    document.body.style.backgroundPosition = 'center';
-                    console.log('应用了新背景图片');
+        function updateChapterImages() {
+            function ensureImageUrl(url, defaultUrl) {
+                if (!url || url === 'undefined' || url === 'null') {
+                    return defaultUrl;
                 }
+                return url;
             }
-            
-            // 更新右侧图片（只有在图片展开状态下才更新）
-            if (!isImageCollapsed && images.rightImage) {
-                const rightImageElement = document.getElementById('rightFloatingImage');
-                const newImageUrl = `url('${images.rightImage}')`;
-                const currentImageUrl = rightImageElement.style.backgroundImage;
-                
-                console.log('当前右侧图片:', currentImageUrl);
-                console.log('新右侧图片:', newImageUrl);
-                
-                // 检查是否是同一张图片
-                if (newImageUrl !== currentImageUrl && 
-                    newImageUrl !== rightImageElement.style.backgroundImage) {
-                    
-                    // 如果不是同一张图片，添加淡入淡出效果
-                    rightImageElement.style.transition = 'opacity 0.5s ease';
-                    rightImageElement.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        rightImageElement.style.backgroundImage = newImageUrl;
-                        rightImageElement.style.opacity = '0.9';
-                        rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
-                        console.log('应用了新右侧图片');
-                    }, 300);
-                } else {
-                    // 如果是同一张图片，直接设置不透明度（确保可见）
-                    rightImageElement.style.opacity = '0.9';
-                }
-                
-                currentRightImageUrl = images.rightImage;
-            }
-        } else {
-            console.log('未找到当前章节或章节图片映射');
-        }
-    }
-
-// 添加背景图片切换的CSS过渡效果
-function addBackgroundTransitions() {
-    // 在CSS中添加过渡效果
-    const style = document.createElement('style');
-    style.textContent = `
-        body {
-            transition: background-image 0.8s ease !important;
-        }
-        .floating-image-right {
-            transition: background-image 0.5s ease, opacity 0.5s ease !important;
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-function saveChapterImages() {
-    try {
-        localStorage.setItem('chapterImages', JSON.stringify(chapterImages));
-    } catch (e) {
-        console.error('保存章节图片失败:', e);
-    }
-}
-
-// 加载章节图片配置
-function loadChapterImages() {
-    try {
-        const saved = localStorage.getItem('chapterImages');
-        if (saved) {
-            chapterImages = JSON.parse(saved);
-        }
-    } catch (e) {
-        console.error('加载章节图片失败:', e);
-    }
-}
-
-function toggleRightImage() {
-    const image = document.getElementById('rightFloatingImage');
-    const button = document.getElementById('toggleImageBtn');
-    
-    isImageCollapsed = !isImageCollapsed;
-    
-    if (isImageCollapsed) {
-        // 收起图片
-        image.classList.add('collapsed');
-        button.innerHTML = '▶';
-        button.title = "展开图片";
-        button.classList.add('collapsed');
-        // 收起时降低不透明度
-        image.style.opacity = '0';
-    } else {
-        // 展开图片
-        image.classList.remove('collapsed');
-        button.innerHTML = '◀';
-        button.title = "收起图片";
-        button.classList.remove('collapsed');
-        // 展开时恢复不透明度，并更新当前章节图片
-        setTimeout(() => {
-            image.style.opacity = '0.9';
-            // 确保显示当前章节的图片
             const currentChapter = getCurrentChapter();
+            
+            console.log('当前章节:', currentChapter?.name);
+            console.log('章节图片映射:', chapterImageMap);
+            
+            // 获取当前背景和右侧图片URL
+            const bodyStyle = window.getComputedStyle(document.body);
+            const currentBackground = bodyStyle.backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/, '$1');
+            const rightImageElement = document.getElementById('rightFloatingImage');
+            const currentRightImage = rightImageElement.style.backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/, '$1');
+            
             if (currentChapter && chapterImageMap[currentChapter.name]) {
                 const images = chapterImageMap[currentChapter.name];
-                if (images.rightImage) {
-                    image.style.backgroundImage = `url('${images.rightImage}')`;
+                
+                console.log('获取到的图片:', images);
+                console.log('当前背景:', currentBackground);
+                console.log('新背景:', images.background);
+                console.log('当前右侧图片:', currentRightImage);
+                console.log('新右侧图片:', images.rightImage);
+                
+                // 背景切换动画
+                if (images.background && images.background !== currentBackground) {
+                    // 使用遮罩实现淡出-切换-淡入效果
+                    const overlay = document.getElementById('backgroundOverlay');
+                    
+                    // 第一步：淡出当前背景
+                    overlay.style.transition = 'opacity 0.4s ease';
+                    overlay.style.opacity = '0.7'; // 半透明黑色
+                    
+                    // 第二步：切换背景图（在淡出期间）
+                    setTimeout(() => {
+                        document.body.style.backgroundImage = `url('${images.background}')`;
+                        document.body.style.backgroundSize = 'cover';
+                        document.body.style.backgroundAttachment = 'fixed';
+                        document.body.style.backgroundPosition = 'center';
+                        
+                        // 第三步：淡入新背景
+                        setTimeout(() => {
+                            overlay.style.opacity = '0';
+                            console.log('背景切换完成');
+                        }, 100);
+                    }, 400); // 等待淡出完成
+                }
+                
+                // 右侧图片切换动画（只有在图片展开状态下才更新）
+                if (!isImageCollapsed && images.rightImage && images.rightImage !== currentRightImage) {
+                    // 第一步：淡出当前图片
+                    rightImageElement.style.transition = 'opacity 0.4s ease';
+                    rightImageElement.style.opacity = '0';
+                    
+                    // 第二步：切换图片（在淡出期间）
+                    setTimeout(() => {
+                        rightImageElement.style.backgroundImage = `url('${images.rightImage}')`;
+                        rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
+                        
+                        // 第三步：淡入新图片
+                        setTimeout(() => {
+                            rightImageElement.style.opacity = '0.9';
+                            console.log('右侧图片切换完成');
+                        }, 100);
+                    }, 400); // 等待淡出完成
+                    
+                    currentRightImageUrl = images.rightImage;
+                } else if (!isImageCollapsed && images.rightImage === currentRightImage) {
+                    // 如果是同一张图片，确保不透明度正确
+                    rightImageElement.style.opacity = '0.9';
+                }
+            } else {
+                console.log('未找到当前章节或章节图片映射');
+                
+                // 如果没有章节图片，使用默认图片
+                const defaultImage = logData.websiteSettings?.rightFloatingImage || logData.rightFloatingImage || "images/scene8.png";
+                const defaultBackground = "images/scene8.png";
+                
+                // 检查是否需要更新背景
+                if (defaultBackground !== currentBackground) {
+                    const overlay = document.getElementById('backgroundOverlay');
+                    overlay.style.transition = 'opacity 0.4s ease';
+                    overlay.style.opacity = '0.7';
+                    
+                    setTimeout(() => {
+                        document.body.style.backgroundImage = `url('${defaultBackground}')`;
+                        setTimeout(() => {
+                            overlay.style.opacity = '0';
+                        }, 100);
+                    }, 400);
+                }
+                
+                // 检查是否需要更新右侧图片
+                if (!isImageCollapsed && defaultImage !== currentRightImage) {
+                    rightImageElement.style.opacity = '0';
+                    setTimeout(() => {
+                        rightImageElement.style.backgroundImage = `url('${defaultImage}')`;
+                        setTimeout(() => {
+                            rightImageElement.style.opacity = '0.9';
+                        }, 100);
+                    }, 400);
                 }
             }
-        }, 100);
-    }
-    
-    // 保存状态到localStorage
-    localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
-}
+        }
 
-// 页面加载时检查之前的状态
-function loadImageState() {
-    const savedState = localStorage.getItem('rightImageCollapsed');
-    if (savedState === 'true') {
-        // 如果之前是收起状态，应用收起状态
-        const image = document.getElementById('rightFloatingImage');
-        const button = document.getElementById('toggleImageBtn');
-        
-        isImageCollapsed = true;
-        image.classList.add('collapsed');
-        button.innerHTML = '▶';
-        button.title = "展开图片";
-        button.classList.add('collapsed');
-        image.style.opacity = '0';
-    } else {
-        isImageCollapsed = false;
-    }
-}
+        // 添加背景图片切换的CSS过渡效果
+        function addBackgroundTransitions() {
+            // 在CSS中添加过渡效果
+            const style = document.createElement('style');
+            style.textContent = `
+                body {
+                    transition: background-image 0.8s ease !important;
+                }
+                .floating-image-right {
+                    transition: background-image 0.5s ease, opacity 0.5s ease !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function saveChapterImages() {
+            try {
+                localStorage.setItem('chapterImages', JSON.stringify(chapterImages));
+            } catch (e) {
+                console.error('保存章节图片失败:', e);
+            }
+        }
+
+        // 加载章节图片配置
+        function loadChapterImages() {
+            try {
+                const saved = localStorage.getItem('chapterImages');
+                if (saved) {
+                    chapterImages = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('加载章节图片失败:', e);
+            }
+        }
+
+        function toggleRightImage() {
+            const image = document.getElementById('rightFloatingImage');
+            const button = document.getElementById('toggleImageBtn');
+            
+            isImageCollapsed = !isImageCollapsed;
+            
+            if (isImageCollapsed) {
+                // 收起图片 - 淡出
+                image.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                image.style.opacity = '0';
+                image.style.transform = 'translateX(50px)';
+                
+                setTimeout(() => {
+                    image.classList.add('collapsed');
+                    button.innerHTML = '▶';
+                    button.title = "展开图片";
+                    button.classList.add('collapsed');
+                }, 500); // 等待动画完成
+            } else {
+                // 展开图片 - 先移除collapsed类，再淡入
+                image.classList.remove('collapsed');
+                
+                setTimeout(() => {
+                    image.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    image.style.opacity = '0';
+                    image.style.transform = 'translateX(50px)';
+                    
+                    // 确保显示当前章节的图片
+                    const currentChapter = getCurrentChapter();
+                    if (currentChapter && chapterImageMap[currentChapter.name]) {
+                        const images = chapterImageMap[currentChapter.name];
+                        if (images.rightImage) {
+                            image.style.backgroundImage = `url('${images.rightImage}')`;
+                        }
+                    }
+                    
+                    // 淡入并滑入
+                    setTimeout(() => {
+                        image.style.opacity = '0.9';
+                        image.style.transform = 'translateX(0)';
+                        button.innerHTML = '◀';
+                        button.title = "收起图片";
+                        button.classList.remove('collapsed');
+                    }, 50);
+                }, 10);
+            }
+            
+            // 保存状态到localStorage
+            localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
+        }
+
+        // 页面加载时检查之前的状态
+        function loadImageState() {
+            const savedState = localStorage.getItem('rightImageCollapsed');
+            if (savedState === 'true') {
+                // 如果之前是收起状态，应用收起状态
+                const image = document.getElementById('rightFloatingImage');
+                const button = document.getElementById('toggleImageBtn');
+                
+                isImageCollapsed = true;
+                image.classList.add('collapsed');
+                image.style.opacity = '0';
+                image.style.transform = 'translateX(50px)';
+                button.innerHTML = '▶';
+                button.title = "展开图片";
+                button.classList.add('collapsed');
+            } else {
+                isImageCollapsed = false;
+                // 确保初始状态下图片可见
+                const image = document.getElementById('rightFloatingImage');
+                image.style.opacity = '0.9';
+                image.style.transform = 'translateX(0)';
+            }
+        }
 
         // 在页面加载完成后调用
         window.addEventListener('DOMContentLoaded', function() {
@@ -1118,6 +1206,7 @@ function loadImageState() {
             }
             // 应用网站设置
             setTimeout(() => {
+                updateChapterImages();
                 applyWebsiteSettings();
             }, 100);
         }
