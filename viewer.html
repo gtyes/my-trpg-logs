@@ -30,63 +30,63 @@
         }
         
         /* ========== 右侧悬浮图片 ========== */
-        .floating-image-container {
-            position: fixed;
-            right: 0;
-            top: 120px;
-            z-index: 800;
-            display: flex;
-            align-items: flex-start;
-            transition: all 0.3s ease;
-        }
-        .floating-image-right {
-            width: 475px;
-            height: 475px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: right center;
-            opacity: 0.9;
-            pointer-events: none;
-            filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
-            transition: all 0.3s ease;
-            border-radius: 8px;
-        }
-        .floating-image-right.collapsed {
-            width: 0;
-            opacity: 0;
-            transform: translateX(100%);
-        }
-        /* 控制按钮样式 */
-        .image-toggle-btn {
-            position: fixed;
-            right: 0;
-            top: 120px;
-            width: 30px;
-            height: 40px;
-            background: rgba(139, 0, 0, 0.9);
-            color: white;
-            border: none;
-            border-radius: 8px 0 0 8px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: -2px 0 8px rgba(0,0,0,0.2);
-            z-index: 801;
-            margin: 0 !important; /* 确保没有外边距影响位置 */
-        }
+.floating-image-container {
+    position: fixed;
+    right: 0;
+    top: 120px;
+    z-index: 800;
+    display: flex;
+    align-items: flex-start;
+    transition: all 0.3s ease;
+}
+.floating-image-right {
+    width: 475px;
+    height: 475px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right center;
+    opacity: 0.9;
+    pointer-events: none;
+    filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+.floating-image-right.collapsed {
+    width: 0;
+    opacity: 0;
+    transform: translateX(100%);
+}
+/* 控制按钮样式 */
+.image-toggle-btn {
+    position: fixed;
+    right: 0;
+    top: 120px;
+    width: 30px;
+    height: 40px;
+    background: rgba(139, 0, 0, 0.9);
+    color: white;
+    border: none;
+    border-radius: 8px 0 0 8px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+    z-index: 801;
+    margin: 0 !important; /* 确保没有外边距影响位置 */
+}
 
-        .image-toggle-btn:hover {
-            background: rgba(178, 34, 34, 0.9);
-            transform: scale(1.05);
-        }
-        /* 图片收起时按钮位置调整 */
-        .image-toggle-btn.collapsed {
-            right: 0; /* 仍然保持在屏幕最右侧 */
-            transform: none;
-        }
+.image-toggle-btn:hover {
+    background: rgba(178, 34, 34, 0.9);
+    transform: scale(1.05);
+}
+/* 图片收起时按钮位置调整 */
+.image-toggle-btn.collapsed {
+    right: 0; /* 仍然保持在屏幕最右侧 */
+    transform: none;
+}
         
         /* ========== 顶部标题栏 ========== */
         .top-header {
@@ -107,55 +107,55 @@
             z-index: 1000;
             backdrop-filter: blur(5px);
         }
-                
-        .log-title {
-            font-size: 2.4rem;
-            font-weight: normal;
-            text-align: center;
-            flex: 1;
-            margin: 0 auto;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-            font-family: 'STZhongsong', '华文中宋', serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        
+.log-title {
+    font-size: 2.4rem;
+    font-weight: normal;
+    text-align: center;
+    flex: 1;
+    margin: 0 auto;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    font-family: 'STZhongsong', '华文中宋', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 
-        .title-character {
-            color: white;
-            transition: all 0.3s;
-        }
+.title-character {
+    color: white;
+    transition: all 0.3s;
+}
 
-        .title-character:first-child {
-            color: #8b0000;
-        }
+.title-character:first-child {
+    color: #8b0000;
+}
 
-        /* 可选：添加悬停效果 */
-        .log-title:hover .title-character:first-child {
-            text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
-        }
+/* 可选：添加悬停效果 */
+.log-title:hover .title-character:first-child {
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+}
 
-        .log-title:hover .title-character:not(:first-child) {
-            color: #f0f0f0;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-        }
+.log-title:hover .title-character:not(:first-child) {
+    color: #f0f0f0;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
 
-            /* 左侧控制按钮容器 */
-        .top-controls.left-controls {
-            position: absolute;
-            left: 20px;
-            display: flex;
-            align-items: center;
-        }
+     /* 左侧控制按钮容器 */
+.top-controls.left-controls {
+    position: absolute;
+    left: 20px;
+    display: flex;
+    align-items: center;
+}
 
-        /* 右侧控制按钮容器 */
-        .top-controls.right-controls {
-            position: absolute;
-            right: 20px;
-            display: flex;
-            align-items: center;
-        }   
+/* 右侧控制按钮容器 */
+.top-controls.right-controls {
+    position: absolute;
+    right: 20px;
+    display: flex;
+    align-items: center;
+}   
         .top-controls {
             display: flex;
             align-items: center;
@@ -178,21 +178,21 @@
         .search-box input::placeholder {
             color: rgba(255,255,255,0.7);
         }
-                
-        .control-btn {
-            background: rgba(139, 0, 0, 0.9); /* 暗红色 */
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
-        }
-                
-        .control-btn:hover {
-            background: rgba(178, 34, 34, 0.9); /* 稍微亮一点的暗红色 */
-        }
+        
+.control-btn {
+    background: rgba(139, 0, 0, 0.9); /* 暗红色 */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+        
+.control-btn:hover {
+    background: rgba(178, 34, 34, 0.9); /* 稍微亮一点的暗红色 */
+}
         
         /* ========== 悬浮章节导航 ========== */
         .floating-sidebar {
@@ -262,14 +262,14 @@
         }
         
         /* ========== 日志容器 ========== */
-        .log-container {
-            margin-top: 20px;
-            background: rgba(0, 0, 0, 0.3);;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.8);
-            padding: 15px;
-            font-size: 16px; /* 增加基础字号 */
-        }
+.log-container {
+    margin-top: 20px;
+    background: rgba(0, 0, 0, 0.3);;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    padding: 15px;
+    font-size: 16px; /* 增加基础字号 */
+}
         
         /* ========== 频道组样式 ========== */
         .channel-group {
@@ -360,10 +360,10 @@
             background-position: center;
         }
         
-        .character-name {
-            font-weight: bold;
-            font-size: 1.1em; /* 相对大小 */
-        }
+.character-name {
+    font-weight: bold;
+    font-size: 1.1em; /* 相对大小 */
+}
         
         .to-name {
             color: #666;
@@ -381,11 +381,11 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         
-        .message-text {
-            margin-bottom: 6px;
-            line-height: 1.5; /* 增加行高 */
-            font-size: 1em; /* 使用相对单位 */
-        }
+.message-text {
+    margin-bottom: 6px;
+    line-height: 1.5; /* 增加行高 */
+    font-size: 1em; /* 使用相对单位 */
+}
         
         .message-image {
             margin-top: 6px; /* 减小间距 */
@@ -414,23 +414,23 @@
             border-radius: 4px;
         }
         /* 搜索标红 */
-        .search-highlight {
-            background-color: #8b0000; /* 暗红色背景 */
-            color: #000000; /* 黑色字体 */
-            font-weight: bold;
-            padding: 1px 3px;
-            border-radius: 3px;
-            border: 1px solid #660000; /* 深红色边框 */
-        }
-                
-                /* 骰子结果样式 */
-        .dice-result {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px dashed rgba(0,0,0,0.1);
-            font-family: 'Consolas, Monaco, monospace';
-            font-size: 1em; /* 相对大小 */
-        }
+.search-highlight {
+    background-color: #8b0000; /* 暗红色背景 */
+    color: #000000; /* 黑色字体 */
+    font-weight: bold;
+    padding: 1px 3px;
+    border-radius: 3px;
+    border: 1px solid #660000; /* 深红色边框 */
+}
+        
+        /* 骰子结果样式 */
+.dice-result {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-family: 'Consolas, Monaco, monospace';
+    font-size: 1em; /* 相对大小 */
+}
         
         /* ========== 系统消息样式 ========== */
         .system-message {
@@ -456,24 +456,24 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             flex-wrap: wrap;
         }
-                
-        .pagination-btn {
-            background: #8b0000; /* 暗红色 */
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-                
-        .pagination-btn:hover:not(:disabled) {
-            background: #a52a2a; /* 更亮的暗红色 */
-        }
-                .pagination-btn:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-        }
+        
+.pagination-btn {
+    background: #8b0000; /* 暗红色 */
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+        
+.pagination-btn:hover:not(:disabled) {
+    background: #a52a2a; /* 更亮的暗红色 */
+}
+        .pagination-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
         
         .pagination-info {
             font-size: 13px;
@@ -497,68 +497,68 @@
         }
         
         /* ========== 筛选面板 ========== */
-        .filter-panel {
-            position: fixed;
-            right: -350px;
-            top: 100px;
-            width: 280px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 15px;
-            z-index: 999;
-            transition: right 0.3s;
-            border: 1px solid rgba(139, 0, 0, 0.2);
-        }
-        /* 频道筛选部分添加滚动条 */
-        #channelFilters {
-            max-height: 200px; /* 固定高度 */
-            overflow-y: auto; /* 垂直滚动 */
-            padding-right: 5px; /* 给滚动条留空间 */
-        }
+.filter-panel {
+    position: fixed;
+    right: -350px;
+    top: 100px;
+    width: 280px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 15px;
+    z-index: 999;
+    transition: right 0.3s;
+    border: 1px solid rgba(139, 0, 0, 0.2);
+}
+/* 频道筛选部分添加滚动条 */
+#channelFilters {
+    max-height: 200px; /* 固定高度 */
+    overflow-y: auto; /* 垂直滚动 */
+    padding-right: 5px; /* 给滚动条留空间 */
+}
 
-        /* 自定义滚动条样式 */
-        #channelFilters::-webkit-scrollbar {
-            width: 6px;
-        }
+/* 自定义滚动条样式 */
+#channelFilters::-webkit-scrollbar {
+    width: 6px;
+}
 
-        #channelFilters::-webkit-scrollbar-track {
-            background: rgba(139, 0, 0, 0.1);
-            border-radius: 3px;
-        }
+#channelFilters::-webkit-scrollbar-track {
+    background: rgba(139, 0, 0, 0.1);
+    border-radius: 3px;
+}
 
-        #channelFilters::-webkit-scrollbar-thumb {
-            background: rgba(139, 0, 0, 0.3);
-            border-radius: 3px;
-        }
+#channelFilters::-webkit-scrollbar-thumb {
+    background: rgba(139, 0, 0, 0.3);
+    border-radius: 3px;
+}
 
-        #channelFilters::-webkit-scrollbar-thumb:hover {
-            background: rgba(139, 0, 0, 0.5);
-        }
-        /* 筛选选项样式 */
-        #channelFilters label {
-            display: flex;
-            align-items: center;
-            padding: 8px 5px;
-            margin: 2px 0;
-            border-radius: 4px;
-            transition: background 0.2s;
-            cursor: pointer;
-        }
+#channelFilters::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 0, 0, 0.5);
+}
+/* 筛选选项样式 */
+#channelFilters label {
+    display: flex;
+    align-items: center;
+    padding: 8px 5px;
+    margin: 2px 0;
+    border-radius: 4px;
+    transition: background 0.2s;
+    cursor: pointer;
+}
 
-        #channelFilters label:hover {
-            background: rgba(139, 0, 0, 0.05);
-        }
+#channelFilters label:hover {
+    background: rgba(139, 0, 0, 0.05);
+}
 
-        #channelFilters input[type="checkbox"] {
-            margin-right: 8px;
-            cursor: pointer;
-        }
+#channelFilters input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
 
-        #channelFilters span {
-            font-size: 13px;
-            color: #333;
-        }        
+#channelFilters span {
+    font-size: 13px;
+    color: #333;
+}        
         .filter-panel.show {
             right: 20px;
         }
@@ -586,39 +586,39 @@
         
         /* ========== 响应式设计 ========== */
         @media (max-width: 1100px) {
-            .floating-image-right {
-                width: 300px;
-                height: 300px;
-            }
-            
-            .image-toggle-btn {
-                top: 100px;
-            }
-        }
-        @media (max-width: 768px) {
-            .floating-image-right {
-                width: 200px;
-                height: 200px;
-            }
-            
-            .image-toggle-btn {
-                top: 80px;
-                width: 25px;
-                height: 35px;
-                font-size: 12px;
-            }
-        }
-        @media (max-width: 768px) {
-            .filter-panel {
-                width: 90%;
-                right: -95%;
-                top: 80px;
-            }
-            
-            #channelFilters {
-                max-height: 150px; /* 手机端稍矮一些 */
-            }
-        }
+    .floating-image-right {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .image-toggle-btn {
+        top: 100px;
+    }
+}
+@media (max-width: 768px) {
+    .floating-image-right {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .image-toggle-btn {
+        top: 80px;
+        width: 25px;
+        height: 35px;
+        font-size: 12px;
+    }
+}
+@media (max-width: 768px) {
+    .filter-panel {
+        width: 90%;
+        right: -95%;
+        top: 80px;
+    }
+    
+    #channelFilters {
+        max-height: 150px; /* 手机端稍矮一些 */
+    }
+}
 
         
         @media (max-width: 768px) {
@@ -634,19 +634,19 @@
                 margin: 10px 0;
                 order: 1;
             }
-            .top-controls.left-controls {
-                position: static;
-                order: 0; /* 左侧按钮在上方 */
-                justify-content: flex-start;
-                width: 100%;
-            }
-            
-            .top-controls.right-controls {
-                position: static;
-                order: 2; /* 右侧按钮在下方 */
-                justify-content: flex-end;
-                width: 100%;
-            }
+    .top-controls.left-controls {
+        position: static;
+        order: 0; /* 左侧按钮在上方 */
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .top-controls.right-controls {
+        position: static;
+        order: 2; /* 右侧按钮在下方 */
+        justify-content: flex-end;
+        width: 100%;
+    }
             
             .search-box input {
                 width: 100%;
@@ -678,40 +678,10 @@
                 padding: 12px;
             }
         }
-        /* ========== 背景切换动画 ========== */
-        #backgroundOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #000; /* 黑色遮罩 */
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s ease;
-            z-index: -1; /* 在背景之下，内容之上 */
-        }
-
-        #rightFloatingImage {
-            transition: opacity 0.8s ease, transform 0.3s ease !important;
-        }
-
-        /* 背景图淡入淡出动画 */
-        @keyframes backgroundFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes backgroundFadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
     </style>
 </head>
 <body>
     <!-- 右侧悬浮图片 -->
-     <!-- 背景遮罩，用于淡入淡出动画 -->
-<div id="backgroundOverlay"></div>
 <!-- 修改右侧悬浮图片部分 -->
 <div class="floating-image-container" id="rightImageContainer">
     <div class="floating-image-right" id="rightFloatingImage"></div>
@@ -847,8 +817,8 @@
         chapters.forEach(chapter => {
             if (!chapterImageMap[chapter.name]) {
                 chapterImageMap[chapter.name] = {
-                    rightImage: ensureImageUrl(chapter.rightImage, defaultImage),
-                    background: ensureImageUrl(chapter.backgroundImage, defaultBackground)
+                    rightImage: defaultImage,
+                    background: defaultBackground
                 };
             } else {
                 // 如果章节设置了图片但为空，使用默认
@@ -899,138 +869,165 @@
         return sortedChapters[0] || null;
     }
 
-function updateChapterImages() {
-    const currentChapter = getCurrentChapter();
-    
-    if (currentChapter && chapterImageMap[currentChapter.name]) {
-        const images = chapterImageMap[currentChapter.name];
+    function updateChapterImages() {
+        const currentChapter = getCurrentChapter();
         
-        // 更新网页背景
-        if (images.background) {
-            document.body.style.backgroundImage = `url('${images.background}')`;
-            document.body.style.backgroundSize = 'cover';
-            document.body.style.backgroundAttachment = 'fixed';
-            document.body.style.backgroundPosition = 'center';
-        }
+        console.log('当前章节:', currentChapter?.name);
+        console.log('章节图片映射:', chapterImageMap);
         
-        // 更新右侧图片（只有在图片展开状态下才更新）
-        if (!isImageCollapsed && images.rightImage) {
-            const rightImageElement = document.getElementById('rightFloatingImage');
-            rightImageElement.style.backgroundImage = `url('${images.rightImage}')`;
-            rightImageElement.style.opacity = '0.9';
-            currentRightImageUrl = images.rightImage;
+        if (currentChapter && chapterImageMap[currentChapter.name]) {
+            const images = chapterImageMap[currentChapter.name];
+            
+            console.log('获取到的图片:', images);
+            
+            // 更新网页背景
+            if (images.background) {
+                // 检查是否是同一张背景图片
+                const bodyStyle = window.getComputedStyle(document.body);
+                const currentBg = bodyStyle.backgroundImage;
+                const newBg = `url('${images.background}')`;
+                
+                console.log('当前背景:', currentBg);
+                console.log('新背景:', newBg);
+                
+                // 如果不是同一张图片，才应用过渡效果
+                if (currentBg !== newBg && currentBg !== `url("${images.background}")`) {
+                    // 添加过渡效果
+                    document.body.style.transition = 'background-image 0.8s ease';
+                    document.body.style.backgroundImage = `url('${images.background}')`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    document.body.style.backgroundPosition = 'center';
+                    console.log('应用了新背景图片');
+                }
+            }
+            
+            // 更新右侧图片（只有在图片展开状态下才更新）
+            if (!isImageCollapsed && images.rightImage) {
+                const rightImageElement = document.getElementById('rightFloatingImage');
+                const newImageUrl = `url('${images.rightImage}')`;
+                const currentImageUrl = rightImageElement.style.backgroundImage;
+                
+                console.log('当前右侧图片:', currentImageUrl);
+                console.log('新右侧图片:', newImageUrl);
+                
+                // 检查是否是同一张图片
+                if (newImageUrl !== currentImageUrl && 
+                    newImageUrl !== rightImageElement.style.backgroundImage) {
+                    
+                    // 如果不是同一张图片，添加淡入淡出效果
+                    rightImageElement.style.transition = 'opacity 0.5s ease';
+                    rightImageElement.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        rightImageElement.style.backgroundImage = newImageUrl;
+                        rightImageElement.style.opacity = '0.9';
+                        rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
+                        console.log('应用了新右侧图片');
+                    }, 300);
+                } else {
+                    // 如果是同一张图片，直接设置不透明度（确保可见）
+                    rightImageElement.style.opacity = '0.9';
+                }
+                
+                currentRightImageUrl = images.rightImage;
+            }
+        } else {
+            console.log('未找到当前章节或章节图片映射');
         }
     }
+
+// 添加背景图片切换的CSS过渡效果
+function addBackgroundTransitions() {
+    // 在CSS中添加过渡效果
+    const style = document.createElement('style');
+    style.textContent = `
+        body {
+            transition: background-image 0.8s ease !important;
+        }
+        .floating-image-right {
+            transition: background-image 0.5s ease, opacity 0.5s ease !important;
+        }
+    `;
+    document.head.appendChild(style);
 }
-        // 添加背景图片切换的CSS过渡效果
-        function addBackgroundTransitions() {
-            // 在CSS中添加过渡效果
-            const style = document.createElement('style');
-            style.textContent = `
-                body {
-                    transition: background-image 0.8s ease !important;
+
+function saveChapterImages() {
+    try {
+        localStorage.setItem('chapterImages', JSON.stringify(chapterImages));
+    } catch (e) {
+        console.error('保存章节图片失败:', e);
+    }
+}
+
+// 加载章节图片配置
+function loadChapterImages() {
+    try {
+        const saved = localStorage.getItem('chapterImages');
+        if (saved) {
+            chapterImages = JSON.parse(saved);
+        }
+    } catch (e) {
+        console.error('加载章节图片失败:', e);
+    }
+}
+
+function toggleRightImage() {
+    const image = document.getElementById('rightFloatingImage');
+    const button = document.getElementById('toggleImageBtn');
+    
+    isImageCollapsed = !isImageCollapsed;
+    
+    if (isImageCollapsed) {
+        // 收起图片
+        image.classList.add('collapsed');
+        button.innerHTML = '▶';
+        button.title = "展开图片";
+        button.classList.add('collapsed');
+        // 收起时降低不透明度
+        image.style.opacity = '0';
+    } else {
+        // 展开图片
+        image.classList.remove('collapsed');
+        button.innerHTML = '◀';
+        button.title = "收起图片";
+        button.classList.remove('collapsed');
+        // 展开时恢复不透明度，并更新当前章节图片
+        setTimeout(() => {
+            image.style.opacity = '0.9';
+            // 确保显示当前章节的图片
+            const currentChapter = getCurrentChapter();
+            if (currentChapter && chapterImageMap[currentChapter.name]) {
+                const images = chapterImageMap[currentChapter.name];
+                if (images.rightImage) {
+                    image.style.backgroundImage = `url('${images.rightImage}')`;
                 }
-                .floating-image-right {
-                    transition: background-image 0.5s ease, opacity 0.5s ease !important;
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        function saveChapterImages() {
-            try {
-                localStorage.setItem('chapterImages', JSON.stringify(chapterImages));
-            } catch (e) {
-                console.error('保存章节图片失败:', e);
             }
-        }
+        }, 100);
+    }
+    
+    // 保存状态到localStorage
+    localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
+}
 
-        // 加载章节图片配置
-        function loadChapterImages() {
-            try {
-                const saved = localStorage.getItem('chapterImages');
-                if (saved) {
-                    chapterImages = JSON.parse(saved);
-                }
-            } catch (e) {
-                console.error('加载章节图片失败:', e);
-            }
-        }
-
-        function toggleRightImage() {
-            const image = document.getElementById('rightFloatingImage');
-            const button = document.getElementById('toggleImageBtn');
-            
-            isImageCollapsed = !isImageCollapsed;
-            
-            if (isImageCollapsed) {
-                // 收起图片 - 淡出
-                image.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                image.style.opacity = '0';
-                image.style.transform = 'translateX(50px)';
-                
-                setTimeout(() => {
-                    image.classList.add('collapsed');
-                    button.innerHTML = '▶';
-                    button.title = "展开图片";
-                    button.classList.add('collapsed');
-                }, 500); // 等待动画完成
-            } else {
-                // 展开图片 - 先移除collapsed类，再淡入
-                image.classList.remove('collapsed');
-                
-                setTimeout(() => {
-                    image.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    image.style.opacity = '0';
-                    image.style.transform = 'translateX(50px)';
-                    
-                    // 确保显示当前章节的图片
-                    const currentChapter = getCurrentChapter();
-                    if (currentChapter && chapterImageMap[currentChapter.name]) {
-                        const images = chapterImageMap[currentChapter.name];
-                        if (images.rightImage) {
-                            image.style.backgroundImage = `url('${images.rightImage}')`;
-                        }
-                    }
-                    
-                    // 淡入并滑入
-                    setTimeout(() => {
-                        image.style.opacity = '0.9';
-                        image.style.transform = 'translateX(0)';
-                        button.innerHTML = '◀';
-                        button.title = "收起图片";
-                        button.classList.remove('collapsed');
-                    }, 50);
-                }, 10);
-            }
-            
-            // 保存状态到localStorage
-            localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
-        }
-
-        // 页面加载时检查之前的状态
-        function loadImageState() {
-            const savedState = localStorage.getItem('rightImageCollapsed');
-            if (savedState === 'true') {
-                // 如果之前是收起状态，应用收起状态
-                const image = document.getElementById('rightFloatingImage');
-                const button = document.getElementById('toggleImageBtn');
-                
-                isImageCollapsed = true;
-                image.classList.add('collapsed');
-                image.style.opacity = '0';
-                image.style.transform = 'translateX(50px)';
-                button.innerHTML = '▶';
-                button.title = "展开图片";
-                button.classList.add('collapsed');
-            } else {
-                isImageCollapsed = false;
-                // 确保初始状态下图片可见
-                const image = document.getElementById('rightFloatingImage');
-                image.style.opacity = '0.9';
-                image.style.transform = 'translateX(0)';
-            }
-        }
+// 页面加载时检查之前的状态
+function loadImageState() {
+    const savedState = localStorage.getItem('rightImageCollapsed');
+    if (savedState === 'true') {
+        // 如果之前是收起状态，应用收起状态
+        const image = document.getElementById('rightFloatingImage');
+        const button = document.getElementById('toggleImageBtn');
+        
+        isImageCollapsed = true;
+        image.classList.add('collapsed');
+        button.innerHTML = '▶';
+        button.title = "展开图片";
+        button.classList.add('collapsed');
+        image.style.opacity = '0';
+    } else {
+        isImageCollapsed = false;
+    }
+}
 
         // 在页面加载完成后调用
         window.addEventListener('DOMContentLoaded', function() {
@@ -1121,7 +1118,6 @@ function updateChapterImages() {
             }
             // 应用网站设置
             setTimeout(() => {
-                updateChapterImages();
                 applyWebsiteSettings();
             }, 100);
         }
@@ -1267,159 +1263,226 @@ function renderFilterOptions() {
         }
         
         // 应用筛选
-        function applyFilters() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
-            currentFilters.searchText = searchText;
-            
-            // 重置频道筛选数组
-            currentFilters.channels = [];
-            
-            // 收集选中的频道
-            document.querySelectorAll('#channelFilters input[type="checkbox"]:checked').forEach(checkbox => {
-                currentFilters.channels.push(checkbox.value);
-            });
-            
-            let filtered = logData.logs || [];
-            
-            // 按频道筛选
-            if (currentFilters.channels.length > 0) {
-                filtered = filtered.filter(msg => 
-                    currentFilters.channels.includes(msg.channel)
-                );
-            }
-            
-            // 按搜索文本筛选
-            if (searchText) {
-                filtered = filtered.filter(msg => 
-                    (msg.text && msg.text.toLowerCase().includes(searchText)) ||
-                    (msg.name && msg.name.toLowerCase().includes(searchText)) ||
-                    (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
-                    (msg.dice && msg.dice && msg.dice.toLowerCase().includes(searchText))
-                );
-            }
-            
-            filteredLogs = filtered;
-            currentPage = 1;
-            renderCurrentPage();
-            closeFilterPanel();
-            setTimeout(() => {
-                updateChapterImages();
-            }, 100);
-        }      
+function applyFilters() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    currentFilters.searchText = searchText;
+    
+    // 重置频道筛选数组
+    currentFilters.channels = [];
+    
+    // 收集选中的频道
+    document.querySelectorAll('#channelFilters input[type="checkbox"]:checked').forEach(checkbox => {
+        currentFilters.channels.push(checkbox.value);
+    });
+    
+    let filtered = logData.logs || [];
+    
+    // 按频道筛选
+    if (currentFilters.channels.length > 0) {
+        filtered = filtered.filter(msg => 
+            currentFilters.channels.includes(msg.channel)
+        );
+    }
+    
+    // 按搜索文本筛选
+    if (searchText) {
+        filtered = filtered.filter(msg => 
+            (msg.text && msg.text.toLowerCase().includes(searchText)) ||
+            (msg.name && msg.name.toLowerCase().includes(searchText)) ||
+            (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
+            (msg.dice && msg.dice && msg.dice.toLowerCase().includes(searchText))
+        );
+    }
+    
+    filteredLogs = filtered;
+    currentPage = 1;
+    renderCurrentPage();
+    closeFilterPanel();
+    setTimeout(() => {
+        updateChapterImages();
+    }, 100);
+}      
         // 清除筛选
-        function clearFilters() {
-            currentFilters = {
-                channels: [],
-                searchText: ''
-            };
+function clearFilters() {
+    currentFilters = {
+        channels: [],
+        searchText: ''
+    };
+    
+    // 清空搜索框
+    document.getElementById('searchInput').value = '';
+    
+    // 取消所有频道筛选复选框
+    document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+    // 取消闲聊折叠复选框
+    const collapseCheckbox = document.getElementById('collapseChatCheckbox');
+    if (collapseCheckbox) {
+        collapseCheckbox.checked = false;
+    }
+    collapseChatChannels = false;
+    
+    // 恢复为原始日志数据
+    filteredLogs = logData.logs || [];
+    currentPage = 1;
+    renderCurrentPage();
+    closeFilterPanel();
+    setTimeout(() => {
+        updateChapterImages();
+    }, 100);
+}
+      
+// 渲染当前页
+        // 替换原来的renderCurrentPage函数
+function renderCurrentPage() {
+    // 计算当前页应该从哪条消息开始
+    let messagesProcessed = 0;
+    let currentStartIndex = 0;
+    
+    // 找到当前页的起始位置
+    for (let i = 0; i < filteredLogs.length; i++) {
+        const msg = filteredLogs[i];
+        
+        // 如果已经收集了足够多的消息，或者遇到章节需要新开一页
+        if ((messagesProcessed >= pageSize) || 
+            (msg.isChapter && messagesProcessed > 0)) {
+            // 我们已经找到了一页，看看这是不是我们要的那一页
+            const pageNumber = calculatePageForMessage(currentStartIndex);
             
-            // 清空搜索框
-            document.getElementById('searchInput').value = '';
-            
-            // 取消所有频道筛选复选框
-            document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            
-            // 取消闲聊折叠复选框
-            const collapseCheckbox = document.getElementById('collapseChatCheckbox');
-            if (collapseCheckbox) {
-                collapseCheckbox.checked = false;
+            if (pageNumber === currentPage) {
+                // 这就是我们要渲染的页
+                break;
             }
-            collapseChatChannels = false;
             
-            // 恢复为原始日志数据
-            filteredLogs = logData.logs || [];
-            currentPage = 1;
-            renderCurrentPage();
-            closeFilterPanel();
-            setTimeout(() => {
-                updateChapterImages();
-            }, 100);
+            // 这不是我们要的页，重置计数器，继续查找
+            currentStartIndex = i;
+            messagesProcessed = 0;
         }
-            
-        // 渲染当前页
-                // 替换原来的renderCurrentPage函数
-        function renderCurrentPage() {
-            // 计算当前页应该从哪条消息开始
-            const startIndex = (currentPage - 1) * pageSize;
-            const endIndex = Math.min(startIndex + pageSize, filteredLogs.length);
-            const pageMessages = filteredLogs.slice(startIndex, endIndex);
-            
-            // 渲染消息
-            const container = document.getElementById('logMessages');
-            container.innerHTML = renderLogMessages(pageMessages);
-            
-            // 更新分页信息
-            updatePaginationInfo();
-            
-            // 滚动到顶部
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            // 更新章节图片（延迟一点确保DOM更新完成）
-            setTimeout(() => {
-                updateChapterImages();
-            }, 100);
+        
+        messagesProcessed++;
+    }
+    
+    // 收集当前页的消息
+    const pageMessages = [];
+    let pageCount = 0;
+    
+    for (let i = currentStartIndex; i < filteredLogs.length && pageCount < pageSize; i++) {
+        const msg = filteredLogs[i];
+        
+        // 如果是章节消息，且不是本页第一条，则停止收集
+        if (msg.isChapter && pageCount > 0) {
+            break;
         }
-        // 添加双击事件处理函数
-        function addMessageDoubleClickHandlers() {
-            const messageRows = document.querySelectorAll('.message-row');
-            messageRows.forEach(row => {
-                row.addEventListener('dblclick', function() {
-                    const messageId = this.getAttribute('data-id');
-                    if (messageId) {
-                        jumpToMessage(messageId);
-                    }
-                });
-            });
-        }
-        // 跳转到指定消息
-        // 简化jumpToMessage函数，确保按filteredLogs的顺序计算
-        // 修改jumpToMessage函数
-        function jumpToMessage(messageId) {
-            console.log('尝试跳转到消息:', messageId);
-            
-            // 在原始日志中查找消息
-            const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
-            console.log('在原始日志中的消息索引位置:', messageIndex);
-            
-            if (messageIndex !== -1) {
-                // 计算消息所在的页数
-                const page = calculatePageForMessage(messageIndex);
-                console.log('消息在第', page, '页');
-                
-                currentPage = page;
-                renderCurrentPage();
-                
-                // 等待渲染完成后高亮显示
-                setTimeout(() => {
-                    highlightMessage(messageId);
-                }, 500);
-            } else {
-                console.error('未找到消息:', messageId);
-                alert('未找到该消息，可能消息已被删除或修改');
+        
+        pageMessages.push(msg);
+        pageCount++;
+    }
+    
+    // 渲染消息
+    const container = document.getElementById('logMessages');
+    container.innerHTML = renderLogMessages(pageMessages);
+    
+    // 更新分页信息
+    updatePaginationInfo();
+    
+    // 滚动到顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // 更新章节图片
+    setTimeout(() => {
+        updateChapterImages();
+    }, 100);
+}
+// 添加双击事件处理函数
+function addMessageDoubleClickHandlers() {
+    const messageRows = document.querySelectorAll('.message-row');
+    messageRows.forEach(row => {
+        row.addEventListener('dblclick', function() {
+            const messageId = this.getAttribute('data-id');
+            if (messageId) {
+                jumpToMessage(messageId);
             }
+        });
+    });
+}
+// 跳转到指定消息
+// 简化jumpToMessage函数，确保按filteredLogs的顺序计算
+// 修改jumpToMessage函数
+function jumpToMessage(messageId) {
+    console.log('尝试跳转到消息:', messageId);
+    
+    // 先清除所有筛选和搜索，回到原始日志
+    clearFilters(); // 这会重置filteredLogs为原始日志
+    
+    // 等待清空筛选完成，再查找消息
+    setTimeout(() => {
+        // 在原始日志中查找消息
+        const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+        console.log('在原始日志中的消息索引位置:', messageIndex);
+        
+        if (messageIndex !== -1) {
+            // 计算消息所在的页数
+            let page = 1;
+            let messagesProcessed = 0;
+            
+            for (let i = 0; i <= messageIndex; i++) {
+                const msg = filteredLogs[i];
+                
+                messagesProcessed++;
+                
+                // 如果是章节标记，且不是本页第一条，则新开一页
+                if (msg.isChapter && messagesProcessed > 1) {
+                    page++;
+                    messagesProcessed = 1;
+                }
+                
+                // 如果本页已满，翻页
+                if (messagesProcessed >= pageSize) {
+                    page++;
+                    messagesProcessed = 0;
+                }
+                
+                // 找到目标消息
+                if (i === messageIndex) {
+                    currentPage = page;
+                    console.log('消息在第', page, '页');
+                    renderCurrentPage();
+                    
+                    // 等待渲染完成后高亮显示
+                    setTimeout(() => {
+                        highlightMessage(messageId);
+                    }, 500); // 延长等待时间确保渲染完成
+                    break;
+                }
+            }
+        } else {
+            console.error('未找到消息:', messageId);
+            alert('未找到该消息，可能消息已被删除或修改');
         }
+    }, 100);
+}
 
-        // 添加高亮函数
-        function highlightMessage(messageId) {
-            const targetRow = document.querySelector(`.message-row[data-id="${messageId}"]`);
-            if (targetRow) {
-                // 添加高亮样式
-                targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
-                targetRow.style.borderLeft = '3px solid #8b0000';
-                targetRow.style.transition = 'all 0.3s ease';
-                
-                // 滚动到该消息位置
-                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // 5秒后清除高亮
-                setTimeout(() => {
-                    targetRow.style.backgroundColor = '';
-                    targetRow.style.borderLeft = '';
-                }, 5000);
-            }
-        }
+// 添加高亮函数
+function highlightMessage(messageId) {
+    const targetRow = document.querySelector(`.message-row[data-id="${messageId}"]`);
+    if (targetRow) {
+        // 添加高亮样式
+        targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
+        targetRow.style.borderLeft = '3px solid #8b0000';
+        targetRow.style.transition = 'all 0.3s ease';
+        
+        // 滚动到该消息位置
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // 5秒后清除高亮
+        setTimeout(() => {
+            targetRow.style.backgroundColor = '';
+            targetRow.style.borderLeft = '';
+        }, 5000);
+    }
+}
         // 渲染日志消息
         function renderLogMessages(logs) {
             if (logs.length === 0) {
@@ -2012,7 +2075,29 @@ function getExtendStyle(resultType) {
 
         // ========== 分页功能 ==========
         function updatePaginationInfo() {
-            const totalPages = Math.ceil(filteredLogs.length / pageSize);
+            // 计算总页数（考虑章节分页）
+            let totalPages = 0;
+            let remainingMessages = filteredLogs.length;
+            let pageStart = 0;
+            
+            while (remainingMessages > 0) {
+                totalPages++;
+                let pageCount = 0;
+                
+                // 计算这一页能放多少消息
+                for (let i = pageStart; i < filteredLogs.length && pageCount < pageSize; i++) {
+                    const msg = filteredLogs[i];
+                    pageCount++;
+                    
+                    // 关键修改：如果是章节标记，且不是本页第一条，则结束当前页
+                    if (msg.isChapter && pageCount > 1) {
+                        break; // 章节在新的一页开始
+                    }
+                }
+                
+                remainingMessages -= pageCount;
+                pageStart += pageCount;
+            }
             
             document.getElementById('currentPage').textContent = currentPage;
             document.getElementById('totalPages').textContent = totalPages;
@@ -2051,28 +2136,48 @@ function getExtendStyle(resultType) {
             input.value = page;
             renderCurrentPage();
         }
-        function calculatePageForMessage(messageIndex) {
-            return Math.floor(messageIndex / pageSize) + 1;
+function calculatePageForMessage(messageIndex) {
+    let page = 1;
+    let messagesProcessed = 0;
+    
+    for (let i = 0; i <= messageIndex; i++) {
+        const msg = filteredLogs[i];
+        messagesProcessed++;
+        
+        // 如果这是章节消息，且不是本页第一条，则需要新开一页
+        if (msg.isChapter && messagesProcessed > 1) {
+            page++;
+            messagesProcessed = 1; // 章节消息算在新的一页
         }
+        
+        // 如果当前页已满，新开一页
+        if (messagesProcessed > pageSize) {
+            page++;
+            messagesProcessed = 1; // 当前消息算在新的一页
+        }
+    }
+    
+    return page;
+}
         // 章节跳转
-        function jumpToChapter(chapterIndex) {
-            if (chapters[chapterIndex]) {
-                const chapter = chapters[chapterIndex];
-                
-                // 查找章节消息在日志中的位置
-                const chapterMsgIndex = filteredLogs.findIndex(msg => 
-                    msg.isChapter && msg.text.includes(chapter.name)
-                );
-                
-                if (chapterMsgIndex !== -1) {
-                    // 计算章节所在的页（使用原始的计算方法）
-                    const targetPage = calculatePageForMessage(chapterMsgIndex);
-                    currentPage = targetPage;
-                    renderCurrentPage();
-                    closeChapterSidebar();
-                }
-            }
+function jumpToChapter(chapterIndex) {
+    if (chapters[chapterIndex]) {
+        const chapter = chapters[chapterIndex];
+        
+        // 查找章节消息在日志中的位置
+        const chapterMsgIndex = filteredLogs.findIndex(msg => 
+            msg.isChapter && msg.text.includes(chapter.name)
+        );
+        
+        if (chapterMsgIndex !== -1) {
+            // 计算章节所在的页
+            const targetPage = calculatePageForMessage(chapterMsgIndex);
+            currentPage = targetPage;
+            renderCurrentPage();
+            closeChapterSidebar();
         }
+    }
+}
 
         // ========== UI控制函数 ==========
         function toggleChapterSidebar() {
