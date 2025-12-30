@@ -810,7 +810,7 @@
         }
         
         // 如果没有设置某章节的图片，使用默认图片
-        const defaultImage = logData.rightFloatingImage || "images/scene8.png";
+        const defaultImage = logData.websiteSettings?.rightFloatingImage || logData.rightFloatingImage || "images/scene8.png";
         const defaultBackground = "images/scene8.png";
         
         // 确保每个章节都有默认图片
@@ -830,8 +830,10 @@
                 }
             }
         });
+        
+        console.log('章节图片初始化完成:', chapterImageMap);
     }
-    
+        
     function getCurrentChapter() {
         if (!chapters || chapters.length === 0) return null;
         
@@ -870,8 +872,13 @@
     function updateChapterImages() {
         const currentChapter = getCurrentChapter();
         
+        console.log('当前章节:', currentChapter?.name);
+        console.log('章节图片映射:', chapterImageMap);
+        
         if (currentChapter && chapterImageMap[currentChapter.name]) {
             const images = chapterImageMap[currentChapter.name];
+            
+            console.log('获取到的图片:', images);
             
             // 更新网页背景
             if (images.background) {
@@ -879,6 +886,9 @@
                 const bodyStyle = window.getComputedStyle(document.body);
                 const currentBg = bodyStyle.backgroundImage;
                 const newBg = `url('${images.background}')`;
+                
+                console.log('当前背景:', currentBg);
+                console.log('新背景:', newBg);
                 
                 // 如果不是同一张图片，才应用过渡效果
                 if (currentBg !== newBg && currentBg !== `url("${images.background}")`) {
@@ -888,6 +898,7 @@
                     document.body.style.backgroundSize = 'cover';
                     document.body.style.backgroundAttachment = 'fixed';
                     document.body.style.backgroundPosition = 'center';
+                    console.log('应用了新背景图片');
                 }
             }
             
@@ -896,6 +907,9 @@
                 const rightImageElement = document.getElementById('rightFloatingImage');
                 const newImageUrl = `url('${images.rightImage}')`;
                 const currentImageUrl = rightImageElement.style.backgroundImage;
+                
+                console.log('当前右侧图片:', currentImageUrl);
+                console.log('新右侧图片:', newImageUrl);
                 
                 // 检查是否是同一张图片
                 if (newImageUrl !== currentImageUrl && 
@@ -909,6 +923,7 @@
                         rightImageElement.style.backgroundImage = newImageUrl;
                         rightImageElement.style.opacity = '0.9';
                         rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
+                        console.log('应用了新右侧图片');
                     }, 300);
                 } else {
                     // 如果是同一张图片，直接设置不透明度（确保可见）
@@ -917,6 +932,8 @@
                 
                 currentRightImageUrl = images.rightImage;
             }
+        } else {
+            console.log('未找到当前章节或章节图片映射');
         }
     }
 
@@ -1106,9 +1123,14 @@ function loadImageState() {
         }
         // 应用网站主题设置
         function applyWebsiteSettings() {
-            if (!logData.websiteSettings) return;
+            if (!logData.websiteSettings) {
+                console.log('没有网站设置数据');
+                return;
+            }
             
             const settings = logData.websiteSettings;
+            
+            console.log('应用网站设置:', settings);
             
             // 应用左侧章节导航背景
             const sidebar = document.querySelector('.floating-sidebar');
@@ -1117,9 +1139,11 @@ function loadImageState() {
                     if (settings.leftSidebar.useImage && settings.leftSidebar.image) {
                         sidebar.style.backgroundImage = `url('${settings.leftSidebar.image}')`;
                         sidebar.style.backgroundColor = 'transparent';
+                        console.log('应用左侧导航背景图片');
                     } else if (settings.leftSidebar.color) {
                         sidebar.style.backgroundColor = `rgba(${hexToRgb(settings.leftSidebar.color)}, ${settings.leftSidebar.opacity || 0.6})`;
                         sidebar.style.backgroundImage = 'none';
+                        console.log('应用左侧导航背景颜色:', settings.leftSidebar.color);
                     }
                 }
             }
@@ -1134,7 +1158,7 @@ function loadImageState() {
                     }
                 });
                 
-                // 应用到其他需要主题颜色的元素
+                // 应用到搜索高亮
                 const style = document.createElement('style');
                 style.textContent = `
                     .control-btn:hover {
@@ -1147,10 +1171,18 @@ function loadImageState() {
                         background-color: ${settings.theme.lightColor || '#8b0000'};
                         border-color: ${settings.theme.darkColor || '#660000'};
                     }
+                    .image-toggle-btn {
+                        background-color: ${settings.theme.lightColor || '#8b0000'};
+                    }
+                    .image-toggle-btn:hover {
+                        background-color: ${settings.theme.darkColor || '#a52a2a'};
+                    }
                 `;
                 document.head.appendChild(style);
+                console.log('应用了主题颜色');
             }
         }
+                
         // 根据章节重新组织日志数据
         function organizeLogsByChapters() {
             const logs = logData.logs || [];
