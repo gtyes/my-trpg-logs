@@ -797,24 +797,17 @@
         let isImageCollapsed = false; // 记录图片是否收起
         
     function initChapterImages() {
-        // 这里设置每个章节对应的右侧图片和背景图片
-        // 格式：章节名: {rightImage: 'url', background: 'url'}
-        chapterImageMap = {
-        "来自白教堂区的纸条": {rightImage: "images/map3.png", background: "images/scene1.png"},
-        "史密斯的请求": {rightImage: "images/map2.png", background: "images/scene2.png"},
-        "在伦敦的调查": {rightImage: "images/map2.png", background: "images/scene3.png"},
-        "穿越欧洲的快车": {rightImage: "images/map5.png", background: "images/scene4.png"},
-        "午夜暗影": {rightImage: "images/map5.png", background: "images/scene5.png"},
-        "床底下的影子": {rightImage: "images/map5.png", background: "images/scene6.png"},
-        "冯·霍夫勒男爵": {rightImage: "images/map5.png", background: "images/scene7.png"},
-        "插曲": {rightImage: "images/map5.png", background: "images/scene8.png"},
-        "不友善的谈判": {rightImage: "images/map5.png", background: "images/scene9.png"},
-        "抵达前的黎明": {rightImage: "images/map5.png", background: "images/scene10.png"},
-        "君士坦丁堡": {rightImage: "images/map1.png", background: "images/scene11.png"},
-        "低语毡帽最终章": {rightImage: "images/map1.png", background: "images/scene12.png"},
-        "厄运王子之岛": {rightImage: "images/map4.png", background: "images/scene13.png"},
-        "战斗后的余声": {rightImage: "images/map4.png", background: "images/scene14.png"}
-        };
+        chapterImageMap = {};
+        
+        // 从logData.chapters中读取每个章节的图片设置
+        if (logData.chapters && Array.isArray(logData.chapters)) {
+            logData.chapters.forEach(chapter => {
+                chapterImageMap[chapter.name] = {
+                    rightImage: chapter.rightImage || '',
+                    background: chapter.backgroundImage || ''
+                };
+            });
+        }
         
         // 如果没有设置某章节的图片，使用默认图片
         const defaultImage = logData.rightFloatingImage || "images/scene8.png";
@@ -827,10 +820,17 @@
                     rightImage: defaultImage,
                     background: defaultBackground
                 };
+            } else {
+                // 如果章节设置了图片但为空，使用默认
+                if (!chapterImageMap[chapter.name].rightImage) {
+                    chapterImageMap[chapter.name].rightImage = defaultImage;
+                }
+                if (!chapterImageMap[chapter.name].background) {
+                    chapterImageMap[chapter.name].background = defaultBackground;
+                }
             }
         });
     }
-
     
     function getCurrentChapter() {
         if (!chapters || chapters.length === 0) return null;
@@ -1012,19 +1012,19 @@ function loadImageState() {
     }
 }
 
-// 在页面加载完成后调用
-window.addEventListener('DOMContentLoaded', function() {
-    setTimeout(loadImageState, 100);
-});
+        // 在页面加载完成后调用
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(loadImageState, 100);
+        });
 
-// 闲聊折叠功能
-function toggleChatCollapse() {
-    const checkbox = document.getElementById('collapseChatCheckbox');
-    if (checkbox) {
-        collapseChatChannels = checkbox.checked;
-        renderCurrentPage(); // 重新渲染当前页
-    }
-}
+        // 闲聊折叠功能
+        function toggleChatCollapse() {
+            const checkbox = document.getElementById('collapseChatCheckbox');
+            if (checkbox) {
+                collapseChatChannels = checkbox.checked;
+                renderCurrentPage(); // 重新渲染当前页
+            }
+        }
         // 从URL获取日志文件
         function getLogFileFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -1046,15 +1046,14 @@ function toggleChatCollapse() {
                 console.log('日志数据加载成功:', logData);
                 
                 // 设置标题
-                document.title = '血色毡帽 - TRPG跑团日志';
-                // 改为内联方式设置标题字符
-        const titleHTML = `
-            <span style="color: #8b0000;">血</span>
-            <span style="color: white;">色</span>
-            <span style="color: white;">毡</span>
-            <span style="color: white;">帽</span>
-        `;
-        document.getElementById('logTitle').innerHTML = titleHTML;
+                document.title = logData.title || '血色毡帽 - TRPG跑团日志';
+                // 改为从网站设置中获取标题
+                const siteTitle = logData.websiteSettings?.title || '血色毡帽';
+                const titleHTML = `
+                    <span style="color: ${logData.websiteSettings?.theme?.lightColor || '#8b0000'};">${siteTitle[0] || '血'}</span>
+                    <span style="color: white;">${siteTitle.substring(1) || '色毡帽'}</span>
+                `;
+                document.getElementById('logTitle').innerHTML = titleHTML;
                 
                 // 设置右侧悬浮图片
                 const rightImageUrl = logData.rightFloatingImage || 'https://example.com/default-image.png';
@@ -1100,25 +1099,75 @@ function toggleChatCollapse() {
                     <button class="control-btn" onclick="location.reload()" style="margin-top: 20px;">重新加载</button>
                 `;
             }
+            // 应用网站设置
+            setTimeout(() => {
+                applyWebsiteSettings();
+            }, 100);
         }
-        
+        // 应用网站主题设置
+        function applyWebsiteSettings() {
+            if (!logData.websiteSettings) return;
+            
+            const settings = logData.websiteSettings;
+            
+            // 应用左侧章节导航背景
+            const sidebar = document.querySelector('.floating-sidebar');
+            if (sidebar) {
+                if (settings.leftSidebar) {
+                    if (settings.leftSidebar.useImage && settings.leftSidebar.image) {
+                        sidebar.style.backgroundImage = `url('${settings.leftSidebar.image}')`;
+                        sidebar.style.backgroundColor = 'transparent';
+                    } else if (settings.leftSidebar.color) {
+                        sidebar.style.backgroundColor = `rgba(${hexToRgb(settings.leftSidebar.color)}, ${settings.leftSidebar.opacity || 0.6})`;
+                        sidebar.style.backgroundImage = 'none';
+                    }
+                }
+            }
+            
+            // 应用主题颜色
+            if (settings.theme) {
+                // 应用到控制按钮
+                const controlBtns = document.querySelectorAll('.control-btn, .pagination-btn');
+                controlBtns.forEach(btn => {
+                    if (settings.theme.lightColor) {
+                        btn.style.backgroundColor = settings.theme.lightColor;
+                    }
+                });
+                
+                // 应用到其他需要主题颜色的元素
+                const style = document.createElement('style');
+                style.textContent = `
+                    .control-btn:hover {
+                        background-color: ${settings.theme.darkColor || '#a52a2a'} !important;
+                    }
+                    .pagination-btn:hover:not(:disabled) {
+                        background-color: ${settings.theme.darkColor || '#a52a2a'} !important;
+                    }
+                    .search-highlight {
+                        background-color: ${settings.theme.lightColor || '#8b0000'};
+                        border-color: ${settings.theme.darkColor || '#660000'};
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
         // 根据章节重新组织日志数据
         function organizeLogsByChapters() {
-    const logs = logData.logs || [];
-    
-    if (chapters.length === 0) {
-        filteredLogs = logs;
-        return;
-    }
-    
-    // 按位置排序
-    chapters.sort((a, b) => a.position - b.position);
-    
-    // 重新构建filteredLogs，确保章节消息正确放置
-    filteredLogs = [...logs];
-    // 章节消息已经在logs中，我们只需要标记它们的位置
-    console.log('章节数量:', chapters.length);
-}
+            const logs = logData.logs || [];
+            
+            if (chapters.length === 0) {
+                filteredLogs = logs;
+                return;
+            }
+            
+            // 按位置排序
+            chapters.sort((a, b) => a.position - b.position);
+            
+            // 重新构建filteredLogs，确保章节消息正确放置
+            filteredLogs = [...logs];
+            // 章节消息已经在logs中，我们只需要标记它们的位置
+            console.log('章节数量:', chapters.length);
+        }
         // 渲染章节导航
         function renderChapterNavigation() {
             const chapterList = document.getElementById('chapterList');
