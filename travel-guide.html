@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>东方快车旅行伴侣</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #8a2387, #e94057, #f27121);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+        
+        /* PDF阅读器样式 */
+        .pdf-viewer {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .pdf-container {
+            width: 100%;
+            height: 600px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* 翻页控制器 */
+        .page-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .control-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .page-info {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        /* 下载按钮 */
+        .download-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 30px auto;
+            text-decoration: none;
+            text-align: center;
+            width: fit-content;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.4);
+        }
+        
+        /* 手册描述 */
+        .guide-description {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 40px;
+            line-height: 1.8;
+            border-left: 4px solid #667eea;
+        }
+        
+        .guide-description h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+                margin-top: 40px;
+            }
+            
+            .pdf-container {
+                height: 400px;
+            }
+            
+            .page-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .control-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .back-btn {
+                position: relative;
+                left: 0;
+                top: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="window.location.href='index.html'">← 返回首页</button>
+        
+        <div class="header">
+            <h1>东方快车旅行伴侣</h1>
+            <p>国际运输公司欢迎您乘坐东方快车！我们为自己无与伦比的服务感到骄傲。当您乘坐东方快车时，您将体验到奢华旅行的终极体验。</p>
+        </div>
+        
+        <div class="pdf-viewer">
+            <div class="pdf-container">
+                <iframe id="pdfViewer" src="data/travel.pdf" type="application/pdf"></iframe>
+            </div>
+            
+            <div class="page-controls">
+                <button class="control-btn" onclick="previousPage()">
+                    <span>←</span> 上一页
+                </button>
+                
+                <div class="page-info" id="pageInfo">
+                    第 1 页 / 共 ? 页
+                </div>
+                
+                <button class="control-btn" onclick="nextPage()">
+                    下一页 <span>→</span>
+                </button>
+            </div>
+            
+            <a href="data/travel.pdf" download="克苏鲁旅行手册.pdf" class="download-btn">
+                下载旅行手册
+            </a>
+        </div>
+        
+        <div class="guide-description">
+            <h3>乘客提醒</h3>
+            <p>提醒乘客，每个国家的警察都会检查乘客上下火车的护照和签证。每个边境都有海关检查。在这些检查期间，列车长总是在场的。每辆列车的车长都会拿走您的签证和护照，这样您就不会受到边境检查安排的打扰。您的签证和护照将由列车长暂时保管。</p>
+            <p>城市：</p>
+            <ul style="padding-left: 20px; margin-top: 10px;">
+                <li>伦敦</li>
+                <li>巴黎</li>
+                <li>洛桑</li>
+                <li>米兰</li>
+                <li>威尼斯</li>
+                <li>的里雅斯特</li>
+                <li>贝尔格莱德</li>
+                <li>索非亚</li>
+                <li>君士坦丁堡</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // PDF页面控制
+        let currentPage = 1;
+        let totalPages = 1;
+        
+        // 获取PDF文档信息
+        function updatePDFInfo() {
+            const iframe = document.getElementById('pdfViewer');
+            
+            // 注意：直接通过iframe控制PDF页面需要PDF文件支持页面参数
+            // 这里我们使用一个简单的方法：通过调整iframe的src来模拟翻页
+            // 如果你的PDF文件比较大，可以考虑使用PDF.js库来实现更专业的控制
+            
+            // 尝试通过URL参数控制页面
+            setTimeout(() => {
+                // 这里可以添加PDF.js库来实现更精确的页面控制
+                // 由于安全限制，我们无法直接获取iframe中的PDF页面数
+                // 所以这里我们使用一个占位符
+                document.getElementById('pageInfo').textContent = `第 ${currentPage} 页 / 阅读中...`;
+            }, 1000);
+        }
+        
+        // 上一页
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                const iframe = document.getElementById('pdfViewer');
+                // 重新加载PDF并跳转到指定页面
+                // 注意：这种方法需要PDF支持#page=参数
+                iframe.src = `data/travel.pdf#page=${currentPage}`;
+                updatePageInfo();
+            }
+        }
+        
+        // 下一页
+        function nextPage() {
+            currentPage++;
+            const iframe = document.getElementById('pdfViewer');
+            iframe.src = `data/travel.pdf#page=${currentPage}`;
+            updatePageInfo();
+        }
+        
+        // 更新页面信息显示
+        function updatePageInfo() {
+            document.getElementById('pageInfo').textContent = `第 ${currentPage} 页`;
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    previousPage();
+                } else if (e.key === 'ArrowRight') {
+                    nextPage();
+                }
+            });
+            
+            updatePDFInfo();
+        });
+        
+        // 如果PDF文件不存在，显示提示
+        window.onload = function() {
+            const iframe = document.getElementById('pdfViewer');
+            iframe.onerror = function() {
+                iframe.contentDocument.body.innerHTML = `
+                    <div style="padding: 50px; text-align: center; color: #666;">
+                        <h2>无法加载PDF文件</h2>
+                        <p>请确保 data/travel.pdf 文件存在</p>
+                        <p>或者 <a href="#" onclick="location.reload()">点击重试</a></p>
+                    </div>
+                `;
+            };
+        };
+    </script>
+</body>
+</html>
