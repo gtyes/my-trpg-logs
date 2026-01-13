@@ -516,6 +516,18 @@
                 inset 0 0 0 1px rgba(0, 0, 0, 0.1),
                 0 4px 20px rgba(0, 0, 0, 0.2);
         }
+        .book-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+        
+        .page-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* 保持比例，完整显示 */
+        }
     </style>
 </head>
 <body>
@@ -709,33 +721,24 @@
         // 设置书容器高度（保持148:210比例）
         function setupBookHeight() {
             const bookContainer = document.getElementById('bookContainer');
-            if (!bookContainer) return;
+            const bookContainerWidth = bookContainer.clientWidth;
             
-            const container = document.querySelector('.pdf-viewer-area');
-            if (!container) return;
+            // 根据PDF比例(148:210)和两页并排计算合适的高度
+            // 每页宽度 = 总宽度 / 2
+            const pageWidth = bookContainerWidth / 2;
+            // 根据PDF比例计算高度：210/148 ≈ 1.4189
+            const pageHeight = pageWidth * (210 / 148);
             
-            // 计算可用宽度（考虑内边距）
-            const containerWidth = container.clientWidth - 60; // 减去内边距
+            // 设置容器高度，确保整个PDF页面能完整显示
+            bookContainer.style.height = Math.max(pageHeight, 500) + 'px'; // 最小高度500px
             
-            // 根据PDF比例计算高度：148:210 = 宽:高
-            // 显示两页，所以每页宽度是总宽的一半
-            const pageWidth = containerWidth / 2;
-            const pageHeight = pageWidth * 210 / 148;
+            // 同时更新每个页面的高度
+            const pages = document.querySelectorAll('.book-page');
+            pages.forEach(page => {
+                page.style.height = bookContainer.style.height;
+            });
             
-            // 设置容器高度，留出一些空间
-            bookContainer.style.height = pageHeight + 'px';
-            
-            // 设置每页的最小高度，避免太小时显示不全
-            const minHeight = 400;
-            if (pageHeight < minHeight) {
-                bookContainer.style.height = minHeight + 'px';
-                
-                // 重新计算宽度以保持比例
-                const newPageHeight = minHeight;
-                const newPageWidth = newPageHeight * 148 / 210;
-                bookContainer.style.width = (newPageWidth * 2) + 'px';
-                bookContainer.style.margin = '0 auto';
-            }
+            console.log(`容器尺寸: ${bookContainerWidth}x${bookContainer.style.height}, 单页尺寸: ${pageWidth}x${pageHeight}`);
         }
         
         // 设置点击事件
@@ -814,51 +817,65 @@
             
             // 获取PDF页面的原始尺寸
             const viewport = page.getViewport({ scale: 1 });
+            const pdfWidth = viewport.width;
+            const pdfHeight = viewport.height;
             
-            // 设置canvas尺寸（保持148:210的比例）
+            // 获取容器尺寸
             const container = document.querySelector('.book-page');
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
             
-            // 计算最佳缩放比例以适应容器并保持高清
-            const devicePixelRatio = window.devicePixelRatio || 1;
-            const scaleToFit = Math.min(
-                containerWidth / viewport.width,
-                containerHeight / viewport.height
+            // 计算合适的缩放比例，使整个PDF页面适应容器
+            // 保持PDF原始宽高比(148:210)
+            const targetWidth = containerWidth;
+            const targetHeight = containerHeight;
+            
+            // 计算缩放比例，使PDF完整显示在容器中
+            const scale = Math.min(
+                targetWidth / pdfWidth,
+                targetHeight / pdfHeight
             );
             
-            // 使用更高的缩放比例以获得更清晰的图像
-            const renderScale = scaleToFit * devicePixelRatio * 1.5; // 提高1.5倍以获得高清效果
+            // 使用计算出的缩放比例创建视口
+            const scaledViewport = page.getViewport({ scale: scale });
             
-            const scaledViewport = page.getViewport({ scale: renderScale });
+            // 获取设备像素比，用于高清渲染
+            const dpr = window.devicePixelRatio || 1;
             
-            // 设置canvas的渲染尺寸（更高分辨率）
-            canvas.width = Math.floor(scaledViewport.width);
-            canvas.height = Math.floor(scaledViewport.height);
-            
-            // 调整canvas的CSS显示尺寸
+            // 设置canvas的显示尺寸（CSS尺寸）
             canvas.style.width = containerWidth + 'px';
             canvas.style.height = containerHeight + 'px';
             
-            // 创建高清渲染上下文
+            // 设置canvas的渲染尺寸（内存中的实际像素）
+            canvas.width = Math.floor(containerWidth * dpr);
+            canvas.height = Math.floor(containerHeight * dpr);
+            
+            // 设置canvas的CSS尺寸为容器大小
+            canvas.style.width = containerWidth + 'px';
+            canvas.style.height = containerHeight + 'px';
+            
+            // 缩放上下文以匹配DPI
             ctx.save();
-            ctx.scale(devicePixelRatio, devicePixelRatio);
+            ctx.scale(dpr, dpr);
             
-            // 设置渲染质量
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            // 计算在canvas中居中显示PDF的位置
+            const xOffset = (containerWidth - scaledViewport.width) / 2;
+            const yOffset = (containerHeight - scaledViewport.height) / 2;
             
-            // 渲染PDF页面
+            // 创建渲染上下文
             const renderContext = {
                 canvasContext: ctx,
                 viewport: scaledViewport,
-                enableWebGL: true,
-                renderInteractiveForms: false
+                transform: [dpr, 0, 0, dpr, xOffset * dpr, yOffset * dpr]
             };
             
+            // 渲染PDF页面
             return page.render(renderContext).promise.then(function() {
                 ctx.restore();
-                console.log(`第${page.pageNumber}页渲染完成，分辨率: ${canvas.width}x${canvas.height}`);
+                console.log(`第${page.pageNumber}页渲染完成，缩放比例: ${scale.toFixed(2)}`);
+            }).catch(function(error) {
+                console.error('渲染页面失败:', error);
+                ctx.restore();
             });
         }
         
