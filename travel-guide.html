@@ -36,8 +36,6 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            display: flex;
-            gap: 30px;
         }
         
         .header {
@@ -152,9 +150,6 @@
             margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 2px solid rgba(212, 175, 55, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
         .toc-list {
@@ -168,7 +163,7 @@
         .toc-link {
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
             padding: 15px 20px;
             background: rgba(212, 175, 55, 0.05);
             border-radius: 10px;
@@ -193,7 +188,6 @@
         }
         
         .city-name {
-            flex-grow: 1;
             font-size: 1.1rem;
         }
         
@@ -207,10 +201,6 @@
         }
         
         /* 主要内容区域 */
-        .main-content {
-            flex-grow: 1;
-        }
-        
         .pdf-viewer-area {
             background: rgba(20, 40, 60, 0.8);
             border-radius: 15px;
@@ -219,13 +209,13 @@
             backdrop-filter: blur(10px);
         }
         
-        /* 双页PDF容器 - 像书一样紧贴 */
+        /* 双页PDF容器 */
         .book-container {
             display: flex;
             margin-bottom: 30px;
-            perspective: 1200px;
             position: relative;
             height: 600px;
+            cursor: pointer;
         }
         
         .book-page {
@@ -233,19 +223,23 @@
             background: #fff;
             position: relative;
             overflow: hidden;
-            box-shadow: 
-                0 0 0 1px rgba(212, 175, 55, 0.1),
-                inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        
+        .book-page:hover {
+            transform: translateY(-2px);
         }
         
         .book-page.left-page {
             border-radius: 5px 0 0 5px;
             border-right: 1px solid rgba(0, 0, 0, 0.2);
+            cursor: pointer;
         }
         
         .book-page.right-page {
             border-radius: 0 5px 5px 0;
             border-left: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
         }
         
         .page-canvas {
@@ -255,78 +249,25 @@
             background: white;
         }
         
-        /* 翻页动画效果 */
-        .page-turning {
+        /* 点击区域提示 */
+        .click-hint {
             position: absolute;
-            width: 50%;
-            height: 100%;
-            transform-origin: left center;
-            transform-style: preserve-3d;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(212, 175, 55, 0.7);
+            font-size: 2rem;
+            font-weight: bold;
+            z-index: 5;
+            transition: opacity 0.3s;
             pointer-events: none;
-            z-index: 10;
         }
         
-        .page-turning.turn-right {
-            left: 50%;
-            transform-origin: left center;
+        .left-hint {
+            left: 20px;
         }
         
-        .page-turning.turn-left {
-            right: 50%;
-            transform-origin: right center;
-        }
-        
-        .page-turning .front,
-        .page-turning .back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            box-shadow: 
-                inset 0 0 30px rgba(0, 0, 0, 0.1),
-                0 0 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .page-turning .front {
-            background: white;
-        }
-        
-        .page-turning .back {
-            background: #f5f5f5;
-            transform: rotateY(180deg);
-        }
-        
-        /* 翻页动画关键帧 */
-        @keyframes turnPageRight {
-            0% {
-                transform: rotateY(0deg);
-            }
-            100% {
-                transform: rotateY(-180deg);
-            }
-        }
-        
-        @keyframes turnPageLeft {
-            0% {
-                transform: rotateY(0deg);
-            }
-            100% {
-                transform: rotateY(180deg);
-            }
-        }
-        
-        .turning-animation {
-            animation-duration: 0.6s;
-            animation-timing-function: ease;
-            animation-fill-mode: forwards;
-        }
-        
-        .turn-right.turning-animation {
-            animation-name: turnPageRight;
-        }
-        
-        .turn-left.turning-animation {
-            animation-name: turnPageLeft;
+        .right-hint {
+            right: 20px;
         }
         
         /* 翻页控制器 */
@@ -403,9 +344,6 @@
             color: #d4af37;
             margin-bottom: 20px;
             font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
         .city-list {
@@ -431,10 +369,6 @@
         
         /* 响应式设计 */
         @media (max-width: 1024px) {
-            .container {
-                flex-direction: column;
-            }
-            
             .header h1 {
                 font-size: 2.8rem;
                 margin-top: 60px;
@@ -471,6 +405,10 @@
             .toc-sidebar {
                 width: 300px;
             }
+            
+            .click-hint {
+                font-size: 1.5rem;
+            }
         }
         
         @media (max-width: 480px) {
@@ -488,6 +426,10 @@
             
             .book-container {
                 height: 300px;
+            }
+            
+            .click-hint {
+                display: none;
             }
         }
         
@@ -550,7 +492,7 @@
 <body>
     <!-- 目录切换按钮 -->
     <button class="toc-toggle-btn" id="tocToggleBtn">
-        <span>📖</span> 目录
+        目录
     </button>
     
     <!-- 悬浮目录面板 -->
@@ -562,83 +504,84 @@
         </ul>
         
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(212, 175, 55, 0.2);">
-            <div style="color: #d4af37; margin-bottom: 15px; font-weight: bold; display: flex; align-items: center; gap: 10px;">
-                <span>📊</span> 手册信息
+            <div style="color: #d4af37; margin-bottom: 15px; font-weight: bold;">
+                手册信息
             </div>
             <div style="color: #c9c0aa; font-size: 0.9rem; line-height: 1.6;">
                 <p>总页数：<span id="totalPages">加载中...</span></p>
                 <p>当前显示：<span id="currentSpread">第 1-2 页</span></p>
-                <p style="margin-top: 10px; font-size: 0.85rem; opacity: 0.7;">使用键盘← →箭头翻页</p>
+                <p style="margin-top: 10px; font-size: 0.85rem; opacity: 0.7;">点击页面左右区域翻页</p>
             </div>
         </div>
     </div>
     
     <!-- 主要内容 -->
     <div class="container">
-        <div class="main-content">
-            <div class="header">
-                <h1>东方快车旅行伴侣</h1>
-                <p>国际运输公司欢迎您乘坐东方快车！我们为自己无与伦比的服务感到骄傲。当您乘坐东方快车时，您将体验到奢华旅行的终极体验。</p>
+        <div class="header">
+            <h1>东方快车旅行伴侣</h1>
+            <p>国际运输公司欢迎您乘坐东方快车！我们为自己无与伦比的服务感到骄傲。当您乘坐东方快车时，您将体验到奢华旅行的终极体验。</p>
+        </div>
+        
+        <div class="pdf-viewer-area">
+            <!-- 双页PDF容器 -->
+            <div class="book-container" id="bookContainer">
+                <!-- 左页点击提示 -->
+                <div class="click-hint left-hint" id="leftHint">‹</div>
+                
+                <!-- 左页 -->
+                <div class="book-page left-page" id="leftPage">
+                    <canvas id="pdfCanvasLeft" class="page-canvas high-res-canvas"></canvas>
+                </div>
+                
+                <!-- 右页 -->
+                <div class="book-page right-page" id="rightPage">
+                    <canvas id="pdfCanvasRight" class="page-canvas high-res-canvas"></canvas>
+                </div>
+                
+                <!-- 右页点击提示 -->
+                <div class="click-hint right-hint" id="rightHint">›</div>
             </div>
             
-            <div class="pdf-viewer-area">
-                <!-- 双页PDF容器 - 像书一样紧贴 -->
-                <div class="book-container" id="bookContainer">
-                    <!-- 左页 -->
-                    <div class="book-page left-page">
-                        <canvas id="pdfCanvasLeft" class="page-canvas high-res-canvas"></canvas>
-                    </div>
-                    
-                    <!-- 右页 -->
-                    <div class="book-page right-page">
-                        <canvas id="pdfCanvasRight" class="page-canvas high-res-canvas"></canvas>
-                    </div>
-                    
-                    <!-- 翻页动画元素 -->
-                    <div class="page-turning" id="pageTurning"></div>
+            <!-- 页面滑动条 -->
+            <div class="page-slider-container">
+                <div class="slider-label">
+                    <span>第 <span id="sliderMin">1</span> 页</span>
+                    <span>第 <span id="sliderMax">1</span> 页</span>
+                </div>
+                <input type="range" id="pageSlider" class="page-slider" min="1" max="1" value="1" oninput="jumpToPage(this.value)">
+            </div>
+            
+            <!-- 翻页控制器 -->
+            <div class="page-controls">
+                <button class="control-btn" id="prevBtn" onclick="goPrevious()">
+                    <span>←</span> 上一页
+                </button>
+                
+                <div class="page-info">
+                    第 <span id="pageNumLeft">1</span>-<span id="pageNumRight">2</span> 页
                 </div>
                 
-                <!-- 页面滑动条 -->
-                <div class="page-slider-container">
-                    <div class="slider-label">
-                        <span>第 <span id="sliderMin">1</span> 页</span>
-                        <span>第 <span id="sliderMax">1</span> 页</span>
-                    </div>
-                    <input type="range" id="pageSlider" class="page-slider" min="1" max="1" value="1" oninput="jumpToPage(this.value)">
-                </div>
+                <button class="control-btn" id="nextBtn" onclick="goNext()">
+                    下一页 <span>→</span>
+                </button>
+            </div>
+            
+            <!-- 乘客提醒 -->
+            <div class="guide-description">
+                <h3>乘客提醒</h3>
+                <p>提醒乘客，每个国家的警察都会检查乘客上下火车的护照和签证。每个边境都有海关检查。在这些检查期间，列车长总是在场的。每辆列车的车长都会拿走您的签证和护照，这样您就不会受到边境检查安排的打扰。您的签证和护照将由列车长暂时保管。</p>
                 
-                <!-- 翻页控制器 -->
-                <div class="page-controls">
-                    <button class="control-btn" id="prevBtn" onclick="goPrevious()">
-                        <span>←</span> 上一页
-                    </button>
-                    
-                    <div class="page-info">
-                        第 <span id="pageNumLeft">1</span>-<span id="pageNumRight">2</span> 页
-                    </div>
-                    
-                    <button class="control-btn" id="nextBtn" onclick="goNext()">
-                        下一页 <span>→</span>
-                    </button>
-                </div>
-                
-                <!-- 乘客提醒 -->
-                <div class="guide-description">
-                    <h3>乘客提醒</h3>
-                    <p>提醒乘客，每个国家的警察都会检查乘客上下火车的护照和签证。每个边境都有海关检查。在这些检查期间，列车长总是在场的。每辆列车的车长都会拿走您的签证和护照，这样您就不会受到边境检查安排的打扰。您的签证和护照将由列车长暂时保管。</p>
-                    
-                    <p><strong>经停城市：</strong></p>
-                    <div class="city-list">
-                        <div class="city-item">伦敦 (第6页)</div>
-                        <div class="city-item">巴黎 (第10页)</div>
-                        <div class="city-item">洛桑 (第15页)</div>
-                        <div class="city-item">米兰 (第21页)</div>
-                        <div class="city-item">威尼斯 (第25页)</div>
-                        <div class="city-item">的里雅斯特 (第29页)</div>
-                        <div class="city-item">贝尔格莱德 (第35页)</div>
-                        <div class="city-item">索非亚 (第39页)</div>
-                        <div class="city-item">君士坦丁堡 (第43页)</div>
-                    </div>
+                <p><strong>经停城市：</strong></p>
+                <div class="city-list">
+                    <div class="city-item">伦敦 (第6页)</div>
+                    <div class="city-item">巴黎 (第10页)</div>
+                    <div class="city-item">洛桑 (第15页)</div>
+                    <div class="city-item">米兰 (第21页)</div>
+                    <div class="city-item">威尼斯 (第25页)</div>
+                    <div class="city-item">的里雅斯特 (第29页)</div>
+                    <div class="city-item">贝尔格莱德 (第35页)</div>
+                    <div class="city-item">索非亚 (第39页)</div>
+                    <div class="city-item">君士坦丁堡 (第43页)</div>
                 </div>
             </div>
         </div>
@@ -650,8 +593,7 @@
         let pdfDoc = null;
         let currentPage = 1; // 当前左页页码
         let totalPages = 1;
-        const scale = 2.0; // 提高清晰度
-        let isTurning = false; // 防止动画期间重复点击
+        const scale = 1.5; // 清晰度
         
         // 城市目录映射
         const cityPages = [
@@ -716,6 +658,9 @@
             
             // 设置书容器高度
             setupBookHeight();
+            
+            // 设置点击事件
+            setupClickEvents();
         }).catch(function(error) {
             console.error('PDF加载失败:', error);
             alert('无法加载PDF文件，请确保data/travel.pdf文件存在');
@@ -731,9 +676,26 @@
             bookContainer.style.height = pageHeight + 'px';
         }
         
+        // 设置点击事件
+        function setupClickEvents() {
+            const leftPage = document.getElementById('leftPage');
+            const rightPage = document.getElementById('rightPage');
+            const bookContainer = document.getElementById('bookContainer');
+            
+            // 点击左半部分翻到前一页
+            leftPage.addEventListener('click', function() {
+                goPrevious();
+            });
+            
+            // 点击右半部分翻到后一页
+            rightPage.addEventListener('click', function() {
+                goNext();
+            });
+        }
+        
         // 渲染两页
         async function renderPages(leftPageNum) {
-            if (!pdfDoc || isTurning) return;
+            if (!pdfDoc) return;
             
             const rightPageNum = leftPageNum + 1;
             
@@ -765,10 +727,14 @@
                 const canvasRight = document.getElementById('pdfCanvasRight');
                 const ctxRight = canvasRight.getContext('2d');
                 ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+                canvasRight.style.backgroundColor = '#fff';
             }
             
             // 更新当前页码
             currentPage = leftPageNum;
+            
+            // 更新点击提示显示
+            updateClickHints();
         }
         
         // 渲染单个页面到指定canvas
@@ -782,7 +748,7 @@
             // 设置canvas尺寸（保持148:210的比例）
             const container = document.querySelector('.book-page');
             const containerWidth = container.clientWidth;
-            const containerHeight = containerWidth * 210 / 148;
+            const containerHeight = container.clientHeight;
             
             // 计算缩放比例以适应容器
             const scaleToFit = Math.min(
@@ -790,7 +756,7 @@
                 containerHeight / viewport.height
             );
             
-            const scaledViewport = page.getViewport({ scale: scaleToFit * window.devicePixelRatio });
+            const scaledViewport = page.getViewport({ scale: scaleToFit });
             
             // 设置canvas尺寸
             canvas.width = scaledViewport.width;
@@ -809,79 +775,64 @@
             return page.render(renderContext).promise;
         }
         
-        // 翻页动画效果
-        function turnPageAnimation(direction, callback) {
-            if (isTurning) return;
-            isTurning = true;
+        // 更新点击提示
+        function updateClickHints() {
+            const leftHint = document.getElementById('leftHint');
+            const rightHint = document.getElementById('rightHint');
             
-            const pageTurning = document.getElementById('pageTurning');
+            // 显示左提示（如果不是第一页）
+            if (currentPage > 1) {
+                leftHint.style.opacity = '1';
+            } else {
+                leftHint.style.opacity = '0';
+            }
             
-            // 设置翻页元素
-            pageTurning.className = 'page-turning';
-            pageTurning.classList.add(direction === 'next' ? 'turn-right' : 'turn-left');
-            
-            // 开始动画
-            setTimeout(() => {
-                pageTurning.classList.add('turning-animation');
-                
-                // 动画结束后执行回调
-                setTimeout(() => {
-                    // 重置动画元素
-                    pageTurning.className = 'page-turning';
-                    pageTurning.classList.remove('turning-animation');
-                    
-                    // 执行回调（加载新页面）
-                    if (callback) callback();
-                    
-                    isTurning = false;
-                }, 600);
-            }, 10);
+            // 显示右提示（如果不是最后一页）
+            if (currentPage < totalPages - 1) {
+                rightHint.style.opacity = '1';
+            } else {
+                rightHint.style.opacity = '0';
+            }
         }
         
         // 上一页
         function goPrevious() {
-            if (currentPage > 2 && !isTurning) {
-                turnPageAnimation('prev', () => {
-                    currentPage -= 2;
-                    renderPages(currentPage);
-                    updateButtonStates();
-                    updateActiveTOC();
-                });
+            if (currentPage > 2) {
+                currentPage -= 2;
+                renderPages(currentPage);
+                updateButtonStates();
+                updateActiveTOC();
+            } else if (currentPage > 1) {
+                currentPage = 1;
+                renderPages(currentPage);
+                updateButtonStates();
+                updateActiveTOC();
             }
         }
         
         // 下一页
         function goNext() {
-            if (currentPage < totalPages - 1 && !isTurning) {
-                turnPageAnimation('next', () => {
-                    currentPage += 2;
-                    renderPages(currentPage);
-                    updateButtonStates();
-                    updateActiveTOC();
-                });
+            if (currentPage < totalPages - 1) {
+                currentPage += 2;
+                renderPages(currentPage);
+                updateButtonStates();
+                updateActiveTOC();
             }
         }
         
         // 跳转到指定页（通过滑块）
         function jumpToPage(sliderValue) {
-            if (isTurning) return;
-            
             const newLeftPage = (parseInt(sliderValue) - 1) * 2 + 1;
             if (newLeftPage !== currentPage) {
-                const direction = newLeftPage > currentPage ? 'next' : 'prev';
-                turnPageAnimation(direction, () => {
-                    currentPage = newLeftPage;
-                    renderPages(currentPage);
-                    updateButtonStates();
-                    updateActiveTOC();
-                });
+                currentPage = newLeftPage;
+                renderPages(currentPage);
+                updateButtonStates();
+                updateActiveTOC();
             }
         }
         
         // 跳转到城市页面
         function jumpToCity(pageNumber) {
-            if (isTurning) return;
-            
             // 确保跳转到双页显示中的左页
             let targetPage = pageNumber;
             if (targetPage % 2 === 0) {
@@ -891,17 +842,13 @@
             if (targetPage < 1) targetPage = 1;
             if (targetPage > totalPages - 1) targetPage = totalPages - 1;
             
-            const direction = targetPage > currentPage ? 'next' : 'prev';
+            currentPage = targetPage;
+            renderPages(currentPage);
+            updateButtonStates();
+            updateActiveTOC();
             
-            turnPageAnimation(direction, () => {
-                currentPage = targetPage;
-                renderPages(currentPage);
-                updateButtonStates();
-                updateActiveTOC();
-                
-                // 关闭目录面板
-                tocSidebar.classList.remove('show');
-            });
+            // 关闭目录面板
+            tocSidebar.classList.remove('show');
         }
         
         // 更新按钮状态
@@ -909,8 +856,8 @@
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             
-            prevBtn.disabled = currentPage <= 1 || isTurning;
-            nextBtn.disabled = currentPage >= totalPages - 1 || isTurning;
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages - 1;
         }
         
         // 渲染目录
