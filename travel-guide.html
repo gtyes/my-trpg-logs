@@ -13,90 +13,249 @@
         
         body {
             font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: #0a1929;
             min-height: 100vh;
-            color: #e0e0e0;
+            color: #f0e6d2;
             padding: 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(135deg, rgba(10, 25, 41, 0.95) 0%, rgba(15, 32, 52, 0.95) 100%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: -1;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            display: flex;
+            gap: 30px;
         }
         
         .header {
             text-align: center;
             margin-bottom: 40px;
-            padding: 30px 0;
-            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
             border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
         }
         
         .header h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #8a2387, #e94057, #f27121);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            color: #d4af37;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+            font-weight: 700;
+            letter-spacing: 1px;
         }
         
         .header p {
-            font-size: 1.2rem;
-            opacity: 0.8;
-            max-width: 600px;
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
             margin: 0 auto;
             line-height: 1.6;
+            color: #c9c0aa;
         }
         
         .back-btn {
             position: absolute;
             left: 20px;
             top: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: none;
-            padding: 10px 25px;
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 12px 30px;
             border-radius: 25px;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
         }
         
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(212, 175, 55, 0.2);
             transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
         }
         
-        /* PDF阅读器样式 */
-        .pdf-viewer {
-            background: rgba(255, 255, 255, 0.05);
+        /* 左侧目录 */
+        .toc-sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            background: rgba(20, 40, 60, 0.8);
             border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            margin-bottom: 40px;
+            padding: 25px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
         }
         
-        .pdf-container {
-            width: 100%;
-            height: 600px;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        .toc-title {
+            color: #d4af37;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toc-title::before {
+            content: '📋';
+            font-size: 1.3rem;
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: 12px;
             position: relative;
         }
         
-        iframe {
+        .toc-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 10px;
+            color: #c9c0aa;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .toc-link:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateX(5px);
+            color: #d4af37;
+        }
+        
+        .toc-link.active {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
+            color: #d4af37;
+            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.1);
+        }
+        
+        .city-name {
+            flex-grow: 1;
+        }
+        
+        .page-number {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        /* PDF阅读器区域 */
+        .pdf-viewer-area {
+            flex-grow: 1;
+            background: rgba(20, 40, 60, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* 两页PDF容器 */
+        .pdf-double-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            perspective: 1000px;
+        }
+        
+        .pdf-page-wrapper {
+            flex: 1;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+        }
+        
+        .pdf-page-wrapper.right-page {
+            perspective-origin: left center;
+        }
+        
+        .pdf-page-wrapper.left-page {
+            perspective-origin: right center;
+        }
+        
+        .pdf-page {
             width: 100%;
-            height: 100%;
-            border: none;
+            background: #fff;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 30px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(212, 175, 55, 0.1);
+            position: relative;
+            transition: transform 0.6s ease, box-shadow 0.6s ease;
+        }
+        
+        .pdf-page canvas {
+            width: 100% !important;
+            height: auto !important;
+            display: block;
+        }
+        
+        /* 翻页动画效果 */
+        .pdf-page-wrapper.turning {
+            z-index: 10;
+        }
+        
+        .pdf-page-wrapper.turning .pdf-page {
+            transform: rotateY(-180deg);
+            box-shadow: 
+                -15px 8px 30px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(212, 175, 55, 0.1);
+        }
+        
+        /* 页面阴影效果 */
+        .pdf-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(0,0,0,0.03) 0%, transparent 5%, transparent 95%, rgba(0,0,0,0.03) 100%);
+            pointer-events: none;
         }
         
         /* 翻页控制器 */
@@ -104,101 +263,135 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
+            gap: 30px;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
         }
         
         .control-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+            color: #0a1929;
             border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 1rem;
+            padding: 14px 35px;
+            border-radius: 30px;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
         
-        .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .control-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+        
+        .control-btn:active:not(:disabled) {
+            transform: translateY(-1px);
         }
         
         .control-btn:disabled {
-            background: #666;
+            background: #4a5568;
+            color: #718096;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
         
         .page-info {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            color: #fff;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            min-width: 120px;
-            text-align: center;
-        }
-        
-        /* 下载按钮 */
-        .download-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
+            color: #d4af37;
+            padding: 12px 25px;
+            background: rgba(212, 175, 55, 0.1);
             border-radius: 25px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: block;
-            margin: 30px auto;
-            text-decoration: none;
+            min-width: 180px;
             text-align: center;
-            width: fit-content;
-        }
-        
-        .download-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
         }
         
         /* 手册描述 */
         .guide-description {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 25px;
+            background: rgba(212, 175, 55, 0.05);
+            padding: 30px;
             border-radius: 15px;
             margin-top: 40px;
             line-height: 1.8;
-            border-left: 4px solid #667eea;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            position: relative;
         }
         
         .guide-description h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .guide-description h3::before {
+            content: '⚠️';
+            font-size: 1.4rem;
+        }
+        
+        .city-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .city-item {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .city-item:hover {
+            background: rgba(212, 175, 55, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .toc-sidebar {
+                width: 100%;
+                position: static;
+            }
+            
+            .header h1 {
+                font-size: 2.8rem;
+                margin-top: 60px;
+            }
         }
         
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2.2rem;
-                margin-top: 40px;
             }
             
-            .pdf-container {
-                height: 400px;
+            .pdf-double-container {
+                flex-direction: column;
             }
             
             .page-controls {
                 flex-direction: column;
-                gap: 10px;
+                gap: 15px;
             }
             
             .control-btn {
@@ -206,128 +399,451 @@
                 justify-content: center;
             }
             
-            .back-btn {
-                position: relative;
-                left: 0;
-                top: 0;
-                margin-bottom: 20px;
+            .city-list {
+                grid-template-columns: repeat(2, 1fr);
             }
+        }
+        
+        @media (max-width: 480px) {
+            .city-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+        }
+        
+        /* 装饰元素 */
+        .decorative-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        }
+        
+        .page-slider {
+            width: 100%;
+            margin: 20px 0;
+            -webkit-appearance: none;
+            height: 6px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .page-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d4af37;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        
+        .page-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d4af37;
+            cursor: pointer;
+            border: none;
         }
     </style>
 </head>
 <body>
+    <button class="back-btn" onclick="window.location.href='index.html'">
+        <span>←</span> 返回日志库
+    </button>
+    
     <div class="container">
-        <button class="back-btn" onclick="window.location.href='index.html'">← 返回首页</button>
-        
-        <div class="header">
-            <h1>东方快车旅行伴侣</h1>
-            <p>国际运输公司欢迎您乘坐东方快车！我们为自己无与伦比的服务感到骄傲。当您乘坐东方快车时，您将体验到奢华旅行的终极体验。</p>
+        <!-- 左侧目录导航 -->
+        <div class="toc-sidebar">
+            <h2 class="toc-title">旅行路线目录</h2>
+            <ul class="toc-list" id="tocList">
+                <!-- 目录项将通过JavaScript动态生成 -->
+            </ul>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(212, 175, 55, 0.2);">
+                <div style="color: #d4af37; margin-bottom: 15px; font-weight: bold; display: flex; align-items: center; gap: 10px;">
+                    <span>📊</span> 手册信息
+                </div>
+                <div style="color: #c9c0aa; font-size: 0.9rem; line-height: 1.6;">
+                    <p>总页数：<span id="totalPages">加载中...</span></p>
+                    <p>当前显示：<span id="currentSpread">第 1-2 页</span></p>
+                </div>
+            </div>
         </div>
         
-        <!-- 在travel-guide.html中替代原有的PDF展示部分 -->
-        <div class="pdf-viewer">
-            <div class="pdf-container">
-                <canvas id="pdfCanvas"></canvas>
+        <!-- 右侧主要区域 -->
+        <div class="pdf-viewer-area">
+            <div class="header">
+                <h1>东方快车旅行伴侣</h1>
+                <p>国际运输公司欢迎您乘坐东方快车！我们为自己无与伦比的服务感到骄傲。当您乘坐东方快车时，您将体验到奢华旅行的终极体验。</p>
             </div>
             
+            <!-- 两页PDF容器 -->
+            <div class="pdf-double-container">
+                <div class="pdf-page-wrapper left-page" id="leftPageWrapper">
+                    <div class="pdf-page">
+                        <canvas id="pdfCanvasLeft"></canvas>
+                    </div>
+                </div>
+                <div class="pdf-page-wrapper right-page" id="rightPageWrapper">
+                    <div class="pdf-page">
+                        <canvas id="pdfCanvasRight"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 翻页控制器 -->
             <div class="page-controls">
-                <button class="control-btn" onclick="goPrevious()">
+                <button class="control-btn" id="prevBtn" onclick="goPrevious()">
                     <span>←</span> 上一页
                 </button>
                 
                 <div class="page-info">
-                    第 <span id="pageNum"></span> 页 / 共 <span id="pageCount"></span> 页
+                    第 <span id="pageNumLeft"></span>-<span id="pageNumRight"></span> 页
                 </div>
                 
-                <button class="control-btn" onclick="goNext()">
+                <button class="control-btn" id="nextBtn" onclick="goNext()">
                     下一页 <span>→</span>
                 </button>
             </div>
             
-            <input type="range" id="pageSlider" min="1" max="1" value="1" class="page-slider">
-        </div>
-        
-        <div class="guide-description">
-            <h3>乘客提醒</h3>
-            <p>提醒乘客，每个国家的警察都会检查乘客上下火车的护照和签证。每个边境都有海关检查。在这些检查期间，列车长总是在场的。每辆列车的车长都会拿走您的签证和护照，这样您就不会受到边境检查安排的打扰。您的签证和护照将由列车长暂时保管。</p>
-            <p>城市：</p>
-            <ul style="padding-left: 20px; margin-top: 10px;">
-                <li>伦敦</li>
-                <li>巴黎</li>
-                <li>洛桑</li>
-                <li>米兰</li>
-                <li>威尼斯</li>
-                <li>的里雅斯特</li>
-                <li>贝尔格莱德</li>
-                <li>索非亚</li>
-                <li>君士坦丁堡</li>
-            </ul>
+            <!-- 页面滑动条 -->
+            <input type="range" id="pageSlider" class="page-slider" min="1" max="1" value="1" oninput="jumpToPage(this.value)">
+            
+            <!-- 乘客提醒 -->
+            <div class="guide-description">
+                <h3>乘客提醒</h3>
+                <p>提醒乘客，每个国家的警察都会检查乘客上下火车的护照和签证。每个边境都有海关检查。在这些检查期间，列车长总是在场的。每辆列车的车长都会拿走您的签证和护照，这样您就不会受到边境检查安排的打扰。您的签证和护照将由列车长暂时保管。</p>
+                
+                <p><strong>经停城市：</strong></p>
+                <div class="city-list">
+                    <div class="city-item">伦敦 (第6页)</div>
+                    <div class="city-item">巴黎 (第10页)</div>
+                    <div class="city-item">洛桑 (第15页)</div>
+                    <div class="city-item">米兰 (第21页)</div>
+                    <div class="city-item">威尼斯 (第25页)</div>
+                    <div class="city-item">的里雅斯特 (第29页)</div>
+                    <div class="city-item">贝尔格莱德 (第35页)</div>
+                    <div class="city-item">索非亚 (第39页)</div>
+                    <div class="city-item">君士坦丁堡 (第43页)</div>
+                </div>
+            </div>
         </div>
     </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-        <script>
-            let pdfDoc = null;
-            let pageNum = 1;
-            let pageRendering = false;
-            let pageNumPending = null;
-            const scale = 1.5;
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        // PDF文档实例
+        let pdfDoc = null;
+        let currentPage = 1; // 当前左页页码
+        let totalPages = 1;
+        const scale = 1.2; // 缩放比例
+        
+        // 城市目录映射
+        const cityPages = [
+            { name: "伦敦", page: 6 },
+            { name: "巴黎", page: 10 },
+            { name: "洛桑", page: 15 },
+            { name: "米兰", page: 21 },
+            { name: "威尼斯", page: 25 },
+            { name: "的里雅斯特", page: 29 },
+            { name: "贝尔格莱德", page: 35 },
+            { name: "索非亚", page: 39 },
+            { name: "君士坦丁堡", page: 43 }
+        ];
+        
+        // 初始化PDF文档
+        pdfjsLib.getDocument('data/travel.pdf').promise.then(function(pdf) {
+            pdfDoc = pdf;
+            totalPages = pdf.numPages;
             
-            function renderPage(num) {
-                pageRendering = true;
-                pdfDoc.getPage(num).then(function(page) {
-                    const canvas = document.getElementById('pdfCanvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    const viewport = page.getViewport({scale: scale});
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-                    
-                    const renderContext = {
-                        canvasContext: ctx,
-                        viewport: viewport
-                    };
-                    const renderTask = page.render(renderContext);
-                    
-                    renderTask.promise.then(function() {
-                        pageRendering = false;
-                        if (pageNumPending !== null) {
-                            renderPage(pageNumPending);
-                            pageNumPending = null;
-                        }
-                    });
-                    
-                    document.getElementById('pageNum').textContent = num;
-                });
+            // 更新总页数显示
+            document.getElementById('totalPages').textContent = totalPages;
+            document.getElementById('pageSlider').max = Math.ceil(totalPages / 2);
+            
+            // 渲染初始页面
+            renderPages(currentPage);
+            
+            // 渲染目录
+            renderTOC();
+            
+            // 更新按钮状态
+            updateButtonStates();
+        }).catch(function(error) {
+            console.error('PDF加载失败:', error);
+            alert('无法加载PDF文件，请确保data/travel.pdf文件存在');
+        });
+        
+        // 渲染两页
+        async function renderPages(leftPageNum) {
+            if (!pdfDoc) return;
+            
+            const rightPageNum = leftPageNum + 1;
+            
+            // 确保页码有效
+            if (leftPageNum < 1) leftPageNum = 1;
+            if (rightPageNum > totalPages) {
+                // 如果只有一页要显示，只渲染左页
+                renderSinglePage(leftPageNum);
+                return;
             }
             
-            function queueRenderPage(num) {
-                if (pageRendering) {
-                    pageNumPending = num;
+            // 更新页码显示
+            document.getElementById('pageNumLeft').textContent = leftPageNum;
+            document.getElementById('pageNumRight').textContent = rightPageNum;
+            document.getElementById('currentSpread').textContent = `第 ${leftPageNum}-${rightPageNum} 页`;
+            
+            // 更新滑块位置
+            document.getElementById('pageSlider').value = Math.ceil(leftPageNum / 2);
+            
+            // 同时渲染两页
+            const [leftPage, rightPage] = await Promise.all([
+                pdfDoc.getPage(leftPageNum),
+                pdfDoc.getPage(rightPageNum)
+            ]);
+            
+            // 渲染左页
+            renderPage(leftPage, 'pdfCanvasLeft', 1);
+            
+            // 渲染右页
+            renderPage(rightPage, 'pdfCanvasRight', 2);
+        }
+        
+        // 渲染单页（最后一页可能是单数）
+        function renderSinglePage(pageNum) {
+            pdfDoc.getPage(pageNum).then(function(page) {
+                // 只渲染左页，右页清空
+                renderPage(page, 'pdfCanvasLeft', 1);
+                
+                // 清空右页
+                const canvasRight = document.getElementById('pdfCanvasRight');
+                const ctxRight = canvasRight.getContext('2d');
+                ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+                
+                // 更新页码显示
+                document.getElementById('pageNumLeft').textContent = pageNum;
+                document.getElementById('pageNumRight').textContent = '-';
+                document.getElementById('currentSpread').textContent = `第 ${pageNum} 页`;
+            });
+        }
+        
+        // 渲染单个页面到指定canvas
+        function renderPage(page, canvasId, side) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // 获取PDF页面的原始尺寸
+            const viewport = page.getViewport({ scale: scale });
+            
+            // 设置canvas尺寸（保持148:210的比例）
+            const targetWidth = side === 1 ? viewport.width : viewport.width;
+            const targetHeight = viewport.height;
+            
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            
+            // 渲染PDF页面
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            
+            page.render(renderContext).promise.then(function() {
+                console.log(`第${page.pageNumber}页渲染完成`);
+            });
+        }
+        
+        // 翻页动画效果
+        async function turnPageAnimation(direction) {
+            const leftWrapper = document.getElementById('leftPageWrapper');
+            const rightWrapper = document.getElementById('rightPageWrapper');
+            
+            // 添加翻页动画类
+            if (direction === 'next') {
+                leftWrapper.classList.add('turning');
+                setTimeout(() => {
+                    leftWrapper.classList.remove('turning');
+                    // 渲染新页面
+                    renderPages(currentPage);
+                }, 600);
+            } else {
+                rightWrapper.classList.add('turning');
+                setTimeout(() => {
+                    rightWrapper.classList.remove('turning');
+                    // 渲染新页面
+                    renderPages(currentPage);
+                }, 600);
+            }
+        }
+        
+        // 上一页
+        function goPrevious() {
+            if (currentPage > 2) {
+                currentPage -= 2;
+                turnPageAnimation('prev');
+                updateButtonStates();
+                updateActiveTOC();
+            }
+        }
+        
+        // 下一页
+        function goNext() {
+            if (currentPage < totalPages - 1) {
+                currentPage += 2;
+                turnPageAnimation('next');
+                updateButtonStates();
+                updateActiveTOC();
+            }
+        }
+        
+        // 跳转到指定页（通过滑块）
+        function jumpToPage(sliderValue) {
+            const newLeftPage = (parseInt(sliderValue) - 1) * 2 + 1;
+            if (newLeftPage !== currentPage) {
+                currentPage = newLeftPage;
+                renderPages(currentPage);
+                updateButtonStates();
+                updateActiveTOC();
+            }
+        }
+        
+        // 跳转到城市页面
+        function jumpToCity(pageNumber) {
+            // 确保跳转到双页显示中的左页
+            let targetPage = pageNumber;
+            if (targetPage % 2 === 0) {
+                targetPage = targetPage - 1; // 如果是偶数页，跳转到前一页（作为左页）
+            }
+            
+            if (targetPage < 1) targetPage = 1;
+            if (targetPage > totalPages - 1) targetPage = totalPages - 1;
+            
+            currentPage = targetPage;
+            
+            // 添加翻页动画
+            if (targetPage > currentPage) {
+                turnPageAnimation('next');
+            } else {
+                turnPageAnimation('prev');
+            }
+            
+            updateButtonStates();
+            updateActiveTOC();
+        }
+        
+        // 更新按钮状态
+        function updateButtonStates() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages - 1;
+        }
+        
+        // 渲染目录
+        function renderTOC() {
+            const tocList = document.getElementById('tocList');
+            tocList.innerHTML = '';
+            
+            cityPages.forEach(city => {
+                const li = document.createElement('li');
+                li.className = 'toc-item';
+                
+                const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'toc-link';
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    jumpToCity(city.page);
+                };
+                
+                link.innerHTML = `
+                    <span class="city-name">${city.name}</span>
+                    <span class="page-number">${city.page}</span>
+                `;
+                
+                li.appendChild(link);
+                tocList.appendChild(li);
+            });
+            
+            // 初始化激活状态
+            updateActiveTOC();
+        }
+        
+        // 更新目录激活状态
+        function updateActiveTOC() {
+            const links = document.querySelectorAll('.toc-link');
+            
+            // 找到最接近当前页的城市
+            let closestCity = null;
+            let minDiff = Infinity;
+            
+            cityPages.forEach(city => {
+                const diff = Math.abs(city.page - currentPage);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestCity = city;
+                }
+            });
+            
+            // 更新激活状态
+            links.forEach(link => {
+                const cityName = link.querySelector('.city-name').textContent;
+                link.classList.remove('active');
+                
+                if (closestCity && cityName === closestCity.name) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                goPrevious();
+            } else if (e.key === 'ArrowRight') {
+                goNext();
+            }
+        });
+        
+        // 触摸滑动翻页
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchEndX - touchStartX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // 向右滑动：上一页
+                    goPrevious();
                 } else {
-                    renderPage(num);
+                    // 向左滑动：下一页
+                    goNext();
                 }
             }
-            
-            function goPrevious() {
-                if (pageNum <= 1) return;
-                pageNum--;
-                queueRenderPage(pageNum);
-            }
-            
-            function goNext() {
-                if (pageNum >= pdfDoc.numPages) return;
-                pageNum++;
-                queueRenderPage(pageNum);
-            }
-            
-            // 加载PDF
-            pdfjsLib.getDocument('data/travel.pdf').promise.then(function(pdf) {
-                pdfDoc = pdf;
-                document.getElementById('pageCount').textContent = pdf.numPages;
-                document.getElementById('pageSlider').max = pdf.numPages;
-                renderPage(pageNum);
-            });
-        </script>
-
+        }
+    </script>
 </body>
 </html>
