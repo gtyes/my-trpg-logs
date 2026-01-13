@@ -628,422 +628,425 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script>
-        // PDF文档实例
-        let pdfDoc = null;
-        let currentPage = 1; // 当前左页页码
-        let totalPages = 1;
-        const scale = 1.5; // 清晰度
-        
-        // 城市目录映射
-        const cityPages = [
-            { name: "伦敦", page: 6 },
-            { name: "巴黎", page: 10 },
-            { name: "洛桑", page: 15 },
-            { name: "米兰", page: 21 },
-            { name: "威尼斯", page: 25 },
-            { name: "的里雅斯特", page: 29 },
-            { name: "贝尔格莱德", page: 35 },
-            { name: "索非亚", page: 39 },
-            { name: "君士坦丁堡", page: 43 }
-        ];
-        
-        // 目录面板控制
-        const tocToggleBtn = document.getElementById('tocToggleBtn');
-        const tocSidebar = document.getElementById('tocSidebar');
-        const tocCloseBtn = document.getElementById('tocCloseBtn');
-        
-        tocToggleBtn.addEventListener('click', function() {
-            tocSidebar.classList.toggle('show');
-        });
-        
-        tocCloseBtn.addEventListener('click', function() {
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script>
+    // PDF文档实例
+    let pdfDoc = null;
+    let currentPage = 1; // 当前左页页码
+    let totalPages = 1;
+    
+    // 城市目录映射
+    const cityPages = [
+        { name: "伦敦", page: 6 },
+        { name: "巴黎", page: 10 },
+        { name: "洛桑", page: 15 },
+        { name: "米兰", page: 21 },
+        { name: "威尼斯", page: 25 },
+        { name: "的里雅斯特", page: 29 },
+        { name: "贝尔格莱德", page: 35 },
+        { name: "索非亚", page: 39 },
+        { name: "君士坦丁堡", page: 43 }
+    ];
+    
+    // 目录面板控制
+    const tocToggleBtn = document.getElementById('tocToggleBtn');
+    const tocSidebar = document.getElementById('tocSidebar');
+    const tocCloseBtn = document.getElementById('tocCloseBtn');
+    
+    tocToggleBtn.addEventListener('click', function() {
+        tocSidebar.classList.toggle('show');
+    });
+    
+    tocCloseBtn.addEventListener('click', function() {
+        tocSidebar.classList.remove('show');
+    });
+    
+    // 点击目录外部关闭
+    document.addEventListener('click', function(event) {
+        if (!tocSidebar.contains(event.target) && 
+            !tocToggleBtn.contains(event.target) &&
+            tocSidebar.classList.contains('show')) {
             tocSidebar.classList.remove('show');
-        });
-        
-        // 点击目录外部关闭
-        document.addEventListener('click', function(event) {
-            if (!tocSidebar.contains(event.target) && 
-                !tocToggleBtn.contains(event.target) &&
-                tocSidebar.classList.contains('show')) {
-                tocSidebar.classList.remove('show');
-            }
-        });
-        
-
-        // 提高PDF渲染质量
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-        
-        // 初始化PDF文档
-        pdfjsLib.getDocument({
-            url: 'data/travel.pdf',
-            cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/',
-            cMapPacked: true,
-            enableWorker: true,
-            disableStream: false,
-            disableAutoFetch: false,
-            disableFontFace: false,
-            useSystemFonts: false,
-            isEvalSupported: true,
-            maxImageSize: -1
-        }).promise.then(function(pdf) {
-            pdfDoc = pdf;
-            totalPages = pdf.numPages;
-            
-            // 更新总页数显示
-            document.getElementById('totalPages').textContent = totalPages;
-            
-            // 更新滑块范围
-            const maxSpread = Math.ceil(totalPages / 2);
-            document.getElementById('pageSlider').max = maxSpread;
-            document.getElementById('sliderMax').textContent = maxSpread * 2 > totalPages ? totalPages : maxSpread * 2;
-            
-            // 渲染初始页面
-            renderPages(currentPage);
-            
-            // 渲染目录
-            renderTOC();
-            
-            // 更新按钮状态
-            updateButtonStates();
-            
-            // 设置书容器高度
-            setupBookHeight();
-            
-            // 设置点击事件
-            setupClickEvents();
-        }).catch(function(error) {
-            console.error('PDF加载失败:', error);
-            alert('无法加载PDF文件，请确保data/travel.pdf文件存在');
-        });
-        
-        // 设置书容器高度（保持148:210比例）
-        function setupBookHeight() {
-            const bookContainer = document.getElementById('bookContainer');
-            const bookContainerWidth = bookContainer.clientWidth;
-            
-            // 根据PDF比例(148:210)和两页并排计算合适的高度
-            // 每页宽度 = 总宽度 / 2
-            const pageWidth = bookContainerWidth / 2;
-            // 根据PDF比例计算高度：210/148 ≈ 1.4189
-            const pageHeight = pageWidth * (210 / 148);
-            
-            // 设置容器高度，确保整个PDF页面能完整显示
-            bookContainer.style.height = Math.max(pageHeight, 500) + 'px'; // 最小高度500px
-            
-            // 同时更新每个页面的高度
-            const pages = document.querySelectorAll('.book-page');
-            pages.forEach(page => {
-                page.style.height = bookContainer.style.height;
-            });
-            
-            console.log(`容器尺寸: ${bookContainerWidth}x${bookContainer.style.height}, 单页尺寸: ${pageWidth}x${pageHeight}`);
         }
+    });
+    
+    // 提高PDF渲染质量
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    
+    // 初始化PDF文档
+    pdfjsLib.getDocument({
+        url: 'data/travel.pdf',
+        cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/',
+        cMapPacked: true,
+        enableWorker: true,
+        disableStream: false,
+        disableAutoFetch: false,
+        disableFontFace: false,
+        useSystemFonts: false,
+        isEvalSupported: true,
+        maxImageSize: -1
+    }).promise.then(function(pdf) {
+        pdfDoc = pdf;
+        totalPages = pdf.numPages;
+        
+        // 更新总页数显示
+        document.getElementById('totalPages').textContent = totalPages;
+        
+        // 更新滑块范围
+        const maxSpread = Math.ceil(totalPages / 2);
+        document.getElementById('pageSlider').max = maxSpread;
+        document.getElementById('sliderMax').textContent = maxSpread * 2 > totalPages ? totalPages : maxSpread * 2;
+        
+        // 设置书容器高度
+        setupBookHeight();
+        
+        // 渲染初始页面
+        renderPages(currentPage);
+        
+        // 渲染目录
+        renderTOC();
+        
+        // 更新按钮状态
+        updateButtonStates();
         
         // 设置点击事件
-        function setupClickEvents() {
-            const leftPage = document.getElementById('leftPage');
-            const rightPage = document.getElementById('rightPage');
-            const bookContainer = document.getElementById('bookContainer');
-            
-            // 点击左半部分翻到前一页
-            leftPage.addEventListener('click', function() {
-                goPrevious();
-            });
-            
-            // 点击右半部分翻到后一页
-            rightPage.addEventListener('click', function() {
-                goNext();
-            });
+        setupClickEvents();
+    }).catch(function(error) {
+        console.error('PDF加载失败:', error);
+        alert('无法加载PDF文件，请确保data/travel.pdf文件存在');
+    });
+    
+    // 设置书容器高度（保持148:210比例）
+    function setupBookHeight() {
+        const bookContainer = document.getElementById('bookContainer');
+        if (!bookContainer) return;
+        
+        // 计算可用宽度
+        const containerWidth = bookContainer.clientWidth;
+        
+        // 根据PDF比例(148:210)和两页并排计算合适的高度
+        // 每页宽度 = 总宽度 / 2
+        const pageWidth = containerWidth / 2;
+        // 根据PDF比例计算高度
+        const pageHeight = pageWidth * (210 / 148);
+        
+        // 设置容器高度，确保整个PDF页面能完整显示
+        bookContainer.style.height = Math.max(pageHeight, 500) + 'px';
+        
+        console.log(`容器尺寸: ${containerWidth}x${bookContainer.style.height}`);
+        return pageHeight;
+    }
+    
+    // 设置点击事件
+    function setupClickEvents() {
+        const leftPage = document.getElementById('leftPage');
+        const rightPage = document.getElementById('rightPage');
+        
+        // 点击左半部分翻到前一页
+        leftPage.addEventListener('click', function() {
+            goPrevious();
+        });
+        
+        // 点击右半部分翻到后一页
+        rightPage.addEventListener('click', function() {
+            goNext();
+        });
+    }
+    
+    // 渲染两页
+    async function renderPages(leftPageNum) {
+        if (!pdfDoc) return;
+        
+        // 更新容器高度
+        setupBookHeight();
+        
+        const rightPageNum = leftPageNum + 1;
+        
+        // 确保页码有效
+        if (leftPageNum < 1) leftPageNum = 1;
+        if (leftPageNum > totalPages) leftPageNum = totalPages - 1;
+        
+        // 更新页码显示
+        document.getElementById('pageNumLeft').textContent = leftPageNum;
+        document.getElementById('pageNumRight').textContent = rightPageNum <= totalPages ? rightPageNum : '-';
+        document.getElementById('currentSpread').textContent = rightPageNum <= totalPages ? 
+            `第 ${leftPageNum}-${rightPageNum} 页` : `第 ${leftPageNum} 页`;
+        
+        // 更新滑块位置
+        document.getElementById('pageSlider').value = Math.ceil(leftPageNum / 2);
+        
+        // 渲染左页
+        if (leftPageNum <= totalPages) {
+            const leftPage = await pdfDoc.getPage(leftPageNum);
+            renderPage(leftPage, 'pdfCanvasLeft');
         }
         
-        // 渲染两页
-        async function renderPages(leftPageNum) {
-            if (!pdfDoc) return;
-            
-            const rightPageNum = leftPageNum + 1;
-            
-            // 确保页码有效
-            if (leftPageNum < 1) leftPageNum = 1;
-            if (leftPageNum > totalPages) leftPageNum = totalPages - 1;
-            
-            // 更新页码显示
-            document.getElementById('pageNumLeft').textContent = leftPageNum;
-            document.getElementById('pageNumRight').textContent = rightPageNum <= totalPages ? rightPageNum : '-';
-            document.getElementById('currentSpread').textContent = rightPageNum <= totalPages ? 
-                `第 ${leftPageNum}-${rightPageNum} 页` : `第 ${leftPageNum} 页`;
-            
-            // 更新滑块位置
-            document.getElementById('pageSlider').value = Math.ceil(leftPageNum / 2);
-            
-            // 渲染左页
-            if (leftPageNum <= totalPages) {
-                const leftPage = await pdfDoc.getPage(leftPageNum);
-                renderPage(leftPage, 'pdfCanvasLeft');
-            }
-            
-            // 渲染右页
-            if (rightPageNum <= totalPages) {
-                try {
-                    const rightPage = await pdfDoc.getPage(rightPageNum);
-                    await renderPage(rightPage, 'pdfCanvasRight');
-                } catch (error) {
-                    console.error('渲染右页失败:', error);
-                    const canvasRight = document.getElementById('pdfCanvasRight');
-                    const ctxRight = canvasRight.getContext('2d');
-                    ctxRight.fillStyle = '#fff';
-                    ctxRight.fillRect(0, 0, canvasRight.width, canvasRight.height);
-                }
-            } else {
-                // 清除右页内容，显示空白
+        // 渲染右页
+        if (rightPageNum <= totalPages) {
+            try {
+                const rightPage = await pdfDoc.getPage(rightPageNum);
+                renderPage(rightPage, 'pdfCanvasRight');
+            } catch (error) {
+                console.error('渲染右页失败:', error);
                 const canvasRight = document.getElementById('pdfCanvasRight');
                 const ctxRight = canvasRight.getContext('2d');
                 ctxRight.fillStyle = '#fff';
                 ctxRight.fillRect(0, 0, canvasRight.width, canvasRight.height);
             }
-            
-            // 更新当前页码
-            currentPage = leftPageNum;
-            
-            // 更新点击提示显示
-            updateClickHints();
+        } else {
+            // 清除右页内容，显示空白
+            const canvasRight = document.getElementById('pdfCanvasRight');
+            const ctxRight = canvasRight.getContext('2d');
+            ctxRight.fillStyle = '#fff';
+            ctxRight.fillRect(0, 0, canvasRight.width, canvasRight.height);
         }
         
-        // 渲染单个页面到指定canvas
-        function renderPage(page, canvasId) {
+        // 更新当前页码
+        currentPage = leftPageNum;
+        
+        // 更新点击提示显示
+        updateClickHints();
+    }
+    
+    // 渲染单个页面到指定canvas - 修复版本
+    function renderPage(page, canvasId) {
+        return new Promise((resolve, reject) => {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
             
-            // 获取PDF页面的原始尺寸
+            // 获取容器尺寸
+            const container = canvas.closest('.book-page');
+            if (!container) {
+                reject('找不到容器');
+                return;
+            }
+            
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            
+            // 获取PDF页面原始尺寸
             const viewport = page.getViewport({ scale: 1 });
             const pdfWidth = viewport.width;
             const pdfHeight = viewport.height;
             
-            // 获取容器尺寸
-            const container = document.querySelector('.book-page');
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
-            
-            // 计算合适的缩放比例，使整个PDF页面适应容器
-            // 保持PDF原始宽高比(148:210)
-            const targetWidth = containerWidth;
-            const targetHeight = containerHeight;
-            
-            // 计算缩放比例，使PDF完整显示在容器中
+            // 计算缩放比例以完整显示PDF
             const scale = Math.min(
-                targetWidth / pdfWidth,
-                targetHeight / pdfHeight
+                containerWidth / pdfWidth,
+                containerHeight / pdfHeight
             );
             
-            // 使用计算出的缩放比例创建视口
+            // 使用缩放比例创建新视口
             const scaledViewport = page.getViewport({ scale: scale });
             
-            // 获取设备像素比，用于高清渲染
+            // 获取设备像素比用于高清渲染
             const dpr = window.devicePixelRatio || 1;
             
-            // 设置canvas的显示尺寸（CSS尺寸）
+            // 设置canvas的渲染尺寸（物理像素）
+            const renderWidth = Math.floor(containerWidth * dpr);
+            const renderHeight = Math.floor(containerHeight * dpr);
+            
+            canvas.width = renderWidth;
+            canvas.height = renderHeight;
+            
+            // 设置canvas的显示尺寸（CSS像素）
             canvas.style.width = containerWidth + 'px';
             canvas.style.height = containerHeight + 'px';
             
-            // 设置canvas的渲染尺寸（内存中的实际像素）
-            canvas.width = Math.floor(containerWidth * dpr);
-            canvas.height = Math.floor(containerHeight * dpr);
+            // 计算PDF在canvas中的居中位置
+            const xOffset = (renderWidth - scaledViewport.width * dpr) / 2;
+            const yOffset = (renderHeight - scaledViewport.height * dpr) / 2;
             
-            // 设置canvas的CSS尺寸为容器大小
-            canvas.style.width = containerWidth + 'px';
-            canvas.style.height = containerHeight + 'px';
+            // 清空canvas
+            ctx.clearRect(0, 0, renderWidth, renderHeight);
             
-            // 缩放上下文以匹配DPI
+            // 设置白色背景
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, renderWidth, renderHeight);
+            
+            // 保存上下文状态
             ctx.save();
+            
+            // 应用设备像素比缩放
             ctx.scale(dpr, dpr);
             
-            // 计算在canvas中居中显示PDF的位置
-            const xOffset = (containerWidth - scaledViewport.width) / 2;
-            const yOffset = (containerHeight - scaledViewport.height) / 2;
-            
-            // 创建渲染上下文
+            // 创建渲染上下文 - 简化版本，不添加transform
             const renderContext = {
                 canvasContext: ctx,
-                viewport: scaledViewport,
-                transform: [dpr, 0, 0, dpr, xOffset * dpr, yOffset * dpr]
+                viewport: scaledViewport
             };
             
             // 渲染PDF页面
-            return page.render(renderContext).promise.then(function() {
-                ctx.restore();
-                console.log(`第${page.pageNumber}页渲染完成，缩放比例: ${scale.toFixed(2)}`);
-            }).catch(function(error) {
-                console.error('渲染页面失败:', error);
-                ctx.restore();
-            });
-        }
+            page.render(renderContext).promise
+                .then(() => {
+                    ctx.restore();
+                    console.log(`第${page.pageNumber}页渲染完成，缩放比例: ${scale.toFixed(2)}`);
+                    resolve();
+                })
+                .catch(error => {
+                    ctx.restore();
+                    console.error('渲染失败:', error);
+                    reject(error);
+                });
+        });
+    }
+    
+    // 更新点击提示
+    function updateClickHints() {
+        const leftHint = document.getElementById('leftHint');
+        const rightHint = document.getElementById('rightHint');
         
-        // 更新点击提示
-        function updateClickHints() {
-            const leftHint = document.getElementById('leftHint');
-            const rightHint = document.getElementById('rightHint');
-            
+        if (leftHint && rightHint) {
             // 显示左提示（如果不是第一页）
-            if (currentPage > 1) {
-                leftHint.style.opacity = '1';
-            } else {
-                leftHint.style.opacity = '0';
-            }
-            
+            leftHint.style.opacity = currentPage > 1 ? '1' : '0';
             // 显示右提示（如果不是最后一页）
-            if (currentPage < totalPages - 1) {
-                rightHint.style.opacity = '1';
-            } else {
-                rightHint.style.opacity = '0';
-            }
+            rightHint.style.opacity = currentPage < totalPages - 1 ? '1' : '0';
         }
-        
-        // 上一页
-        function goPrevious() {
-            if (currentPage > 2) {
-                currentPage -= 2;
-                renderPages(currentPage);
-                updateButtonStates();
-                updateActiveTOC();
-            } else if (currentPage > 1) {
-                currentPage = 1;
-                renderPages(currentPage);
-                updateButtonStates();
-                updateActiveTOC();
-            }
-        }
-        
-        // 下一页
-        function goNext() {
-            if (currentPage < totalPages - 1) {
-                currentPage += 2;
-                renderPages(currentPage);
-                updateButtonStates();
-                updateActiveTOC();
-            }
-        }
-        
-        // 跳转到指定页（通过滑块）
-        function jumpToPage(sliderValue) {
-            const newLeftPage = (parseInt(sliderValue) - 1) * 2 + 1;
-            if (newLeftPage !== currentPage) {
-                currentPage = newLeftPage;
-                renderPages(currentPage);
-                updateButtonStates();
-                updateActiveTOC();
-            }
-        }
-        
-        // 跳转到城市页面
-        function jumpToCity(pageNumber) {
-            // 确保跳转到双页显示中的左页
-            let targetPage = pageNumber;
-            if (targetPage % 2 === 0) {
-                targetPage = targetPage - 1; // 如果是偶数页，跳转到前一页（作为左页）
-            }
-            
-            if (targetPage < 1) targetPage = 1;
-            if (targetPage > totalPages - 1) targetPage = totalPages - 1;
-            
-            currentPage = targetPage;
+    }
+    
+    // 上一页
+    function goPrevious() {
+        if (currentPage > 2) {
+            currentPage -= 2;
             renderPages(currentPage);
             updateButtonStates();
             updateActiveTOC();
-            
-            // 关闭目录面板
-            tocSidebar.classList.remove('show');
-        }
-        
-        // 更新按钮状态
-        function updateButtonStates() {
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            prevBtn.disabled = currentPage <= 1;
-            nextBtn.disabled = currentPage >= totalPages - 1;
-        }
-        
-        // 渲染目录
-        function renderTOC() {
-            const tocList = document.getElementById('tocList');
-            tocList.innerHTML = '';
-            
-            cityPages.forEach(city => {
-                const li = document.createElement('li');
-                li.className = 'toc-item';
-                
-                const link = document.createElement('a');
-                link.href = '#';
-                link.className = 'toc-link';
-                link.onclick = (e) => {
-                    e.preventDefault();
-                    jumpToCity(city.page);
-                };
-                
-                link.innerHTML = `
-                    <span class="city-name">${city.name}</span>
-                    <span class="page-number">第 ${city.page} 页</span>
-                `;
-                
-                li.appendChild(link);
-                tocList.appendChild(li);
-            });
-            
-            // 初始化激活状态
+        } else if (currentPage > 1) {
+            currentPage = 1;
+            renderPages(currentPage);
+            updateButtonStates();
             updateActiveTOC();
         }
-        
-        // 更新目录激活状态
-        function updateActiveTOC() {
-            const links = document.querySelectorAll('.toc-link');
-            
-            // 找到最接近当前页的城市
-            let closestCity = null;
-            let minDiff = Infinity;
-            
-            cityPages.forEach(city => {
-                const diff = Math.abs(city.page - currentPage);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    closestCity = city;
-                }
-            });
-            
-            // 更新激活状态
-            links.forEach(link => {
-                const cityName = link.querySelector('.city-name').textContent;
-                link.classList.remove('active');
-                
-                if (closestCity && cityName === closestCity.name) {
-                    link.classList.add('active');
-                }
-            });
+    }
+    
+    // 下一页
+    function goNext() {
+        if (currentPage < totalPages - 1) {
+            currentPage += 2;
+            renderPages(currentPage);
+            updateButtonStates();
+            updateActiveTOC();
+        }
+    }
+    
+    // 跳转到指定页（通过滑块）
+    function jumpToPage(sliderValue) {
+        const newLeftPage = (parseInt(sliderValue) - 1) * 2 + 1;
+        if (newLeftPage !== currentPage) {
+            currentPage = newLeftPage;
+            renderPages(currentPage);
+            updateButtonStates();
+            updateActiveTOC();
+        }
+    }
+    
+    // 跳转到城市页面
+    function jumpToCity(pageNumber) {
+        // 确保跳转到双页显示中的左页
+        let targetPage = pageNumber;
+        if (targetPage % 2 === 0) {
+            targetPage = targetPage - 1;
         }
         
-        // 键盘快捷键
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') {
-                goPrevious();
-            } else if (e.key === 'ArrowRight') {
-                goNext();
+        if (targetPage < 1) targetPage = 1;
+        if (targetPage > totalPages - 1) targetPage = totalPages - 1;
+        
+        currentPage = targetPage;
+        renderPages(currentPage);
+        updateButtonStates();
+        updateActiveTOC();
+        
+        // 关闭目录面板
+        tocSidebar.classList.remove('show');
+    }
+    
+    // 更新按钮状态
+    function updateButtonStates() {
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        if (prevBtn) prevBtn.disabled = currentPage <= 1;
+        if (nextBtn) nextBtn.disabled = currentPage >= totalPages - 1;
+    }
+    
+    // 渲染目录
+    function renderTOC() {
+        const tocList = document.getElementById('tocList');
+        if (!tocList) return;
+        
+        tocList.innerHTML = '';
+        
+        cityPages.forEach(city => {
+            const li = document.createElement('li');
+            li.className = 'toc-item';
+            
+            const link = document.createElement('a');
+            link.href = '#';
+            link.className = 'toc-link';
+            link.onclick = (e) => {
+                e.preventDefault();
+                jumpToCity(city.page);
+            };
+            
+            link.innerHTML = `
+                <span class="city-name">${city.name}</span>
+                <span class="page-number">第 ${city.page} 页</span>
+            `;
+            
+            li.appendChild(link);
+            tocList.appendChild(li);
+        });
+        
+        // 初始化激活状态
+        updateActiveTOC();
+    }
+    
+    // 更新目录激活状态
+    function updateActiveTOC() {
+        const links = document.querySelectorAll('.toc-link');
+        
+        // 找到最接近当前页的城市
+        let closestCity = null;
+        let minDiff = Infinity;
+        
+        cityPages.forEach(city => {
+            const diff = Math.abs(city.page - currentPage);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestCity = city;
             }
         });
         
-        let resizeTimeout;
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(function() {
-                setupBookHeight();
-                // 重新渲染当前页面以适应新尺寸
-                if (pdfDoc && !isRendering) {
-                    isRendering = true;
-                    renderPages(currentPage).then(() => {
-                        isRendering = false;
-                    });
-                }
-            }, 250); // 防抖，250ms后执行
+        // 更新激活状态
+        links.forEach(link => {
+            const cityName = link.querySelector('.city-name').textContent;
+            link.classList.remove('active');
+            
+            if (closestCity && cityName === closestCity.name) {
+                link.classList.add('active');
+            }
         });
-    </script>
+    }
+    
+    // 键盘快捷键
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
+            goPrevious();
+        } else if (e.key === 'ArrowRight') {
+            goNext();
+        }
+    });
+    
+    // 窗口大小改变时调整书的高度和重新渲染
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if (pdfDoc) {
+                renderPages(currentPage);
+            }
+        }, 250);
+    });
+</script>
 </body>
 </html>
