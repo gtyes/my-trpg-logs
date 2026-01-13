@@ -782,14 +782,22 @@
             
             // 渲染右页
             if (rightPageNum <= totalPages) {
-                const rightPage = await pdfDoc.getPage(rightPageNum);
-                renderPage(rightPage, 'pdfCanvasRight');
+                try {
+                    const rightPage = await pdfDoc.getPage(rightPageNum);
+                    await renderPage(rightPage, 'pdfCanvasRight');
+                } catch (error) {
+                    console.error('渲染右页失败:', error);
+                    const canvasRight = document.getElementById('pdfCanvasRight');
+                    const ctxRight = canvasRight.getContext('2d');
+                    ctxRight.fillStyle = '#fff';
+                    ctxRight.fillRect(0, 0, canvasRight.width, canvasRight.height);
+                }
             } else {
-                // 清除右页内容
+                // 清除右页内容，显示空白
                 const canvasRight = document.getElementById('pdfCanvasRight');
                 const ctxRight = canvasRight.getContext('2d');
-                ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-                canvasRight.style.backgroundColor = '#fff';
+                ctxRight.fillStyle = '#fff';
+                ctxRight.fillRect(0, 0, canvasRight.width, canvasRight.height);
             }
             
             // 更新当前页码
@@ -1005,13 +1013,19 @@
             }
         });
         
-        // 窗口大小改变时调整书的高度
+        let resizeTimeout;
         window.addEventListener('resize', function() {
-            setupBookHeight();
-            // 重新渲染当前页面以适应新尺寸
-            if (pdfDoc) {
-                renderPages(currentPage);
-            }
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                setupBookHeight();
+                // 重新渲染当前页面以适应新尺寸
+                if (pdfDoc && !isRendering) {
+                    isRendering = true;
+                    renderPages(currentPage).then(() => {
+                        isRendering = false;
+                    });
+                }
+            }, 250); // 防抖，250ms后执行
         });
     </script>
 </body>
