@@ -79,14 +79,15 @@
             color: #c9c0aa;
         }
         
-        .back-btn {
-            position: absolute;
+        /* 目录按钮 */
+        .toc-toggle-btn {
+            position: fixed;
             left: 20px;
             top: 20px;
-            background: rgba(212, 175, 55, 0.1);
-            color: #d4af37;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 12px 30px;
+            background: rgba(212, 175, 55, 0.9);
+            color: #0a1929;
+            border: none;
+            padding: 12px 20px;
             border-radius: 25px;
             font-size: 1rem;
             cursor: pointer;
@@ -95,32 +96,59 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            z-index: 100;
+            z-index: 1000;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
         
-        .back-btn:hover {
-            background: rgba(212, 175, 55, 0.2);
-            transform: translateX(-5px);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        .toc-toggle-btn:hover {
+            background: rgba(212, 175, 55, 1);
+            transform: translateX(-3px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
         }
         
-        /* 左侧目录 */
+        /* 悬浮目录 */
         .toc-sidebar {
-            width: 300px;
-            flex-shrink: 0;
-            background: rgba(20, 40, 60, 0.8);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            backdrop-filter: blur(10px);
-            height: fit-content;
-            position: sticky;
-            top: 20px;
+            position: fixed;
+            left: -400px;
+            top: 0;
+            width: 350px;
+            height: 100vh;
+            background: rgba(10, 25, 41, 0.95);
+            border-right: 2px solid #d4af37;
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            transition: left 0.3s ease;
+            padding: 80px 25px 25px;
+            overflow-y: auto;
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .toc-sidebar.show {
+            left: 0;
+        }
+        
+        .toc-close-btn {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: transparent;
+            border: none;
+            color: #d4af37;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .toc-title {
             color: #d4af37;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 2px solid rgba(212, 175, 55, 0.3);
@@ -129,25 +157,19 @@
             gap: 10px;
         }
         
-        .toc-title::before {
-            content: '📋';
-            font-size: 1.3rem;
-        }
-        
         .toc-list {
             list-style: none;
         }
         
         .toc-item {
             margin-bottom: 12px;
-            position: relative;
         }
         
         .toc-link {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 20px;
+            padding: 15px 20px;
             background: rgba(212, 175, 55, 0.05);
             border-radius: 10px;
             color: #c9c0aa;
@@ -157,35 +179,39 @@
         }
         
         .toc-link:hover {
-            background: rgba(212, 175, 55, 0.1);
+            background: rgba(212, 175, 55, 0.15);
             border-color: rgba(212, 175, 55, 0.3);
             transform: translateX(5px);
             color: #d4af37;
         }
         
         .toc-link.active {
-            background: rgba(212, 175, 55, 0.15);
+            background: rgba(212, 175, 55, 0.2);
             border-color: #d4af37;
             color: #d4af37;
-            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.2);
         }
         
         .city-name {
             flex-grow: 1;
+            font-size: 1.1rem;
         }
         
         .page-number {
-            background: rgba(212, 175, 55, 0.2);
-            color: #d4af37;
-            padding: 3px 10px;
+            background: rgba(212, 175, 55, 0.3);
+            color: #0a1929;
+            padding: 5px 12px;
             border-radius: 12px;
             font-size: 0.9rem;
             font-weight: bold;
         }
         
-        /* PDF阅读器区域 */
-        .pdf-viewer-area {
+        /* 主要内容区域 */
+        .main-content {
             flex-grow: 1;
+        }
+        
+        .pdf-viewer-area {
             background: rgba(20, 40, 60, 0.8);
             border-radius: 15px;
             padding: 30px;
@@ -193,69 +219,114 @@
             backdrop-filter: blur(10px);
         }
         
-        /* 两页PDF容器 */
-        .pdf-double-container {
+        /* 双页PDF容器 - 像书一样紧贴 */
+        .book-container {
             display: flex;
-            gap: 20px;
             margin-bottom: 30px;
-            perspective: 1000px;
-        }
-        
-        .pdf-page-wrapper {
-            flex: 1;
+            perspective: 1200px;
             position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s ease;
+            height: 600px;
         }
         
-        .pdf-page-wrapper.right-page {
-            perspective-origin: left center;
-        }
-        
-        .pdf-page-wrapper.left-page {
-            perspective-origin: right center;
-        }
-        
-        .pdf-page {
-            width: 100%;
+        .book-page {
+            flex: 1;
             background: #fff;
-            border-radius: 5px;
+            position: relative;
             overflow: hidden;
             box-shadow: 
-                0 8px 30px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(212, 175, 55, 0.1);
-            position: relative;
-            transition: transform 0.6s ease, box-shadow 0.6s ease;
+                0 0 0 1px rgba(212, 175, 55, 0.1),
+                inset 0 0 0 1px rgba(0, 0, 0, 0.1);
         }
         
-        .pdf-page canvas {
+        .book-page.left-page {
+            border-radius: 5px 0 0 5px;
+            border-right: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        
+        .book-page.right-page {
+            border-radius: 0 5px 5px 0;
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .page-canvas {
             width: 100% !important;
-            height: auto !important;
+            height: 100% !important;
             display: block;
+            background: white;
         }
         
         /* 翻页动画效果 */
-        .pdf-page-wrapper.turning {
+        .page-turning {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            pointer-events: none;
             z-index: 10;
         }
         
-        .pdf-page-wrapper.turning .pdf-page {
-            transform: rotateY(-180deg);
-            box-shadow: 
-                -15px 8px 30px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(212, 175, 55, 0.1);
+        .page-turning.turn-right {
+            left: 50%;
+            transform-origin: left center;
         }
         
-        /* 页面阴影效果 */
-        .pdf-page::before {
-            content: '';
+        .page-turning.turn-left {
+            right: 50%;
+            transform-origin: right center;
+        }
+        
+        .page-turning .front,
+        .page-turning .back {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, rgba(0,0,0,0.03) 0%, transparent 5%, transparent 95%, rgba(0,0,0,0.03) 100%);
-            pointer-events: none;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            box-shadow: 
+                inset 0 0 30px rgba(0, 0, 0, 0.1),
+                0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .page-turning .front {
+            background: white;
+        }
+        
+        .page-turning .back {
+            background: #f5f5f5;
+            transform: rotateY(180deg);
+        }
+        
+        /* 翻页动画关键帧 */
+        @keyframes turnPageRight {
+            0% {
+                transform: rotateY(0deg);
+            }
+            100% {
+                transform: rotateY(-180deg);
+            }
+        }
+        
+        @keyframes turnPageLeft {
+            0% {
+                transform: rotateY(0deg);
+            }
+            100% {
+                transform: rotateY(180deg);
+            }
+        }
+        
+        .turning-animation {
+            animation-duration: 0.6s;
+            animation-timing-function: ease;
+            animation-fill-mode: forwards;
+        }
+        
+        .turn-right.turning-animation {
+            animation-name: turnPageRight;
+        }
+        
+        .turn-left.turning-animation {
+            animation-name: turnPageLeft;
         }
         
         /* 翻页控制器 */
@@ -337,11 +408,6 @@
             gap: 10px;
         }
         
-        .guide-description h3::before {
-            content: '⚠️';
-            font-size: 1.4rem;
-        }
-        
         .city-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -369,14 +435,13 @@
                 flex-direction: column;
             }
             
-            .toc-sidebar {
-                width: 100%;
-                position: static;
-            }
-            
             .header h1 {
                 font-size: 2.8rem;
                 margin-top: 60px;
+            }
+            
+            .book-container {
+                height: 500px;
             }
         }
         
@@ -385,8 +450,8 @@
                 font-size: 2.2rem;
             }
             
-            .pdf-double-container {
-                flex-direction: column;
+            .book-container {
+                height: 400px;
             }
             
             .page-controls {
@@ -402,6 +467,10 @@
             .city-list {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .toc-sidebar {
+                width: 300px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -416,127 +485,160 @@
             .header p {
                 font-size: 1.1rem;
             }
+            
+            .book-container {
+                height: 300px;
+            }
         }
         
-        /* 装饰元素 */
-        .decorative-border {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        /* 页面滑块 */
+        .page-slider-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
         }
         
         .page-slider {
             width: 100%;
-            margin: 20px 0;
             -webkit-appearance: none;
-            height: 6px;
+            height: 8px;
             background: rgba(212, 175, 55, 0.1);
-            border-radius: 3px;
+            border-radius: 4px;
             outline: none;
+            margin-top: 10px;
         }
         
         .page-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: #d4af37;
             cursor: pointer;
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            border: 2px solid #0a1929;
         }
         
         .page-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: #d4af37;
             cursor: pointer;
-            border: none;
+            border: 2px solid #0a1929;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        /* 提高PDF清晰度 */
+        .high-res-canvas {
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            -ms-interpolation-mode: nearest-neighbor;
         }
     </style>
 </head>
 <body>
-    <button class="back-btn" onclick="window.location.href='index.html'">
-        <span>←</span> 返回日志库
+    <!-- 目录切换按钮 -->
+    <button class="toc-toggle-btn" id="tocToggleBtn">
+        <span>📖</span> 目录
     </button>
     
-    <div class="container">
-        <!-- 左侧目录导航 -->
-        <div class="toc-sidebar">
-            <h2 class="toc-title">旅行路线目录</h2>
-            <ul class="toc-list" id="tocList">
-                <!-- 目录项将通过JavaScript动态生成 -->
-            </ul>
-            
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(212, 175, 55, 0.2);">
-                <div style="color: #d4af37; margin-bottom: 15px; font-weight: bold; display: flex; align-items: center; gap: 10px;">
-                    <span>📊</span> 手册信息
-                </div>
-                <div style="color: #c9c0aa; font-size: 0.9rem; line-height: 1.6;">
-                    <p>总页数：<span id="totalPages">加载中...</span></p>
-                    <p>当前显示：<span id="currentSpread">第 1-2 页</span></p>
-                </div>
+    <!-- 悬浮目录面板 -->
+    <div class="toc-sidebar" id="tocSidebar">
+        <button class="toc-close-btn" id="tocCloseBtn">×</button>
+        <h2 class="toc-title">旅行路线目录</h2>
+        <ul class="toc-list" id="tocList">
+            <!-- 目录项将通过JavaScript动态生成 -->
+        </ul>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(212, 175, 55, 0.2);">
+            <div style="color: #d4af37; margin-bottom: 15px; font-weight: bold; display: flex; align-items: center; gap: 10px;">
+                <span>📊</span> 手册信息
+            </div>
+            <div style="color: #c9c0aa; font-size: 0.9rem; line-height: 1.6;">
+                <p>总页数：<span id="totalPages">加载中...</span></p>
+                <p>当前显示：<span id="currentSpread">第 1-2 页</span></p>
+                <p style="margin-top: 10px; font-size: 0.85rem; opacity: 0.7;">使用键盘← →箭头翻页</p>
             </div>
         </div>
-        
-        <!-- 右侧主要区域 -->
-        <div class="pdf-viewer-area">
+    </div>
+    
+    <!-- 主要内容 -->
+    <div class="container">
+        <div class="main-content">
             <div class="header">
                 <h1>东方快车旅行伴侣</h1>
                 <p>国际运输公司欢迎您乘坐东方快车！我们为自己无与伦比的服务感到骄傲。当您乘坐东方快车时，您将体验到奢华旅行的终极体验。</p>
             </div>
             
-            <!-- 两页PDF容器 -->
-            <div class="pdf-double-container">
-                <div class="pdf-page-wrapper left-page" id="leftPageWrapper">
-                    <div class="pdf-page">
-                        <canvas id="pdfCanvasLeft"></canvas>
+            <div class="pdf-viewer-area">
+                <!-- 双页PDF容器 - 像书一样紧贴 -->
+                <div class="book-container" id="bookContainer">
+                    <!-- 左页 -->
+                    <div class="book-page left-page">
+                        <canvas id="pdfCanvasLeft" class="page-canvas high-res-canvas"></canvas>
                     </div>
-                </div>
-                <div class="pdf-page-wrapper right-page" id="rightPageWrapper">
-                    <div class="pdf-page">
-                        <canvas id="pdfCanvasRight"></canvas>
+                    
+                    <!-- 右页 -->
+                    <div class="book-page right-page">
+                        <canvas id="pdfCanvasRight" class="page-canvas high-res-canvas"></canvas>
                     </div>
-                </div>
-            </div>
-            
-            <!-- 翻页控制器 -->
-            <div class="page-controls">
-                <button class="control-btn" id="prevBtn" onclick="goPrevious()">
-                    <span>←</span> 上一页
-                </button>
-                
-                <div class="page-info">
-                    第 <span id="pageNumLeft"></span>-<span id="pageNumRight"></span> 页
+                    
+                    <!-- 翻页动画元素 -->
+                    <div class="page-turning" id="pageTurning"></div>
                 </div>
                 
-                <button class="control-btn" id="nextBtn" onclick="goNext()">
-                    下一页 <span>→</span>
-                </button>
-            </div>
-            
-            <!-- 页面滑动条 -->
-            <input type="range" id="pageSlider" class="page-slider" min="1" max="1" value="1" oninput="jumpToPage(this.value)">
-            
-            <!-- 乘客提醒 -->
-            <div class="guide-description">
-                <h3>乘客提醒</h3>
-                <p>提醒乘客，每个国家的警察都会检查乘客上下火车的护照和签证。每个边境都有海关检查。在这些检查期间，列车长总是在场的。每辆列车的车长都会拿走您的签证和护照，这样您就不会受到边境检查安排的打扰。您的签证和护照将由列车长暂时保管。</p>
+                <!-- 页面滑动条 -->
+                <div class="page-slider-container">
+                    <div class="slider-label">
+                        <span>第 <span id="sliderMin">1</span> 页</span>
+                        <span>第 <span id="sliderMax">1</span> 页</span>
+                    </div>
+                    <input type="range" id="pageSlider" class="page-slider" min="1" max="1" value="1" oninput="jumpToPage(this.value)">
+                </div>
                 
-                <p><strong>经停城市：</strong></p>
-                <div class="city-list">
-                    <div class="city-item">伦敦 (第6页)</div>
-                    <div class="city-item">巴黎 (第10页)</div>
-                    <div class="city-item">洛桑 (第15页)</div>
-                    <div class="city-item">米兰 (第21页)</div>
-                    <div class="city-item">威尼斯 (第25页)</div>
-                    <div class="city-item">的里雅斯特 (第29页)</div>
-                    <div class="city-item">贝尔格莱德 (第35页)</div>
-                    <div class="city-item">索非亚 (第39页)</div>
-                    <div class="city-item">君士坦丁堡 (第43页)</div>
+                <!-- 翻页控制器 -->
+                <div class="page-controls">
+                    <button class="control-btn" id="prevBtn" onclick="goPrevious()">
+                        <span>←</span> 上一页
+                    </button>
+                    
+                    <div class="page-info">
+                        第 <span id="pageNumLeft">1</span>-<span id="pageNumRight">2</span> 页
+                    </div>
+                    
+                    <button class="control-btn" id="nextBtn" onclick="goNext()">
+                        下一页 <span>→</span>
+                    </button>
+                </div>
+                
+                <!-- 乘客提醒 -->
+                <div class="guide-description">
+                    <h3>乘客提醒</h3>
+                    <p>提醒乘客，每个国家的警察都会检查乘客上下火车的护照和签证。每个边境都有海关检查。在这些检查期间，列车长总是在场的。每辆列车的车长都会拿走您的签证和护照，这样您就不会受到边境检查安排的打扰。您的签证和护照将由列车长暂时保管。</p>
+                    
+                    <p><strong>经停城市：</strong></p>
+                    <div class="city-list">
+                        <div class="city-item">伦敦 (第6页)</div>
+                        <div class="city-item">巴黎 (第10页)</div>
+                        <div class="city-item">洛桑 (第15页)</div>
+                        <div class="city-item">米兰 (第21页)</div>
+                        <div class="city-item">威尼斯 (第25页)</div>
+                        <div class="city-item">的里雅斯特 (第29页)</div>
+                        <div class="city-item">贝尔格莱德 (第35页)</div>
+                        <div class="city-item">索非亚 (第39页)</div>
+                        <div class="city-item">君士坦丁堡 (第43页)</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -548,7 +650,8 @@
         let pdfDoc = null;
         let currentPage = 1; // 当前左页页码
         let totalPages = 1;
-        const scale = 1.2; // 缩放比例
+        const scale = 2.0; // 提高清晰度
+        let isTurning = false; // 防止动画期间重复点击
         
         // 城市目录映射
         const cityPages = [
@@ -563,14 +666,44 @@
             { name: "君士坦丁堡", page: 43 }
         ];
         
+        // 目录面板控制
+        const tocToggleBtn = document.getElementById('tocToggleBtn');
+        const tocSidebar = document.getElementById('tocSidebar');
+        const tocCloseBtn = document.getElementById('tocCloseBtn');
+        
+        tocToggleBtn.addEventListener('click', function() {
+            tocSidebar.classList.toggle('show');
+        });
+        
+        tocCloseBtn.addEventListener('click', function() {
+            tocSidebar.classList.remove('show');
+        });
+        
+        // 点击目录外部关闭
+        document.addEventListener('click', function(event) {
+            if (!tocSidebar.contains(event.target) && 
+                !tocToggleBtn.contains(event.target) &&
+                tocSidebar.classList.contains('show')) {
+                tocSidebar.classList.remove('show');
+            }
+        });
+        
         // 初始化PDF文档
-        pdfjsLib.getDocument('data/travel.pdf').promise.then(function(pdf) {
+        pdfjsLib.getDocument({
+            url: 'data/travel.pdf',
+            cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/',
+            cMapPacked: true
+        }).promise.then(function(pdf) {
             pdfDoc = pdf;
             totalPages = pdf.numPages;
             
             // 更新总页数显示
             document.getElementById('totalPages').textContent = totalPages;
-            document.getElementById('pageSlider').max = Math.ceil(totalPages / 2);
+            
+            // 更新滑块范围
+            const maxSpread = Math.ceil(totalPages / 2);
+            document.getElementById('pageSlider').max = maxSpread;
+            document.getElementById('sliderMax').textContent = maxSpread * 2 > totalPages ? totalPages : maxSpread * 2;
             
             // 渲染初始页面
             renderPages(currentPage);
@@ -580,66 +713,66 @@
             
             // 更新按钮状态
             updateButtonStates();
+            
+            // 设置书容器高度
+            setupBookHeight();
         }).catch(function(error) {
             console.error('PDF加载失败:', error);
             alert('无法加载PDF文件，请确保data/travel.pdf文件存在');
         });
         
+        // 设置书容器高度（保持148:210比例）
+        function setupBookHeight() {
+            const bookContainer = document.getElementById('bookContainer');
+            const width = bookContainer.clientWidth;
+            // 148:210 = 宽:高，所以高 = 宽 * 210 / 148 / 2（因为显示两页）
+            const pageWidth = width / 2;
+            const pageHeight = pageWidth * 210 / 148;
+            bookContainer.style.height = pageHeight + 'px';
+        }
+        
         // 渲染两页
         async function renderPages(leftPageNum) {
-            if (!pdfDoc) return;
+            if (!pdfDoc || isTurning) return;
             
             const rightPageNum = leftPageNum + 1;
             
             // 确保页码有效
             if (leftPageNum < 1) leftPageNum = 1;
-            if (rightPageNum > totalPages) {
-                // 如果只有一页要显示，只渲染左页
-                renderSinglePage(leftPageNum);
-                return;
-            }
+            if (leftPageNum > totalPages) leftPageNum = totalPages - 1;
             
             // 更新页码显示
             document.getElementById('pageNumLeft').textContent = leftPageNum;
-            document.getElementById('pageNumRight').textContent = rightPageNum;
-            document.getElementById('currentSpread').textContent = `第 ${leftPageNum}-${rightPageNum} 页`;
+            document.getElementById('pageNumRight').textContent = rightPageNum <= totalPages ? rightPageNum : '-';
+            document.getElementById('currentSpread').textContent = rightPageNum <= totalPages ? 
+                `第 ${leftPageNum}-${rightPageNum} 页` : `第 ${leftPageNum} 页`;
             
             // 更新滑块位置
             document.getElementById('pageSlider').value = Math.ceil(leftPageNum / 2);
             
-            // 同时渲染两页
-            const [leftPage, rightPage] = await Promise.all([
-                pdfDoc.getPage(leftPageNum),
-                pdfDoc.getPage(rightPageNum)
-            ]);
-            
             // 渲染左页
-            renderPage(leftPage, 'pdfCanvasLeft', 1);
+            if (leftPageNum <= totalPages) {
+                const leftPage = await pdfDoc.getPage(leftPageNum);
+                renderPage(leftPage, 'pdfCanvasLeft');
+            }
             
             // 渲染右页
-            renderPage(rightPage, 'pdfCanvasRight', 2);
-        }
-        
-        // 渲染单页（最后一页可能是单数）
-        function renderSinglePage(pageNum) {
-            pdfDoc.getPage(pageNum).then(function(page) {
-                // 只渲染左页，右页清空
-                renderPage(page, 'pdfCanvasLeft', 1);
-                
-                // 清空右页
+            if (rightPageNum <= totalPages) {
+                const rightPage = await pdfDoc.getPage(rightPageNum);
+                renderPage(rightPage, 'pdfCanvasRight');
+            } else {
+                // 清除右页内容
                 const canvasRight = document.getElementById('pdfCanvasRight');
                 const ctxRight = canvasRight.getContext('2d');
                 ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-                
-                // 更新页码显示
-                document.getElementById('pageNumLeft').textContent = pageNum;
-                document.getElementById('pageNumRight').textContent = '-';
-                document.getElementById('currentSpread').textContent = `第 ${pageNum} 页`;
-            });
+            }
+            
+            // 更新当前页码
+            currentPage = leftPageNum;
         }
         
         // 渲染单个页面到指定canvas
-        function renderPage(page, canvasId, side) {
+        function renderPage(page, canvasId) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
             
@@ -647,79 +780,108 @@
             const viewport = page.getViewport({ scale: scale });
             
             // 设置canvas尺寸（保持148:210的比例）
-            const targetWidth = side === 1 ? viewport.width : viewport.width;
-            const targetHeight = viewport.height;
+            const container = document.querySelector('.book-page');
+            const containerWidth = container.clientWidth;
+            const containerHeight = containerWidth * 210 / 148;
             
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
+            // 计算缩放比例以适应容器
+            const scaleToFit = Math.min(
+                containerWidth / viewport.width,
+                containerHeight / viewport.height
+            );
+            
+            const scaledViewport = page.getViewport({ scale: scaleToFit * window.devicePixelRatio });
+            
+            // 设置canvas尺寸
+            canvas.width = scaledViewport.width;
+            canvas.height = scaledViewport.height;
+            
+            // 调整canvas的CSS尺寸
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
             
             // 渲染PDF页面
             const renderContext = {
                 canvasContext: ctx,
-                viewport: viewport
+                viewport: scaledViewport
             };
             
-            page.render(renderContext).promise.then(function() {
-                console.log(`第${page.pageNumber}页渲染完成`);
-            });
+            return page.render(renderContext).promise;
         }
         
         // 翻页动画效果
-        async function turnPageAnimation(direction) {
-            const leftWrapper = document.getElementById('leftPageWrapper');
-            const rightWrapper = document.getElementById('rightPageWrapper');
+        function turnPageAnimation(direction, callback) {
+            if (isTurning) return;
+            isTurning = true;
             
-            // 添加翻页动画类
-            if (direction === 'next') {
-                leftWrapper.classList.add('turning');
+            const pageTurning = document.getElementById('pageTurning');
+            
+            // 设置翻页元素
+            pageTurning.className = 'page-turning';
+            pageTurning.classList.add(direction === 'next' ? 'turn-right' : 'turn-left');
+            
+            // 开始动画
+            setTimeout(() => {
+                pageTurning.classList.add('turning-animation');
+                
+                // 动画结束后执行回调
                 setTimeout(() => {
-                    leftWrapper.classList.remove('turning');
-                    // 渲染新页面
-                    renderPages(currentPage);
+                    // 重置动画元素
+                    pageTurning.className = 'page-turning';
+                    pageTurning.classList.remove('turning-animation');
+                    
+                    // 执行回调（加载新页面）
+                    if (callback) callback();
+                    
+                    isTurning = false;
                 }, 600);
-            } else {
-                rightWrapper.classList.add('turning');
-                setTimeout(() => {
-                    rightWrapper.classList.remove('turning');
-                    // 渲染新页面
-                    renderPages(currentPage);
-                }, 600);
-            }
+            }, 10);
         }
         
         // 上一页
         function goPrevious() {
-            if (currentPage > 2) {
-                currentPage -= 2;
-                turnPageAnimation('prev');
-                updateButtonStates();
-                updateActiveTOC();
+            if (currentPage > 2 && !isTurning) {
+                turnPageAnimation('prev', () => {
+                    currentPage -= 2;
+                    renderPages(currentPage);
+                    updateButtonStates();
+                    updateActiveTOC();
+                });
             }
         }
         
         // 下一页
         function goNext() {
-            if (currentPage < totalPages - 1) {
-                currentPage += 2;
-                turnPageAnimation('next');
-                updateButtonStates();
-                updateActiveTOC();
+            if (currentPage < totalPages - 1 && !isTurning) {
+                turnPageAnimation('next', () => {
+                    currentPage += 2;
+                    renderPages(currentPage);
+                    updateButtonStates();
+                    updateActiveTOC();
+                });
             }
         }
         
         // 跳转到指定页（通过滑块）
         function jumpToPage(sliderValue) {
+            if (isTurning) return;
+            
             const newLeftPage = (parseInt(sliderValue) - 1) * 2 + 1;
             if (newLeftPage !== currentPage) {
-                currentPage = newLeftPage;
-                renderPages(currentPage);
-                updateButtonStates();
-                updateActiveTOC();
+                const direction = newLeftPage > currentPage ? 'next' : 'prev';
+                turnPageAnimation(direction, () => {
+                    currentPage = newLeftPage;
+                    renderPages(currentPage);
+                    updateButtonStates();
+                    updateActiveTOC();
+                });
             }
         }
         
         // 跳转到城市页面
         function jumpToCity(pageNumber) {
+            if (isTurning) return;
+            
             // 确保跳转到双页显示中的左页
             let targetPage = pageNumber;
             if (targetPage % 2 === 0) {
@@ -729,17 +891,17 @@
             if (targetPage < 1) targetPage = 1;
             if (targetPage > totalPages - 1) targetPage = totalPages - 1;
             
-            currentPage = targetPage;
+            const direction = targetPage > currentPage ? 'next' : 'prev';
             
-            // 添加翻页动画
-            if (targetPage > currentPage) {
-                turnPageAnimation('next');
-            } else {
-                turnPageAnimation('prev');
-            }
-            
-            updateButtonStates();
-            updateActiveTOC();
+            turnPageAnimation(direction, () => {
+                currentPage = targetPage;
+                renderPages(currentPage);
+                updateButtonStates();
+                updateActiveTOC();
+                
+                // 关闭目录面板
+                tocSidebar.classList.remove('show');
+            });
         }
         
         // 更新按钮状态
@@ -747,8 +909,8 @@
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             
-            prevBtn.disabled = currentPage <= 1;
-            nextBtn.disabled = currentPage >= totalPages - 1;
+            prevBtn.disabled = currentPage <= 1 || isTurning;
+            nextBtn.disabled = currentPage >= totalPages - 1 || isTurning;
         }
         
         // 渲染目录
@@ -770,7 +932,7 @@
                 
                 link.innerHTML = `
                     <span class="city-name">${city.name}</span>
-                    <span class="page-number">${city.page}</span>
+                    <span class="page-number">第 ${city.page} 页</span>
                 `;
                 
                 li.appendChild(link);
@@ -817,33 +979,14 @@
             }
         });
         
-        // 触摸滑动翻页
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        document.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-        
-        document.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
-        
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            const diff = touchEndX - touchStartX;
-            
-            if (Math.abs(diff) > swipeThreshold) {
-                if (diff > 0) {
-                    // 向右滑动：上一页
-                    goPrevious();
-                } else {
-                    // 向左滑动：下一页
-                    goNext();
-                }
+        // 窗口大小改变时调整书的高度
+        window.addEventListener('resize', function() {
+            setupBookHeight();
+            // 重新渲染当前页面以适应新尺寸
+            if (pdfDoc) {
+                renderPages(currentPage);
             }
-        }
+        });
     </script>
 </body>
 </html>
