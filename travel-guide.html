@@ -224,28 +224,27 @@
             <p>国际运输公司欢迎您乘坐东方快车！我们为自己无与伦比的服务感到骄傲。当您乘坐东方快车时，您将体验到奢华旅行的终极体验。</p>
         </div>
         
+        <!-- 在travel-guide.html中替代原有的PDF展示部分 -->
         <div class="pdf-viewer">
             <div class="pdf-container">
-                <iframe id="pdfViewer" src="data/travel.pdf" type="application/pdf"></iframe>
+                <canvas id="pdfCanvas"></canvas>
             </div>
             
             <div class="page-controls">
-                <button class="control-btn" onclick="previousPage()">
+                <button class="control-btn" onclick="goPrevious()">
                     <span>←</span> 上一页
                 </button>
                 
-                <div class="page-info" id="pageInfo">
-                    第 1 页 / 共 ? 页
+                <div class="page-info">
+                    第 <span id="pageNum"></span> 页 / 共 <span id="pageCount"></span> 页
                 </div>
                 
-                <button class="control-btn" onclick="nextPage()">
+                <button class="control-btn" onclick="goNext()">
                     下一页 <span>→</span>
                 </button>
             </div>
             
-            <a href="data/travel.pdf" download="克苏鲁旅行手册.pdf" class="download-btn">
-                下载旅行手册
-            </a>
+            <input type="range" id="pageSlider" min="1" max="1" value="1" class="page-slider">
         </div>
         
         <div class="guide-description">
@@ -265,81 +264,70 @@
             </ul>
         </div>
     </div>
-
-    <script>
-        // PDF页面控制
-        let currentPage = 1;
-        let totalPages = 1;
-        
-        // 获取PDF文档信息
-        function updatePDFInfo() {
-            const iframe = document.getElementById('pdfViewer');
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+        <script>
+            let pdfDoc = null;
+            let pageNum = 1;
+            let pageRendering = false;
+            let pageNumPending = null;
+            const scale = 1.5;
             
-            // 注意：直接通过iframe控制PDF页面需要PDF文件支持页面参数
-            // 这里我们使用一个简单的方法：通过调整iframe的src来模拟翻页
-            // 如果你的PDF文件比较大，可以考虑使用PDF.js库来实现更专业的控制
-            
-            // 尝试通过URL参数控制页面
-            setTimeout(() => {
-                // 这里可以添加PDF.js库来实现更精确的页面控制
-                // 由于安全限制，我们无法直接获取iframe中的PDF页面数
-                // 所以这里我们使用一个占位符
-                document.getElementById('pageInfo').textContent = `第 ${currentPage} 页 / 阅读中...`;
-            }, 1000);
-        }
-        
-        // 上一页
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                const iframe = document.getElementById('pdfViewer');
-                // 重新加载PDF并跳转到指定页面
-                // 注意：这种方法需要PDF支持#page=参数
-                iframe.src = `data/travel.pdf#page=${currentPage}`;
-                updatePageInfo();
+            function renderPage(num) {
+                pageRendering = true;
+                pdfDoc.getPage(num).then(function(page) {
+                    const canvas = document.getElementById('pdfCanvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    const viewport = page.getViewport({scale: scale});
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    const renderContext = {
+                        canvasContext: ctx,
+                        viewport: viewport
+                    };
+                    const renderTask = page.render(renderContext);
+                    
+                    renderTask.promise.then(function() {
+                        pageRendering = false;
+                        if (pageNumPending !== null) {
+                            renderPage(pageNumPending);
+                            pageNumPending = null;
+                        }
+                    });
+                    
+                    document.getElementById('pageNum').textContent = num;
+                });
             }
-        }
-        
-        // 下一页
-        function nextPage() {
-            currentPage++;
-            const iframe = document.getElementById('pdfViewer');
-            iframe.src = `data/travel.pdf#page=${currentPage}`;
-            updatePageInfo();
-        }
-        
-        // 更新页面信息显示
-        function updatePageInfo() {
-            document.getElementById('pageInfo').textContent = `第 ${currentPage} 页`;
-        }
-        
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            // 键盘快捷键
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowLeft') {
-                    previousPage();
-                } else if (e.key === 'ArrowRight') {
-                    nextPage();
-                }
-            });
             
-            updatePDFInfo();
-        });
-        
-        // 如果PDF文件不存在，显示提示
-        window.onload = function() {
-            const iframe = document.getElementById('pdfViewer');
-            iframe.onerror = function() {
-                iframe.contentDocument.body.innerHTML = `
-                    <div style="padding: 50px; text-align: center; color: #666;">
-                        <h2>无法加载PDF文件</h2>
-                        <p>请确保 data/travel.pdf 文件存在</p>
-                        <p>或者 <a href="#" onclick="location.reload()">点击重试</a></p>
-                    </div>
-                `;
-            };
-        };
-    </script>
+            function queueRenderPage(num) {
+                if (pageRendering) {
+                    pageNumPending = num;
+                } else {
+                    renderPage(num);
+                }
+            }
+            
+            function goPrevious() {
+                if (pageNum <= 1) return;
+                pageNum--;
+                queueRenderPage(pageNum);
+            }
+            
+            function goNext() {
+                if (pageNum >= pdfDoc.numPages) return;
+                pageNum++;
+                queueRenderPage(pageNum);
+            }
+            
+            // 加载PDF
+            pdfjsLib.getDocument('data/travel.pdf').promise.then(function(pdf) {
+                pdfDoc = pdf;
+                document.getElementById('pageCount').textContent = pdf.numPages;
+                document.getElementById('pageSlider').max = pdf.numPages;
+                renderPage(pageNum);
+            });
+        </script>
+
 </body>
 </html>
