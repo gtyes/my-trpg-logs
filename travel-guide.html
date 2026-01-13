@@ -487,6 +487,35 @@
             image-rendering: crisp-edges;
             -ms-interpolation-mode: nearest-neighbor;
         }
+        /* 优化Canvas渲染质量 */
+        .page-canvas {
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            -ms-interpolation-mode: nearest-neighbor;
+        }
+        
+        /* 确保Canvas使用硬件加速 */
+        .book-page {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform;
+        }
+        
+        /* 优化渲染性能 */
+        .book-container {
+            contain: layout style paint;
+        }
+        
+        /* 提高页面阴影效果以增强立体感 */
+        .book-page {
+            box-shadow: 
+                0 0 0 1px rgba(212, 175, 55, 0.1),
+                inset 0 0 0 1px rgba(0, 0, 0, 0.1),
+                0 4px 20px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -630,11 +659,22 @@
             }
         });
         
+
+        // 提高PDF渲染质量
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        
         // 初始化PDF文档
         pdfjsLib.getDocument({
             url: 'data/travel.pdf',
             cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/',
-            cMapPacked: true
+            cMapPacked: true,
+            enableWorker: true,
+            disableStream: false,
+            disableAutoFetch: false,
+            disableFontFace: false,
+            useSystemFonts: false,
+            isEvalSupported: true,
+            maxImageSize: -1
         }).promise.then(function(pdf) {
             pdfDoc = pdf;
             totalPages = pdf.numPages;
@@ -669,11 +709,33 @@
         // 设置书容器高度（保持148:210比例）
         function setupBookHeight() {
             const bookContainer = document.getElementById('bookContainer');
-            const width = bookContainer.clientWidth;
-            // 148:210 = 宽:高，所以高 = 宽 * 210 / 148 / 2（因为显示两页）
-            const pageWidth = width / 2;
+            if (!bookContainer) return;
+            
+            const container = document.querySelector('.pdf-viewer-area');
+            if (!container) return;
+            
+            // 计算可用宽度（考虑内边距）
+            const containerWidth = container.clientWidth - 60; // 减去内边距
+            
+            // 根据PDF比例计算高度：148:210 = 宽:高
+            // 显示两页，所以每页宽度是总宽的一半
+            const pageWidth = containerWidth / 2;
             const pageHeight = pageWidth * 210 / 148;
+            
+            // 设置容器高度，留出一些空间
             bookContainer.style.height = pageHeight + 'px';
+            
+            // 设置每页的最小高度，避免太小时显示不全
+            const minHeight = 400;
+            if (pageHeight < minHeight) {
+                bookContainer.style.height = minHeight + 'px';
+                
+                // 重新计算宽度以保持比例
+                const newPageHeight = minHeight;
+                const newPageWidth = newPageHeight * 148 / 210;
+                bookContainer.style.width = (newPageWidth * 2) + 'px';
+                bookContainer.style.margin = '0 auto';
+            }
         }
         
         // 设置点击事件
@@ -743,36 +805,53 @@
             const ctx = canvas.getContext('2d');
             
             // 获取PDF页面的原始尺寸
-            const viewport = page.getViewport({ scale: scale });
+            const viewport = page.getViewport({ scale: 1 });
             
             // 设置canvas尺寸（保持148:210的比例）
             const container = document.querySelector('.book-page');
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
             
-            // 计算缩放比例以适应容器
+            // 计算最佳缩放比例以适应容器并保持高清
+            const devicePixelRatio = window.devicePixelRatio || 1;
             const scaleToFit = Math.min(
                 containerWidth / viewport.width,
                 containerHeight / viewport.height
             );
             
-            const scaledViewport = page.getViewport({ scale: scaleToFit });
+            // 使用更高的缩放比例以获得更清晰的图像
+            const renderScale = scaleToFit * devicePixelRatio * 1.5; // 提高1.5倍以获得高清效果
             
-            // 设置canvas尺寸
-            canvas.width = scaledViewport.width;
-            canvas.height = scaledViewport.height;
+            const scaledViewport = page.getViewport({ scale: renderScale });
             
-            // 调整canvas的CSS尺寸
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
+            // 设置canvas的渲染尺寸（更高分辨率）
+            canvas.width = Math.floor(scaledViewport.width);
+            canvas.height = Math.floor(scaledViewport.height);
+            
+            // 调整canvas的CSS显示尺寸
+            canvas.style.width = containerWidth + 'px';
+            canvas.style.height = containerHeight + 'px';
+            
+            // 创建高清渲染上下文
+            ctx.save();
+            ctx.scale(devicePixelRatio, devicePixelRatio);
+            
+            // 设置渲染质量
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             
             // 渲染PDF页面
             const renderContext = {
                 canvasContext: ctx,
-                viewport: scaledViewport
+                viewport: scaledViewport,
+                enableWebGL: true,
+                renderInteractiveForms: false
             };
             
-            return page.render(renderContext).promise;
+            return page.render(renderContext).promise.then(function() {
+                ctx.restore();
+                console.log(`第${page.pageNumber}页渲染完成，分辨率: ${canvas.width}x${canvas.height}`);
+            });
         }
         
         // 更新点击提示
