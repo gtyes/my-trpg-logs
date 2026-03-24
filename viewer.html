@@ -687,7 +687,10 @@
     
     <!-- 标题 -->
     <div class="log-title" id="logTitle">
-        <span class="title-character">加载中…</span>
+        <span class="title-character" style="color: #8b0000;">血</span>
+        <span class="title-character">色</span>
+        <span class="title-character">毡</span>
+        <span class="title-character">帽</span>
     </div>
     
     <!-- 右侧控制按钮 -->
@@ -776,6 +779,7 @@
             searchText: ''
         };
         let chapters = [];
+        let currentRenderedChapter = null; 
         let collapseChatChannels = false;
         const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
@@ -855,7 +859,11 @@
     }
 
     function updateChapterImages() {
-        const currentChapter = getCurrentChapter();
+        const currentChapter = currentRenderedChapter;
+        if (!currentChapter) {
+            console.warn('未找到当前章节，尝试用 getCurrentChapter 回退');
+            currentChapter = getCurrentChapter();
+        }
         
         console.log('当前章节:', currentChapter?.name);
         console.log('章节图片映射:', chapterImageMap);
@@ -981,7 +989,7 @@ function toggleRightImage() {
         setTimeout(() => {
             image.style.opacity = '0.9';
             // 确保显示当前章节的图片
-            const currentChapter = getCurrentChapter();
+            const currentChapter = currentRenderedChapter;
             if (currentChapter && chapterImageMap[currentChapter.name]) {
                 const images = chapterImageMap[currentChapter.name];
                 if (images.rightImage) {
@@ -1369,28 +1377,83 @@ function clearFilters() {
         updateChapterImages();
     }, 100);
 }
-      
+// 根据消息索引（在 filteredLogs 中的位置）查找所属章节
+function findChapterByMessageIndex(index) {
+    if (!chapters || chapters.length === 0) return null;
+    const sortedChapters = [...chapters].sort((a, b) => a.position - b.position);
+    for (let i = sortedChapters.length - 1; i >= 0; i--) {
+        const chapter = sortedChapters[i];
+        // 注意：chapter.position 是 1-based，index 是 0-based
+        if (index + 1 >= chapter.position) {
+            return chapter;
+        }
+    }
+    return sortedChapters[0] || null;
+}      
 // 渲染当前页
         // 替换原来的renderCurrentPage函数
 function renderCurrentPage() {
-    // 直接通过统一函数获取当前页的起始索引
-    const startIndex = getPageStartIndex(currentPage);
-    const pageMessages = [];
-    let messagesOnPage = 0;
-
-    for (let i = startIndex; i < filteredLogs.length && messagesOnPage < pageSize; i++) {
+    // 计算当前页应该从哪条消息开始
+    let messagesProcessed = 0;
+    let currentStartIndex = 0;
+    
+    // 找到当前页的起始位置
+    for (let i = 0; i < filteredLogs.length; i++) {
         const msg = filteredLogs[i];
-        // 章节消息分页规则：如果不是本页第一条就停止
-        if (msg.isChapter && messagesOnPage > 0) break;
-        pageMessages.push(msg);
-        messagesOnPage++;
+        
+        // 如果已经收集了足够多的消息，或者遇到章节需要新开一页
+        if ((messagesProcessed >= pageSize) || 
+            (msg.isChapter && messagesProcessed > 0)) {
+            // 我们已经找到了一页，看看这是不是我们要的那一页
+            const pageNumber = calculatePageForMessage(currentStartIndex);
+            
+            if (pageNumber === currentPage) {
+                // 这就是我们要渲染的页
+                break;
+            }
+            
+            // 这不是我们要的页，重置计数器，继续查找
+            currentStartIndex = i;
+            messagesProcessed = 0;
+        }
+        
+        messagesProcessed++;
     }
-
+    if (filteredLogs.length > 0 && currentStartIndex < filteredLogs.length) {
+        currentRenderedChapter = findChapterByMessageIndex(currentStartIndex);
+    } else {
+        currentRenderedChapter = null;
+    }
+    // 收集当前页的消息
+    const pageMessages = [];
+    let pageCount = 0;
+    
+    for (let i = currentStartIndex; i < filteredLogs.length && pageCount < pageSize; i++) {
+        const msg = filteredLogs[i];
+        
+        // 如果是章节消息，且不是本页第一条，则停止收集
+        if (msg.isChapter && pageCount > 0) {
+            break;
+        }
+        
+        pageMessages.push(msg);
+        pageCount++;
+    }
+    
+    // 渲染消息
     const container = document.getElementById('logMessages');
     container.innerHTML = renderLogMessages(pageMessages);
+    
+    // 更新分页信息
     updatePaginationInfo();
+    
+    // 滚动到顶部
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setTimeout(() => updateChapterImages(), 100);
+    
+    // 更新章节图片
+    setTimeout(() => {
+        updateChapterImages();
+    }, 100);
 }
 // 添加双击事件处理函数
 function addMessageDoubleClickHandlers() {
@@ -1408,20 +1471,59 @@ function addMessageDoubleClickHandlers() {
 // 简化jumpToMessage函数，确保按filteredLogs的顺序计算
 // 修改jumpToMessage函数
 function jumpToMessage(messageId) {
-    clearFilters(); // 清除筛选，回到原始日志
+    console.log('尝试跳转到消息:', messageId);
+    
+    // 先清除所有筛选和搜索，回到原始日志
+    clearFilters(); // 这会重置filteredLogs为原始日志
+    
+    // 等待清空筛选完成，再查找消息
     setTimeout(() => {
+        // 在原始日志中查找消息
         const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+        console.log('在原始日志中的消息索引位置:', messageIndex);
+        
         if (messageIndex !== -1) {
-            const targetPage = calculatePageForMessage(messageIndex);
-            currentPage = targetPage;
-            renderCurrentPage();
-            setTimeout(() => highlightMessage(messageId), 500);
+            // 计算消息所在的页数
+            let page = 1;
+            let messagesProcessed = 0;
+            
+            for (let i = 0; i <= messageIndex; i++) {
+                const msg = filteredLogs[i];
+                
+                messagesProcessed++;
+                
+                // 如果是章节标记，且不是本页第一条，则新开一页
+                if (msg.isChapter && messagesProcessed > 1) {
+                    page++;
+                    messagesProcessed = 1;
+                }
+                
+                // 如果本页已满，翻页
+                if (messagesProcessed >= pageSize) {
+                    page++;
+                    messagesProcessed = 0;
+                }
+                
+                // 找到目标消息
+                if (i === messageIndex) {
+                    currentPage = page;
+                    console.log('消息在第', page, '页');
+                    renderCurrentPage();
+                    
+                    // 等待渲染完成后高亮显示
+                    setTimeout(() => {
+                        highlightMessage(messageId);
+                    }, 500); // 延长等待时间确保渲染完成
+                    break;
+                }
+            }
         } else {
             console.error('未找到消息:', messageId);
             alert('未找到该消息，可能消息已被删除或修改');
         }
     }, 100);
 }
+
 // 添加高亮函数
 function highlightMessage(messageId) {
     const targetRow = document.querySelector(`.message-row[data-id="${messageId}"]`);
@@ -2033,15 +2135,40 @@ function getExtendStyle(resultType) {
 
         // ========== 分页功能 ==========
         function updatePaginationInfo() {
-            const totalPages = getTotalPages();
+            // 计算总页数（考虑章节分页）
+            let totalPages = 0;
+            let remainingMessages = filteredLogs.length;
+            let pageStart = 0;
+            
+            while (remainingMessages > 0) {
+                totalPages++;
+                let pageCount = 0;
+                
+                // 计算这一页能放多少消息
+                for (let i = pageStart; i < filteredLogs.length && pageCount < pageSize; i++) {
+                    const msg = filteredLogs[i];
+                    pageCount++;
+                    
+                    // 关键修改：如果是章节标记，且不是本页第一条，则结束当前页
+                    if (msg.isChapter && pageCount > 1) {
+                        break; // 章节在新的一页开始
+                    }
+                }
+                
+                remainingMessages -= pageCount;
+                pageStart += pageCount;
+            }
+            
             document.getElementById('currentPage').textContent = currentPage;
             document.getElementById('totalPages').textContent = totalPages;
             document.getElementById('pageSize').textContent = pageSize;
+            
             document.getElementById('prevPageBtn').disabled = currentPage === 1;
             document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
             document.getElementById('jumpInput').value = currentPage;
             document.getElementById('jumpInput').max = totalPages;
         }
+        
         function prevPage() {
             if (currentPage > 1) {
                 currentPage--;
@@ -2071,74 +2198,39 @@ function getExtendStyle(resultType) {
         }
 function calculatePageForMessage(messageIndex) {
     let page = 1;
-    let messagesOnCurrentPage = 0;
+    let messagesProcessed = 0;
+    
     for (let i = 0; i <= messageIndex; i++) {
         const msg = filteredLogs[i];
-        messagesOnCurrentPage++;
-        // 章节消息强制分页（除非它是本页第一条）
-        if (msg.isChapter && messagesOnCurrentPage > 1) {
+        messagesProcessed++;
+        
+        // 如果这是章节消息，且不是本页第一条，则需要新开一页
+        if (msg.isChapter && messagesProcessed > 1) {
             page++;
-            messagesOnCurrentPage = 1;
+            messagesProcessed = 1; // 章节消息算在新的一页
         }
-        // 页容量已满
-        if (messagesOnCurrentPage > pageSize) {
+        
+        // 如果当前页已满，新开一页
+        if (messagesProcessed > pageSize) {
             page++;
-            messagesOnCurrentPage = 1;
+            messagesProcessed = 1; // 当前消息算在新的一页
         }
     }
+    
     return page;
-}      
-// 获取第 page 页的起始索引（0-based）
-function getPageStartIndex(page) {
-    if (page < 1) page = 1;
-    let currentPage = 1;
-    let startIndex = 0;
-    let i = 0;
-    while (i < filteredLogs.length && currentPage < page) {
-        let messagesOnCurrentPage = 0;
-        // 模拟一页的内容，直到触发分页
-        for (; i < filteredLogs.length; i++) {
-            const msg = filteredLogs[i];
-            messagesOnCurrentPage++;
-            if (msg.isChapter && messagesOnCurrentPage > 1) {
-                // 章节强制结束当前页，且当前消息属于下一页
-                break;
-            }
-            if (messagesOnCurrentPage >= pageSize) {
-                // 页容量已满，当前消息属于下一页
-                break;
-            }
-        }
-        currentPage++;
-        startIndex = i; // 下一页的起始索引
-    }
-    return startIndex;
 }
-// 计算总页数
-function getTotalPages() {
-    if (filteredLogs.length === 0) return 1;
-    let page = 1;
-    let i = 0;
-    while (i < filteredLogs.length) {
-        let messagesOnCurrentPage = 0;
-        for (; i < filteredLogs.length; i++) {
-            const msg = filteredLogs[i];
-            messagesOnCurrentPage++;
-            if (msg.isChapter && messagesOnCurrentPage > 1) break;
-            if (messagesOnCurrentPage >= pageSize) break;
-        }
-        page++;
-    }
-    return page - 1; // 最后一次循环会多加一次
-}
-// 章节跳转
+        // 章节跳转
 function jumpToChapter(chapterIndex) {
     if (chapters[chapterIndex]) {
         const chapter = chapters[chapterIndex];
-        const chapterMsgIndex = filteredLogs.findIndex(msg =>
+        
+        // 查找章节消息在日志中的位置
+        const chapterMsgIndex = filteredLogs.findIndex(msg => 
             msg.isChapter && msg.text.includes(chapter.name)
         );
+        
         if (chapterMsgIndex !== -1) {
+            // 计算章节所在的页
             const targetPage = calculatePageForMessage(chapterMsgIndex);
             currentPage = targetPage;
             renderCurrentPage();
