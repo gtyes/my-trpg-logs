@@ -651,9 +651,11 @@
                 display: block;
             }
             
+            /* 修改点：让消息区域贴边 */
             .main-container {
-                padding: 0 15px;
-                max-width: 100%;
+                padding: 0 !important;      /* 清除所有内边距 */
+                margin: 0 !important;       /* 清除外边距 */
+                max-width: 100% !important;
             }
             
             .pagination-container {
@@ -662,8 +664,10 @@
                 padding: 12px;
             }
             
+            /* 修改点：让消息容器贴边，去掉圆角 */
             .log-container {
-                padding: 12px;
+                border-radius: 0 !important;   /* 完全贴边 */
+                padding: 12px !important;      /* 保留内部留白，文字不撞边 */
             }
         }
     </style>
