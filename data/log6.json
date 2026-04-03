@@ -20,7 +20,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": "lPtOplOs7ua0PAepZ81u",
@@ -4395,28 +4401,28 @@
     "title": "幻梦境快车",
     "titleColors": [
       {
-        "color": "#f7d69a",
-        "shadowColor": "#0d1c67",
+        "color": "#0d1c67",
+        "shadowColor": "#f7d69a",
         "shadowSize": "1px 1px 10px"
       },
       {
-        "color": "#f7d69a",
-        "shadowColor": "#0d1c67",
+        "color": "#0d1c67",
+        "shadowColor": "#f7d69a",
         "shadowSize": "1px 1px 10px"
       },
       {
-        "color": "#f7d69a",
-        "shadowColor": "#0d1c67",
+        "color": "#0d1c67",
+        "shadowColor": "#f7d69a",
         "shadowSize": "1px 1px 10px"
       },
       {
-        "color": "#f7d69a",
-        "shadowColor": "#0d1c67",
+        "color": "#0d1c67",
+        "shadowColor": "#f7d69a",
         "shadowSize": "1px 1px 10px"
       },
       {
-        "color": "#f7d69a",
-        "shadowColor": "#0d1c67",
+        "color": "#0d1c67",
+        "shadowColor": "#f7d69a",
         "shadowSize": "1px 1px 10px"
       }
     ],
@@ -4427,8 +4433,8 @@
       "opacity": 0.6
     },
     "theme": {
-      "lightColor": "#f7d69a",
-      "darkColor": "#0d1c67"
+      "lightColor": "#0d1c67",
+      "darkColor": "#f7d69a"
     },
     "rightFloatingImage": ""
   },
@@ -5025,7 +5031,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-04-03T10:38:43.558Z",
+    "exportedAt": "2026-04-03T10:46:57.665Z",
     "totalMessages": 169,
     "version": "7.0",
     "features": [
