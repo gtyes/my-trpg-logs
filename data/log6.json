@@ -159589,8 +159589,8 @@
       "name": "幻梦境快车上的谋杀案",
       "position": 2710,
       "id": "chapter-1778583991080",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "images/scene69.png",
+      "rightImage": "images/map19.png"
     },
     {
       "name": "伊伯与萨尔纳斯",
@@ -159617,8 +159617,8 @@
       "name": "解决命案",
       "position": 4261,
       "id": "chapter-1779669033883",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "images/scene64.png",
+      "rightImage": "images/map19.png"
     },
     {
       "name": "安普霍拉特",
@@ -160247,7 +160247,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-05-25T01:56:22.956Z",
+    "exportedAt": "2026-05-25T02:10:53.394Z",
     "totalMessages": 6134,
     "version": "7.0",
     "features": [
