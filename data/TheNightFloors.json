@@ -24031,22 +24031,22 @@
     "title": "夜间楼层",
     "titleColors": [
       {
-        "color": "#dbb700",
+        "color": "#c2a200",
         "shadowColor": "#750000",
         "shadowSize": "1px 1px 2px"
       },
       {
-        "color": "#dbb700",
+        "color": "#c2a200",
         "shadowColor": "#750000",
         "shadowSize": "1px 1px 2px"
       },
       {
-        "color": "#dbb700",
+        "color": "#c2a200",
         "shadowColor": "#750000",
         "shadowSize": "1px 1px 2px"
       },
       {
-        "color": "#dbb700",
+        "color": "#c2a200",
         "shadowColor": "#750000",
         "shadowSize": "1px 1px 2px"
       }
@@ -24054,11 +24054,11 @@
     "leftSidebar": {
       "useImage": false,
       "image": "",
-      "color": "#c2a200",
+      "color": "#a88400",
       "opacity": 0.6
     },
     "theme": {
-      "lightColor": "#dbb700",
+      "lightColor": "#a88400",
       "darkColor": "#750000"
     },
     "rightFloatingImage": ""
@@ -24572,7 +24572,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-06-09T13:43:37.195Z",
+    "exportedAt": "2026-06-09T13:55:25.642Z",
     "totalMessages": 924,
     "version": "7.0",
     "features": [
