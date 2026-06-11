@@ -2093,7 +2093,6 @@ function formatExtendContent(msg) {
             let text = traditionalToSimple(extendText);
             
             if (resultType === 'criticalSuccess') {
-                // 将成功结果替换为“大成功”
                 text = text.replace(/(\d+\s*[＞>]\s*)(.+)/, (match, prefix, suffix) => {
                     if (suffix.includes('成功')) return prefix + '大成功';
                     return match;
@@ -2105,30 +2104,38 @@ function formatExtendContent(msg) {
                     return match;
                 });
             }
+            // DG规则下，将普通成功/失败统一为“成功”/“失败”
+            else if (extendSettings.ruleSystem === 'dg') {
+                if (resultType === 'success') {
+                    text = text.replace(/(\d+\s*[＞>]\s*).+成功/, '$1成功');
+                } else if (resultType === 'failure') {
+                    text = text.replace(/(\d+\s*[＞>]\s*).+失败/, '$1失败');
+                }
+            }
             
             return text;
         }
 
         // 获取扩展内容样式
-function getExtendStyle(resultType) {
-    const format = (extendFormats && extendFormats[resultType]) ? extendFormats[resultType] : {};
-    let style = '';
-    
-    // 基础extend设置
-    const fontSettings = logData.fontSettings || {};
-    if (fontSettings.extendText) style += `font-family: ${fontSettings.extendText};`;
-    if (fontSettings.extendTextColor) style += `color: ${fontSettings.extendTextColor};`;
-    if (fontSettings.extendTextSize) style += `font-size: ${fontSettings.extendTextSize}px;`;
-    
-    // 特殊格式（使用编辑器设置的格式）
-    if (format.color) style += `color: ${format.color};`;
-    if (format.fontFamily) style += `font-family: ${format.fontFamily};`;
-    if (format.fontSize) style += `font-size: ${format.fontSize}px;`;
-    if (format.bold) style += `font-weight: bold;`;
-    
-    console.log(`extend样式 (${resultType}):`, style);
-    return style;
-}
+        function getExtendStyle(resultType) {
+            const format = (extendFormats && extendFormats[resultType]) ? extendFormats[resultType] : {};
+            let style = '';
+            
+            // 基础extend设置
+            const fontSettings = logData.fontSettings || {};
+            if (fontSettings.extendText) style += `font-family: ${fontSettings.extendText};`;
+            if (fontSettings.extendTextColor) style += `color: ${fontSettings.extendTextColor};`;
+            if (fontSettings.extendTextSize) style += `font-size: ${fontSettings.extendTextSize}px;`;
+            
+            // 特殊格式（使用编辑器设置的格式）
+            if (format.color) style += `color: ${format.color};`;
+            if (format.fontFamily) style += `font-family: ${format.fontFamily};`;
+            if (format.fontSize) style += `font-size: ${format.fontSize}px;`;
+            if (format.bold) style += `font-weight: bold;`;
+            
+            console.log(`extend样式 (${resultType}):`, style);
+            return style;
+        }
         
         // 获取扩展图片
         function getExtendImage(resultType) {
