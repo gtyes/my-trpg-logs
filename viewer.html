@@ -772,6 +772,8 @@
     <script>
         // 全局变量
         let chapterImageMap = {}; // 章节名 -> 右侧图片URL
+        let extendFormats = {};
+        let extendSettings = { ruleSystem: 'coc_houserule' };
         let chapterBackgroundMap = {}; // 章节名 -> 背景图片URL
         let logData = null;
         let filteredLogs = [];
@@ -1125,6 +1127,16 @@ function loadImageState() {
                 
                 // 初始化章节数据
                 chapters = logData.chapters || [];
+                
+                // 加载 extend 规则和格式
+                if (logData.extendSettings) {
+                    extendSettings = logData.extendSettings;
+                } else {
+                    extendSettings = { ruleSystem: 'coc_houserule' };
+                }
+                if (logData.extendFormats) {
+                    extendFormats = logData.extendFormats;
+                }
                 
                 // 根据章节重新组织日志数据
                 organizeLogsByChapters();
@@ -2007,111 +2019,91 @@ function formatExtendContent(msg) {
     return msg.dice || '';
 }     
         // 获取扩展结果类型
-function getExtendResultType(msg) {
-    const extendText = formatExtendContent(msg);
-    if (!extendText) return 'normal';
-    
-    console.log('原始extend文本:', extendText);
-    
-    // 先进行繁简转换
-    let text = traditionalToSimple(extendText);
-    console.log('繁简转换后:', text);
-    
-    // 去除空格以便匹配
-    const cleanText = text.replace(/\s+/g, '');
-    console.log('去除空格后:', cleanText);
-    
-    // 检查大失败（简体）- 支持多种格式
-    if (text.includes('大失败')) {
-        console.log('识别为大失败（包含"大失败"文本）');
-        return 'criticalFailure';
-    }
-    
-    // 检查大成功（简体）- 支持多种格式
-    if (text.includes('大成功')) {
-        console.log('识别为大成功（包含"大成功"文本）');
-        return 'criticalSuccess';
-    }
-    
-    // 检查"{数字}＞失败"且数字≥96（支持各种空格和符号变体）
-    // 匹配格式如: "96 ＞ 失败", "96＞失败", "96 > 失败"
-    const failureMatch = cleanText.match(/(\d+)[＞>]失败/);
-    if (failureMatch) {
-        const number = parseInt(failureMatch[1]);
-        console.log('失败匹配到数字:', number);
-        if (number >= 96) {
-            console.log('数字≥96，识别为大失败');
-            return 'criticalFailure';
+        // 新增辅助函数：解析骰子文本
+        function parseDiceText(text) {
+            let simple = traditionalToSimple(text);
+            let match = simple.match(/(\d+)\s*[＞>]\s*(.+)/);
+            if (!match) return null;
+            let number = parseInt(match[1]);
+            let resultText = match[2].trim();
+            let isSuccess = resultText.includes('成功') && !resultText.includes('失败');
+            let isFailure = resultText.includes('失败');
+            return { number, resultText, isSuccess, isFailure };
         }
-        console.log('数字<96，识别为普通失败');
-        return 'failure';
-    }
-    
-    // 检查"{数字}＞极限成功"且数字≤5（支持各种空格和符号变体）
-    // 匹配格式如: "5 ＞ 极限成功", "5＞极限成功", "5 > 极限成功"
-    const successMatch = cleanText.match(/(\d+)[＞>]极限成功/);
-    if (successMatch) {
-        const number = parseInt(successMatch[1]);
-        console.log('成功匹配到数字:', number);
-        if (number <= 5) {
-            console.log('数字≤5，识别为大成功');
-            return 'criticalSuccess';
-        }
-        console.log('数字>5，识别为普通成功');
-        return 'success';
-    }
-    
-    // 检查普通成功（以"成功"结尾）
-    if (text.trim().endsWith('成功')) {
-        console.log('识别为普通成功（以"成功"结尾）');
-        return 'success';
-    }
-    
-    // 检查普通失败（以"失败"结尾）
-    if (text.trim().endsWith('失败')) {
-        console.log('识别为普通失败（以"失败"结尾）');
-        return 'failure';
-    }
-    
-    console.log('未识别特殊格式，返回normal');
-    return 'normal';
-}
-// 重新实现getFormattedExtendText函数
-function getFormattedExtendText(msg) {
-    const extendText = formatExtendContent(msg);
-    if (!extendText) return '';
-    
-    const resultType = getExtendResultType(msg);
-    let text = traditionalToSimple(extendText);
-    
-    console.log('格式化前文本:', text, '结果类型:', resultType);
-    
-    // 根据结果类型进行转换
-    if (resultType === 'criticalSuccess') {
-        // 将"极限成功"转为"大成功"
-        text = text.replace('极限成功', '大成功');
-        // 如果匹配到数字格式，也进行转换
-        text = text.replace(/(\d+)\s*[＞>]\s*极限成功/, '大成功');
-        console.log('格式化后（大成功）:', text);
-    } else if (resultType === 'criticalFailure') {
-        // 如果是数字≥96的失败，转换为大失败
-        text = text.replace(/(\d+)\s*[＞>]\s*失败/, (match, number) => {
-            if (parseInt(number) >= 96) {
-                return '大失败';
-            }
-            return match;
-        });
-        console.log('格式化后（大失败）:', text);
-    }
-    
-    return text;
-}
 
+        // 核心判定函数
+        function determineResultTypeWithRule(msg, ruleSystem) {
+            const originalText = formatExtendContent(msg);
+            if (!originalText) return 'normal';
+            
+            let simpleText = traditionalToSimple(originalText);
+            // 如果原文已经明确是大成功或大失败
+            if (simpleText.includes('大失败')) return 'criticalFailure';
+            if (simpleText.includes('大成功')) return 'criticalSuccess';
+            
+            let parsed = parseDiceText(originalText);
+            if (!parsed) return 'normal';
+            
+            const { number, isSuccess, isFailure } = parsed;
+            
+            if (ruleSystem === 'coc') {
+                // COC 原样：不创造额外的大成功/大失败
+                return isSuccess ? 'success' : (isFailure ? 'failure' : 'normal');
+            }
+            else if (ruleSystem === 'coc_houserule') {
+                // COC房规
+                if (isFailure && number >= 96) return 'criticalFailure';
+                if (isSuccess && number <= 5) return 'criticalSuccess';
+                return isSuccess ? 'success' : (isFailure ? 'failure' : 'normal');
+            }
+            else if (ruleSystem === 'dg') {
+                // DG规则
+                if (isSuccess) {
+                    if (number === 1 || number % 2 === 0) return 'criticalSuccess';
+                    else return 'success';
+                }
+                if (isFailure) {
+                    if (number % 2 === 0) return 'criticalFailure';
+                    else return 'failure';
+                }
+                return 'normal';
+            }
+            return 'normal';
+        }
+
+        // 新的 getExtendResultType
+        function getExtendResultType(msg) {
+            return determineResultTypeWithRule(msg, extendSettings.ruleSystem);
+        }
+
+        // 新的 getFormattedExtendText
+        function getFormattedExtendText(msg) {
+            const extendText = formatExtendContent(msg);
+            if (!extendText) return '';
+            
+            const resultType = getExtendResultType(msg);
+            let text = traditionalToSimple(extendText);
+            
+            if (resultType === 'criticalSuccess') {
+                // 将成功结果替换为“大成功”
+                text = text.replace(/(\d+\s*[＞>]\s*)(.+)/, (match, prefix, suffix) => {
+                    if (suffix.includes('成功')) return prefix + '大成功';
+                    return match;
+                });
+            }
+            else if (resultType === 'criticalFailure') {
+                text = text.replace(/(\d+\s*[＞>]\s*)(.+)/, (match, prefix, suffix) => {
+                    if (suffix.includes('失败')) return prefix + '大失败';
+                    return match;
+                });
+            }
+            
+            return text;
+        }
 
         // 获取扩展内容样式
 function getExtendStyle(resultType) {
-    const formats = logData.extendFormats || {};
-    const format = formats[resultType] || {};
+    const format = (extendFormats && extendFormats[resultType]) ? extendFormats[resultType] : {};
     let style = '';
     
     // 基础extend设置
@@ -2132,8 +2124,7 @@ function getExtendStyle(resultType) {
         
         // 获取扩展图片
         function getExtendImage(resultType) {
-            const formats = logData.extendFormats || {};
-            const format = formats[resultType] || {};
+            const format = (extendFormats && extendFormats[resultType]) ? extendFormats[resultType] : {};
             return format.image || null;
         }
         
