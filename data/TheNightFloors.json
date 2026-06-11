@@ -37427,7 +37427,7 @@
       "to": null,
       "dice": null,
       "extend": null,
-      "messageImage": null,
+      "messageImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/2e57eddfe81e8a9a75eb58dfa35f6b49823d0849e340dac7f865037d8181ff95?t=1779961247162",
       "isChapter": false,
       "nameUseImage": false,
       "nameBackground": null,
@@ -39176,7 +39176,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": "2ycRVrLx6BhI4zmFtlil",
@@ -41243,7 +41249,7 @@
       "to": null,
       "dice": null,
       "extend": null,
-      "messageImage": null,
+      "messageImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/3d96ea4ab4028a83178ec6506e8d7f8720f969381bf0bdd70c4162638b5e3bc2?t=1781185020917",
       "isChapter": false,
       "nameUseImage": false,
       "nameBackground": null,
@@ -41619,7 +41625,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "c4Q7Adut9kwff4UtMcmn",
@@ -41762,7 +41769,7 @@
       "to": null,
       "dice": null,
       "extend": null,
-      "messageImage": null,
+      "messageImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/6294f83d4ade47427c8ce6cd55a9b1b4fb5d5668c4ed44c229bb785c9ab95767?t=1781175571263",
       "isChapter": false,
       "nameUseImage": false,
       "nameBackground": null,
@@ -47633,7 +47640,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-06-11T15:33:43.763Z",
+    "exportedAt": "2026-06-11T15:40:22.075Z",
     "totalMessages": 1810,
     "version": "7.0",
     "features": [
