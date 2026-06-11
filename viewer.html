@@ -2057,13 +2057,21 @@ function formatExtendContent(msg) {
                 return isSuccess ? 'success' : (isFailure ? 'failure' : 'normal');
             }
             else if (ruleSystem === 'dg') {
-                // DG规则
+                // 辅助函数：判断是否为两位相同（11,22,...,99,100）
+                const isDoubleNumber = (n) => {
+                    if (n === 100) return true;      // 100 视为 00，两位相同
+                    if (n < 10) return false;        // 1-9 不是两位数，但1已经单独处理
+                    const tens = Math.floor(n / 10);
+                    const units = n % 10;
+                    return tens === units;
+                };
+                
                 if (isSuccess) {
-                    if (number === 1 || number % 2 === 0) return 'criticalSuccess';
+                    if (number === 1 || isDoubleNumber(number)) return 'criticalSuccess';
                     else return 'success';
                 }
                 if (isFailure) {
-                    if (number % 2 === 0) return 'criticalFailure';
+                    if (isDoubleNumber(number)) return 'criticalFailure';
                     else return 'failure';
                 }
                 return 'normal';
