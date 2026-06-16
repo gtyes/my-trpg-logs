@@ -67776,7 +67776,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": "html-1781624563184-3064",
@@ -74484,8 +74490,8 @@
       "name": "波特城堡",
       "position": 2607,
       "id": "chapter-1781625198162",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/1c93cf1e00b13365f4a0af228542c0a09bacf7dce4d575b3cc63bc4543bf4aeb?t=1781578726566",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     }
   ],
   "fontSettings": {
@@ -75015,7 +75021,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-06-16T15:59:50.000Z",
+    "exportedAt": "2026-06-16T16:04:49.465Z",
     "totalMessages": 2852,
     "version": "7.0",
     "features": [
