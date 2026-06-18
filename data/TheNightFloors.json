@@ -40748,14 +40748,14 @@
       "id": "fxk3YyceGaR25wnOmj2p",
       "time": "2026-06-11T13:31:38.531573Z",
       "name": "掌局者",
-      "text": "你捡起来，发现这张照片下面还有一张照片，一个陌生的秃头男人朝着镜头摆出会意的暗淡微笑。一本旅游手册从他的上衣口袋露出一角，上面写着一个单词的部分字母：“RCOSA。”",
+      "text": "你捡起来，发现这张照片下面还有一张照片，一个陌生的戴帽男人朝着镜头摆出会意的暗淡微笑。一本旅游手册从他的上衣口袋露出一角，上面写着一个单词的部分字母：“RCOSA。”",
       "color": "#e0e0e0",
       "channel": "约书亚·扎卡里，代号约拿",
       "icon": null,
       "to": null,
       "dice": null,
       "extend": null,
-      "messageImage": null,
+      "messageImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/87dd6946195a55f5efcf43badedae00b323fe24cb9c7f26676de369e2d929760?t=1781775683978",
       "isChapter": false,
       "nameUseImage": false,
       "nameBackground": null,
@@ -79410,7 +79410,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-06-17T16:34:41.826Z",
+    "exportedAt": "2026-06-18T09:43:12.518Z",
     "totalMessages": 3014,
     "version": "7.0",
     "features": [
