@@ -410,11 +410,9 @@
     border: 1px solid #660000; /* 深红色边框 */
 }
         
-        /* 骰子结果样式 */
         .dice-result {
             margin-top: 8px;
-            /* padding-top: 8px; 删除或注释 */
-            /* border-top: 1px dashed rgba(0,0,0,0.1); 删除或注释 */
+            /* 删除 border-top 和 padding-top */
             font-family: 'Consolas, Monaco, monospace';
             font-size: 1em;
         }
@@ -1659,52 +1657,76 @@ function renderChannelGroup(group) {
     `;
 }     
         // 渲染单条消息
-function renderMessage(msg) {
-    
-    // 系统消息特殊处理
-    if (msg.name.toLowerCase() === 'system' && !msg.isChapter) {
-        const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
-        return `
-            <div class="system-message" style="${getSystemMessageStyle()}">
-                ${logData.systemSettings && logData.systemSettings.prefix ? logData.systemSettings.prefix + ' ' : ''}${highlightedText}
-            </div>
-        `;
-    }
-    
-    // 获取样式
-    const nameStyle = getCharacterNameStyle(msg.name);
-    const bubbleStyle = getCharacterBubbleStyle(msg.name);
-    const avatarHtml = msg.icon ? `<img src="${msg.icon}" class="avatar" alt="${msg.name}" onerror="this.style.display='none'">` : '';
-    
-    // 处理扩展内容
-    const extendText = getFormattedExtendText(msg);  // 获取格式化后的纯文本
-    // 只有当扩展文本存在且与消息文本不同时，才生成扩展 HTML
-    const extendHtml = (extendText && extendText.trim() !== msg.text.trim()) 
-        ? renderExtendContent(msg) 
-        : '';
-    
-    // 高亮搜索文本
-    const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
-    
-    return `
-        <div class="message-row" data-id="${msg.id}">
-            <div class="avatar-box">
-                ${avatarHtml}
-            </div>
-            <div class="content-box">
-                <div class="character-name-box" style="${nameStyle}">
-                    <span class="character-name">${msg.name}</span>
-                    ${msg.to ? `<span class="to-name"> > @${msg.to}</span>` : ''}
+        function renderMessage(msg) {
+            // 系统消息特殊处理（不变）
+            if (msg.name.toLowerCase() === 'system' && !msg.isChapter) {
+                const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
+                return `
+                    <div class="system-message" style="${getSystemMessageStyle()}">
+                        ${logData.systemSettings && logData.systemSettings.prefix ? logData.systemSettings.prefix + ' ' : ''}${highlightedText}
+                    </div>
+                `;
+            }
+            
+            // 获取角色样式（不变）
+            const nameStyle = getCharacterNameStyle(msg.name);
+            const bubbleStyle = getCharacterBubbleStyle(msg.name);
+            const avatarHtml = msg.icon ? `<img src="${msg.icon}" class="avatar" alt="${msg.name}" onerror="this.style.display='none'">` : '';
+            
+            // ---- 核心修改开始 ----
+            // 获取格式化后的骰点文本（已处理繁简和 [0] 隐藏）
+            const diceDisplayText = getFormattedExtendText(msg);
+            
+            // 判断是否存在骰点内容（即 diceDisplayText 不为空且与原始消息文本不同？但我们直接判断是否有骰点，可以通过 msg.dice 或 msg.extend）
+            const hasDice = !!(msg.dice || msg.extend);
+            
+            let messageTextHtml = '';
+            let diceHtml = '';
+            
+            if (hasDice && diceDisplayText) {
+                // 如果有骰点，直接使用骰点文本替代原消息文本
+                // 获取骰点结果类型用于样式
+                const resultType = getExtendResultType(msg);
+                const extendStyle = getExtendStyle(resultType);
+                
+                // 高亮搜索文本
+                const highlightedDice = highlightSearchText(diceDisplayText, currentFilters.searchText);
+                
+                // 将骰点文本作为消息内容，并应用骰点样式（颜色等）
+                messageTextHtml = `<div class="message-text" style="${extendStyle}">${highlightedDice}</div>`;
+                // 不渲染额外的 dice-result 区块
+            } else {
+                // 无骰点，正常显示消息文本
+                const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
+                messageTextHtml = `<div class="message-text">${highlightedText}</div>`;
+                // 如果仍有扩展内容（比如非骰点扩展），可渲染（但一般骰点扩展已包含，此处保留以备其他扩展）
+                // 这里我们可以忽略，因为现在已无骰点重复。
+            }
+            // ---- 核心修改结束 ----
+            
+            // 图片渲染（不变）
+            const imageHtml = msg.messageImage ? renderMessageImage(msg.messageImage) : '';
+            
+            return `
+                <div class="message-row" data-id="${msg.id}">
+                    <div class="avatar-box">
+                        ${avatarHtml}
+                    </div>
+                    <div class="content-box">
+                        <div class="character-name-box" style="${nameStyle}">
+                            <span class="character-name">${msg.name}</span>
+                            ${msg.to ? `<span class="to-name"> > @${msg.to}</span>` : ''}
+                        </div>
+                        <div class="message-bubble" style="${bubbleStyle}">
+                            ${messageTextHtml}
+                            ${imageHtml}
+                            <!-- 不再渲染 dice-result，已合并到消息文本中 -->
+                        </div>
+                    </div>
                 </div>
-                <div class="message-bubble" style="${bubbleStyle}">
-                    <div class="message-text">${highlightedText}</div>
-                    ${msg.messageImage ? renderMessageImage(msg.messageImage) : ''}
-                    ${extendHtml}
-                </div>
-            </div>
-        </div>
-    `;
-}
+            `;
+        }
+
         // 添加高亮函数
 function highlightSearchText(text, searchText) {
     if (!searchText || !text) return text;
@@ -1968,59 +1990,84 @@ function getCharacterNameStyle(character) {
             return style;
         }
         // 添加繁简转换函数
-function traditionalToSimple(text) {
-    if (!text) return text;
-    
-    // 简繁转换表（仅处理需要的词汇）
-    const mapping = {
-        '極限': '极限',
-        '成功': '成功',
-        '失敗': '失败',
-        '大成功': '大成功',
-        '大失败': '大失败'
-    };
-    
-    let result = text;
-    // 替换词汇
-    for (const [traditional, simple] of Object.entries(mapping)) {
-        result = result.replace(new RegExp(traditional, 'g'), simple);
-    }
-    
-    return result;
-}
+        function traditionalToSimple(text) {
+            if (!text) return text;
+            
+            // 简繁转换表（仅处理需要的词汇）
+            const mapping = {
+                '極限': '极限',
+                '成功': '成功',
+                '失敗': '失败',
+                '大成功': '大成功',
+                '大失败': '大失败'
+            };
+            
+            let result = text;
+            // 替换词汇
+            for (const [traditional, simple] of Object.entries(mapping)) {
+                result = result.replace(new RegExp(traditional, 'g'), simple);
+            }
+            
+            return result;
+        }
+        // 处理骰点文本：简化「獎勵・懲罰骰」，并移除 [0] 部分（当数字为0时）
+        function formatDiceTextForDisplay(text) {
+            if (!text) return text;
+            
+            // 先繁转简
+            let result = traditionalToSimple(text);
+            
+            // 匹配「獎勵・懲罰骰[数字]」或「奖励惩罚骰[数字]」
+            // 注意：可能已经是简体，所以用 /獎勵・懲罰骰|奖励惩罚骰/ 匹配
+            const regex = /(獎勵・懲罰骰|奖励惩罚骰)\[(\d+)\]/g;
+            
+            result = result.replace(regex, (match, prefix, number) => {
+                if (number === '0') {
+                    return ''; // 数字为0，删除整段
+                } else {
+                    return `奖励惩罚骰[${number}]`; // 非0，替换为简体
+                }
+            });
+            
+            // 清理多余的空格（如果删除后出现双空格，可整理）
+            result = result.replace(/\s{2,}/g, ' ').trim();
+            
+            return result;
+        }
         // 格式化扩展内容
         // 重新实现formatExtendContent函数
-function formatExtendContent(msg) {
-    // 优先使用extend字段
-    if (msg.extend) {
-        if (typeof msg.extend === 'string') {
-            try {
-                // 尝试解析JSON字符串
-                const parsed = JSON.parse(msg.extend);
-                if (parsed && parsed.roll && parsed.roll.result) {
-                    return parsed.roll.result;
+        function formatExtendContent(msg) {
+            // 优先使用extend字段
+            if (msg.extend) {
+                if (typeof msg.extend === 'string') {
+                    try {
+                        // 尝试解析JSON字符串
+                        const parsed = JSON.parse(msg.extend);
+                        if (parsed && parsed.roll && parsed.roll.result) {
+                            return parsed.roll.result;
+                        }
+                        return msg.extend;
+                    } catch (e) {
+                        // 如果不是JSON，直接返回字符串
+                        return msg.extend;
+                    }
+                } else if (typeof msg.extend === 'object') {
+                    // 如果是对象，提取roll.result
+                    if (msg.extend.roll && msg.extend.roll.result) {
+                        return msg.extend.roll.result;
+                    }
+                    // 尝试转换为字符串
+                    try {
+                        return JSON.stringify(msg.extend);
+                    } catch (e) {
+                        return String(msg.extend);
+                    }
                 }
-                return msg.extend;
-            } catch (e) {
-                // 如果不是JSON，直接返回字符串
-                return msg.extend;
             }
-        } else if (typeof msg.extend === 'object') {
-            // 如果是对象，提取roll.result
-            if (msg.extend.roll && msg.extend.roll.result) {
-                return msg.extend.roll.result;
-            }
-            // 尝试转换为字符串
-            try {
-                return JSON.stringify(msg.extend);
-            } catch (e) {
-                return String(msg.extend);
-            }
-        }
-    }
-    // 如果没有extend，使用dice字段
-    return msg.dice || '';
-}     
+            // 如果没有extend，使用dice字段
+            return msg.dice || '';
+        }     
+
         // 获取扩展结果类型
         // 新增辅助函数：解析骰子文本
         function parseDiceText(text) {
@@ -2095,6 +2142,10 @@ function formatExtendContent(msg) {
             const resultType = getExtendResultType(msg);
             let text = traditionalToSimple(extendText);
             
+            // 处理「獎勵・懲罰骰」和 [0] 隐藏
+            text = formatDiceTextForDisplay(text);
+            
+            // 根据规则调整成功/失败描述（大成功/大失败）
             if (resultType === 'criticalSuccess') {
                 text = text.replace(/(\d+\s*[＞>]\s*)(.+)/, (match, prefix, suffix) => {
                     if (suffix.includes('成功')) return prefix + '大成功';
@@ -2107,7 +2158,7 @@ function formatExtendContent(msg) {
                     return match;
                 });
             }
-            // DG规则下，将普通成功/失败统一为“成功”/“失败”
+            // DG规则下统一“成功”/“失败”
             else if (extendSettings.ruleSystem === 'dg') {
                 if (resultType === 'success') {
                     text = text.replace(/(\d+\s*[＞>]\s*).+成功/, '$1成功');
