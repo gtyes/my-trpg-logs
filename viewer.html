@@ -1658,7 +1658,7 @@ function renderChannelGroup(group) {
 }     
         // 渲染单条消息
         function renderMessage(msg) {
-            // 系统消息特殊处理（不变）
+            // 系统消息特殊处理
             if (msg.name.toLowerCase() === 'system' && !msg.isChapter) {
                 const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
                 return `
@@ -1668,45 +1668,45 @@ function renderChannelGroup(group) {
                 `;
             }
             
-            // 获取角色样式（不变）
+            // 获取角色样式
             const nameStyle = getCharacterNameStyle(msg.name);
             const bubbleStyle = getCharacterBubbleStyle(msg.name);
             const avatarHtml = msg.icon ? `<img src="${msg.icon}" class="avatar" alt="${msg.name}" onerror="this.style.display='none'">` : '';
             
-            // ---- 核心修改开始 ----
-            // 获取格式化后的骰点文本（已处理繁简和 [0] 隐藏）
-            const diceDisplayText = getFormattedExtendText(msg);
-            
-            // 判断是否存在骰点内容（即 diceDisplayText 不为空且与原始消息文本不同？但我们直接判断是否有骰点，可以通过 msg.dice 或 msg.extend）
+            // ---- 骰点处理 ----
             const hasDice = !!(msg.dice || msg.extend);
-            
             let messageTextHtml = '';
-            let diceHtml = '';
+            let extendImageHtml = '';
             
-            if (hasDice && diceDisplayText) {
-                // 如果有骰点，直接使用骰点文本替代原消息文本
-                // 获取骰点结果类型用于样式
-                const resultType = getExtendResultType(msg);
-                const extendStyle = getExtendStyle(resultType);
-                
-                // 高亮搜索文本
-                const highlightedDice = highlightSearchText(diceDisplayText, currentFilters.searchText);
-                
-                // 将骰点文本作为消息内容，并应用骰点样式（颜色等）
-                messageTextHtml = `<div class="message-text" style="${extendStyle}">${highlightedDice}</div>`;
-                // 不渲染额外的 dice-result 区块
+            if (hasDice) {
+                // 获取格式化后的骰点文本（已处理繁简和 [0] 隐藏）
+                const diceDisplayText = getFormattedExtendText(msg);
+                if (diceDisplayText) {
+                    const resultType = getExtendResultType(msg);
+                    const extendStyle = getExtendStyle(resultType);
+                    const highlightedDice = highlightSearchText(diceDisplayText, currentFilters.searchText);
+                    messageTextHtml = `<div class="message-text" style="${extendStyle}">${highlightedDice}</div>`;
+                    
+                    // 获取结果对应的图片（如果有）
+                    const extendImage = getExtendImage(resultType);
+                    if (extendImage) {
+                        extendImageHtml = `<div class="extend-image"><img src="${extendImage}" alt="${resultType}图片"></div>`;
+                    }
+                } else {
+                    // 没有有效骰点文本，回退到原始消息文本（但这种情况很少）
+                    const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
+                    messageTextHtml = `<div class="message-text">${highlightedText}</div>`;
+                }
             } else {
                 // 无骰点，正常显示消息文本
                 const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
                 messageTextHtml = `<div class="message-text">${highlightedText}</div>`;
-                // 如果仍有扩展内容（比如非骰点扩展），可渲染（但一般骰点扩展已包含，此处保留以备其他扩展）
-                // 这里我们可以忽略，因为现在已无骰点重复。
             }
-            // ---- 核心修改结束 ----
             
-            // 图片渲染（不变）
-            const imageHtml = msg.messageImage ? renderMessageImage(msg.messageImage) : '';
+            // 消息内嵌图片（如表情包、场景图等）
+            let imageHtml = msg.messageImage ? renderMessageImage(msg.messageImage) : '';
             
+            // ---- 组装输出 ----
             return `
                 <div class="message-row" data-id="${msg.id}">
                     <div class="avatar-box">
@@ -1719,8 +1719,8 @@ function renderChannelGroup(group) {
                         </div>
                         <div class="message-bubble" style="${bubbleStyle}">
                             ${messageTextHtml}
-                            ${imageHtml}
-                            <!-- 不再渲染 dice-result，已合并到消息文本中 -->
+                            ${extendImageHtml}   <!-- 骰子结果图片（大成功/大失败图标） -->
+                            ${imageHtml}         <!-- 消息内嵌图片 -->
                         </div>
                     </div>
                 </div>
@@ -1728,19 +1728,19 @@ function renderChannelGroup(group) {
         }
 
         // 添加高亮函数
-function highlightSearchText(text, searchText) {
-    if (!searchText || !text) return text;
-    
-    const regex = new RegExp(`(${escapeRegExp(searchText)})`, 'gi');
-    return text.replace(regex, '<span class="search-highlight">$1</span>');
-}
+        function highlightSearchText(text, searchText) {
+            if (!searchText || !text) return text;
+            
+            const regex = new RegExp(`(${escapeRegExp(searchText)})`, 'gi');
+            return text.replace(regex, '<span class="search-highlight">$1</span>');
+        }
 
-// 转义正则表达式特殊字符
-function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+        // 转义正则表达式特殊字符
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
 
-        
+                
         // 渲染消息中的图片
         function renderMessageImage(imageUrl) {
             return `
@@ -1751,31 +1751,31 @@ function escapeRegExp(string) {
         }
         
         // 渲染扩展内容（骰子结果）
-function renderExtendContent(msg) {
-    const extendText = getFormattedExtendText(msg); // 使用新的格式化函数
-    if (!extendText) return '';
-    
-    const extendResultType = getExtendResultType(msg);
-    const extendStyle = getExtendStyle(extendResultType);
-    const extendImage = getExtendImage(extendResultType);
-    
-    let imageHtml = '';
-    if (extendImage) {
-        imageHtml = `
-            <div class="extend-image">
-                <img src="${extendImage}" alt="${extendResultType}图片">
-            </div>
-        `;
-    }
-    
-    return `
-        <div class="dice-result" style="${extendStyle}">
-            ${extendText}
-            ${imageHtml}
-        </div>
-    `;
-}
-        
+        function renderExtendContent(msg) {
+            const extendText = getFormattedExtendText(msg); // 使用新的格式化函数
+            if (!extendText) return '';
+            
+            const extendResultType = getExtendResultType(msg);
+            const extendStyle = getExtendStyle(extendResultType);
+            const extendImage = getExtendImage(extendResultType);
+            
+            let imageHtml = '';
+            if (extendImage) {
+                imageHtml = `
+                    <div class="extend-image">
+                        <img src="${extendImage}" alt="${extendResultType}图片">
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="dice-result" style="${extendStyle}">
+                    ${extendText}
+                    ${imageHtml}
+                </div>
+            `;
+        }
+                
         // ========== 样式获取函数 ==========
         
         // 获取章节样式
