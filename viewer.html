@@ -411,13 +411,13 @@
 }
         
         /* 骰子结果样式 */
-.dice-result {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px dashed rgba(0,0,0,0.1);
-    font-family: 'Consolas, Monaco, monospace';
-    font-size: 1em; /* 相对大小 */
-}
+        .dice-result {
+            margin-top: 8px;
+            /* padding-top: 8px; 删除或注释 */
+            /* border-top: 1px dashed rgba(0,0,0,0.1); 删除或注释 */
+            font-family: 'Consolas, Monaco, monospace';
+            font-size: 1em;
+        }
         
         /* ========== 系统消息样式 ========== */
         .system-message {
@@ -1677,8 +1677,11 @@ function renderMessage(msg) {
     const avatarHtml = msg.icon ? `<img src="${msg.icon}" class="avatar" alt="${msg.name}" onerror="this.style.display='none'">` : '';
     
     // 处理扩展内容
-    const extendContent = msg.dice || msg.extend;
-    const extendHtml = extendContent ? renderExtendContent(msg) : '';
+    const extendText = getFormattedExtendText(msg);  // 获取格式化后的纯文本
+    // 只有当扩展文本存在且与消息文本不同时，才生成扩展 HTML
+    const extendHtml = (extendText && extendText.trim() !== msg.text.trim()) 
+        ? renderExtendContent(msg) 
+        : '';
     
     // 高亮搜索文本
     const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
