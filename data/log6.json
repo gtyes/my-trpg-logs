@@ -184048,7 +184048,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 1027,
@@ -189476,7 +189482,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 1146,
@@ -194150,7 +194162,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 1496,
@@ -200722,7 +200740,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 1771,
@@ -202177,7 +202201,7 @@
       "name": "兹苏扎",
       "position": 1552,
       "id": "chapter-1776521508831",
-      "backgroundImage": "scene50.jpg",
+      "backgroundImage": "images/scene50.jpg",
       "rightImage": "images/map19.png"
     },
     {
@@ -202915,7 +202939,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-07-05T14:54:18.195Z",
+    "exportedAt": "2026-07-05T15:01:51.073Z",
     "totalMessages": 7774,
     "version": "7.0",
     "features": [
