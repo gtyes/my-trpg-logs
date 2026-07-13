@@ -236906,8 +236906,8 @@
       "name": "突如其来的枪声",
       "position": 8913,
       "id": "chapter-1783902323120",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/b15179a3099fa200d88c11b7fa4746064ec370a0dfe5468e89e4e44896359176?t=1773786406190",
+      "rightImage": "images/map19.png"
     }
   ],
   "fontSettings": {
@@ -237497,7 +237497,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-07-13T00:29:12.396Z",
+    "exportedAt": "2026-07-13T00:31:32.568Z",
     "totalMessages": 9103,
     "version": "7.0",
     "features": [
