@@ -1625,40 +1625,41 @@ function highlightMessage(messageId) {
         }
         
         // 渲染频道组
-function renderChannelGroup(group) {
-    const channelBackgroundStyle = getChannelBackgroundStyle(group.channel);
-    const channelMaskStyle = getChannelMaskStyle(group.channel);
-    const channelNameTextStyle = getChannelNameTextStyle(group.channel);
-    
-    // 判断是否为闲聊频道
-    const isChatChannel = chatChannelKeywords.some(keyword => 
-        group.channel.includes(keyword)
-    );
-    
-    // 判断是否应该折叠
-    const shouldCollapse = collapseChatChannels && isChatChannel;
-    
-    // 根据折叠状态决定显示哪些消息
-    const messagesToShow = shouldCollapse ? [] : group.messages;
-    const messagesHtml = messagesToShow.map(msg => renderMessage(msg)).join('');
-    
-    return `
-        <div class="channel-group" style="${channelBackgroundStyle}">
-            ${channelMaskStyle ? `<div class="channel-mask" style="${channelMaskStyle}"></div>` : ''}
-            <div class="channel-name" style="${channelNameTextStyle}">
-                ${group.channel}
-                ${isChatChannel ? '<span style="font-size: 10px; color: #8b0000; margin-left: 5px;">[可折叠]</span>' : ''}
-            </div>
-            <div class="channel-messages">
-                ${messagesHtml}
-                ${shouldCollapse ? '<div style="text-align: center; padding: 10px; color: #666; font-style: italic;">频道内容已折叠</div>' : ''}
-            </div>
-        </div>
-    `;
-}     
+        function renderChannelGroup(group) {
+            const channelBackgroundStyle = getChannelBackgroundStyle(group.channel);
+            const channelMaskStyle = getChannelMaskStyle(group.channel);
+            const channelNameTextStyle = getChannelNameTextStyle(group.channel);
+            
+            // 判断是否为闲聊频道
+            const isChatChannel = chatChannelKeywords.some(keyword => 
+                group.channel.includes(keyword)
+            );
+            
+            // 判断是否应该折叠
+            const shouldCollapse = collapseChatChannels && isChatChannel;
+            
+            // 根据折叠状态决定显示哪些消息
+            const messagesToShow = shouldCollapse ? [] : group.messages;
+            const messagesHtml = messagesToShow.map(msg => renderMessage(msg)).join('');
+            
+            return `
+                <div class="channel-group" style="${channelBackgroundStyle}">
+                    ${channelMaskStyle ? `<div class="channel-mask" style="${channelMaskStyle}"></div>` : ''}
+                    <div class="channel-name" style="${channelNameTextStyle}">
+                        ${group.channel}
+                        ${isChatChannel ? '<span style="font-size: 10px; color: #8b0000; margin-left: 5px;">[可折叠]</span>' : ''}
+                    </div>
+                    <div class="channel-messages">
+                        ${messagesHtml}
+                        ${shouldCollapse ? '<div style="text-align: center; padding: 10px; color: #666; font-style: italic;">频道内容已折叠</div>' : ''}
+                    </div>
+                </div>
+            `;
+        }     
+
         // 渲染单条消息
         function renderMessage(msg) {
-            // 系统消息特殊处理
+            // 系统消息特殊处理（保持不变）
             if (msg.name.toLowerCase() === 'system' && !msg.isChapter) {
                 const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
                 return `
@@ -1667,46 +1668,40 @@ function renderChannelGroup(group) {
                     </div>
                 `;
             }
-            
-            // 获取角色样式
+
+            // 角色样式
             const nameStyle = getCharacterNameStyle(msg.name);
             const bubbleStyle = getCharacterBubbleStyle(msg.name);
             const avatarHtml = msg.icon ? `<img src="${msg.icon}" class="avatar" alt="${msg.name}" onerror="this.style.display='none'">` : '';
-            
-            // ---- 骰点处理 ----
+
+            // ---- 1️⃣ 对话文本 ----
+            const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
+            let html = `<div class="message-text">${highlightedText}</div>`;
+
+            // ---- 2️⃣ 消息内嵌图片（如果有） ----
+            if (msg.messageImage) {
+                html += renderMessageImage(msg.messageImage);
+            }
+
+            // ---- 3️⃣ 骰子/扩展结果（如果有） ----
             const hasDice = !!(msg.dice || msg.extend);
-            let messageTextHtml = '';
-            let extendImageHtml = '';
-            
             if (hasDice) {
-                // 获取格式化后的骰点文本（已处理繁简和 [0] 隐藏）
                 const diceDisplayText = getFormattedExtendText(msg);
                 if (diceDisplayText) {
                     const resultType = getExtendResultType(msg);
                     const extendStyle = getExtendStyle(resultType);
                     const highlightedDice = highlightSearchText(diceDisplayText, currentFilters.searchText);
-                    messageTextHtml = `<div class="message-text" style="${extendStyle}">${highlightedDice}</div>`;
-                    
-                    // 获取结果对应的图片（如果有）
+                    html += `<div class="dice-result" style="${extendStyle}">${highlightedDice}</div>`;
+
+                    // 骰子结果对应的特殊图片（大成功/大失败图标）
                     const extendImage = getExtendImage(resultType);
                     if (extendImage) {
-                        extendImageHtml = `<div class="extend-image"><img src="${extendImage}" alt="${resultType}图片"></div>`;
+                        html += `<div class="extend-image"><img src="${extendImage}" alt="${resultType}图片"></div>`;
                     }
-                } else {
-                    // 没有有效骰点文本，回退到原始消息文本（但这种情况很少）
-                    const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
-                    messageTextHtml = `<div class="message-text">${highlightedText}</div>`;
                 }
-            } else {
-                // 无骰点，正常显示消息文本
-                const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
-                messageTextHtml = `<div class="message-text">${highlightedText}</div>`;
             }
-            
-            // 消息内嵌图片（如表情包、场景图等）
-            let imageHtml = msg.messageImage ? renderMessageImage(msg.messageImage) : '';
-            
-            // ---- 组装输出 ----
+
+            // ---- 组装消息行 ----
             return `
                 <div class="message-row" data-id="${msg.id}">
                     <div class="avatar-box">
@@ -1718,9 +1713,7 @@ function renderChannelGroup(group) {
                             ${msg.to ? `<span class="to-name"> > @${msg.to}</span>` : ''}
                         </div>
                         <div class="message-bubble" style="${bubbleStyle}">
-                            ${messageTextHtml}
-                            ${extendImageHtml}   <!-- 骰子结果图片（大成功/大失败图标） -->
-                            ${imageHtml}         <!-- 消息内嵌图片 -->
+                            ${html}
                         </div>
                     </div>
                 </div>
@@ -1779,50 +1772,51 @@ function renderChannelGroup(group) {
         // ========== 样式获取函数 ==========
         
         // 获取章节样式
-function getChapterStyle(chapter) {
-    const settings = logData.chapterSettings || {};
-    let style = '';
-    
-    // 字体设置
-    if (settings.fontFamily) {
-        style += `font-family: ${settings.fontFamily};`;
-    }
-    if (settings.color) {
-        style += `color: ${settings.color};`;
-    }
-    if (settings.fontSize) {
-        style += `font-size: ${settings.fontSize}px !important;`; // 使用重要标志
-    }
-    if (settings.bold) {
-        style += `font-weight: bold;`;
-    }
-    if (settings.shadow) {
-        style += `text-shadow: 1px 1px 3px rgba(0,0,0,0.5);`;
-    }
-    
-    // 背景设置
-    if (settings.useImage && settings.image) {
-        const opacity = settings.imageOpacity !== undefined ? settings.imageOpacity : 1.0;
-        style += `background-image: url('${settings.image}') !important;`;
-        style += `background-size: ${settings.imageSize || 'cover'} !important;`;
-        style += `background-position: center !important;`;
-        style += `opacity: ${opacity};`;
-    } else if (settings.backgroundColor) {
-        const opacity = settings.backgroundOpacity || 0.9;
-        style += `background-color: ${hexToRgba(settings.backgroundColor, opacity)} !important;`;
-    }
-    
-    return style;
-}
+        function getChapterStyle(chapter) {
+            const settings = logData.chapterSettings || {};
+            let style = '';
+            
+            // 字体设置
+            if (settings.fontFamily) {
+                style += `font-family: ${settings.fontFamily};`;
+            }
+            if (settings.color) {
+                style += `color: ${settings.color};`;
+            }
+            if (settings.fontSize) {
+                style += `font-size: ${settings.fontSize}px !important;`; // 使用重要标志
+            }
+            if (settings.bold) {
+                style += `font-weight: bold;`;
+            }
+            if (settings.shadow) {
+                style += `text-shadow: 1px 1px 3px rgba(0,0,0,0.5);`;
+            }
+            
+            // 背景设置
+            if (settings.useImage && settings.image) {
+                const opacity = settings.imageOpacity !== undefined ? settings.imageOpacity : 1.0;
+                style += `background-image: url('${settings.image}') !important;`;
+                style += `background-size: ${settings.imageSize || 'cover'} !important;`;
+                style += `background-position: center !important;`;
+                style += `opacity: ${opacity};`;
+            } else if (settings.backgroundColor) {
+                const opacity = settings.backgroundOpacity || 0.9;
+                style += `background-color: ${hexToRgba(settings.backgroundColor, opacity)} !important;`;
+            }
+            
+            return style;
+        }
 
-// 添加hexToRgba辅助函数
-function hexToRgba(hex, opacity) {
-    hex = hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-}
+        // 添加hexToRgba辅助函数
+        function hexToRgba(hex, opacity) {
+            hex = hex.replace('#', '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        }
+
         // 获取频道背景样式
         function getChannelBackgroundStyle(channel) {
             const rules = logData.channelRules || {};
