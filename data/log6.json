@@ -261735,7 +261735,7 @@
     {
       "id": "chapter-1784456691145",
       "name": "系统",
-      "text": "=== 终点 ===",
+      "text": "=== 诺登斯深渊 ===",
       "color": "#3498db",
       "channel": "系统",
       "icon": null,
@@ -277379,11 +277379,11 @@
       "rightImage": ""
     },
     {
-      "name": "终点",
+      "name": "诺登斯深渊",
       "position": 10068,
       "id": "chapter-1784456691145",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/89bd85be01a39eb533b2aad951e7ab46514b9160b584129649b2a6184ae879bf?t=1784333894534",
-      "rightImage": ""
+      "rightImage": "images/map20.png"
     },
     {
       "name": "清醒世界",
@@ -277980,7 +277980,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-07-19T10:51:26.791Z",
+    "exportedAt": "2026-07-19T10:57:41.978Z",
     "totalMessages": 10659,
     "version": "7.0",
     "features": [
