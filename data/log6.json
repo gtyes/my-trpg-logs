@@ -234890,7 +234890,7 @@
       "id": 3169,
       "time": 1783865200047,
       "name": "卡拉科夫",
-      "text": "“我真滴，你刚才说的那些——面对，背负，真正地决定放下，好吧，听起来是对的，听起来应该是那样的。只是我做不到，一想到要做那些事，我只是觉得……还不如像原来计划的那样，直接扔下去，管它有没有准备好。因为如果我真的要去面对它……我就得重新直视那些我花了很多年堆积下来的事情……”",
+      "text": "“我真的，你刚才说的那些——面对，背负，真正地决定放下，好吧，听起来是对的，听起来应该是那样的。只是我做不到，一想到要做那些事，我只是觉得……还不如像原来计划的那样，直接扔下去，管它有没有准备好。因为如果我真的要去面对它……我就得重新直视那些我花了很多年堆积下来的事情……”",
       "color": "#888888",
       "channel": "主频道",
       "icon": "https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/11ebf1c8ceaad4819c58ccbf4d6176c7d7e85ba3b3e76dbab1b4cfcb724d4bfa?t=1775026250832",
@@ -236958,7 +236958,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 3255,
@@ -248912,7 +248918,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 3765,
@@ -261750,7 +261762,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 4263,
@@ -270480,7 +270498,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 4617,
@@ -271051,7 +271075,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": 4638,
@@ -277980,7 +278005,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-07-19T10:57:41.978Z",
+    "exportedAt": "2026-07-20T00:20:34.630Z",
     "totalMessages": 10659,
     "version": "7.0",
     "features": [
