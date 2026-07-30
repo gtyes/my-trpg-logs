@@ -265820,7 +265820,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 11301,
@@ -271136,7 +271142,7 @@
       "icon": null,
       "dice": null,
       "extend": null,
-      "messageImage": null,
+      "messageImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/e36d9b4803563c0a1cdc95d006116cdaec35130f50d3cd35d7ed47e0985947ee?t=1785425128929",
       "to": null,
       "isChapter": false,
       "nameUseImage": false,
@@ -276941,7 +276947,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-07-30T15:15:30.553Z",
+    "exportedAt": "2026-07-30T15:26:05.745Z",
     "totalMessages": 10499,
     "version": "7.0",
     "features": [
