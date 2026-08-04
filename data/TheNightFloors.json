@@ -293588,7 +293588,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 12431,
@@ -300108,7 +300114,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 12727,
@@ -302031,7 +302043,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": 12838,
@@ -305835,6 +305848,78 @@
       "maskColor": "#000000",
       "maskOpacity": 0.35,
       "collapsed": false
+    },
+    "主频道": {
+      "useImage": true,
+      "color": "#2c3e50",
+      "opacity": 0.1,
+      "image": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/baf55facbbcc6e769de26660bd97183515f2d16a6b94654d8730586c6b12a271?t=1780382115754",
+      "imageSize": "cover",
+      "imageOpacity": 1,
+      "useMask": false,
+      "maskColor": "#cccccc",
+      "maskOpacity": 0.3,
+      "collapsed": false
+    },
+    "李玫，特工简": {
+      "useImage": true,
+      "color": "#2c3e50",
+      "opacity": 0.1,
+      "image": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/baf55facbbcc6e769de26660bd97183515f2d16a6b94654d8730586c6b12a271?t=1780382115754",
+      "imageSize": "cover",
+      "imageOpacity": 1,
+      "useMask": false,
+      "maskColor": "#cccccc",
+      "maskOpacity": 0.3,
+      "collapsed": false
+    },
+    "系统": {
+      "useImage": true,
+      "color": "#2c3e50",
+      "opacity": 0.1,
+      "image": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/baf55facbbcc6e769de26660bd97183515f2d16a6b94654d8730586c6b12a271?t=1780382115754",
+      "imageSize": "cover",
+      "imageOpacity": 1,
+      "useMask": false,
+      "maskColor": "#cccccc",
+      "maskOpacity": 0.3,
+      "collapsed": false
+    },
+    "约书亚·扎卡里，代号约拿": {
+      "useImage": true,
+      "color": "#2c3e50",
+      "opacity": 0.1,
+      "image": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/baf55facbbcc6e769de26660bd97183515f2d16a6b94654d8730586c6b12a271?t=1780382115754",
+      "imageSize": "cover",
+      "imageOpacity": 1,
+      "useMask": false,
+      "maskColor": "#cccccc",
+      "maskOpacity": 0.3,
+      "collapsed": false
+    },
+    "赫里斯.埃马尔": {
+      "useImage": true,
+      "color": "#2c3e50",
+      "opacity": 0.1,
+      "image": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/baf55facbbcc6e769de26660bd97183515f2d16a6b94654d8730586c6b12a271?t=1780382115754",
+      "imageSize": "cover",
+      "imageOpacity": 1,
+      "useMask": false,
+      "maskColor": "#cccccc",
+      "maskOpacity": 0.3,
+      "collapsed": false
+    },
+    "麦卡利斯塔大楼": {
+      "useImage": true,
+      "color": "#2c3e50",
+      "opacity": 0.1,
+      "image": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/baf55facbbcc6e769de26660bd97183515f2d16a6b94654d8730586c6b12a271?t=1780382115754",
+      "imageSize": "cover",
+      "imageOpacity": 1,
+      "useMask": false,
+      "maskColor": "#cccccc",
+      "maskOpacity": 0.3,
+      "collapsed": false
     }
   },
   "characterRules": {
@@ -306266,7 +306351,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-08-04T23:02:18.390Z",
+    "exportedAt": "2026-08-04T23:05:34.362Z",
     "totalMessages": 11633,
     "version": "7.0",
     "features": [
