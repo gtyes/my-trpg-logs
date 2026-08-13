@@ -305609,6 +305609,26 @@
       "bubbleImageOpacity": 1
     },
     {
+      "id": "chapter-1786659591469",
+      "name": "系统",
+      "text": "=== 芝加哥 ===",
+      "color": "#3498db",
+      "channel": "系统",
+      "icon": null,
+      "dice": null,
+      "extend": null,
+      "to": null,
+      "time": "2026-08-13T22:19:51.469Z",
+      "nameUseImage": false,
+      "nameBackground": "#3498db",
+      "nameOpacity": 0.9,
+      "bubbleUseImage": false,
+      "bubbleColor": "#f8f9fa",
+      "bubbleOpacity": 0.9,
+      "messageImage": null,
+      "isChapter": true
+    },
+    {
       "id": 12948,
       "time": 1786613427945,
       "name": "掌局者",
@@ -314475,6 +314495,26 @@
       "bubbleImageOpacity": 1
     },
     {
+      "id": "chapter-1786659769672",
+      "name": "系统",
+      "text": "=== 夜幕降临 ===",
+      "color": "#3498db",
+      "channel": "系统",
+      "icon": null,
+      "dice": null,
+      "extend": null,
+      "to": null,
+      "time": "2026-08-13T22:22:49.673Z",
+      "nameUseImage": false,
+      "nameBackground": "#3498db",
+      "nameOpacity": 0.9,
+      "bubbleUseImage": false,
+      "bubbleColor": "#f8f9fa",
+      "bubbleOpacity": 0.9,
+      "messageImage": null,
+      "isChapter": true
+    },
+    {
       "id": 13308,
       "time": 1786629423626,
       "name": "掌局者",
@@ -319311,6 +319351,20 @@
       "id": "chapter-1785884011623",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/e4b5fe2c4355536851a14284e5fdc3c92b395a82e486406ce2b239d49832d00f?t=1785841450478",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46bc43f02d1ad4fccda5ea4de96fe33ff389b229de5985855bf08c8836c5b8ef?t=1785841025724"
+    },
+    {
+      "name": "芝加哥",
+      "position": 11638,
+      "id": "chapter-1786659591469",
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/9dbb656bdc832b8f53e5d904ea2c4e5389ba0407bc300721140f9a8ed317c987?t=1786602617779",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46bc43f02d1ad4fccda5ea4de96fe33ff389b229de5985855bf08c8836c5b8ef?t=1785841025724"
+    },
+    {
+      "name": "夜幕降临",
+      "position": 11980,
+      "id": "chapter-1786659769672",
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/452ec9b5412b259bceb86c611dc19af37b8c22995d50df0603583e0bcdcb39b4?t=1783104476701",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46bc43f02d1ad4fccda5ea4de96fe33ff389b229de5985855bf08c8836c5b8ef?t=1785841025724"
     }
   ],
   "fontSettings": {
@@ -319897,8 +319951,8 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-08-13T22:18:04.116Z",
-    "totalMessages": 12154,
+    "exportedAt": "2026-08-13T22:25:39.795Z",
+    "totalMessages": 12156,
     "version": "7.0",
     "features": [
       "image-backgrounds",
