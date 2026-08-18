@@ -343803,6 +343803,58 @@
       "bubbleImageOpacity": 1
     },
     {
+      "id": 14502,
+      "time": 1786803444889,
+      "name": "约书亚·扎卡里，特工约拿",
+      "text": "1D6 ",
+      "color": "#7e5bfa",
+      "channel": "主频道",
+      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
+      "dice": "(1D6) ＞ 5",
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": 14506,
+      "time": 1786803505523,
+      "name": "system",
+      "text": "[ 约书亚·扎卡里，特工约拿 ] SAN : 48 → 43",
+      "color": "#888888",
+      "channel": "主频道",
+      "icon": null,
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
       "id": 14500,
       "time": 1786803441852,
       "name": "掌局者",
@@ -343913,58 +343965,6 @@
       "text": "？怎么你也，卧槽，但你不能了已经归0了",
       "color": "#e0e0e0",
       "channel": "闲聊",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": 14502,
-      "time": 1786803444889,
-      "name": "约书亚·扎卡里，特工约拿",
-      "text": "1D6 ",
-      "color": "#7e5bfa",
-      "channel": "主频道",
-      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
-      "dice": "(1D6) ＞ 5",
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": 14506,
-      "time": 1786803505523,
-      "name": "system",
-      "text": "[ 约书亚·扎卡里，特工约拿 ] SAN : 48 → 43",
-      "color": "#888888",
-      "channel": "主频道",
       "icon": null,
       "dice": null,
       "extend": null,
@@ -372555,7 +372555,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-1786966556466",
@@ -372580,7 +372581,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-1786966568638",
@@ -372605,7 +372607,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-1786966586557",
@@ -372630,7 +372633,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-1786966691281",
@@ -372655,7 +372659,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-1786966757593",
@@ -372680,7 +372685,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": 15697,
@@ -388881,7 +388887,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-08-17T11:39:31.522Z",
+    "exportedAt": "2026-08-18T01:26:36.043Z",
     "totalMessages": 14805,
     "version": "7.0",
     "features": [
