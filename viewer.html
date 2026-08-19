@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRPG跑团日志</title>
+    <title>血色毡帽 - TRPG跑团日志</title>
     <style>
         * {
             margin: 0;
@@ -1487,37 +1487,56 @@ function addMessageDoubleClickHandlers() {
 // 修改jumpToMessage函数
 function jumpToMessage(messageId) {
     console.log('尝试跳转到消息:', messageId);
-
-    // 直接在当前 filteredLogs 中查找（宽松比较，兼容数字/字符串）
-    const messageIndex = filteredLogs.findIndex(msg => msg.id == messageId);
-    console.log('在 filteredLogs 中的索引位置:', messageIndex);
-
-    if (messageIndex !== -1) {
-        // 计算消息所在的页数（复用原逻辑）
-        let page = 1;
-        let messagesProcessed = 0;
-        for (let i = 0; i <= messageIndex; i++) {
-            const msg = filteredLogs[i];
-            messagesProcessed++;
-            if (msg.isChapter && messagesProcessed > 1) {
-                page++;
-                messagesProcessed = 1;
+    
+    // 先清除所有筛选和搜索，回到原始日志
+    clearFilters(); // 这会重置filteredLogs为原始日志
+    
+    // 等待清空筛选完成，再查找消息
+    setTimeout(() => {
+        // 在原始日志中查找消息
+        const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
+        console.log('在原始日志中的消息索引位置:', messageIndex);
+        
+        if (messageIndex !== -1) {
+            // 计算消息所在的页数
+            let page = 1;
+            let messagesProcessed = 0;
+            
+            for (let i = 0; i <= messageIndex; i++) {
+                const msg = filteredLogs[i];
+                
+                messagesProcessed++;
+                
+                // 如果是章节标记，且不是本页第一条，则新开一页
+                if (msg.isChapter && messagesProcessed > 1) {
+                    page++;
+                    messagesProcessed = 1;
+                }
+                
+                // 如果本页已满，翻页
+                if (messagesProcessed >= pageSize) {
+                    page++;
+                    messagesProcessed = 0;
+                }
+                
+                // 找到目标消息
+                if (i === messageIndex) {
+                    currentPage = page;
+                    console.log('消息在第', page, '页');
+                    renderCurrentPage();
+                    
+                    // 等待渲染完成后高亮显示
+                    setTimeout(() => {
+                        highlightMessage(messageId);
+                    }, 500); // 延长等待时间确保渲染完成
+                    break;
+                }
             }
-            if (messagesProcessed >= pageSize) {
-                page++;
-                messagesProcessed = 0;
-            }
-            if (i === messageIndex) {
-                currentPage = page;
-                renderCurrentPage();
-                setTimeout(() => highlightMessage(messageId), 500);
-                break;
-            }
+        } else {
+            console.error('未找到消息:', messageId);
+            alert('未找到该消息，可能消息已被删除或修改');
         }
-    } else {
-        console.error('未找到消息:', messageId);
-        alert('未找到该消息，可能消息已被删除或修改');
-    }
+    }, 100);
 }
 
 // 添加高亮函数
