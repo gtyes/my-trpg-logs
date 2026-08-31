@@ -347,10 +347,10 @@
             background-position: center;
         }
         
-.character-name {
-    font-weight: bold;
-    font-size: 1.1em; /* 相对大小 */
-}
+        .character-name {
+            font-weight: bold;
+            font-size: 1.1em; /* 相对大小 */
+        }
         
         .to-name {
             color: #666;
@@ -366,13 +366,20 @@
             background-size: cover;
             background-position: center;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
         
-.message-text {
-    margin-bottom: 6px;
-    line-height: 1.5; /* 增加行高 */
-    font-size: 1em; /* 使用相对单位 */
-}
+        .message-text {
+            margin-bottom: 6px;
+            line-height: 1.5; /* 增加行高 */
+            font-size: 1em; /* 使用相对单位 */
+            white-space: pre-wrap;        /* 保留 \n 换行，同时自动换行 */
+            word-wrap: break-word;        /* 长单词换行（兼容旧浏览器） */
+            overflow-wrap: break-word;    /* 现代浏览器标准 */
+            word-break: break-word;       /* 更激进地断行，防止溢出 */
+        }
         
         .message-image {
             margin-top: 6px; /* 减小间距 */
