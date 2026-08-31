@@ -52654,12 +52654,12 @@
     },
     {
       "id": "msg-2026",
-      "time": "2026-06-12T13:39:22.650154Z",
-      "name": "约书亚·扎卡里，特工约拿",
-      "text": "“……嗯，让它先开着吧，我再试着给它调频，再归位，如果它今晚一直没什么其他动静，那就取下它。”",
-      "color": "#7e5bfa",
+      "time": "2026-06-12T13:37:50.224537Z",
+      "name": "李玫，特工简",
+      "text": "“它的确被保存得相当好，我没想到居然还能使用，但作为军用设备，它现在捕捉到的究竟是哪个频段的信号？”我摇摇头，并不期待还能有所回应，“这类设备的序列号一般都印在背面，我们想要查看就只能取下它，那也意味着会破坏它。”",
+      "color": "#e83929",
       "channel": "主频道",
-      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
+      "icon": "https://storage.ccfolia-cdn.net/users/MbwENwaVV6hogAhTbk3aWOnFUwy2/files/7cea46f8c38d758951bbb35022c4ca74363fd9066f705548e22520e0cbe22e35?t=1780770573192",
       "to": null,
       "dice": null,
       "extend": null,
@@ -52680,12 +52680,12 @@
     },
     {
       "id": "msg-2027",
-      "time": "2026-06-12T13:37:50.224537Z",
-      "name": "李玫，特工简",
-      "text": "“它的确被保存得相当好，我没想到居然还能使用，但作为军用设备，它现在捕捉到的究竟是哪个频段的信号？”我摇摇头，并不期待还能有所回应，“这类设备的序列号一般都印在背面，我们想要查看就只能取下它，那也意味着会破坏它。”",
-      "color": "#e83929",
+      "time": "2026-06-12T13:39:22.650154Z",
+      "name": "约书亚·扎卡里，特工约拿",
+      "text": "“……嗯，让它先开着吧，我再试着给它调频，再归位，如果它今晚一直没什么其他动静，那就取下它。”",
+      "color": "#7e5bfa",
       "channel": "主频道",
-      "icon": "https://storage.ccfolia-cdn.net/users/MbwENwaVV6hogAhTbk3aWOnFUwy2/files/7cea46f8c38d758951bbb35022c4ca74363fd9066f705548e22520e0cbe22e35?t=1780770573192",
+      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
       "to": null,
       "dice": null,
       "extend": null,
@@ -343804,58 +343804,6 @@
     },
     {
       "id": "msg-13107",
-      "time": 1786803444889,
-      "name": "约书亚·扎卡里，特工约拿",
-      "text": "1D6 ",
-      "color": "#7e5bfa",
-      "channel": "主频道",
-      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
-      "dice": "(1D6) ＞ 5",
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-13108",
-      "time": 1786803505523,
-      "name": "system",
-      "text": "[ 约书亚·扎卡里，特工约拿 ] SAN : 48 → 43",
-      "color": "#888888",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-13109",
       "time": 1786803441852,
       "name": "掌局者",
       "text": "卧槽你们真让玫一个人扛两个吗",
@@ -343881,7 +343829,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-13110",
+      "id": "msg-13108",
       "time": 1786803442057,
       "name": "赫里斯·埃马尔",
       "text": "精神病该犯了吧",
@@ -343907,7 +343855,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-13111",
+      "id": "msg-13109",
       "time": 1786803454397,
       "name": "赫里斯·埃马尔",
       "text": "。",
@@ -343933,7 +343881,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-13112",
+      "id": "msg-13110",
       "time": 1786803458715,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我还能抵吗",
@@ -343959,12 +343907,64 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-13113",
+      "id": "msg-13111",
       "time": 1786803495213,
       "name": "掌局者",
       "text": "？怎么你也，卧槽，但你不能了已经归0了",
       "color": "#e0e0e0",
       "channel": "闲聊",
+      "icon": null,
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-13112",
+      "time": 1786803444889,
+      "name": "约书亚·扎卡里，特工约拿",
+      "text": "1D6 ",
+      "color": "#7e5bfa",
+      "channel": "主频道",
+      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
+      "dice": "(1D6) ＞ 5",
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-13113",
+      "time": 1786803505523,
+      "name": "system",
+      "text": "[ 约书亚·扎卡里，特工约拿 ] SAN : 48 → 43",
+      "color": "#888888",
+      "channel": "主频道",
       "icon": null,
       "dice": null,
       "extend": null,
@@ -372534,162 +372534,6 @@
     },
     {
       "id": "msg-14212",
-      "name": "掌局者",
-      "text": "书中还介绍了一个仪式：对普里梅乌马顿的初步祈祷",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-17T11:34:52.149Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14213",
-      "name": "掌局者",
-      "text": "普里梅乌马顿（Primeumton）在希腊语中意为“你是第一个也是最后的人”。初步祈祷祈求天使和耶和华在危险的工作中保护他们，强迫他们控制恶魔力量。",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-17T11:35:56.466Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14214",
-      "name": "掌局者",
-      "text": "祈祷仪式以复杂的仪式准备开始，包括剑、占卜和召唤器皿、蜡像、血书卷轴、戒指、仪式法杖、特殊服装、花环，以及根据奥术占星规则精心计时。",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-17T11:36:08.638Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14215",
-      "name": "掌局者",
-      "text": "在保护圆圈之内，画一个标有“ANAPHAXETON， ANAPHANETON， PRIMEUMATON”字样的所罗门三角形。",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-17T11:36:26.558Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14216",
-      "name": "掌局者",
-      "text": "在念诵祈祷时保持在圆圈内：吾恳祈汝，那未诞者。汝造天地。汝分昼夜。汝划昏明。汝名唤作奥索罗诺普里斯：那无人得见者……",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-17T11:38:11.281Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14217",
-      "name": "掌局者",
-      "text": "接着，施术者宣告在《唤魔术》之中找到的七十二魔神名讳，随后印下他们希望接触的、特定一尊的魔神印记。",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-17T11:39:17.593Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14218",
       "time": 1786873246763,
       "name": "掌局者",
       "text": "读所罗门后每个人神秘学+2",
@@ -372715,7 +372559,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14219",
+      "id": "msg-14213",
       "time": 1786873312376,
       "name": "李玫，特工简",
       "text": "哇",
@@ -372741,7 +372585,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14220",
+      "id": "msg-14214",
       "time": 1786873319600,
       "name": "李玫，特工简",
       "text": "全是熟悉的名字",
@@ -372767,7 +372611,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14221",
+      "id": "msg-14215",
       "time": 1786873324783,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "又来重组",
@@ -372793,7 +372637,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14222",
+      "id": "msg-14216",
       "time": 1786873337331,
       "name": "掌局者",
       "text": "然后你们把那些1D4骰了",
@@ -372819,7 +372663,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14223",
+      "id": "msg-14217",
       "time": 1786873344719,
       "name": "李玫，特工简",
       "text": "成长吗",
@@ -372845,7 +372689,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14224",
+      "id": "msg-14218",
       "time": 1786873348643,
       "name": "掌局者",
       "text": "我有漏的话自己补一下",
@@ -372871,7 +372715,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14225",
+      "id": "msg-14219",
       "time": 1786873351839,
       "name": "掌局者",
       "text": "对",
@@ -372897,7 +372741,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14226",
+      "id": "msg-14220",
       "time": 1786873365139,
       "name": "掌局者",
       "text": "然后你们前五年的私人规划是什么",
@@ -372923,7 +372767,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14227",
+      "id": "msg-14221",
       "time": 1786873368506,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "哦草忘记统计了",
@@ -372949,7 +372793,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14228",
+      "id": "msg-14222",
       "time": 1786873385816,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "前五年回顾案件、后五年心理治疗",
@@ -372975,7 +372819,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14229",
+      "id": "msg-14223",
       "time": 1786873387360,
       "name": "掌局者",
       "text": "你往上看看呢",
@@ -373001,7 +372845,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14230",
+      "id": "msg-14224",
       "time": 1786873396264,
       "name": "掌局者",
       "text": "我有圈虽然不清楚有没有漏的",
@@ -373027,7 +372871,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14231",
+      "id": "msg-14225",
       "time": 1786873399723,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "肯定",
@@ -373053,7 +372897,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14232",
+      "id": "msg-14226",
       "time": 1786873411538,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我的说服大失败历历在目",
@@ -373079,7 +372923,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14233",
+      "id": "msg-14227",
       "time": 1786873416036,
       "name": "掌局者",
       "text": "闪避",
@@ -373105,7 +372949,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14234",
+      "id": "msg-14228",
       "time": 1786873418202,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "闪避直接砸残血",
@@ -373131,7 +372975,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14235",
+      "id": "msg-14229",
       "time": 1786873418990,
       "name": "掌局者",
       "text": "加一个",
@@ -373157,7 +373001,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14236",
+      "id": "msg-14230",
       "time": 1786873432918,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "会计学我忘了",
@@ -373183,7 +373027,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14237",
+      "id": "msg-14231",
       "time": 1786873443812,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "噢没过",
@@ -373209,7 +373053,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14238",
+      "id": "msg-14232",
       "time": 1786873448775,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "17",
@@ -373235,7 +373079,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14239",
+      "id": "msg-14233",
       "time": 1786873453893,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "看心理医生吧，前五年能不能熟人介绍一个好点的医生",
@@ -373261,7 +373105,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14240",
+      "id": "msg-14234",
       "time": 1786873478329,
       "name": "掌局者",
       "text": "你要不继续找李玫吧",
@@ -373287,7 +373131,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14241",
+      "id": "msg-14235",
       "time": 1786873485756,
       "name": "掌局者",
       "text": "我就不占用她私人规划了",
@@ -373313,7 +373157,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14242",
+      "id": "msg-14236",
       "time": 1786873493142,
       "name": "掌局者",
       "text": "主要是我不想我来骰这个精神分析（",
@@ -373339,7 +373183,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14243",
+      "id": "msg-14237",
       "time": 1786873495567,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "需要玫给我看病",
@@ -373365,7 +373209,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14244",
+      "id": "msg-14238",
       "time": 1786873532408,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "历史也失败了",
@@ -373391,7 +373235,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14245",
+      "id": "msg-14239",
       "time": 1786873534392,
       "name": "掌局者",
       "text": "那李玫是回顾案件对吗",
@@ -373417,7 +373261,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14246",
+      "id": "msg-14240",
       "time": 1786873554778,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "说服",
@@ -373443,7 +373287,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14247",
+      "id": "msg-14241",
       "time": 1786873570363,
       "name": "掌局者",
       "text": "，怎么还有说服",
@@ -373469,7 +373313,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14248",
+      "id": "msg-14242",
       "time": 1786873572833,
       "name": "掌局者",
       "text": "对谁的来着",
@@ -373495,7 +373339,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14249",
+      "id": "msg-14243",
       "time": 1786873596139,
       "name": "李玫，特工简",
       "text": "会计学、警觉、行政、闪避、急救、历史、人源情报、说服、精神治疗、搜寻",
@@ -373521,7 +373365,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14250",
+      "id": "msg-14244",
       "time": 1786873607524,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "我好像是会计，警觉，计算机，闪避，驾驶，法证，人源情报，历史，导航，说服，搜寻，游泳都失败过",
@@ -373547,7 +373391,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14251",
+      "id": "msg-14245",
       "time": 1786873611297,
       "name": "李玫，特工简",
       "text": "10D4",
@@ -373573,7 +373417,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14252",
+      "id": "msg-14246",
       "time": 1786873614770,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "对DG的",
@@ -373599,7 +373443,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14253",
+      "id": "msg-14247",
       "time": 1786873621428,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "这怎么会忘",
@@ -373625,7 +373469,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14254",
+      "id": "msg-14248",
       "time": 1786873623790,
       "name": "掌局者",
       "text": "可以，你们来吧",
@@ -373651,7 +373495,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14255",
+      "id": "msg-14249",
       "time": 1786873634720,
       "name": "掌局者",
       "text": "那约书亚是回顾案件吗",
@@ -373677,7 +373521,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14256",
+      "id": "msg-14250",
       "time": 1786873680756,
       "name": "李玫，特工简",
       "text": "那感觉她自己好像不用去看医生啊",
@@ -373703,7 +373547,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14257",
+      "id": "msg-14251",
       "time": 1786873682482,
       "name": "李玫，特工简",
       "text": "吗",
@@ -373729,7 +373573,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14258",
+      "id": "msg-14252",
       "time": 1786873687093,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "12D4",
@@ -373755,7 +373599,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14259",
+      "id": "msg-14253",
       "time": 1786873695099,
       "name": "李玫，特工简",
       "text": "好像还算健康",
@@ -373781,7 +373625,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14260",
+      "id": "msg-14254",
       "time": 1786873713753,
       "name": "李玫，特工简",
       "text": "我们派赫里斯去追查失踪是吧",
@@ -373807,7 +373651,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14261",
+      "id": "msg-14255",
       "time": 1786873725099,
       "name": "李玫，特工简",
       "text": "虽然结果互通",
@@ -373833,7 +373677,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14262",
+      "id": "msg-14256",
       "time": 1786873725267,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "会计、警觉、行政、闪避、机动车驾驶、历史、人源情报、神秘学、说服、搜寻",
@@ -373859,7 +373703,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14263",
+      "id": "msg-14257",
       "time": 1786873729345,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "不用过技能了所以我不去了.jpg",
@@ -373885,7 +373729,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14264",
+      "id": "msg-14258",
       "time": 1786873742959,
       "name": "李玫，特工简",
       "text": "哦哦哦",
@@ -373911,7 +373755,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14265",
+      "id": "msg-14259",
       "time": 1786873744484,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "10D4",
@@ -373937,7 +373781,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14266",
+      "id": "msg-14260",
       "time": 1786873793491,
       "name": "掌局者",
       "text": "所以约书亚查法国吗，查的话我接下来发这个",
@@ -373963,7 +373807,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14267",
+      "id": "msg-14261",
       "time": 1786873796462,
       "name": "李玫，特工简",
       "text": "那李玫去查？san多的去查吧",
@@ -373989,7 +373833,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14268",
+      "id": "msg-14262",
       "time": 1786873807995,
       "name": "李玫，特工简",
       "text": "查失踪",
@@ -374015,7 +373859,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14269",
+      "id": "msg-14263",
       "time": 1786873819285,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "玫查吧",
@@ -374041,7 +373885,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14270",
+      "id": "msg-14264",
       "time": 1786873833062,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "我两次都打算找你看精神病",
@@ -374067,7 +373911,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14271",
+      "id": "msg-14265",
       "time": 1786873838375,
       "name": "李玫，特工简",
       "text": "然后给你们俩精神治疗",
@@ -374093,7 +373937,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14272",
+      "id": "msg-14266",
       "time": 1786873841189,
       "name": "李玫，特工简",
       "text": "可以",
@@ -374119,7 +373963,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14273",
+      "id": "msg-14267",
       "time": 1786873842698,
       "name": "掌局者",
       "text": "玫不是查你们的重要关系事件吗",
@@ -374145,7 +373989,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14274",
+      "id": "msg-14268",
       "time": 1786873846282,
       "name": "掌局者",
       "text": "法国不是这个",
@@ -374171,7 +374015,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14275",
+      "id": "msg-14269",
       "time": 1786873847238,
       "name": "李玫，特工简",
       "text": "对",
@@ -374197,7 +374041,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14276",
+      "id": "msg-14270",
       "time": 1786873857485,
       "name": "李玫，特工简",
       "text": "我查重要关系然后给他们精神治疗",
@@ -374223,7 +374067,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14277",
+      "id": "msg-14271",
       "time": 1786873884751,
       "name": "李玫，特工简",
       "text": "如果治他们不占用的话我就再去给自己回个san",
@@ -374249,7 +374093,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14278",
+      "id": "msg-14272",
       "time": 1786873894631,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "对",
@@ -374275,7 +374119,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14279",
+      "id": "msg-14273",
       "time": 1786873896585,
       "name": "李玫，特工简",
       "text": "占用的话我就不回自己的了",
@@ -374301,7 +374145,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14280",
+      "id": "msg-14274",
       "time": 1786873897004,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "法",
@@ -374327,7 +374171,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14281",
+      "id": "msg-14275",
       "time": 1786873973126,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=53 神秘学",
@@ -374353,7 +374197,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14282",
+      "id": "msg-14276",
       "time": 1786873977816,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "OK录了",
@@ -374379,7 +374223,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14283",
+      "id": "msg-14277",
       "time": 1786874130957,
       "name": "掌局者",
       "text": "2005年末开始，约书亚被CIA分配了一项不定期前往法国的长期外勤任务。任务本身并不复杂——与当地情报机构协调，处理一批涉及跨境资金流动的文件，以及约谈几名相关人士。他在任务间隙开始查阅一些档案，既然到了这边，不妨把把一些事弄清楚。",
@@ -374405,7 +374249,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14284",
+      "id": "msg-14278",
       "time": 1786874164735,
       "name": "李玫，特工简",
       "text": "哦对约书亚还要坐个牢",
@@ -374431,7 +374275,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14285",
+      "id": "msg-14279",
       "time": 1786874165229,
       "name": "李玫，特工简",
       "text": "、、",
@@ -374457,7 +374301,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14286",
+      "id": "msg-14280",
       "time": 1786874171983,
       "name": "李玫，特工简",
       "text": "好忙啊",
@@ -374483,7 +374327,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14287",
+      "id": "msg-14281",
       "time": 1786874239424,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "我们还要去探监",
@@ -374509,7 +374353,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14288",
+      "id": "msg-14282",
       "time": 1786874348684,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "大忙人",
@@ -374535,7 +374379,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14289",
+      "id": "msg-14283",
       "time": 1786874427059,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我不行了",
@@ -374561,7 +374405,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14290",
+      "id": "msg-14284",
       "time": 1786874382606,
       "name": "掌局者",
       "text": "他先是重新调查了兰斯郊区的那座庄园，它在战争期间被用作储存文件和审讯场所，战后曾被美军接管过一段时间。在《中世纪欧洲的建筑奇观》一书在提到这座庄园曾属于一个名为卡斯泰因的家族，那时候这座建筑并未被改造为庄园，被称为波特城堡，起初建于十一世纪，在十五世纪由卡斯泰因家族翻修扩建。",
@@ -374587,7 +374431,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14291",
+      "id": "msg-14285",
       "time": 1786874512585,
       "name": "掌局者",
       "text": "他接着发现了一本《法国影响最大的闹鬼事件》，其中讲述了卡斯泰因家族的离奇遭遇。",
@@ -374613,7 +374457,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14292",
+      "id": "msg-14286",
       "time": 1786874641450,
       "name": "掌局者",
       "text": "1402年10月，奥古斯都·卡斯泰因在继承并搬进这栋宅邸不久后找到了一本他刚去世的堂兄米契尔·卡斯泰为他著写的书籍。米契尔在书中敦促奥古斯都继续进行家族的事业。这本用铁丝捆扎怪异的书籍写满了由“所罗门”加密的代码与密文，大部分都是用“古怪的英语” 写成的。而在这后不久，奥古斯都的妻子，露易斯从塔楼三层的外门坠楼身亡。",
@@ -374639,7 +374483,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14293",
+      "id": "msg-14287",
       "time": 1786874697551,
       "name": "掌局者",
       "text": "1402年11月，卡斯泰因宅邸内的仆人报告说，曾在晚上看到过一群怪人：头戴面具，身披银袍的人群和一个头上着火的幽灵。除此之外，他们还曾多次看到一个月前去世的露易斯·卡斯泰因也身处其中。同月，奥古斯都·卡斯泰因开始花费巨资，高价从巴黎、日内瓦、凡尔登等地广泛购入有关密码学的书籍。在这段时间内，人们对他的印象只剩下：“形容憔悴、郁郁寡欢”。",
@@ -374665,7 +374509,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14294",
+      "id": "msg-14288",
       "time": 1786874747478,
       "name": "掌局者",
       "text": "继续追查要过个幸运",
@@ -374691,7 +374535,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14295",
+      "id": "msg-14289",
       "time": 1786874758203,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=50 幸运",
@@ -374717,7 +374561,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14296",
+      "id": "msg-14290",
       "time": 1786874761174,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "。",
@@ -374743,7 +374587,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14297",
+      "id": "msg-14291",
       "time": 1786874763121,
       "name": "掌局者",
       "text": "。",
@@ -374769,7 +374613,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14298",
+      "id": "msg-14292",
       "time": 1786874765863,
       "name": "李玫，特工简",
       "text": "。",
@@ -374795,7 +374639,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14299",
+      "id": "msg-14293",
       "time": 1786874769466,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "好那个",
@@ -374821,7 +374665,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14300",
+      "id": "msg-14294",
       "time": 1786874773591,
       "name": "李玫，特工简",
       "text": "好那个",
@@ -374847,7 +374691,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14301",
+      "id": "msg-14295",
       "time": 1786874776306,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "他幸运过过吗",
@@ -374873,7 +374717,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14302",
+      "id": "msg-14296",
       "time": 1786874776769,
       "name": "李玫，特工简",
       "text": "好嘲讽",
@@ -374899,7 +374743,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14303",
+      "id": "msg-14297",
       "time": 1786874784584,
       "name": "掌局者",
       "text": "或者你rp也行",
@@ -374925,7 +374769,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14304",
+      "id": "msg-14298",
       "time": 1786874788260,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "。。。。",
@@ -374951,7 +374795,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14305",
+      "id": "msg-14299",
       "time": 1786874798620,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "哇他幸运没过过！",
@@ -374977,7 +374821,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14306",
+      "id": "msg-14300",
       "time": 1786874806147,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "震撼",
@@ -375003,7 +374847,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14307",
+      "id": "msg-14301",
       "time": 1786874831527,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "我们谁幸运过过吗",
@@ -375029,7 +374873,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14308",
+      "id": "msg-14302",
       "time": 1786874851613,
       "name": "掌局者",
       "text": "好像没有",
@@ -375055,7 +374899,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14309",
+      "id": "msg-14303",
       "time": 1786874866657,
       "name": "掌局者",
       "text": "大家被晦气的生日害了",
@@ -375081,7 +374925,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14310",
+      "id": "msg-14304",
       "time": 1786874866748,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "玫过过",
@@ -375107,7 +374951,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14311",
+      "id": "msg-14305",
       "time": 1786874874825,
       "name": "李玫，特工简",
       "text": "玫看书成功过",
@@ -375133,7 +374977,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14312",
+      "id": "msg-14306",
       "time": 1786874875757,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "。。",
@@ -375159,7 +375003,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14313",
+      "id": "msg-14307",
       "time": 1786875135484,
       "name": "掌局者",
       "text": "噢rp后过搜寻吧",
@@ -375185,7 +375029,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14314",
+      "id": "msg-14308",
       "time": 1786875171000,
       "name": "掌局者",
       "text": "。祈祷nia",
@@ -375211,7 +375055,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14315",
+      "id": "msg-14309",
       "time": 1786875188713,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "祈祷nia",
@@ -375237,7 +375081,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14316",
+      "id": "msg-14310",
       "time": 1786875261179,
       "name": "李玫，特工简",
       "text": "祈祷nia",
@@ -375263,7 +375107,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14317",
+      "id": "msg-14311",
       "time": 1786875285980,
       "name": "掌局者",
       "text": "或者历史也行",
@@ -375289,7 +375133,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14318",
+      "id": "msg-14312",
       "time": 1786875320569,
       "name": "掌局者",
       "text": "历史吧，感觉过历史更正确点",
@@ -375315,7 +375159,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14319",
+      "id": "msg-14313",
       "time": 1786875459006,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "全过一遍",
@@ -375341,7 +375185,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14320",
+      "id": "msg-14314",
       "time": 1786875478480,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "连接这一连串事件的不止卡斯泰因，还有建筑。约书亚调查起波特城堡的历史，它的设计者，以及当时为卡斯泰因家族翻修扩建的设计师是何许人也。可以的话，还希望能找到图纸。而且，三楼……是只有通过三楼才可以吗？",
@@ -375367,10 +375211,10 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14321",
+      "id": "msg-14315",
       "time": 1786875489661,
       "name": "约书亚·扎卡里，特工约拿",
-      "text": "密码学，约书亚很好奇卡斯泰因把密码用在了何处？总不能是一股脑都使在了建筑的起名上，他们的著作现在流向何方？书店？还是说……至少约书亚在亨利·卡斯泰因的屋里没有看到。又或者，那些可能不是密码，而是什么咒语。",
+      "text": "密码学，约书亚很好奇卡斯泰因把密码用在了何处？总不能是一股脑都使在了建筑的起名上，他们的著作现在流向何方？书店？还是说……至少我在亨利·卡斯泰因的屋里没有看到。又或者，那些可能不是密码，而是什么咒语。",
       "color": "#7e5bfa",
       "channel": "主频道",
       "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
@@ -375393,7 +375237,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14322",
+      "id": "msg-14316",
       "time": 1786875504347,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "然后就是关于米契尔·卡斯泰和奥古斯都·卡斯泰因与妻子的档案，他们究竟做了什么，他们的研究路上只有他们吗？没有什么明显的同伙？当然，那些身披银袍的人群和一个头上着火的幽灵……呃，他们的信息或许会在鬼魂传说里吗？",
@@ -375419,7 +375263,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14323",
+      "id": "msg-14317",
       "time": 1786875494873,
       "name": "掌局者",
       "text": "那没有，就过一个",
@@ -375445,7 +375289,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14324",
+      "id": "msg-14318",
       "time": 1786875512294,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我看看哪个高",
@@ -375471,7 +375315,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14325",
+      "id": "msg-14319",
       "time": 1786875548069,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=52 搜寻",
@@ -375497,7 +375341,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14326",
+      "id": "msg-14320",
       "time": 1786875552827,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "。",
@@ -375523,7 +375367,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14327",
+      "id": "msg-14321",
       "time": 1786875556678,
       "name": "掌局者",
       "text": "笑死",
@@ -375549,7 +375393,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14328",
+      "id": "msg-14322",
       "time": 1786875558461,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "无事发生",
@@ -375575,7 +375419,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14329",
+      "id": "msg-14323",
       "time": 1786875561035,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "两个都不过的话",
@@ -375601,7 +375445,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14330",
+      "id": "msg-14324",
       "time": 1786875561852,
       "name": "掌局者",
       "text": "之后都过历史吧",
@@ -375627,7 +375471,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14331",
+      "id": "msg-14325",
       "time": 1786875565873,
       "name": "掌局者",
       "text": "有好几本呢",
@@ -375653,7 +375497,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14332",
+      "id": "msg-14326",
       "time": 1786875572549,
       "name": "掌局者",
       "text": "这本找不到了",
@@ -375679,7 +375523,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14333",
+      "id": "msg-14327",
       "time": 1786875577276,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "历史51",
@@ -375705,7 +375549,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14334",
+      "id": "msg-14328",
       "time": 1786875579950,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "搜寻52",
@@ -375731,7 +375575,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14335",
+      "id": "msg-14329",
       "time": 1786875582782,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "卧龙凤雏",
@@ -375757,7 +375601,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14336",
+      "id": "msg-14330",
       "time": 1786875580831,
       "name": "掌局者",
       "text": "再过一次历史",
@@ -375783,7 +375627,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14337",
+      "id": "msg-14331",
       "time": 1786875592635,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=51 历史",
@@ -375809,7 +375653,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14338",
+      "id": "msg-14332",
       "time": 1786875604303,
       "name": "掌局者",
       "text": "主要是历史比较符合这个定义",
@@ -375835,7 +375679,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14339",
+      "id": "msg-14333",
       "time": 1786875606738,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "历史比搜寻好",
@@ -375861,7 +375705,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14340",
+      "id": "msg-14334",
       "time": 1786875607887,
       "name": "掌局者",
       "text": "搜寻感觉不合适",
@@ -375887,7 +375731,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14341",
+      "id": "msg-14335",
       "time": 1786875610488,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "啊啊啊",
@@ -375913,7 +375757,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14342",
+      "id": "msg-14336",
       "time": 1786875662138,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "他是我们唯一一个有历史的",
@@ -375939,7 +375783,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14343",
+      "id": "msg-14337",
       "time": 1786875706974,
       "name": "李玫，特工简",
       "text": "对",
@@ -375965,7 +375809,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14344",
+      "id": "msg-14338",
       "time": 1786875712217,
       "name": "掌局者",
       "text": "约书亚继续寻找相关的书籍，在《法国的光照主义》中提到，1403年2月，奥古斯都·卡斯泰因声称，他从“瓶子”中获得了新的信息，并开始撰写一本名为《所罗门魔法论》 的新书，署名“所罗门”。1403年3月，奥古斯都·卡斯泰因以一个名叫巴尔的实体向他“展现了世界真理”的情节，完成了《所罗门魔法论》的结尾。巴尔告诉奥古斯都，他所著成的书籍将是一本孕育出“世界之王”的红皮书。奥古斯都把这一切经历都写在寄给儿子的信件中，随后自缢于波特城堡，葬于家族陵墓。有传言称，他在自杀前曾坦白是自己把妻子推向了死亡。",
@@ -375991,7 +375835,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14345",
+      "id": "msg-14339",
       "time": 1786875754041,
       "name": "掌局者",
       "text": "所以你当时",
@@ -376017,7 +375861,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14346",
+      "id": "msg-14340",
       "time": 1786875761764,
       "name": "掌局者",
       "text": "让他去找我就？",
@@ -376043,7 +375887,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14347",
+      "id": "msg-14341",
       "time": 1786875762715,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "好野",
@@ -376069,7 +375913,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14348",
+      "id": "msg-14342",
       "time": 1786875766781,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我不行了",
@@ -376095,7 +375939,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14349",
+      "id": "msg-14343",
       "time": 1786875769888,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "作者在这里",
@@ -376121,7 +375965,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14350",
+      "id": "msg-14344",
       "time": 1786875772632,
       "name": "李玫，特工简",
       "text": "好好笑",
@@ -376147,7 +375991,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14351",
+      "id": "msg-14345",
       "time": 1786875774368,
       "name": "掌局者",
       "text": "何意味真是",
@@ -376173,7 +376017,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14352",
+      "id": "msg-14346",
       "time": 1786875780670,
       "name": "李玫，特工简",
       "text": "那也不知道啊是吧",
@@ -376199,7 +376043,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14353",
+      "id": "msg-14347",
       "time": 1786875832729,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "他也自缢",
@@ -376225,7 +376069,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14354",
+      "id": "msg-14348",
       "time": 1786875843911,
       "name": "掌局者",
       "text": "过历史",
@@ -376251,7 +376095,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14355",
+      "id": "msg-14349",
       "time": 1786875877233,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=51 历史",
@@ -376277,7 +376121,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14356",
+      "id": "msg-14350",
       "time": 1786875890348,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "。",
@@ -376303,7 +376147,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14357",
+      "id": "msg-14351",
       "time": 1786875898903,
       "name": "掌局者",
       "text": "继续过",
@@ -376329,7 +376173,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14358",
+      "id": "msg-14352",
       "time": 1786875904535,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=51 历史",
@@ -376355,7 +376199,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14359",
+      "id": "msg-14353",
       "time": 1786875909489,
       "name": "掌局者",
       "text": "没事了",
@@ -376381,7 +376225,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14360",
+      "id": "msg-14354",
       "time": 1786875922110,
       "name": "掌局者",
       "text": "噢还有一个",
@@ -376407,7 +376251,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14361",
+      "id": "msg-14355",
       "time": 1786875935206,
       "name": "掌局者",
       "text": "好难崩",
@@ -376433,7 +376277,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14362",
+      "id": "msg-14356",
       "time": 1786875925826,
       "name": "掌局者",
       "text": "再过",
@@ -376459,7 +376303,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14363",
+      "id": "msg-14357",
       "time": 1786875951931,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=51 历史 ",
@@ -376485,7 +376329,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14364",
+      "id": "msg-14358",
       "time": 1786875959252,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "好难崩",
@@ -376511,7 +376355,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14365",
+      "id": "msg-14359",
       "time": 1786875963356,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "要不要幸运",
@@ -376537,7 +376381,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14366",
+      "id": "msg-14360",
       "time": 1786876002625,
       "name": "掌局者",
       "text": "不，认命吧，还有最后一个",
@@ -376563,7 +376407,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14367",
+      "id": "msg-14361",
       "time": 1786876013744,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "认命",
@@ -376589,7 +376433,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14368",
+      "id": "msg-14362",
       "time": 1786876023762,
       "name": "掌局者",
       "text": "有些线索可能就是不想让你知道",
@@ -376615,7 +376459,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14369",
+      "id": "msg-14363",
       "time": 1786876009547,
       "name": "掌局者",
       "text": "最后一个，过一下",
@@ -376641,7 +376485,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14370",
+      "id": "msg-14364",
       "time": 1786876023987,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=51 历史",
@@ -376667,7 +376511,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14371",
+      "id": "msg-14365",
       "time": 1786876028812,
       "name": "掌局者",
       "text": "没事了",
@@ -376693,7 +376537,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14372",
+      "id": "msg-14366",
       "time": 1786876035344,
       "name": "掌局者",
       "text": "下一个（好好笑",
@@ -376719,7 +376563,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14373",
+      "id": "msg-14367",
       "time": 1786876043725,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "CCF：PL你自己去推吧",
@@ -376745,7 +376589,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14374",
+      "id": "msg-14368",
       "time": 1786876050536,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "努力派",
@@ -376771,7 +376615,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14375",
+      "id": "msg-14369",
       "time": 1786876090456,
       "name": "李玫，特工简",
       "text": "？",
@@ -376797,7 +376641,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14376",
+      "id": "msg-14370",
       "time": 1786876109271,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我去吃饭",
@@ -376823,7 +376667,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14377",
+      "id": "msg-14371",
       "time": 1786876110401,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "无事发生",
@@ -376849,7 +376693,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14378",
+      "id": "msg-14372",
       "time": 1786876110658,
       "name": "李玫，特工简",
       "text": "我们改天再精神治疗吧",
@@ -376875,7 +376719,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14379",
+      "id": "msg-14373",
       "time": 1786876111890,
       "name": "李玫，特工简",
       "text": "怕了",
@@ -376901,7 +376745,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14380",
+      "id": "msg-14374",
       "time": 1786876117610,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "别怕",
@@ -376927,7 +376771,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14381",
+      "id": "msg-14375",
       "time": 1786876124059,
       "name": "李玫，特工简",
       "text": "真怕",
@@ -376953,7 +376797,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14382",
+      "id": "msg-14376",
       "time": 1786876128935,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "真怕",
@@ -376979,7 +376823,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14383",
+      "id": "msg-14377",
       "time": 1786876120888,
       "name": "掌局者",
       "text": "约书亚仅调查到这些内容，CIA的任务也就此结束了，他缺少了接触到一些私密文件的机会，只能就此作罢。",
@@ -377005,7 +376849,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14384",
+      "id": "msg-14378",
       "time": 1786876168492,
       "name": "掌局者",
       "text": "2007年1月30日，J班的三人小队开始了一次行动，他们根据情报前往NASA纽约分部的一处实验室，调查一项可能涉及非自然因素的研究。潜入过程一度顺利，但在接近目标房间时，一名夜间值班的警卫提前结束巡查经过走廊，发现了约书亚。",
@@ -377031,7 +376875,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14385",
+      "id": "msg-14379",
       "time": 1786876182737,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "乐观点想，如果我选特训的话这些甚至不会有见天日的机会",
@@ -377057,7 +376901,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14386",
+      "id": "msg-14380",
       "time": 1786876204966,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "卧槽还得RP入狱",
@@ -377083,7 +376927,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14387",
+      "id": "msg-14381",
       "time": 1786876208423,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我何时能吃饭",
@@ -377109,7 +376953,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14388",
+      "id": "msg-14382",
       "time": 1786876245688,
       "name": "李玫，特工简",
       "text": "饭休一会儿？",
@@ -377135,7 +376979,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14389",
+      "id": "msg-14383",
       "time": 1786876266753,
       "name": "李玫，特工简",
       "text": "我们后面会有机会一起去法国吗",
@@ -377161,7 +377005,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14390",
+      "id": "msg-14384",
       "time": 1786876307251,
       "name": "掌局者",
       "text": "警报随即触发，李玫和赫里斯及时撤离，约书亚则被堵在走廊尽头，随后被赶到现场的安保人员控制。执法人员从他的背包中搜出了伪造的FBI证件、一把无注册记录的手枪以及用于打开门锁的设备。",
@@ -377187,7 +377031,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14391",
+      "id": "msg-14385",
       "time": 1786876329044,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "真的好像",
@@ -377213,7 +377057,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14392",
+      "id": "msg-14386",
       "time": 1786876332641,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "joker",
@@ -377239,7 +377083,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14393",
+      "id": "msg-14387",
       "time": 1786876360158,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "其实我们是偷心怪盗团",
@@ -377265,7 +377109,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14394",
+      "id": "msg-14388",
       "time": 1786876365902,
       "name": "掌局者",
       "text": "很快他被正式起诉：伪造政府文件、未经授权进入联邦设施，以及非法持有枪支。由于他携带的证件和装备均无法关联到任何官方机构，辩护空间极为有限，法院判处他有期徒刑十八个月。",
@@ -377291,7 +377135,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14395",
+      "id": "msg-14389",
       "time": 1786876369242,
       "name": "李玫，特工简",
       "text": "好萌啊",
@@ -377317,7 +377161,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14396",
+      "id": "msg-14390",
       "time": 1786876389867,
       "name": "李玫，特工简",
       "text": "被关起来的狐狸",
@@ -377343,7 +377187,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14397",
+      "id": "msg-14391",
       "time": 1786876512902,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "以后肯定要去法国的吧",
@@ -377369,7 +377213,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14398",
+      "id": "msg-14392",
       "time": 1786876541145,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "卡斯泰因那边我们迟早实地考察（？）",
@@ -377395,7 +377239,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14399",
+      "id": "msg-14393",
       "time": 1786876632100,
       "name": "掌局者",
       "text": "没啊（",
@@ -377421,7 +377265,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14400",
+      "id": "msg-14394",
       "time": 1786876636415,
       "name": "掌局者",
       "text": "谁说的（？",
@@ -377447,7 +377291,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14401",
+      "id": "msg-14395",
       "time": 1786876621428,
       "name": "掌局者",
       "text": "接着，他的父母前来探监。在会面室隔着一块透明隔板，通过电话进行沟通，问他怎么会做出这种事，伊萨克一直没有说话，在温和地安抚瑞贝卡的情绪后，才问了一句这件事是不是和约书亚瞒着他们的事有关。",
@@ -377473,7 +377317,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14402",
+      "id": "msg-14396",
       "time": 1786876649932,
       "name": "李玫，特工简",
       "text": "哎",
@@ -377499,7 +377343,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14403",
+      "id": "msg-14397",
       "time": 1786876652888,
       "name": "李玫，特工简",
       "text": "萌",
@@ -377525,7 +377369,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14404",
+      "id": "msg-14398",
       "time": 1786877685816,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "在父母到来之前，约书亚已经琢磨好了所有的理由与谎言，但当看见他们的脸庞攀上焦急和忧愁时，他盘算好的一切都好像夜楼一样消失无踪，尤其是那问了无数次又被他敷衍过去的问题再度横在它面前时——像有什么如鲠在喉。他很想甩手不干了，他很想抛下一切扑进他们怀中大哭一场，然后说出很多，很多很多，多到这完全不温馨的地方怎么也装不下。",
@@ -377551,7 +377395,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14405",
+      "id": "msg-14399",
       "time": 1786877701371,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "但最后他只是低下头，像那天一样轻轻“嗯”了一声。",
@@ -377577,7 +377421,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14406",
+      "id": "msg-14400",
       "time": 1786877711197,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "“爸、妈，你们注意保重身体。”这次他没有说自己没法说，他说不出口，“不要开奇怪的门，不要去奇怪的地方……”",
@@ -377603,7 +377447,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14407",
+      "id": "msg-14401",
       "time": 1786877729185,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "“也不要……”不要做奇怪的事，加入奇怪的组织。但是，这不就是他在做的吗？他又一次停顿了。",
@@ -377629,7 +377473,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14408",
+      "id": "msg-14402",
       "time": 1786877742611,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "“你们去度个假，散散心吧。”约书亚·扎卡里收回了方才的脆弱，他似乎觉得再说下去的话，会像背叛了什么，又或许只是会一如既往的丢人。",
@@ -377655,7 +377499,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14409",
+      "id": "msg-14403",
       "time": 1786877760516,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "他捏紧了电话，头却微微偏斜，像是舒服地枕在上面，平静地笑着：“我没事，相信我，我在这儿也能过得如鱼得水，说不定还能提前释放呢！”",
@@ -377681,7 +377525,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14410",
+      "id": "msg-14404",
       "time": 1786877779060,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "“再见，爱你们。”",
@@ -377707,7 +377551,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14411",
+      "id": "msg-14405",
       "time": 1786881344369,
       "name": "掌局者",
       "text": "沉默持续了一会儿，瑞贝卡仍是忍不住多说了几句，比如他们做不到放着自己的儿子不管，比如之后会想办法让他的刑期缩短，尽可能早地让他出去，她像是疲惫地接受了这件事，伊萨克则是叹了口气，让约书亚在狱中照顾好自己。",
@@ -377733,7 +377577,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14412",
+      "id": "msg-14406",
       "time": 1786881454106,
       "name": "掌局者",
       "text": "即使身为队长的约书亚暂被关押，李玫和赫里斯仍必须参与组织下派的任务。2007年5月6日，为解决纽约市内的一起非自然事件，他们开始了新的行动。",
@@ -377759,7 +377603,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14413",
+      "id": "msg-14407",
       "time": 1786881692748,
       "name": "掌局者",
       "text": "2007年5月10日，当李玫和赫里斯顺利完成行动，准备收工之时，发现前方路段的交通过于拥堵了，他们注意到不远处似乎发生了一起交通事故，有警灯在旋转，靠近时，可见路面上遍地散落着碎片，路边有一辆汽车的残骸，浓烟弥漫，两旁已经拉起了黄色的警戒线，几名交警正在疏散围观人群。",
@@ -377785,7 +377629,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14414",
+      "id": "msg-14408",
       "time": 1786881782382,
       "name": "掌局者",
       "text": "交警向他们说明了情况，这是一起单车事故，司机在行驶途中由于走神或操作失误，没有注意到前方弯道，车辆失控后撞上了墙。接着，赫里斯便从交警那得知了一个令人难以接受的信息：这起事故的死者，那具头破血流，身上包含大面积灼伤的尸体是赫里斯的叔叔，伊莱恩·埃马尔。",
@@ -377811,7 +377655,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14415",
+      "id": "msg-14409",
       "time": 1786881848286,
       "name": "掌局者",
       "text": "赫里斯也未在车祸现场发现其他车辆参与或其他设计的痕迹，由于车辆损毁过于严重，他根本无从下手，即使他的某种感觉告诉他这一切都并没有这般简单，只是一起意外事故。无论如何这起案件很快就被警方盖章定论，就此收尾了。",
@@ -377837,7 +377681,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14416",
+      "id": "msg-14410",
       "time": 1786881797612,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "悲",
@@ -377863,7 +377707,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14417",
+      "id": "msg-14411",
       "time": 1786881821869,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "小苦瓜",
@@ -377889,7 +377733,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14418",
+      "id": "msg-14412",
       "time": 1786881960753,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "然后是其他人的重要关系失踪开始调查吗",
@@ -377915,7 +377759,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14419",
+      "id": "msg-14413",
       "time": 1786882080003,
       "name": "掌局者",
       "text": "2007年5月19日，李玫前往西切斯特看望母亲李安宜。在此之前她提前打过电话，那时电话里的李安宜似乎没有什么异常。但当她到了家门口，敲门后却无人回应。",
@@ -377941,7 +377785,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14420",
+      "id": "msg-14414",
       "time": 1786882397899,
       "name": "掌局者",
       "text": "李玫迅速用备用钥匙开了门。客厅里很安静，电视关着，窗户也关着，李安宜趴在桌上，脸侧向一边，手臂垂在桌沿，桌边放着一只玻璃杯，剩余一些可疑的白色沉淀。李玫已然想到那个可怕的可能性，仍抱着最后的希望立刻进行了检查，然而李安宜的脉搏已经停止，她在几个小时前死去了。",
@@ -377967,7 +377811,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14421",
+      "id": "msg-14415",
       "time": 1786882463839,
       "name": "掌局者",
       "text": "警方和急救人员到达后封锁了现场。初步检查未发现外伤或挣扎痕迹，公寓门窗均完好，没有强行进入的迹象。杯子中的液体样本送检，结果确认含有亚硝酸钠，剂量超过致死量。",
@@ -377993,7 +377837,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14422",
+      "id": "msg-14416",
       "time": 1786882819058,
       "name": "掌局者",
       "text": "现场没有遗书，但警方将整个屋子进行了彻底的检查，未发现有外来人员闯入痕迹的情况，以及十分干净无可疑痕迹的现场，将其定性为自杀，案件就此结案了。",
@@ -378019,7 +377863,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14423",
+      "id": "msg-14417",
       "time": 1786882820483,
       "name": "掌局者",
       "text": "李玫无法找到辩驳的证据，即使她向警方说明李安宜似乎并没有自杀倾向，但却找不出存在其他凶手的证据，只是她仍能感受到一种强烈的不安感，太过干净、简直是被熟练处理过的现场反而体现了这次案件的诡异之处。",
@@ -378045,7 +377889,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14424",
+      "id": "msg-14418",
       "time": 1786882260587,
       "name": "李玫，特工简",
       "text": "呃啊",
@@ -378071,7 +377915,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14425",
+      "id": "msg-14419",
       "time": 1786882605547,
       "name": "李玫，特工简",
       "text": "为什么会有这个",
@@ -378097,7 +377941,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14426",
+      "id": "msg-14420",
       "time": 1786882839140,
       "name": "掌局者",
       "text": "调查后就知道了（?",
@@ -378123,7 +377967,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14427",
+      "id": "msg-14421",
       "time": 1786882844434,
       "name": "李玫，特工简",
       "text": "好的",
@@ -378149,7 +377993,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14428",
+      "id": "msg-14422",
       "time": 1786882852702,
       "name": "掌局者",
       "text": "。。",
@@ -378175,7 +378019,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14429",
+      "id": "msg-14423",
       "time": 1786882858954,
       "name": "李玫，特工简",
       "text": "我等约书亚爸妈也失踪之中一起查了吗",
@@ -378201,7 +378045,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14430",
+      "id": "msg-14424",
       "time": 1786882859835,
       "name": "掌局者",
       "text": "非常的，呃，嗯",
@@ -378227,7 +378071,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14431",
+      "id": "msg-14425",
       "time": 1786882863783,
       "name": "掌局者",
       "text": "对",
@@ -378253,7 +378097,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14432",
+      "id": "msg-14426",
       "time": 1786882864457,
       "name": "李玫，特工简",
       "text": "还是",
@@ -378279,7 +378123,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14433",
+      "id": "msg-14427",
       "time": 1786882866038,
       "name": "李玫，特工简",
       "text": "？",
@@ -378305,7 +378149,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14434",
+      "id": "msg-14428",
       "time": 1786882866056,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "约书亚父母是不是也一起",
@@ -378331,7 +378175,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14435",
+      "id": "msg-14429",
       "time": 1786882867397,
       "name": "掌局者",
       "text": "你等我发完",
@@ -378357,7 +378201,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14436",
+      "id": "msg-14430",
       "time": 1786882868395,
       "name": "李玫，特工简",
       "text": "非常的",
@@ -378383,7 +378227,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14437",
+      "id": "msg-14431",
       "time": 1786882871353,
       "name": "李玫，特工简",
       "text": "你先发",
@@ -378409,7 +378253,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14438",
+      "id": "msg-14432",
       "time": 1786882998048,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "咪",
@@ -378435,7 +378279,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14439",
+      "id": "msg-14433",
       "time": 1786883015948,
       "name": "李玫，特工简",
       "text": "轮到你啦（不是）",
@@ -378461,7 +378305,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14440",
+      "id": "msg-14434",
       "time": 1786883232526,
       "name": "掌局者",
       "text": "2007年5月22日，一则新闻出现在各个报纸的版面上，标题为：国务院官员及其妻子失踪，警方调查无进展。",
@@ -378487,7 +378331,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14441",
+      "id": "msg-14435",
       "time": 1786883300095,
       "name": "掌局者",
       "text": "报道内容为：国务院官员伊萨克·扎卡里及其妻子瑞贝卡·扎卡里于5月22日在芝加哥失踪。伊萨克原定出席一场在芝加哥举行的政府间会议，但并未在约定时间出现。",
@@ -378513,7 +378357,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14442",
+      "id": "msg-14436",
       "time": 1786883323794,
       "name": "掌局者",
       "text": "警方调取了酒店及会议场地周边的监控录像，确认两人曾在5月20日晚间返回酒店房间，但此后未有离开记录。房间内未发现异常痕迹，个人物品均保持原样，警方在完成现场勘查和周边区域排查后，表示未发现明确的指向性线索，也没有收到任何勒索或联络信息。",
@@ -378539,7 +378383,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14443",
+      "id": "msg-14437",
       "time": 1786883365439,
       "name": "掌局者",
       "text": "警方后来发布了一份简短的后续声明，确认调查仍在进行中，没有新的进展可以公布。此后没有再出现相关的公开报道。案件停留在“下落不明”的状态，没有更多的解释或结论。",
@@ -378565,7 +378409,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14444",
+      "id": "msg-14438",
       "time": 1786883319533,
       "name": "李玫，特工简",
       "text": "也太密集了",
@@ -378591,7 +378435,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14445",
+      "id": "msg-14439",
       "time": 1786883322870,
       "name": "李玫，特工简",
       "text": "还是在芝加哥",
@@ -378617,7 +378461,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14446",
+      "id": "msg-14440",
       "time": 1786883331559,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "杀得好密集",
@@ -378643,7 +378487,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14447",
+      "id": "msg-14441",
       "time": 1786883342544,
       "name": "掌局者",
       "text": "芝加哥太晦气了（",
@@ -378669,7 +378513,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14448",
+      "id": "msg-14442",
       "time": 1786883366430,
       "name": "李玫，特工简",
       "text": "约书亚这时候出来了吗",
@@ -378695,7 +378539,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14449",
+      "id": "msg-14443",
       "time": 1786883381342,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "没有吧",
@@ -378721,7 +378565,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14450",
+      "id": "msg-14444",
       "time": 1786883388081,
       "name": "掌局者",
       "text": "第二天出来了",
@@ -378747,7 +378591,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14451",
+      "id": "msg-14445",
       "time": 1786883396227,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "（）",
@@ -378773,7 +378617,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14452",
+      "id": "msg-14446",
       "time": 1786883400889,
       "name": "掌局者",
       "text": "正好可以看到消息",
@@ -378799,7 +378643,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14453",
+      "id": "msg-14447",
       "time": 1786883402518,
       "name": "掌局者",
       "text": "（",
@@ -378825,7 +378669,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14454",
+      "id": "msg-14448",
       "time": 1786883403958,
       "name": "李玫，特工简",
       "text": "。。",
@@ -378851,7 +378695,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14455",
+      "id": "msg-14449",
       "time": 1786883413687,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "为了看到消息给你出来了",
@@ -378877,7 +378721,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14456",
+      "id": "msg-14450",
       "time": 1786883416298,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "SOS",
@@ -378903,7 +378747,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14457",
+      "id": "msg-14451",
       "time": 1786883596933,
       "name": "李玫，特工简",
       "text": "突然意识到",
@@ -378929,7 +378773,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14458",
+      "id": "msg-14452",
       "time": 1786883609905,
       "name": "李玫，特工简",
       "text": "这也不是失踪啊",
@@ -378955,7 +378799,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14459",
+      "id": "msg-14453",
       "time": 1786883620826,
       "name": "李玫，特工简",
       "text": "死了两个失踪两个",
@@ -378981,7 +378825,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14460",
+      "id": "msg-14454",
       "time": 1786883648233,
       "name": "李玫，特工简",
       "text": "我还以为是轮到赫里斯哥们了（？）",
@@ -379007,7 +378851,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14461",
+      "id": "msg-14455",
       "time": 1786883660752,
       "name": "掌局者",
       "text": "？并不",
@@ -379033,7 +378877,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14462",
+      "id": "msg-14456",
       "time": 1786883670072,
       "name": "掌局者",
       "text": "我想到一个问题就是",
@@ -379059,7 +378903,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14463",
+      "id": "msg-14457",
       "time": 1786883675875,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "他是2009年的吧",
@@ -379085,7 +378929,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14464",
+      "id": "msg-14458",
       "time": 1786883686010,
       "name": "掌局者",
       "text": "你们要不要去接出狱但我觉得你们应该没法知道",
@@ -379111,7 +378955,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14465",
+      "id": "msg-14459",
       "time": 1786883693430,
       "name": "掌局者",
       "text": "他什么时候出狱",
@@ -379137,7 +378981,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14466",
+      "id": "msg-14460",
       "time": 1786883700746,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "他是提前出狱的吧",
@@ -379163,7 +379007,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14467",
+      "id": "msg-14461",
       "time": 1786883703638,
       "name": "掌局者",
       "text": "对",
@@ -379189,7 +379033,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14468",
+      "id": "msg-14462",
       "time": 1786883710071,
       "name": "掌局者",
       "text": "只能自己灰溜溜出来了小伙",
@@ -379215,7 +379059,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14469",
+      "id": "msg-14463",
       "time": 1786883712697,
       "name": "李玫，特工简",
       "text": "他这个出狱日期是爸妈给通的关系吗",
@@ -379241,7 +379085,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14470",
+      "id": "msg-14464",
       "time": 1786883716223,
       "name": "李玫，特工简",
       "text": "好萌啊",
@@ -379267,7 +379111,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14471",
+      "id": "msg-14465",
       "time": 1786883719333,
       "name": "李玫，特工简",
       "text": "但其实应该",
@@ -379293,7 +379137,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14472",
+      "id": "msg-14466",
       "time": 1786883730335,
       "name": "李玫，特工简",
       "text": "出这个事之后会去探望他",
@@ -379319,7 +379163,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14473",
+      "id": "msg-14467",
       "time": 1786883751434,
       "name": "李玫，特工简",
       "text": "刚好接上了（？）",
@@ -379345,7 +379189,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14474",
+      "id": "msg-14468",
       "time": 1786883752020,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "是吧，探望的时候刚好碰上今天出狱",
@@ -379371,7 +379215,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14475",
+      "id": "msg-14469",
       "time": 1786883767691,
       "name": "掌局者",
       "text": "5月23日，约书亚提前出狱。他的父母的朋友辗转通过律师和狱方协调，在程序上找到了提前释放的依据，手续很快下来了。他好不容易走出了监狱大门时，拿到了自己的手机，打开，然后看到了那则新闻。",
@@ -379397,7 +379241,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14476",
+      "id": "msg-14470",
       "time": 1786883778579,
       "name": "掌局者",
       "text": "噢对了虽然是算李玫的私人规划",
@@ -379423,7 +379267,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14477",
+      "id": "msg-14471",
       "time": 1786883784392,
       "name": "掌局者",
       "text": "但我当作你们都有参与",
@@ -379449,7 +379293,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14478",
+      "id": "msg-14472",
       "time": 1786883791746,
       "name": "掌局者",
       "text": "毕竟这个其他人不调查说不过去吧",
@@ -379475,7 +379319,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14479",
+      "id": "msg-14473",
       "time": 1786883797240,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "对的",
@@ -379501,7 +379345,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14480",
+      "id": "msg-14474",
       "time": 1786883801227,
       "name": "李玫，特工简",
       "text": "对的",
@@ -379527,7 +379371,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14481",
+      "id": "msg-14475",
       "time": 1786883851165,
       "name": "掌局者",
       "text": "。哎卧槽发现都是亲人",
@@ -379553,7 +379397,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14482",
+      "id": "msg-14476",
       "time": 1786883852919,
       "name": "掌局者",
       "text": "。",
@@ -379579,7 +379423,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14483",
+      "id": "msg-14477",
       "time": 1786883862533,
       "name": "李玫，特工简",
       "text": "是啊",
@@ -379605,7 +379449,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14484",
+      "id": "msg-14478",
       "time": 1786883864713,
       "name": "李玫，特工简",
       "text": "（是啊）",
@@ -379631,7 +379475,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14485",
+      "id": "msg-14479",
       "time": 1786883872101,
       "name": "李玫，特工简",
       "text": "血亲啊",
@@ -379657,7 +379501,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14486",
+      "id": "msg-14480",
       "time": 1786883883617,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "专杀血亲",
@@ -379683,7 +379527,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14487",
+      "id": "msg-14481",
       "time": 1786883898655,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "唯一一条是亲人的重要关系",
@@ -379709,7 +379553,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14488",
+      "id": "msg-14482",
       "time": 1786883911766,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我不行了",
@@ -379735,7 +379579,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14489",
+      "id": "msg-14483",
       "time": 1786883912066,
       "name": "掌局者",
       "text": "当天三个人就碰了面。至亲之人的三种死因和结果，发生时间都集中在本月，每个案件都透露着违和感。",
@@ -379761,10 +379605,10 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14490",
+      "id": "msg-14484",
       "time": 1786884151947,
       "name": "掌局者",
-      "text": "或是被约书亚父母失踪的地点所提醒，李玫重新检查了母亲更久之前的的记录，在4月19日，她的账户里有一笔支出，用于购买5月6日前往芝加哥的往返机票，但她没有告诉过任何人这件事，包括李玫。赫里斯同样发现伊莱恩在5月6日购买了往返的机票，同样是前往芝加哥，同样没有告知任何人。约书亚仔细查看了父母的电脑，发现一个文件夹里有各种黄印的图片，日期从05年8月直到最近的5月6日，第一张就是约书亚发送的那一张图片。",
+      "text": "或是被约书亚父母失踪的地点所提醒，李玫重新检查了母亲更久之前的的记录，在4月19日，她的账户里有一笔支出，用于购买5月6日前往芝加哥的往返机票，但她没有告诉过任何人这件事，包括李玫。赫里斯同样发现伊莱恩在5月6日购买了往返的机票，同样是前往芝加哥，同样没有告知任何人。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -379787,7 +379631,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14491",
+      "id": "msg-14485",
       "time": 1786884163340,
       "name": "掌局者",
       "text": "我都说很晦气了",
@@ -379813,7 +379657,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14492",
+      "id": "msg-14486",
       "time": 1786884165412,
       "name": "掌局者",
       "text": "。",
@@ -379839,7 +379683,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14493",
+      "id": "msg-14487",
       "time": 1786884178630,
       "name": "李玫，特工简",
       "text": "。。",
@@ -379865,7 +379709,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14494",
+      "id": "msg-14488",
       "time": 1786884184060,
       "name": "李玫，特工简",
       "text": "这样晦气吗",
@@ -379891,7 +379735,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14495",
+      "id": "msg-14489",
       "time": 1786884184928,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "。。。",
@@ -379917,7 +379761,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14496",
+      "id": "msg-14490",
       "time": 1786884270673,
       "name": "掌局者",
       "text": "不其实还",
@@ -379943,7 +379787,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14497",
+      "id": "msg-14491",
       "time": 1786884276478,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "芝加哥变成法外之地了",
@@ -379969,7 +379813,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14498",
+      "id": "msg-14492",
       "time": 1786884283014,
       "name": "掌局者",
       "text": "呃继续查吧打字慢慢",
@@ -379995,7 +379839,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14499",
+      "id": "msg-14493",
       "time": 1786884330449,
       "name": "李玫，特工简",
       "text": "查到了很多个不吉利的5月6日倒是",
@@ -380021,7 +379865,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14500",
+      "id": "msg-14494",
       "time": 1786884693477,
       "name": "掌局者",
       "text": "。我不行了",
@@ -380047,7 +379891,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14501",
+      "id": "msg-14495",
       "time": 1786884680899,
       "name": "掌局者",
       "text": "接着他们采用了地毯式调查方式，把四月到五月期间，死去或失踪的家人的所有信息尽可能都检查一遍。不久后，他们找到了一个共同点：死去或失踪之人的电脑或手机浏览器的历史记录中，都有一条相同的YOUTUBE的历史浏览记录，但点进去后页面显示的却是此视频已被删除。",
@@ -380073,7 +379917,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14502",
+      "id": "msg-14496",
       "time": 1786884704993,
       "name": "李玫，特工简",
       "text": "哎呀",
@@ -380099,7 +379943,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14503",
+      "id": "msg-14497",
       "time": 1786884715626,
       "name": "李玫，特工简",
       "text": "不会看剧去了吧",
@@ -380125,7 +379969,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14504",
+      "id": "msg-14498",
       "time": 1786884717725,
       "name": "李玫，特工简",
       "text": "我要闹了",
@@ -380151,7 +379995,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14505",
+      "id": "msg-14499",
       "time": 1786884719489,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "不会都看了黄印吧",
@@ -380177,7 +380021,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14506",
+      "id": "msg-14500",
       "time": 1786884734093,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "都去当观众了",
@@ -380203,7 +380047,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14507",
+      "id": "msg-14501",
       "time": 1786885214280,
       "name": "掌局者",
       "text": "他们用了些关系，找到了网络服务商的记录文件，得知此视频是一个叫《旅行前歌》电影的预告片，在当时播放量似乎已经涨得很高。但出于未知原因，所有视频都被删除，互联网没有留下任何关于这个电影与这支预告片的视频记录。",
@@ -380229,7 +380073,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14508",
+      "id": "msg-14502",
       "time": 1786885218095,
       "name": "掌局者",
       "text": "经过数日长时间的查找后，他们也仅是找到了一条相关的博客，这个人只是在抱怨自己刚点开视频，还没看清画面就看到视频已被删除的提示，并附上了页面当时的截图。",
@@ -380238,7 +380082,7 @@
       "icon": null,
       "dice": null,
       "extend": null,
-      "messageImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/e5f80eac06c7c4e60a9fb416f02b8b02168284d159f041c7144223b635dc3bb8?t=1786884376729",
+      "messageImage": null,
       "to": null,
       "isChapter": false,
       "nameUseImage": false,
@@ -380255,7 +380099,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14509",
+      "id": "msg-14503",
       "time": 1786885257307,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "真看剧了",
@@ -380281,7 +380125,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14510",
+      "id": "msg-14504",
       "time": 1786885269267,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "从不停止的戏剧",
@@ -380307,7 +380151,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14511",
+      "id": "msg-14505",
       "time": 1786885301854,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "虽然压缩了很多画质但还是看得出是黄印",
@@ -380333,7 +380177,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14512",
+      "id": "msg-14506",
       "time": 1786885314432,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "这个观看量……",
@@ -380359,7 +380203,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14513",
+      "id": "msg-14507",
       "time": 1786885361813,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "一次死好多",
@@ -380385,7 +380229,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14514",
+      "id": "msg-14508",
       "time": 1786885369995,
       "name": "李玫，特工简",
       "text": "那个评论ID好糊",
@@ -380411,7 +380255,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14515",
+      "id": "msg-14509",
       "time": 1786885385698,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "每周预告还是黄印我服了",
@@ -380437,7 +380281,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14516",
+      "id": "msg-14510",
       "time": 1786885390160,
       "name": "李玫，特工简",
       "text": "对",
@@ -380463,7 +380307,33 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14517",
+      "id": "msg-14511",
+      "time": 1786885546346,
+      "name": "约书亚·扎卡里，特工约拿",
+      "text": "!go https://gtyes.github.io/my-trpg-logs/viewer.html?log=data%2FTheNightFloors.json",
+      "color": "#7e5bfa",
+      "channel": "主频道",
+      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-14512",
       "time": 1786885582729,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "新人物：维克多·科雷尔",
@@ -380489,7 +380359,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14518",
+      "id": "msg-14513",
       "time": 1786885601075,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "。。。差点就想起维克多这个名字",
@@ -380515,7 +380385,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14519",
+      "id": "msg-14514",
       "time": 1786885608524,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "洋人！",
@@ -380541,7 +380411,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14520",
+      "id": "msg-14515",
       "time": 1786885633697,
       "name": "掌局者",
       "text": "在经过更细致的调查后，他们得知了关于这个电影的另一条信息，《旅行前歌》曾在网上宣布将在5月6日在芝加哥市区举办试映会，欢迎感兴趣的观众前来观看。在询问芝加哥的一些业界人士后，那些人仅是表示当天确实有观影会在芝加哥举行，不少人对此产生了兴趣，但他们即不知道电影的名称也不知道观影会的地点，只知道当日在观影会中，某些人做出了一些极其危险的行为，从而阻碍了那部电影的后续放映。",
@@ -380567,7 +380437,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14521",
+      "id": "msg-14516",
       "time": 1786885654787,
       "name": "李玫，特工简",
       "text": "啊啊啊啊",
@@ -380593,7 +380463,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14522",
+      "id": "msg-14517",
       "time": 1786885664159,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "感觉是DG阻碍了",
@@ -380619,7 +380489,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14523",
+      "id": "msg-14518",
       "time": 1786885666253,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "放映",
@@ -380645,7 +380515,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14524",
+      "id": "msg-14519",
       "time": 1786885667184,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "特工吧",
@@ -380671,7 +380541,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14525",
+      "id": "msg-14520",
       "time": 1786885691959,
       "name": "李玫，特工简",
       "text": "确实",
@@ -380697,7 +380567,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14526",
+      "id": "msg-14521",
       "time": 1786885736313,
       "name": "李玫，特工简",
       "text": "能活着还知道这件事的人感觉都是当天没去看的",
@@ -380723,10 +380593,10 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14527",
+      "id": "msg-14522",
       "time": 1786885793221,
       "name": "掌局者",
-      "text": "他们也调查了电影的导演，维克多·科雷尔，却发现此人早已失踪，账号也已经被注销，可找到的信息少之又少，而那些疑似参加电影创作的人也是如此。最后，通过各种零碎的线索，他们很快便拼凑出这样的事实 : 所有《旅行前歌》的观众以及传言中参与电影制作流程的人员，均在电影上映后的几个月内全部失踪或离世。",
+      "text": "他们也调查视频的发布者，却发现此人早已失踪，账号也已经被注销，可找到的信息少之又少，而那些疑似参加电影创作的人也是如此。最后，通过各种零碎的线索，他们很快便拼凑出这样的事实 : 所有《旅行前歌》的观众以及传言中参与电影制作流程的人员，均在电影上映后的几个月内全部失踪或离世。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -380749,7 +380619,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14528",
+      "id": "msg-14523",
       "time": 1786885831381,
       "name": "掌局者",
       "text": "而就在他们发现这件事后，三人的邮箱都收到了一封邮件——来自绿色三角洲的联络地址。",
@@ -380775,7 +380645,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14529",
+      "id": "msg-14524",
       "time": 1786885839549,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "发邮件问DG问得到吗",
@@ -380801,7 +380671,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14530",
+      "id": "msg-14525",
       "time": 1786885842383,
       "name": "李玫，特工简",
       "text": "。。",
@@ -380827,7 +380697,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14531",
+      "id": "msg-14526",
       "time": 1786885844944,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "笑死自己上门了",
@@ -380853,7 +380723,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14532",
+      "id": "msg-14527",
       "time": 1786885847161,
       "name": "李玫，特工简",
       "text": "对",
@@ -380879,7 +380749,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14533",
+      "id": "msg-14528",
       "time": 1786885855450,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "主动上门了",
@@ -380905,7 +380775,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14534",
+      "id": "msg-14529",
       "time": 1786885906123,
       "name": "掌局者",
       "text": "内容都是相同的一句话：请记住组织的原则，停止调查。",
@@ -380931,7 +380801,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14535",
+      "id": "msg-14530",
       "time": 1786885915910,
       "name": "掌局者",
       "text": "过智力",
@@ -380957,7 +380827,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14536",
+      "id": "msg-14531",
       "time": 1786885926644,
       "name": "李玫，特工简",
       "text": "cc<=70 智力",
@@ -380983,7 +380853,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14537",
+      "id": "msg-14532",
       "time": 1786885924514,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "都过？",
@@ -381009,7 +380879,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14538",
+      "id": "msg-14533",
       "time": 1786885932400,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "？",
@@ -381035,7 +380905,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14539",
+      "id": "msg-14534",
       "time": 1786885938475,
       "name": "掌局者",
       "text": "？",
@@ -381061,7 +380931,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14540",
+      "id": "msg-14535",
       "time": 1786885940913,
       "name": "李玫，特工简",
       "text": "看得出来很",
@@ -381087,7 +380957,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14541",
+      "id": "msg-14536",
       "time": 1786885941991,
       "name": "李玫，特工简",
       "text": "呃",
@@ -381113,7 +380983,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14542",
+      "id": "msg-14537",
       "time": 1786885943989,
       "name": "李玫，特工简",
       "text": "嗯",
@@ -381139,7 +381009,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14543",
+      "id": "msg-14538",
       "time": 1786885944593,
       "name": "掌局者",
       "text": "一定要在这时候大失败吗",
@@ -381165,7 +381035,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14544",
+      "id": "msg-14539",
       "time": 1786885951809,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我们可以过吗",
@@ -381191,7 +381061,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14545",
+      "id": "msg-14540",
       "time": 1786885953915,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "我们能过吗",
@@ -381217,7 +381087,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14546",
+      "id": "msg-14541",
       "time": 1786885956132,
       "name": "掌局者",
       "text": "都过啊",
@@ -381243,7 +381113,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14547",
+      "id": "msg-14542",
       "time": 1786885961502,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=55 智力",
@@ -381269,7 +381139,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14548",
+      "id": "msg-14543",
       "time": 1786885963335,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "cc<=80 智力",
@@ -381295,7 +381165,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14549",
+      "id": "msg-14544",
       "time": 1786886081734,
       "name": "掌局者",
       "text": "看着那份列出来已经超过了两百人的名单，你们很快意识到，这很可能是针对非自然的一次清理行动——绿色三角洲极有可能谋害了自己的至亲之人。",
@@ -381321,7 +381191,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14550",
+      "id": "msg-14545",
       "time": 1786886113839,
       "name": "掌局者",
       "text": "因无力感，SAN CHECK 1/1D6",
@@ -381347,7 +381217,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14551",
+      "id": "msg-14546",
       "time": 1786886086889,
       "name": "掌局者",
       "text": "。",
@@ -381373,7 +381243,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14552",
+      "id": "msg-14547",
       "time": 1786886094703,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "。",
@@ -381399,7 +381269,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14553",
+      "id": "msg-14548",
       "time": 1786886101279,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "。？",
@@ -381425,7 +381295,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14554",
+      "id": "msg-14549",
       "time": 1786886108596,
       "name": "李玫，特工简",
       "text": "哦",
@@ -381451,7 +381321,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14555",
+      "id": "msg-14550",
       "time": 1786886115357,
       "name": "李玫，特工简",
       "text": "停止传播那种吗",
@@ -381477,7 +381347,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14556",
+      "id": "msg-14551",
       "time": 1786886125273,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我是不是已经适应无力了",
@@ -381503,7 +381373,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14557",
+      "id": "msg-14552",
       "time": 1786886132936,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "（已出狱）",
@@ -381529,7 +381399,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14558",
+      "id": "msg-14553",
       "time": 1786886138313,
       "name": "掌局者",
       "text": "我这个是合并的",
@@ -381555,7 +381425,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14559",
+      "id": "msg-14554",
       "time": 1786886141020,
       "name": "李玫，特工简",
       "text": "像中世纪阻止瘟疫的传播就把整个村子烧了",
@@ -381581,7 +381451,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14560",
+      "id": "msg-14555",
       "time": 1786886142437,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "啊啊啊",
@@ -381607,7 +381477,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14561",
+      "id": "msg-14556",
       "time": 1786886146154,
       "name": "掌局者",
       "text": "本来知道死了就1/1d4",
@@ -381633,7 +381503,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14562",
+      "id": "msg-14557",
       "time": 1786886156861,
       "name": "掌局者",
       "text": "知道是绿色三角洲后1d4",
@@ -381659,7 +381529,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14563",
+      "id": "msg-14558",
       "time": 1786886165719,
       "name": "掌局者",
       "text": "不如1d6还少一点（",
@@ -381685,7 +381555,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14564",
+      "id": "msg-14559",
       "time": 1786886148646,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "cc<=45 理智",
@@ -381711,7 +381581,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14565",
+      "id": "msg-14560",
       "time": 1786886151570,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "cc<=47 SAN CHECK",
@@ -381737,7 +381607,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14566",
+      "id": "msg-14561",
       "time": 1786886164724,
       "name": "system",
       "text": "[ 约书亚·扎卡里，特工约拿 ] SAN : 47 → 46",
@@ -381763,7 +381633,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14567",
+      "id": "msg-14562",
       "time": 1786886161500,
       "name": "李玫，特工简",
       "text": "我是直接",
@@ -381789,7 +381659,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14568",
+      "id": "msg-14563",
       "time": 1786886168517,
       "name": "李玫，特工简",
       "text": "按失败算吗",
@@ -381815,7 +381685,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14569",
+      "id": "msg-14564",
       "time": 1786886176564,
       "name": "掌局者",
       "text": "你直接拉满吧",
@@ -381841,7 +381711,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14570",
+      "id": "msg-14565",
       "time": 1786886177490,
       "name": "掌局者",
       "text": "。",
@@ -381867,7 +381737,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14571",
+      "id": "msg-14566",
       "time": 1786886183378,
       "name": "李玫，特工简",
       "text": "11",
@@ -381893,7 +381763,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14572",
+      "id": "msg-14567",
       "time": 1786886187102,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "真能藏啊",
@@ -381919,7 +381789,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14573",
+      "id": "msg-14568",
       "time": 1786886188370,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "用关系值抵一下？",
@@ -381945,7 +381815,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14574",
+      "id": "msg-14569",
       "time": 1786886194927,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "掌局者该憋坏了",
@@ -381971,7 +381841,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14575",
+      "id": "msg-14570",
       "time": 1786886205384,
       "name": "李玫，特工简",
       "text": "哦对哦",
@@ -381997,7 +381867,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14576",
+      "id": "msg-14571",
       "time": 1786886209800,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "你们俩都要适应无力了",
@@ -382023,7 +381893,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14577",
+      "id": "msg-14572",
       "time": 1786886213113,
       "name": "李玫，特工简",
       "text": "能抵吗",
@@ -382049,7 +381919,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14578",
+      "id": "msg-14573",
       "time": 1786886227271,
       "name": "掌局者",
       "text": "全世界面对电车难题最不会犹豫的组织",
@@ -382075,7 +381945,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14579",
+      "id": "msg-14574",
       "time": 1786886234442,
       "name": "李玫，特工简",
       "text": "但我不想适应，要不疯了吧（？）",
@@ -382101,7 +381971,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14580",
+      "id": "msg-14575",
       "time": 1786886236665,
       "name": "李玫，特工简",
       "text": "我去看一眼",
@@ -382127,7 +381997,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14581",
+      "id": "msg-14576",
       "time": 1786886254015,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "你适应就要1d6了",
@@ -382153,7 +382023,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14582",
+      "id": "msg-14577",
       "time": 1786886275016,
       "name": "李玫，特工简",
       "text": "第一幕结束这个适应无力能不能清了啊",
@@ -382179,7 +382049,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14583",
+      "id": "msg-14578",
       "time": 1786886280431,
       "name": "掌局者",
       "text": "能吧",
@@ -382205,7 +382075,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14584",
+      "id": "msg-14579",
       "time": 1786886302882,
       "name": "李玫，特工简",
       "text": "那我还是用艾丽西亚的关系抵一下吧",
@@ -382231,7 +382101,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14585",
+      "id": "msg-14580",
       "time": 1786886307194,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "你现在疯了好像就清了",
@@ -382257,7 +382127,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14586",
+      "id": "msg-14581",
       "time": 1786886311045,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "（？",
@@ -382283,7 +382153,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14587",
+      "id": "msg-14582",
       "time": 1786886323732,
       "name": "掌局者",
       "text": "不过其实也不算电车难题",
@@ -382309,7 +382179,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14588",
+      "id": "msg-14583",
       "time": 1786886338756,
       "name": "掌局者",
       "text": "因为看过了基本就等同于呃嗯（。",
@@ -382335,7 +382205,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14589",
+      "id": "msg-14584",
       "time": 1786886338834,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "我用跟约书亚的抵一下",
@@ -382361,7 +382231,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14590",
+      "id": "msg-14585",
       "time": 1786886189789,
       "name": "system",
       "text": "[ 李玫，特工简 ] SAN : 75 → 69",
@@ -382387,7 +382257,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14591",
+      "id": "msg-14586",
       "time": 1786886340528,
       "name": "李玫，特工简",
       "text": "1D4",
@@ -382413,7 +382283,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14592",
+      "id": "msg-14587",
       "time": 1786886353206,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "1D4",
@@ -382439,7 +382309,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14593",
+      "id": "msg-14588",
       "time": 1786886356250,
       "name": "system",
       "text": "[ 李玫，特工简 ] 艾丽西亚 : 14 → 12",
@@ -382465,7 +382335,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14594",
+      "id": "msg-14589",
       "time": 1786886361911,
       "name": "system",
       "text": "[ 李玫，特工简 ] SAN : 69 → 71",
@@ -382491,7 +382361,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14595",
+      "id": "msg-14590",
       "time": 1786886363412,
       "name": "system",
       "text": "[ 赫里斯·埃马尔，特工约尔丹 ] 约书亚 : 8 → 7",
@@ -382517,7 +382387,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14596",
+      "id": "msg-14591",
       "time": 1786886371513,
       "name": "system",
       "text": "[ 李玫，特工简 ] 李安宜 : 14 → 0",
@@ -382543,7 +382413,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14597",
+      "id": "msg-14592",
       "time": 1786886388868,
       "name": "掌局者",
       "text": "然后呃看看精神分析",
@@ -382569,7 +382439,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14598",
+      "id": "msg-14593",
       "time": 1786886395199,
       "name": "李玫，特工简",
       "text": "哎",
@@ -382595,7 +382465,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14599",
+      "id": "msg-14594",
       "time": 1786886395263,
       "name": "掌局者",
       "text": "（这个时候吗",
@@ -382621,7 +382491,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14600",
+      "id": "msg-14595",
       "time": 1786886402139,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "（这个时候吗",
@@ -382647,7 +382517,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14601",
+      "id": "msg-14596",
       "time": 1786886403013,
       "name": "李玫，特工简",
       "text": "大不敬之词",
@@ -382673,7 +382543,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14602",
+      "id": "msg-14597",
       "time": 1786886406249,
       "name": "李玫，特工简",
       "text": "有点涩",
@@ -382699,7 +382569,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14603",
+      "id": "msg-14598",
       "time": 1786886434493,
       "name": "李玫，特工简",
       "text": "我两个一起过了？",
@@ -382725,7 +382595,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14604",
+      "id": "msg-14599",
       "time": 1786886496204,
       "name": "掌局者",
       "text": "没啊，就赫里斯一个",
@@ -382751,7 +382621,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14605",
+      "id": "msg-14600",
       "time": 1786886502181,
       "name": "李玫，特工简",
       "text": "嗯？",
@@ -382777,7 +382647,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14606",
+      "id": "msg-14601",
       "time": 1786886503272,
       "name": "掌局者",
       "text": "这个是前五年的",
@@ -382803,7 +382673,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14607",
+      "id": "msg-14602",
       "time": 1786886509530,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "噢",
@@ -382829,7 +382699,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14608",
+      "id": "msg-14603",
       "time": 1786886509926,
       "name": "掌局者",
       "text": "后五年才是两个人",
@@ -382855,7 +382725,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14609",
+      "id": "msg-14604",
       "time": 1786886510511,
       "name": "李玫，特工简",
       "text": "哦！",
@@ -382881,7 +382751,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14610",
+      "id": "msg-14605",
       "time": 1786886420708,
       "name": "李玫，特工简",
       "text": "cc<=71 精神治疗",
@@ -382907,7 +382777,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14611",
+      "id": "msg-14606",
       "time": 1786886593929,
       "name": "李玫，特工简",
       "text": "1D6 ",
@@ -382933,7 +382803,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14612",
+      "id": "msg-14607",
       "time": 1786886601972,
       "name": "system",
       "text": "[ 赫里斯·埃马尔，特工约尔丹 ] SAN : 45 → 50",
@@ -382959,7 +382829,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14613",
+      "id": "msg-14608",
       "time": 1786886515389,
       "name": "李玫，特工简",
       "text": "好",
@@ -382985,7 +382855,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14614",
+      "id": "msg-14609",
       "time": 1786886522468,
       "name": "李玫，特工简",
       "text": "我看一下",
@@ -383011,7 +382881,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14615",
+      "id": "msg-14610",
       "time": 1786886534112,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "不过玫这个关系值抵消的话她是不是就要适应无力了",
@@ -383037,7 +382907,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14616",
+      "id": "msg-14611",
       "time": 1786886546509,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "之前就已经2了",
@@ -383063,7 +382933,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14617",
+      "id": "msg-14612",
       "time": 1786886596159,
       "name": "李玫，特工简",
       "text": "没有",
@@ -383089,7 +382959,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14618",
+      "id": "msg-14613",
       "time": 1786886608436,
       "name": "李玫，特工简",
       "text": "掌局者说第一幕结束累积的适应可以清",
@@ -383115,7 +382985,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14619",
+      "id": "msg-14614",
       "time": 1786886612227,
       "name": "李玫，特工简",
       "text": "是吧（？）",
@@ -383141,7 +383011,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14620",
+      "id": "msg-14615",
       "time": 1786886671306,
       "name": "李玫，特工简",
       "text": "卧槽忘记切了使用这个黑脸差分做精神治疗有点搞笑",
@@ -383167,7 +383037,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14621",
+      "id": "msg-14616",
       "time": 1786886677175,
       "name": "掌局者",
       "text": "可以清",
@@ -383193,7 +383063,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14622",
+      "id": "msg-14617",
       "time": 1786886721226,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我不行了",
@@ -383219,7 +383089,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14623",
+      "id": "msg-14618",
       "time": 1786886729871,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "我不行了",
@@ -383245,7 +383115,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14624",
+      "id": "msg-14619",
       "time": 1786886882396,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "是在打字吗",
@@ -383271,7 +383141,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14625",
+      "id": "msg-14620",
       "time": 1786886891838,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "噢噢显示了",
@@ -383297,7 +383167,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14626",
+      "id": "msg-14621",
       "time": 1786886923868,
       "name": "李玫，特工简",
       "text": "唉",
@@ -383323,7 +383193,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14627",
+      "id": "msg-14622",
       "time": 1786886940914,
       "name": "李玫，特工简",
       "text": "沉浸在pc同款的震撼中",
@@ -383349,7 +383219,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14628",
+      "id": "msg-14623",
       "time": 1786886962889,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "原来是要对绿色三角洲复仇吗",
@@ -383375,7 +383245,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14629",
+      "id": "msg-14624",
       "time": 1786886973509,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "绿三角坏事做尽啊",
@@ -383401,7 +383271,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14630",
+      "id": "msg-14625",
       "time": 1786886992816,
       "name": "李玫，特工简",
       "text": "怎么可能，肯定是接受了啊（？）",
@@ -383427,7 +383297,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14631",
+      "id": "msg-14626",
       "time": 1786886998857,
       "name": "李玫，特工简",
       "text": "这是能复仇的吗",
@@ -383453,7 +383323,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14632",
+      "id": "msg-14627",
       "time": 1786887034923,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "为什么不能？",
@@ -383479,7 +383349,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14633",
+      "id": "msg-14628",
       "time": 1786887043613,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "复仇就是一种自残行为",
@@ -383505,7 +383375,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14634",
+      "id": "msg-14629",
       "time": 1786887056080,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "和绿色三角洲做特工无异",
@@ -383531,7 +383401,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14635",
+      "id": "msg-14630",
       "time": 1786887073294,
       "name": "李玫，特工简",
       "text": "那你试试，队长",
@@ -383557,7 +383427,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14636",
+      "id": "msg-14631",
       "time": 1786887095909,
       "name": "李玫，特工简",
       "text": "队员或许是负责在你真把自己作死之前拉回来吗",
@@ -383583,7 +383453,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14637",
+      "id": "msg-14632",
       "time": 1786887104036,
       "name": "掌局者",
       "text": "2009年12月31日，赫里斯正在一次外州的绿色三角洲行动中，由于最近一段时间太忙，他很少和周围的人联络。想起今天是艾丹恩的生日后，他打开通讯软件发送了一条生日祝福。但几个小时后，他仍未得到回复。",
@@ -383609,7 +383479,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14638",
+      "id": "msg-14633",
       "time": 1786887118933,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "继续杀",
@@ -383635,7 +383505,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14639",
+      "id": "msg-14634",
       "time": 1786887193136,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我不行了",
@@ -383661,7 +383531,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14640",
+      "id": "msg-14635",
       "time": 1786887326814,
       "name": "李玫，特工简",
       "text": "卧槽还在杀",
@@ -383687,7 +383557,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14641",
+      "id": "msg-14636",
       "time": 1786887384771,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "追着杀",
@@ -383713,7 +383583,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14642",
+      "id": "msg-14637",
       "time": 1786887334937,
       "name": "掌局者",
       "text": "出于对方几年生日还在加班的前科，想到他可能同样正忙于工作（艾丹恩毕业后进入了一家电信公司），赫里斯并没有急着打电话，又过了一段时间——时间已经来到0点，现在是2010年1月1日，或许他应该再发一条新年祝福了。",
@@ -383739,7 +383609,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14643",
+      "id": "msg-14638",
       "time": 1786887369386,
       "name": "掌局者",
       "text": "但当他再次拿起手机时，发现聊天界面里多了很多未读消息——全部来自艾丹恩，发信日期覆盖了十二月下旬的多个日期。但他很确定自己昨天晚上才看过手机，当时这些消息并不存在。",
@@ -383765,7 +383635,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14644",
+      "id": "msg-14639",
       "time": 1786887484699,
       "name": "掌局者",
       "text": "最开始几条语气还算正常——艾丹恩说公司服务器最近有些奇怪，凌晨三点会自动运行一段代码，不是他写的，也不是他同事写的。日志里没有留下署名。程序不会影响日常运作，但每隔几天就会重复一次。他决定花时间追查一下。随着时间逐渐接近，他的语气越来越不对劲，他追查了几天，日志程序每天凌晨会自动清除运行记录，不留痕迹。到了后面，他只是在不断地重复一句话“它们在系统里”。",
@@ -383791,7 +383661,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14645",
+      "id": "msg-14640",
       "time": 1786887513926,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "。。。",
@@ -383817,7 +383687,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14646",
+      "id": "msg-14641",
       "time": 1786887515075,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "这不就那个",
@@ -383843,7 +383713,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14647",
+      "id": "msg-14642",
       "time": 1786887523652,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "是那个",
@@ -383869,7 +383739,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14648",
+      "id": "msg-14643",
       "time": 1786887532547,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "简直像现实被另一个现实覆盖了",
@@ -383895,7 +383765,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14649",
+      "id": "msg-14644",
       "time": 1786887711862,
       "name": "李玫，特工简",
       "text": "哇……",
@@ -383921,7 +383791,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14650",
+      "id": "msg-14645",
       "time": 1786887806643,
       "name": "掌局者",
       "text": "他很快询问了其他人，接着便发现包括莉迪亚在内，没有人能联系到艾丹恩，他失踪了，最后目击者是他的邻居，看到他12月31日出了家门后便查无音讯，那片区域未安装有监控，警方也没有任何线索。",
@@ -383947,7 +383817,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14651",
+      "id": "msg-14646",
       "time": 1786888058601,
       "name": "掌局者",
       "text": "赫里斯在电脑上搜寻着信息，并向艾丹恩的公司上级发去信息，但对方说艾丹恩已经离职了，大概在十二月中旬的时候。走得很突然，同事们问他去了哪家公司，他只说了一家没听过的公司，叫“系尔”。",
@@ -383973,7 +383843,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14652",
+      "id": "msg-14647",
       "time": 1786888062707,
       "name": "掌局者",
       "text": "就在他看到这条消息时，他的浏览器突然跳转到一个网址：DemonWeb101.com",
@@ -383999,7 +383869,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14653",
+      "id": "msg-14648",
       "time": 1786888129675,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "哇",
@@ -384025,7 +383895,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14654",
+      "id": "msg-14649",
       "time": 1786888144840,
       "name": "李玫，特工简",
       "text": "最初的那个",
@@ -384051,7 +383921,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14655",
+      "id": "msg-14650",
       "time": 1786888156024,
       "name": "李玫，特工简",
       "text": "这也能call back吗",
@@ -384077,7 +383947,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14656",
+      "id": "msg-14651",
       "time": 1786888159562,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "卧槽",
@@ -384103,7 +383973,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14657",
+      "id": "msg-14652",
       "time": 1786888208502,
       "name": "掌局者",
       "text": "而网站页面正好停留在魔神”系尔“的那一页。",
@@ -384129,7 +383999,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14658",
+      "id": "msg-14653",
       "time": 1786888292465,
       "name": "掌局者",
       "text": "他想起自己曾经浏览过这个网址——五年前，他们调查关于魔神“普尔森”的符号时，他曾点进过这个网站。",
@@ -384155,7 +384025,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14659",
+      "id": "msg-14654",
       "time": 1786888320856,
       "name": "掌局者",
       "text": "噢你们的适应无力和艰苦经历都可以加上了",
@@ -384181,7 +384051,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14660",
+      "id": "msg-14655",
       "time": 1786888352816,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "他这个失踪我要sc吗",
@@ -384207,7 +384077,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14661",
+      "id": "msg-14656",
       "time": 1786888366561,
       "name": "掌局者",
       "text": "就是-5",
@@ -384233,7 +384103,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14662",
+      "id": "msg-14657",
       "time": 1786888370369,
       "name": "掌局者",
       "text": "你的艰苦经历",
@@ -384259,7 +384129,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14663",
+      "id": "msg-14658",
       "time": 1786888376210,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我看看我用谁的关系值",
@@ -384285,7 +384155,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14664",
+      "id": "msg-14659",
       "time": 1786888378614,
       "name": "掌局者",
       "text": "噢我把工作改成绿色三角洲任务吧",
@@ -384311,7 +384181,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14665",
+      "id": "msg-14660",
       "time": 1786888380933,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "关系值能抵吗",
@@ -384337,7 +384207,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14666",
+      "id": "msg-14661",
       "time": 1786888383350,
       "name": "掌局者",
       "text": "相关一点",
@@ -384363,7 +384233,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14667",
+      "id": "msg-14662",
       "time": 1786888403494,
       "name": "掌局者",
       "text": "能",
@@ -384389,7 +384259,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14668",
+      "id": "msg-14663",
       "time": 1786888420829,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "玫的吧，就当心理学和她倾诉很多，肯定有不光彩的东西，觉得降了",
@@ -384415,7 +384285,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14669",
+      "id": "msg-14664",
       "time": 1786888415012,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "1D4",
@@ -384441,7 +384311,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14670",
+      "id": "msg-14665",
       "time": 1786888429839,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "1D4 ",
@@ -384467,7 +384337,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14671",
+      "id": "msg-14666",
       "time": 1786888435887,
       "name": "system",
       "text": "[ 约书亚·扎卡里，特工约拿 ] SAN : 46 → 45",
@@ -384493,7 +384363,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14672",
+      "id": "msg-14667",
       "time": 1786888438530,
       "name": "system",
       "text": "[ 约书亚·扎卡里，特工约拿 ] 李玫 : 8 → 4",
@@ -384519,7 +384389,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14673",
+      "id": "msg-14668",
       "time": 1786888465785,
       "name": "system",
       "text": "[ 赫里斯·埃马尔，特工约尔丹 ] 玫 : 7 → 4",
@@ -384545,7 +384415,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14674",
+      "id": "msg-14669",
       "time": 1786888475172,
       "name": "system",
       "text": "[ 赫里斯·埃马尔，特工约尔丹 ] SAN : 50 → 48",
@@ -384571,7 +384441,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14675",
+      "id": "msg-14670",
       "time": 1786888450087,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "玫的吧，对心理医生诉苦时崩溃了",
@@ -384597,7 +384467,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14676",
+      "id": "msg-14671",
       "time": 1786888454052,
       "name": "掌局者",
       "text": "然后精神分析吧",
@@ -384623,7 +384493,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14677",
+      "id": "msg-14672",
       "time": 1786888459378,
       "name": "掌局者",
       "text": "。然后再过玫的",
@@ -384649,7 +384519,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14678",
+      "id": "msg-14673",
       "time": 1786888464576,
       "name": "李玫，特工简",
       "text": "两个是吗",
@@ -384675,7 +384545,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14679",
+      "id": "msg-14674",
       "time": 1786888469911,
       "name": "掌局者",
       "text": "对",
@@ -384701,7 +384571,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14680",
+      "id": "msg-14675",
       "time": 1786888473962,
       "name": "李玫，特工简",
       "text": "那我等过完再加吧",
@@ -384727,7 +384597,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14681",
+      "id": "msg-14676",
       "time": 1786888477832,
       "name": "李玫，特工简",
       "text": "再扣",
@@ -384753,7 +384623,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14682",
+      "id": "msg-14677",
       "time": 1786888480037,
       "name": "掌局者",
       "text": "加什么",
@@ -384779,7 +384649,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14683",
+      "id": "msg-14678",
       "time": 1786888486159,
       "name": "李玫，特工简",
       "text": "cc<=71 精神治疗",
@@ -384805,7 +384675,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14684",
+      "id": "msg-14679",
       "time": 1786888490966,
       "name": "李玫，特工简",
       "text": "cc<=71 精神治疗",
@@ -384831,7 +384701,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14685",
+      "id": "msg-14680",
       "time": 1786888495506,
       "name": "李玫，特工简",
       "text": "？",
@@ -384857,7 +384727,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14686",
+      "id": "msg-14681",
       "time": 1786888496456,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "卧槽",
@@ -384883,7 +384753,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14687",
+      "id": "msg-14682",
       "time": 1786888498258,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "哇",
@@ -384909,7 +384779,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14688",
+      "id": "msg-14683",
       "time": 1786888502459,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "神医！！！",
@@ -384935,7 +384805,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14689",
+      "id": "msg-14684",
       "time": 1786888506027,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "治好了一个精神病",
@@ -384961,7 +384831,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14690",
+      "id": "msg-14685",
       "time": 1786888507566,
       "name": "李玫，特工简",
       "text": "治好一个精神病",
@@ -384987,7 +384857,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14691",
+      "id": "msg-14686",
       "time": 1786888511729,
       "name": "李玫，特工简",
       "text": "、。。。。。。",
@@ -385013,7 +384883,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14692",
+      "id": "msg-14687",
       "time": 1786888520951,
       "name": "李玫，特工简",
       "text": "治好谁的",
@@ -385039,7 +384909,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14693",
+      "id": "msg-14688",
       "time": 1786888531537,
       "name": "李玫，特工简",
       "text": "甚至还能加关系值我服了",
@@ -385065,7 +384935,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14694",
+      "id": "msg-14689",
       "time": 1786888569495,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我的san上限改好了",
@@ -385091,7 +384961,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14695",
+      "id": "msg-14690",
       "time": 1786888569496,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "要不约书亚吧",
@@ -385117,7 +384987,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14696",
+      "id": "msg-14691",
       "time": 1786888573770,
       "name": "李玫，特工简",
       "text": "哦不是",
@@ -385143,7 +385013,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14697",
+      "id": "msg-14692",
       "time": 1786888578293,
       "name": "李玫，特工简",
       "text": "好像要幸运来着",
@@ -385169,7 +385039,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14698",
+      "id": "msg-14693",
       "time": 1786888578697,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "他关系值还差很多满",
@@ -385195,7 +385065,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14699",
+      "id": "msg-14694",
       "time": 1786888583953,
       "name": "李玫，特工简",
       "text": "等下我看下",
@@ -385221,7 +385091,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14700",
+      "id": "msg-14695",
       "time": 1786888591158,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "找你就不用幸运了？",
@@ -385247,7 +385117,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14701",
+      "id": "msg-14696",
       "time": 1786888625252,
       "name": "李玫，特工简",
       "text": "我不确定，你看群里那个",
@@ -385273,7 +385143,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14702",
+      "id": "msg-14697",
       "time": 1786888625337,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "噢精神病要",
@@ -385299,7 +385169,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14703",
+      "id": "msg-14698",
       "time": 1786888636376,
       "name": "李玫，特工简",
       "text": "那我补过三个幸运吗？",
@@ -385325,7 +385195,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14704",
+      "id": "msg-14699",
       "time": 1786888670923,
       "name": "掌局者",
       "text": "？",
@@ -385351,7 +385221,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14705",
+      "id": "msg-14700",
       "time": 1786888674874,
       "name": "掌局者",
       "text": "噢可以啊",
@@ -385377,7 +385247,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14706",
+      "id": "msg-14701",
       "time": 1786888677039,
       "name": "掌局者",
       "text": "那你过吧",
@@ -385403,7 +385273,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14707",
+      "id": "msg-14702",
       "time": 1786888696165,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "约书亚的上限居然都要到了",
@@ -385429,7 +385299,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14708",
+      "id": "msg-14703",
       "time": 1786888700207,
       "name": "李玫，特工简",
       "text": "cc<=50 幸运",
@@ -385455,7 +385325,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14709",
+      "id": "msg-14704",
       "time": 1786888703654,
       "name": "李玫，特工简",
       "text": "cc<=50 幸运",
@@ -385481,7 +385351,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14710",
+      "id": "msg-14705",
       "time": 1786888707310,
       "name": "李玫，特工简",
       "text": "cc<=50 幸运",
@@ -385507,7 +385377,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14711",
+      "id": "msg-14706",
       "time": 1786888716215,
       "name": "李玫，特工简",
       "text": "没有那样的治愈精神病了",
@@ -385533,7 +385403,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14712",
+      "id": "msg-14707",
       "time": 1786888716931,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "牛牛",
@@ -385559,7 +385429,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14713",
+      "id": "msg-14708",
       "time": 1786888726343,
       "name": "李玫，特工简",
       "text": "1D6 ",
@@ -385585,7 +385455,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14714",
+      "id": "msg-14709",
       "time": 1786888747246,
       "name": "system",
       "text": "[ 约书亚·扎卡里，特工约拿 ] SAN : 45 → 50",
@@ -385611,7 +385481,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14715",
+      "id": "msg-14710",
       "time": 1786888759464,
       "name": "system",
       "text": "[ 赫里斯·埃马尔，特工约尔丹 ] SAN : 48 → 54",
@@ -385637,7 +385507,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14716",
+      "id": "msg-14711",
       "time": 1786888794264,
       "name": "system",
       "text": "[ 赫里斯·埃马尔，特工约尔丹 ] 莉迪亚 : 10 → 9",
@@ -385663,7 +385533,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14717",
+      "id": "msg-14712",
       "time": 1786888732173,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "因为最大SAN值降了",
@@ -385689,7 +385559,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14718",
+      "id": "msg-14713",
       "time": 1786888738647,
       "name": "李玫，特工简",
       "text": "那就 约书亚+5 赫里斯+6",
@@ -385715,7 +385585,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14719",
+      "id": "msg-14714",
       "time": 1786888740778,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "哇，刚刚好这个5",
@@ -385741,7 +385611,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14720",
+      "id": "msg-14715",
       "time": 1786888747746,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "神医啊",
@@ -385767,7 +385637,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14721",
+      "id": "msg-14716",
       "time": 1786888752477,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "拉满",
@@ -385793,7 +385663,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14722",
+      "id": "msg-14717",
       "time": 1786888755496,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "舒服",
@@ -385819,7 +385689,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14723",
+      "id": "msg-14718",
       "time": 1786888758734,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "谢谢神医！",
@@ -385845,7 +385715,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14724",
+      "id": "msg-14719",
       "time": 1786888774898,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "看起来好健康好欣慰",
@@ -385871,7 +385741,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14725",
+      "id": "msg-14720",
       "time": 1786888801131,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我的崩溃点变40吗",
@@ -385897,7 +385767,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14726",
+      "id": "msg-14721",
       "time": 1786888808512,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "还是继承之前的第二个崩溃点",
@@ -385923,7 +385793,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14727",
+      "id": "msg-14722",
       "time": 1786888839619,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "跟你们的关系值可以满了",
@@ -385949,7 +385819,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14728",
+      "id": "msg-14723",
       "time": 1786888899180,
       "name": "掌局者",
       "text": "你的崩溃点变40",
@@ -385975,7 +385845,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14729",
+      "id": "msg-14724",
       "time": 1786888911129,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "呃啊",
@@ -386001,7 +385871,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14730",
+      "id": "msg-14725",
       "time": 1786888922313,
       "name": "李玫，特工简",
       "text": "我等掌局者杀完再改数值",
@@ -386027,7 +385897,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14731",
+      "id": "msg-14726",
       "time": 1786888940321,
       "name": "李玫，特工简",
       "text": "话说玫后五年的私人规划就用在治疗上了是吗",
@@ -386053,7 +385923,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14732",
+      "id": "msg-14727",
       "time": 1786889202167,
       "name": "掌局者",
       "text": "2015年2月22日，李玫收到消息，诺琳·K·琼斯去世了。那天下午，艾丽西亚放学回家后发现了诺琳倒在浴缸边，手臂搭在浴缸外缘，手腕处有几道长长的切口，浴缸里的水已经被血染成深红色。浴室的镜子碎了一地，沾着血点散落在地面，有几片上还留着清晰的指纹和干涸的血痕。",
@@ -386079,7 +385949,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14733",
+      "id": "msg-14728",
       "time": 1786889244583,
       "name": "掌局者",
       "text": "警方在初步勘查后认为诺琳用镜子的碎片切开了自己的血管，然后躺下或滑倒，侧身靠在浴缸边，直到失血耗尽。法医报告确认死因是失血过多，没有发现防御性伤口或药物残留。",
@@ -386105,7 +385975,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14734",
+      "id": "msg-14729",
       "time": 1786889256832,
       "name": "李玫，特工简",
       "text": "😭。😭😭😭😭😭😭",
@@ -386131,7 +386001,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14735",
+      "id": "msg-14730",
       "time": 1786889342607,
       "name": "李玫，特工简",
       "text": "不是怎么还是自杀（看起来是自杀）",
@@ -386157,7 +386027,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14736",
+      "id": "msg-14731",
       "time": 1786889518102,
       "name": "掌局者",
       "text": "艾丽西亚是第一个发现现场的人。她在报警后等待的过程中没有离开公寓，李玫并不知道诺琳是因何而死，也不清楚艾丽西亚当时产生了什么样的情绪，因为此刻的她不在纽约，正处于一次异常艰难的任务之中。",
@@ -386183,137 +386053,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14737",
-      "time": 1786889535554,
-      "name": "约书亚·扎卡里，特工约拿",
-      "text": "雾草",
-      "color": "#7e5bfa",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-14738",
-      "time": 1786889543247,
-      "name": "李玫，特工简",
-      "text": "。",
-      "color": "#e83929",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/MbwENwaVV6hogAhTbk3aWOnFUwy2/files/725b78b1884130a3019e572f56cfca3193ec4d64384c8920f28be09db0a8d2f7?t=1780770388901",
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-14739",
-      "time": 1786889545641,
-      "name": "约书亚·扎卡里，特工约拿",
-      "text": "最无助的时候第二亲密的人不在",
-      "color": "#7e5bfa",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-14740",
-      "time": 1786889574772,
-      "name": "赫里斯·埃马尔，特工约尔丹",
-      "text": "。。。",
-      "color": "#ffc107",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/gZf3RgiWiIgyKe5KyfnYV5HPdex2/files/044bb4dd02b6fe158143ba909aeae768d37480555ea0ad6f946e6196c0e238fe?t=1780754007181",
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-14741",
-      "time": 1786889588836,
-      "name": "赫里斯·埃马尔，特工约尔丹",
-      "text": "太经典了",
-      "color": "#ffc107",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/gZf3RgiWiIgyKe5KyfnYV5HPdex2/files/044bb4dd02b6fe158143ba909aeae768d37480555ea0ad6f946e6196c0e238fe?t=1780754007181",
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-14742",
+      "id": "msg-14732",
       "time": 1786889681722,
       "name": "掌局者",
       "text": "等李玫结束任务后，诺琳的葬礼也已经在一周前举行完毕了，几天里艾丽西亚处理完了所有的后续事务，又在之后搬离了纽约，没有留下具体的地址或联系方式。有人说她去了西海岸，也有人说只是换了个其他的城市重新开始，没有人知道她的去向。",
@@ -386339,7 +386079,137 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14743",
+      "id": "msg-14733",
+      "time": 1786889535554,
+      "name": "约书亚·扎卡里，特工约拿",
+      "text": "雾草",
+      "color": "#7e5bfa",
+      "channel": "闲聊",
+      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-14734",
+      "time": 1786889543247,
+      "name": "李玫，特工简",
+      "text": "。",
+      "color": "#e83929",
+      "channel": "闲聊",
+      "icon": "https://storage.ccfolia-cdn.net/users/MbwENwaVV6hogAhTbk3aWOnFUwy2/files/725b78b1884130a3019e572f56cfca3193ec4d64384c8920f28be09db0a8d2f7?t=1780770388901",
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-14735",
+      "time": 1786889545641,
+      "name": "约书亚·扎卡里，特工约拿",
+      "text": "最无助的时候第二亲密的人不在",
+      "color": "#7e5bfa",
+      "channel": "闲聊",
+      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-14736",
+      "time": 1786889574772,
+      "name": "赫里斯·埃马尔，特工约尔丹",
+      "text": "。。。",
+      "color": "#ffc107",
+      "channel": "闲聊",
+      "icon": "https://storage.ccfolia-cdn.net/users/gZf3RgiWiIgyKe5KyfnYV5HPdex2/files/044bb4dd02b6fe158143ba909aeae768d37480555ea0ad6f946e6196c0e238fe?t=1780754007181",
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-14737",
+      "time": 1786889588836,
+      "name": "赫里斯·埃马尔，特工约尔丹",
+      "text": "太经典了",
+      "color": "#ffc107",
+      "channel": "闲聊",
+      "icon": "https://storage.ccfolia-cdn.net/users/gZf3RgiWiIgyKe5KyfnYV5HPdex2/files/044bb4dd02b6fe158143ba909aeae768d37480555ea0ad6f946e6196c0e238fe?t=1780754007181",
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-14738",
       "time": 1786889692594,
       "name": "掌局者",
       "text": "好了结束了",
@@ -386365,7 +386235,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14744",
+      "id": "msg-14739",
       "time": 1786889706671,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "辛苦了！",
@@ -386391,7 +386261,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14745",
+      "id": "msg-14740",
       "time": 1786889711788,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "这个幕间这么长",
@@ -386417,7 +386287,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14746",
+      "id": "msg-14741",
       "time": 1786889714611,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "重要关系支离破碎了",
@@ -386443,7 +386313,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14747",
+      "id": "msg-14742",
       "time": 1786889719885,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "然后全是刀子",
@@ -386469,7 +386339,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14748",
+      "id": "msg-14743",
       "time": 1786889726761,
       "name": "掌局者",
       "text": "还是比较偏框架",
@@ -386495,7 +386365,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14749",
+      "id": "msg-14744",
       "time": 1786889734113,
       "name": "掌局者",
       "text": "如果想研究细节可以问我",
@@ -386521,7 +386391,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14750",
+      "id": "msg-14745",
       "time": 1786889741783,
       "name": "李玫，特工简",
       "text": "玫好像可以喜提精神病了",
@@ -386547,7 +386417,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14751",
+      "id": "msg-14746",
       "time": 1786889747768,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我的天呐下了6小时的刀子",
@@ -386573,7 +386443,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14752",
+      "id": "msg-14747",
       "time": 1786889758725,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "天啊",
@@ -386599,111 +386469,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14753",
-      "time": 1786889760731,
-      "name": "约书亚·扎卡里，特工约拿",
-      "text": "辛苦了！",
-      "color": "#7e5bfa",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-14754",
-      "time": 1786889774990,
-      "name": "赫里斯·埃马尔，特工约尔丹",
-      "text": "辛苦啦",
-      "color": "#ffc107",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/gZf3RgiWiIgyKe5KyfnYV5HPdex2/files/044bb4dd02b6fe158143ba909aeae768d37480555ea0ad6f946e6196c0e238fe?t=1780754007181",
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-14755",
-      "time": 1786889844935,
-      "name": "李玫，特工简",
-      "text": "我思考一下要不要拿你俩谁的抵一下艰苦经历的",
-      "color": "#e83929",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/MbwENwaVV6hogAhTbk3aWOnFUwy2/files/725b78b1884130a3019e572f56cfca3193ec4d64384c8920f28be09db0a8d2f7?t=1780770388901",
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-14756",
-      "time": 1786889847753,
-      "name": "李玫，特工简",
-      "text": "能抵吗",
-      "color": "#e83929",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/MbwENwaVV6hogAhTbk3aWOnFUwy2/files/725b78b1884130a3019e572f56cfca3193ec4d64384c8920f28be09db0a8d2f7?t=1780770388901",
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "to": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
-    },
-    {
-      "id": "msg-14757",
+      "id": "msg-14748",
       "time": 1786889854382,
       "name": "system",
       "text": "[ 李玫，特工简 ] 约书亚 : 13 → 14",
@@ -386729,7 +386495,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14758",
+      "id": "msg-14749",
       "time": 1786889854730,
       "name": "system",
       "text": "[ 李玫，特工简 ] 赫里斯 : 13 → 14",
@@ -386755,7 +386521,59 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14759",
+      "id": "msg-14750",
+      "time": 1786889844935,
+      "name": "李玫，特工简",
+      "text": "我思考一下要不要拿你俩谁的抵一下艰苦经历的",
+      "color": "#e83929",
+      "channel": "闲聊",
+      "icon": "https://storage.ccfolia-cdn.net/users/MbwENwaVV6hogAhTbk3aWOnFUwy2/files/725b78b1884130a3019e572f56cfca3193ec4d64384c8920f28be09db0a8d2f7?t=1780770388901",
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-14751",
+      "time": 1786889847753,
+      "name": "李玫，特工简",
+      "text": "能抵吗",
+      "color": "#e83929",
+      "channel": "闲聊",
+      "icon": "https://storage.ccfolia-cdn.net/users/MbwENwaVV6hogAhTbk3aWOnFUwy2/files/725b78b1884130a3019e572f56cfca3193ec4d64384c8920f28be09db0a8d2f7?t=1780770388901",
+      "dice": null,
+      "extend": null,
+      "messageImage": null,
+      "to": null,
+      "isChapter": false,
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
+    },
+    {
+      "id": "msg-14752",
       "time": 1786889861183,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "可以的",
@@ -386781,7 +386599,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14760",
+      "id": "msg-14753",
       "time": 1786889863954,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "能",
@@ -386807,7 +386625,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14761",
+      "id": "msg-14754",
       "time": 1786889871268,
       "name": "掌局者",
       "text": "可以\n",
@@ -386833,7 +386651,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14762",
+      "id": "msg-14755",
       "time": 1786889889279,
       "name": "李玫，特工简",
       "text": "但感觉很大概率还是要精神病",
@@ -386859,7 +386677,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14763",
+      "id": "msg-14756",
       "time": 1786889896319,
       "name": "李玫，特工简",
       "text": "D4",
@@ -386885,7 +386703,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14764",
+      "id": "msg-14757",
       "time": 1786889913659,
       "name": "system",
       "text": "[ 李玫，特工简 ] SAN : 66 → 68",
@@ -386911,7 +386729,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14765",
+      "id": "msg-14758",
       "time": 1786889922581,
       "name": "system",
       "text": "[ 李玫，特工简 ] 约书亚 : 14 → 12",
@@ -386937,18 +386755,16 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14766",
-      "time": 1786901223545,
-      "name": "李玫，特工简",
-      "text": "cc<=68 理智",
+      "id": "msg-14759",
+      "name": "掌局者",
+      "text": "在那之后李玫梦到了诺琳家的客厅，客厅里的陈设和她遥远的记忆中一样，沙发、落地灯、书架，但所有事物、整个客厅是完全镜像翻转过的，而窗外的景象是一片永无止境，向外不断衍生的无尽重复的客厅。她正和年幼的艾丽西亚坐在柔软的沙发上，如同多年前数个闲暇的周末午后那样，一起从柜子中随机抽出一张碟片来观看，而面前的电视机播放着一部矫揉造作的青春电影，它的女主角是个多愁善感的花季少女，正神色忧伤地自言自语，“我如何确定，我是否只是他的一场梦呢？”",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "https://storage.ccfolia-cdn.net/users/MbwENwaVV6hogAhTbk3aWOnFUwy2/files/725b78b1884130a3019e572f56cfca3193ec4d64384c8920f28be09db0a8d2f7?t=1780770388901",
-      "dice": "(1D100<=68) 獎勵・懲罰骰[0] ＞ 27 ＞ 27 ＞ 困難成功",
+      "icon": "",
+      "dice": null,
       "extend": null,
-      "messageImage": null,
       "to": null,
-      "isChapter": false,
+      "time": "2026-08-31T04:27:06.913Z",
       "nameUseImage": false,
       "nameBackground": null,
       "nameOpacity": 0.85,
@@ -386960,19 +386776,195 @@
       "bubbleOpacity": 0.85,
       "bubbleImage": "",
       "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
+      "bubbleImageOpacity": 1,
+      "messageImage": null
+    },
+    {
+      "id": "msg-14760",
+      "name": "掌局者",
+      "text": "艾丽西亚却不怎么理解女主角的复杂心理，看着电视里的人流下眼泪，她嘟囔着说“如果你只是在别人的梦里，你就不可能真的哭呀？“",
+      "color": "#e83929",
+      "channel": "主频道",
+      "icon": "",
+      "dice": null,
+      "extend": null,
+      "to": null,
+      "time": "2026-08-31T04:27:57.806Z",
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1,
+      "messageImage": null
+    },
+    {
+      "id": "msg-14761",
+      "name": "掌局者",
+      "text": "她们很快看完了这部烂俗的电影，最后还附上了女主角对自己的“成长”感想，艾丽西亚虽然对电影没什么好评价，但也不由得联想，并问起李玫”我之后也要成长变成大人吗？”，但还未等李玫回答，她又像是想到了什么，自己回答了自己，“对了，我知道——一个人无法阻止自己变老。”",
+      "color": "#e83929",
+      "channel": "主频道",
+      "icon": "",
+      "dice": null,
+      "extend": null,
+      "to": null,
+      "time": "2026-08-31T04:28:13.647Z",
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1,
+      "messageImage": null
+    },
+    {
+      "id": "msg-14762",
+      "name": "掌局者",
+      "text": "而梦境就这样突然融化了，变为一片波澜不惊的水面，看不见一丝水纹，仿佛她们只是出于一面巨大镜子的上方。",
+      "color": "#e83929",
+      "channel": "主频道",
+      "icon": "",
+      "dice": null,
+      "extend": null,
+      "to": null,
+      "time": "2026-08-31T04:28:38.010Z",
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1,
+      "messageImage": null
+    },
+    {
+      "id": "msg-14763",
+      "name": "掌局者",
+      "text": "但她们正坐在一艘随风漂流的小船上，或许这证明了这里确实是一方水域。船桨搁置在船边，没有人动，而艾丽西亚眨眼睛已经成了二十多岁的样貌。",
+      "color": "#e83929",
+      "channel": "主频道",
+      "icon": "",
+      "dice": null,
+      "extend": null,
+      "to": null,
+      "time": "2026-08-31T04:30:03.309Z",
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1,
+      "messageImage": null
+    },
+    {
+      "id": "msg-14764",
+      "name": "掌局者",
+      "text": "她的手里正抱着一只带着蓝纹的猫面具，李玫询问她，这是她的面具吗，她只摇头，说这是有人递给她的。",
+      "color": "#e83929",
+      "channel": "主频道",
+      "icon": "",
+      "dice": null,
+      "extend": null,
+      "to": null,
+      "time": "2026-08-31T04:30:18.761Z",
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1,
+      "messageImage": null
+    },
+    {
+      "id": "msg-14765",
+      "name": "掌局者",
+      "text": "随后她弯下腰，看向水面，以一种奇怪的语调自言自语着，如同在朗诵一首诗歌，“镜子如此奇妙，有多少人是从它身上获得了自我的认同感呢？即使它是一个外部的、虚幻的意象，但人们仍能把它当成自己，而那些真实的感受，笨拙的、不协调的、控制不了的部分都能被如此完美的影像所覆盖。”",
+      "color": "#e83929",
+      "channel": "主频道",
+      "icon": "",
+      "dice": null,
+      "extend": null,
+      "to": null,
+      "time": "2026-08-31T04:30:43.972Z",
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1,
+      "messageImage": null
+    },
+    {
+      "id": "msg-14766",
+      "name": "掌局者",
+      "text": "伴随着艾丽西亚的话语，李玫的视线也不由得被这样的水面所吸引，然而在她看到的水面之下，不是自己的镜像，而是一个淡色的模糊人影——诺琳。",
+      "color": "#e83929",
+      "channel": "主频道",
+      "icon": "",
+      "dice": null,
+      "extend": null,
+      "to": null,
+      "time": "2026-08-31T04:30:48.105Z",
+      "nameUseImage": false,
+      "nameBackground": null,
+      "nameOpacity": 0.85,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleUseImage": false,
+      "bubbleColor": null,
+      "bubbleOpacity": 0.85,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1,
+      "messageImage": null
     },
     {
       "id": "msg-14767",
       "name": "掌局者",
-      "text": "在那之后李玫梦到了诺琳家的客厅，客厅里的陈设和她遥远的记忆中一样，沙发、落地灯、书架，但所有事物、整个客厅是完全镜像翻转过的，而窗外的景象是一片永无止境，向外不断衍生的无尽重复的客厅。她正和年幼的艾丽西亚坐在柔软的沙发上，如同多年前数个闲暇的周末午后那样，一起从柜子中随机抽出一张碟片来观看，而面前的电视机播放着一部矫揉造作的青春电影，它的女主角是个多愁善感的花季少女，正神色忧伤地自言自语，“我如何确定，我是否只是他的一场梦呢？”",
-      "color": "#e0e0e0",
+      "text": "她闭着眼，姿态松散，像在水中找到了某种宁和与美好的体验，随着某种律动轻轻晃动着，成为这静止的水面下流动着的事物，又像来自水底深处随时会消散的一缕暗影。",
+      "color": "#e83929",
       "channel": "主频道",
-      "icon": null,
+      "icon": "",
       "dice": null,
       "extend": null,
       "to": null,
-      "time": "2026-08-18T01:35:34.858Z",
+      "time": "2026-08-31T04:30:57.318Z",
       "nameUseImage": false,
       "nameBackground": null,
       "nameOpacity": 0.85,
@@ -386985,20 +386977,19 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
+      "messageImage": null
     },
     {
       "id": "msg-14768",
       "name": "掌局者",
-      "text": "艾丽西亚却不怎么理解女主角的复杂心理，看着电视里的人流下眼泪，她嘟囔着说“如果你只是在别人的梦里，你就不可能真的哭呀？“",
-      "color": "#e0e0e0",
+      "text": "而艾丽西亚仍在说着，“可那镜子中能实现的统一自我，只是对脑海中破碎状态的自己的一次想象性重组，真实何在？”",
+      "color": "#e83929",
       "channel": "主频道",
-      "icon": null,
+      "icon": "",
       "dice": null,
       "extend": null,
       "to": null,
-      "time": "2026-08-18T01:37:09.256Z",
+      "time": "2026-08-31T04:31:13.940Z",
       "nameUseImage": false,
       "nameBackground": null,
       "nameOpacity": 0.85,
@@ -387011,20 +387002,19 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
+      "messageImage": null
     },
     {
       "id": "msg-14769",
       "name": "掌局者",
-      "text": "她们很快看完了这部烂俗的电影，最后还附上了女主角对自己的”成长“感想，艾丽西亚虽然对电影没什么好评价，但也不由得联想，并问起李玫”我之后也要成长变成大人吗？”，但还未等李玫回答，她又像是想到了什么，自己回答了自己，“对了，我知道——一个人无法阻止自己变老。”",
-      "color": "#e0e0e0",
+      "text": "一个人如此回答道：“不，不。我们并未赋予我们自身，”“那眼瞳代行了赋予之能。”“未经我们同意，就将那角色加诸我等；”“那是如此残酷，令我等如今求死不能。”",
+      "color": "#e83929",
       "channel": "主频道",
-      "icon": null,
+      "icon": "",
       "dice": null,
       "extend": null,
       "to": null,
-      "time": "2026-08-18T01:37:24.149Z",
+      "time": "2026-08-31T04:31:17.821Z",
       "nameUseImage": false,
       "nameBackground": null,
       "nameOpacity": 0.85,
@@ -387037,20 +387027,19 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
+      "messageImage": null
     },
     {
       "id": "msg-14770",
       "name": "掌局者",
-      "text": "而梦境就这样突然融化了，变为一片波澜不惊的水面，看不见一丝水纹，仿佛她们只是出于一面巨大镜子的上方。",
-      "color": "#e0e0e0",
+      "text": "醒来后，李玫很快意识到梦中艾丽西亚在船上说的大部分话应当与著名精神分析家、哲学家雅克·拉康的“镜像阶段”理论有关。此理论在拉康探讨了自我的形成问题。自我的形成开始于婴儿的笑。心理学与观察发现，大约6至18个月的婴儿，经常会冲着镜中自身的像发笑，拉康称之婴儿对“自身像快乐的攫取”。它表达了婴儿这么一种期待：尽管在身体上仍然处于一种机体不协调、无法自如活动、从而需要旁人照料的状态，但是他却在想象的层面上，通过与镜像的认同，期待着一种对身体整体性的自如控制。",
+      "color": "#e83929",
       "channel": "主频道",
-      "icon": null,
+      "icon": "",
       "dice": null,
       "extend": null,
       "to": null,
-      "time": "2026-08-18T01:37:35.022Z",
+      "time": "2026-08-31T04:31:47.756Z",
       "nameUseImage": false,
       "nameBackground": null,
       "nameOpacity": 0.85,
@@ -387063,20 +387052,19 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
+      "messageImage": null
     },
     {
       "id": "msg-14771",
       "name": "掌局者",
-      "text": "但她们正坐在一艘随风漂流的小船上，或许这证明了这里确实是一方水域。船桨搁置在船边，没有人动，而艾丽西亚眨眼睛已经成了二十多岁的样貌。",
-      "color": "#e0e0e0",
+      "text": "此理论给心理学的自我认同带来了新的思考角度，即自我从诞生起就是想象的产物，并非内在的、坚实的实体，而是通过外部形象建构出来的形象，自我的本质就是异化，人从一开始就把不是自己的东西认作了自己。\n",
+      "color": "#e83929",
       "channel": "主频道",
-      "icon": null,
+      "icon": "",
       "dice": null,
       "extend": null,
       "to": null,
-      "time": "2026-08-18T01:37:44.787Z",
+      "time": "2026-08-31T04:32:04.237Z",
       "nameUseImage": false,
       "nameBackground": null,
       "nameOpacity": 0.85,
@@ -387089,20 +387077,19 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
+      "messageImage": null
     },
     {
       "id": "msg-14772",
       "name": "掌局者",
-      "text": "她的手里正抱着一只带着蓝纹的猫面具，李玫询问她，这是她的面具吗，她只摇头，说这是有人递给她的。",
-      "color": "#e0e0e0",
+      "text": "她不知为何还想起了一件事，05年的夜楼之中从未出现过窗户。",
+      "color": "#e83929",
       "channel": "主频道",
-      "icon": null,
+      "icon": "",
       "dice": null,
       "extend": null,
       "to": null,
-      "time": "2026-08-18T01:37:55.963Z",
+      "time": "2026-08-31T04:32:23.807Z",
       "nameUseImage": false,
       "nameBackground": null,
       "nameOpacity": 0.85,
@@ -387115,141 +387102,10 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
+      "messageImage": null
     },
     {
       "id": "msg-14773",
-      "name": "掌局者",
-      "text": "随后她弯下腰，看向水面，以一种奇怪的语调自言自语着，如同在朗诵一首诗歌，“镜子如此奇妙，有多少人是从它身上获得了自我的认同感呢？即使它是一个外部的、虚幻的意象，但人们仍能把它当成自己，而那些真实的感受，笨拙的、不协调的、控制不了的部分都能被如此完美的影像所覆盖。”",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-18T01:38:07.965Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14774",
-      "name": "掌局者",
-      "text": "伴随着艾丽西亚的话语，李玫的视线也不由得被这样的水面所吸引，然而在她看到的水面之下，不是自己的镜像，而是一个淡色的模糊人影——诺琳。",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-18T01:38:51.858Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14775",
-      "name": "掌局者",
-      "text": "她闭着眼，姿态松散，像在水中找到了某种宁和与美好的体验，随着某种律动轻轻晃动着，成为这静止的水面下流动着的事物，又像来自水底深处随时会消散的一缕暗影。",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-18T01:39:01.957Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14776",
-      "name": "掌局者",
-      "text": "而艾丽西亚仍在说着，“可那镜子中能实现的统一自我，只是对脑海中破碎状态的自己的一次想象性重组，真实何在？”",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-18T01:39:12.503Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14777",
-      "name": "掌局者",
-      "text": "一个人如此回答道：“不，不。我们并未赋予我们自身，”“那眼瞳代行了赋予之能。”“未经我们同意，就将那角色加诸我等；”“那是如此残酷，令我等如今求死不能。”",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "dice": null,
-      "extend": null,
-      "to": null,
-      "time": "2026-08-18T01:39:23.475Z",
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "messageImage": null,
-      "isChapter": false
-    },
-    {
-      "id": "msg-14778",
       "time": 1786889900449,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "已经归零的重要关系还继续留在面板上吗",
@@ -387275,7 +387131,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14779",
+      "id": "msg-14774",
       "time": 1786889905601,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "。刚好",
@@ -387301,7 +387157,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14780",
+      "id": "msg-14775",
       "time": 1786889906347,
       "name": "李玫，特工简",
       "text": "刚刚好",
@@ -387327,7 +387183,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14781",
+      "id": "msg-14776",
       "time": 1786889912689,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "刚刚好",
@@ -387353,7 +387209,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14782",
+      "id": "msg-14777",
       "time": 1786889928599,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "玫的后五年就是找人治疗自己吗",
@@ -387379,7 +387235,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14783",
+      "id": "msg-14778",
       "time": 1786889949352,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "约书亚现在看起来竟然是最健康的",
@@ -387405,7 +387261,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14784",
+      "id": "msg-14779",
       "time": 1786889983684,
       "name": "李玫，特工简",
       "text": "玫还有后五年的行动轮吗",
@@ -387431,7 +387287,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14785",
+      "id": "msg-14780",
       "time": 1786889986035,
       "name": "李玫，特工简",
       "text": "应该没了",
@@ -387457,7 +387313,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14786",
+      "id": "msg-14781",
       "time": 1786890003993,
       "name": "掌局者",
       "text": "没了",
@@ -387483,7 +387339,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14787",
+      "id": "msg-14782",
       "time": 1786890019968,
       "name": "李玫，特工简",
       "text": "那就等待精神病降临",
@@ -387509,7 +387365,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14788",
+      "id": "msg-14783",
       "time": 1786890026549,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "玫怎么一下子掉了3个重要关系",
@@ -387535,7 +387391,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14789",
+      "id": "msg-14784",
       "time": 1786890034883,
       "name": "李玫，特工简",
       "text": "顺便划掉爱的那条",
@@ -387561,7 +387417,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14790",
+      "id": "msg-14785",
       "time": 1786890036511,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "精神病降临你手心",
@@ -387587,7 +387443,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14791",
+      "id": "msg-14786",
       "time": 1786890043609,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "精神病降临你手心",
@@ -387613,7 +387469,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14792",
+      "id": "msg-14787",
       "time": 1786890046240,
       "name": "李玫，特工简",
       "text": "诺琳是早就掉的",
@@ -387639,7 +387495,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14793",
+      "id": "msg-14788",
       "time": 1786890050300,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "噢噢噢",
@@ -387665,7 +387521,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14794",
+      "id": "msg-14789",
       "time": 1786890053818,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "延迟是吧",
@@ -387691,7 +387547,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14795",
+      "id": "msg-14790",
       "time": 1786890059753,
       "name": "掌局者",
       "text": "哦你加精神病了吗",
@@ -387717,7 +387573,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14796",
+      "id": "msg-14791",
       "time": 1786890066671,
       "name": "李玫，特工简",
       "text": "之前是分手了，这次死亡掉的是艾丽西亚的",
@@ -387743,7 +387599,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14797",
+      "id": "msg-14792",
       "time": 1786890070266,
       "name": "李玫，特工简",
       "text": "因为联系不上了",
@@ -387769,7 +387625,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14798",
+      "id": "msg-14793",
       "time": 1786890072534,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "OK",
@@ -387795,7 +387651,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14799",
+      "id": "msg-14794",
       "time": 1786890075340,
       "name": "掌局者",
       "text": "那你可能还有梦环节",
@@ -387821,7 +387677,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14800",
+      "id": "msg-14795",
       "time": 1786890078938,
       "name": "李玫，特工简",
       "text": "哇",
@@ -387847,7 +387703,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14801",
+      "id": "msg-14796",
       "time": 1786890079886,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "哇哦",
@@ -387873,7 +387729,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14802",
+      "id": "msg-14797",
       "time": 1786890081217,
       "name": "掌局者",
       "text": "但之后再说",
@@ -387899,7 +387755,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14803",
+      "id": "msg-14798",
       "time": 1786890084714,
       "name": "李玫，特工简",
       "text": "好的",
@@ -387925,7 +387781,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14804",
+      "id": "msg-14799",
       "time": 1786890089707,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "哇",
@@ -387951,7 +387807,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14805",
+      "id": "msg-14800",
       "time": 1786890092956,
       "name": "李玫，特工简",
       "text": "刚好到崩溃点了",
@@ -387977,7 +387833,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14806",
+      "id": "msg-14801",
       "time": 1786890173175,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "我适应无力栏怎么处理",
@@ -388003,7 +387859,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14807",
+      "id": "msg-14802",
       "time": 1786890173393,
       "name": "李玫，特工简",
       "text": "已经没了的重要关系可以拖到下面",
@@ -388029,7 +387885,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14808",
+      "id": "msg-14803",
       "time": 1786890178321,
       "name": "李玫，特工简",
       "text": "保留的话",
@@ -388055,7 +387911,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14809",
+      "id": "msg-14804",
       "time": 1786890189013,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "直接删除吗",
@@ -388081,7 +387937,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14810",
+      "id": "msg-14805",
       "time": 1786890200357,
       "name": "李玫，特工简",
       "text": "好像可以",
@@ -388107,7 +387963,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14811",
+      "id": "msg-14806",
       "time": 1786890210880,
       "name": "赫里斯·埃马尔，特工约尔丹",
       "text": "我们第一幕结束都算适应无力清零了吗",
@@ -388133,7 +387989,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14812",
+      "id": "msg-14807",
       "time": 1786890230061,
       "name": "李玫，特工简",
       "text": "第一幕的清了，幕间的不知道还能不能清",
@@ -388159,7 +388015,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14813",
+      "id": "msg-14808",
       "time": 1786890253935,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "把适应无力改成了父母",
@@ -388185,7 +388041,7 @@
       "bubbleImageOpacity": 1
     },
     {
-      "id": "msg-14814",
+      "id": "msg-14809",
       "time": 1786890255386,
       "name": "约书亚·扎卡里，特工约拿",
       "text": "嗯",
@@ -388518,8 +388374,8 @@
       "name": "幕间",
       "position": 14069,
       "id": "msg-14069",
-      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/111331fe04f749a56da705b96387795f07281c2fd32c99ae2108244441543243?t=1786866704270",
-      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/4ca220388decf2f22c3013b0afa5974a8ef7cad64dd81834855622dfed2f8337?t=1786866549728"
+      "backgroundImage": "",
+      "rightImage": ""
     }
   ],
   "fontSettings": {
@@ -389067,21 +388923,6 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1
-    },
-    "赫里斯·埃马尔，特工约尔丹": {
-      "nameColor": "#ffc107",
-      "nameUseImage": false,
-      "nameBackground": "#ffffff",
-      "nameOpacity": 0,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": "#7a4d00",
-      "bubbleOpacity": 0.35,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1
     }
   },
   "globalChannelSettings": {
@@ -389121,8 +388962,8 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-08-18T10:20:45.829Z",
-    "totalMessages": 14814,
+    "exportedAt": "2026-08-31T04:33:41.315Z",
+    "totalMessages": 14809,
     "version": "7.0",
     "features": [
       "image-backgrounds",
