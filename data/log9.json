@@ -126484,7 +126484,7 @@
       "id": 5251,
       "time": 1789226850843,
       "name": "西格·范奥尔森",
-      "text": "和同伴们汇合，拿出那份《魔鬼拟像》手稿，看着上面的拉丁语文字开始念诵：“上面事情的是这样的……”",
+      "text": "和同伴们汇合，拿出那份《魔鬼拟像》手稿，看着上面的拉丁语文字开始念诵：“上面的事情是这样的……”",
       "color": "#00bcd4",
       "channel": "主频道",
       "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/f7e9f751feab623e312f5455afaee9a7d96a7644b02b75d06f0d55fc24e996da?t=1779617482903",
@@ -128610,7 +128610,7 @@
         "shadowSize": "1px 1px 2px"
       },
       {
-        "color": "#7b7882",
+        "color": "#545454",
         "shadowColor": "#000000",
         "shadowSize": "1px 1px 2px"
       },
@@ -128632,8 +128632,8 @@
       "opacity": 0.6
     },
     "theme": {
-      "lightColor": "#d9e6f2",
-      "darkColor": "#223262"
+      "lightColor": "#122063",
+      "darkColor": "#873c1c"
     },
     "rightFloatingImage": ""
   },
@@ -129347,7 +129347,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-09-13T10:22:12.108Z",
+    "exportedAt": "2026-09-13T10:31:30.652Z",
     "totalMessages": 4946,
     "version": "7.0",
     "features": [
