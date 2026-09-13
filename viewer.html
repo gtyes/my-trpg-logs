@@ -1037,7 +1037,39 @@ function loadImageState() {
         window.addEventListener('DOMContentLoaded', function() {
             setTimeout(loadImageState, 100);
         });
+        // ========== 统一分页计算 ==========
+        // 规则：章节消息强制另起一页；每页最多 pageSize 条
+        function computePages() {
+            const pages = [];
+            let i = 0;
+            const n = filteredLogs.length;
+            while (i < n) {
+                const start = i;
+                let count = 0;
+                while (i < n && count < pageSize) {
+                    // 章节消息若不是本页第一条，则本页在此结束（章节归新页）
+                    if (count > 0 && filteredLogs[i].isChapter) {
+                        break;
+                    }
+                    i++;
+                    count++;
+                }
+                pages.push({ start, end: i - 1, count: i - start });
+            }
+            return pages;
+        }
 
+        // 根据 filteredLogs 中的索引找到页号
+        // 保留同名函数，只是换成基于 computePages 的实现
+        function calculatePageForMessage(messageIndex) {
+            const pages = computePages();
+            for (let i = 0; i < pages.length; i++) {
+                if (messageIndex >= pages[i].start && messageIndex <= pages[i].end) {
+                    return i + 1;
+                }
+            }
+            return pages.length || 1;
+        }
         // 闲聊折叠功能
         function toggleChatCollapse() {
             const checkbox = document.getElementById('collapseChatCheckbox');
@@ -1401,82 +1433,51 @@ function clearFilters() {
 // 根据消息索引（在 filteredLogs 中的位置）查找所属章节
 function findChapterByMessageIndex(index) {
     if (!chapters || chapters.length === 0) return null;
-    const sortedChapters = [...chapters].sort((a, b) => a.position - b.position);
-    for (let i = sortedChapters.length - 1; i >= 0; i--) {
-        const chapter = sortedChapters[i];
-        // 注意：chapter.position 是 1-based，index 是 0-based
-        if (index + 1 >= chapter.position) {
-            return chapter;
+    const sorted = [...chapters].sort((a, b) => a.position - b.position);
+    // 找 filteredLogs 中最后一个 isChapter 且索引 <= index 的章节
+    let result = null;
+    for (let i = index; i >= 0; i--) {
+        if (filteredLogs[i] && filteredLogs[i].isChapter) {
+            const name = filteredLogs[i].text.replace('=== ', '').replace(' ===', '');
+            result = sorted.find(c => c.name === name) || null;
+            if (result) break;
         }
     }
-    return sortedChapters[0] || null;
-}      
+    return result || sorted[0] || null;
+} 
 // 渲染当前页
         // 替换原来的renderCurrentPage函数
 function renderCurrentPage() {
-    // 计算当前页应该从哪条消息开始
-    let messagesProcessed = 0;
-    let currentStartIndex = 0;
-    
-    // 找到当前页的起始位置
-    for (let i = 0; i < filteredLogs.length; i++) {
-        const msg = filteredLogs[i];
-        
-        // 如果已经收集了足够多的消息，或者遇到章节需要新开一页
-        if ((messagesProcessed >= pageSize) || 
-            (msg.isChapter && messagesProcessed > 0)) {
-            // 我们已经找到了一页，看看这是不是我们要的那一页
-            const pageNumber = calculatePageForMessage(currentStartIndex);
-            
-            if (pageNumber === currentPage) {
-                // 这就是我们要渲染的页
-                break;
-            }
-            
-            // 这不是我们要的页，重置计数器，继续查找
-            currentStartIndex = i;
-            messagesProcessed = 0;
-        }
-        
-        messagesProcessed++;
-    }
-    if (filteredLogs.length > 0 && currentStartIndex < filteredLogs.length) {
-        currentRenderedChapter = findChapterByMessageIndex(currentStartIndex);
-    } else {
+    const pages = computePages();
+
+    // 空数据保护
+    if (pages.length === 0) {
         currentRenderedChapter = null;
+        document.getElementById('logMessages').innerHTML =
+            '<div style="text-align: center; padding: 40px; color: #7f8c8d;">没有找到匹配的消息</div>';
+        updatePaginationInfo();
+        return;
     }
-    // 收集当前页的消息
-    const pageMessages = [];
-    let pageCount = 0;
-    
-    for (let i = currentStartIndex; i < filteredLogs.length && pageCount < pageSize; i++) {
-        const msg = filteredLogs[i];
-        
-        // 如果是章节消息，且不是本页第一条，则停止收集
-        if (msg.isChapter && pageCount > 0) {
-            break;
-        }
-        
-        pageMessages.push(msg);
-        pageCount++;
-    }
-    
-    // 渲染消息
+
+    // 页码越界时夹紧（关键：防止 currentPage 超过真实页数导致空白）
+    if (currentPage < 1) currentPage = 1;
+    if (currentPage > pages.length) currentPage = pages.length;
+
+    const { start, end } = pages[currentPage - 1];
+    const pageMessages = filteredLogs.slice(start, end + 1);
+
+    currentRenderedChapter = findChapterByMessageIndex(start);
+
     const container = document.getElementById('logMessages');
     container.innerHTML = renderLogMessages(pageMessages);
-    
-    // 更新分页信息
+
     updatePaginationInfo();
-    
-    // 滚动到顶部
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // 更新章节图片
-    setTimeout(() => {
-        updateChapterImages();
-    }, 100);
+
+    setTimeout(() => { updateChapterImages(); }, 100);
     addMessageDoubleClickHandlers();
 }
+
 // 添加双击事件处理函数
 function addMessageDoubleClickHandlers() {
     const messageRows = document.querySelectorAll('.message-row');
@@ -1493,59 +1494,18 @@ function addMessageDoubleClickHandlers() {
 // 简化jumpToMessage函数，确保按filteredLogs的顺序计算
 // 修改jumpToMessage函数
 function jumpToMessage(messageId) {
-    console.log('尝试跳转到消息:', messageId);
-    
-    // 先清除所有筛选和搜索，回到原始日志
-    clearFilters(); // 这会重置filteredLogs为原始日志
-    
-    // 等待清空筛选完成，再查找消息
+    clearFilters(); // 回到原始日志
     setTimeout(() => {
-        // 在原始日志中查找消息
         const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
-        console.log('在原始日志中的消息索引位置:', messageIndex);
-        
-        if (messageIndex !== -1) {
-            // 计算消息所在的页数
-            let page = 1;
-            let messagesProcessed = 0;
-            
-            for (let i = 0; i <= messageIndex; i++) {
-                const msg = filteredLogs[i];
-                
-                messagesProcessed++;
-                
-                // 如果是章节标记，且不是本页第一条，则新开一页
-                if (msg.isChapter && messagesProcessed > 1) {
-                    page++;
-                    messagesProcessed = 1;
-                }
-                
-                // 如果本页已满，翻页
-                if (messagesProcessed >= pageSize) {
-                    page++;
-                    messagesProcessed = 0;
-                }
-                
-                // 找到目标消息
-                if (i === messageIndex) {
-                    currentPage = page;
-                    console.log('消息在第', page, '页');
-                    renderCurrentPage();
-                    
-                    // 等待渲染完成后高亮显示
-                    setTimeout(() => {
-                        highlightMessage(messageId);
-                    }, 500); // 延长等待时间确保渲染完成
-                    break;
-                }
-            }
-        } else {
-            console.error('未找到消息:', messageId);
+        if (messageIndex === -1) {
             alert('未找到该消息，可能消息已被删除或修改');
+            return;
         }
+        currentPage = calculatePageForMessage(messageIndex);
+        renderCurrentPage();
+        setTimeout(() => highlightMessage(messageId), 500);
     }, 100);
 }
-
 // 添加高亮函数
 function highlightMessage(messageId) {
     const targetRow = document.querySelector(`.message-row[data-id="${messageId}"]`);
@@ -2201,40 +2161,22 @@ function getCharacterNameStyle(character) {
 
         // ========== 分页功能 ==========
         function updatePaginationInfo() {
-            // 计算总页数（考虑章节分页）
-            let totalPages = 0;
-            let remainingMessages = filteredLogs.length;
-            let pageStart = 0;
-            
-            while (remainingMessages > 0) {
-                totalPages++;
-                let pageCount = 0;
-                
-                // 计算这一页能放多少消息
-                for (let i = pageStart; i < filteredLogs.length && pageCount < pageSize; i++) {
-                    const msg = filteredLogs[i];
-                    pageCount++;
-                    
-                    // 关键修改：如果是章节标记，且不是本页第一条，则结束当前页
-                    if (msg.isChapter && pageCount > 1) {
-                        break; // 章节在新的一页开始
-                    }
-                }
-                
-                remainingMessages -= pageCount;
-                pageStart += pageCount;
-            }
-            
+            const pages = computePages();
+            const totalPages = Math.max(1, pages.length);
+
+            // 夹紧 currentPage
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
             document.getElementById('currentPage').textContent = currentPage;
             document.getElementById('totalPages').textContent = totalPages;
             document.getElementById('pageSize').textContent = pageSize;
-            
+
             document.getElementById('prevPageBtn').disabled = currentPage === 1;
             document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
             document.getElementById('jumpInput').value = currentPage;
             document.getElementById('jumpInput').max = totalPages;
         }
-        
         function prevPage() {
             if (currentPage > 1) {
                 currentPage--;
@@ -2262,29 +2204,6 @@ function getCharacterNameStyle(character) {
             input.value = page;
             renderCurrentPage();
         }
-function calculatePageForMessage(messageIndex) {
-    let page = 1;
-    let messagesProcessed = 0;
-    
-    for (let i = 0; i <= messageIndex; i++) {
-        const msg = filteredLogs[i];
-        messagesProcessed++;
-        
-        // 如果这是章节消息，且不是本页第一条，则需要新开一页
-        if (msg.isChapter && messagesProcessed > 1) {
-            page++;
-            messagesProcessed = 1; // 章节消息算在新的一页
-        }
-        
-        // 如果当前页已满，新开一页
-        if (messagesProcessed > pageSize) {
-            page++;
-            messagesProcessed = 1; // 当前消息算在新的一页
-        }
-    }
-    
-    return page;
-}
         // 章节跳转
 function jumpToChapter(chapterIndex) {
     if (chapters[chapterIndex]) {
