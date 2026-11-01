@@ -3504,7 +3504,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 151,
@@ -8256,7 +8262,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 354,
@@ -25306,7 +25318,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 1098,
@@ -35804,7 +35822,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 1521,
@@ -41856,7 +41880,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 1765,
@@ -54460,7 +54490,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 2259,
@@ -65608,7 +65644,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 2749,
@@ -74624,7 +74666,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 3110,
@@ -84056,7 +84104,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 3496,
@@ -91772,7 +91826,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 3824,
@@ -97018,7 +97078,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 4034,
@@ -111598,7 +111664,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 4676,
@@ -119834,7 +119906,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 5031,
@@ -128460,7 +128538,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 5385,
@@ -137710,7 +137794,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 5748,
@@ -140902,7 +140992,13 @@
       "bubbleColor": "#f8f9fa",
       "bubbleOpacity": 0.9,
       "messageImage": null,
-      "isChapter": true
+      "isChapter": true,
+      "nameImage": "",
+      "nameImageSize": "cover",
+      "nameImageOpacity": 1,
+      "bubbleImage": "",
+      "bubbleImageSize": "cover",
+      "bubbleImageOpacity": 1
     },
     {
       "id": 5871,
@@ -142300,71 +142396,71 @@
       "name": "地下室与隧道",
       "position": 2525,
       "id": "chapter-1793539934794",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/3427fe24321a740f783cd2ddb30f134b98911a3f9c24d457e5e3538970a6606f?t=1791562924173",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     },
     {
       "name": "夜间谈话",
       "position": 2872,
       "id": "chapter-1793540797599",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/d117f127a767c00aa4c8cf090c89695b08e7351178f62d69ab07c4f6d7b38761?t=1789769529334",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     },
     {
       "name": "无皮者的仪式",
       "position": 3235,
       "id": "chapter-1793545810454",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/27219dd31111977aab9cabee973be53d12a8e40bb699ecaabd1cac4469d77c95?t=1791558921203",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     },
     {
       "name": "血红之塔",
       "position": 3532,
       "id": "chapter-1793546201798",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46def3ca428539cd3aff0b61dfbf65f9fb2ffef4fe457c0ced703a075d04902a?t=1792292456006",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     },
     {
       "name": "皮肤恶魔",
       "position": 3734,
       "id": "chapter-1793547167985",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/6a8ff93f161e6fc8581218941f8fbf5a262f3d24cdeb1789aa4c19c0298fa9d8?t=1792292455061",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     },
     {
       "name": "祭坛",
       "position": 4295,
       "id": "chapter-1793548346046",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/57a44e132f5e72a266edf1a3263de5875f0eb3ad6e995efd3223aa7e1230f076?t=1792292454091",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     },
     {
       "name": "拟像的归宿",
       "position": 4612,
       "id": "chapter-1793548981194",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/1d07ba352c3f1c2027660802b5e039051a1c48f9fb4e597fe2d23660d9245c36?t=1789769532235",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     },
     {
       "name": "安纳托利亚龙",
       "position": 4944,
       "id": "chapter-1793549576068",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/2163ee6ca306db21a80a1f270e682c64876022cd662217885778bc4dd7dfb17e?t=1791563020324",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     },
     {
       "name": "新的任务",
       "position": 5300,
       "id": "chapter-1793549919643",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/1d07ba352c3f1c2027660802b5e039051a1c48f9fb4e597fe2d23660d9245c36?t=1789769532235",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     },
     {
       "name": "余波",
       "position": 5423,
       "id": "chapter-1793550132550",
-      "backgroundImage": "",
-      "rightImage": ""
+      "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/21edc2dfb142900303cb16baf57169f042e574af94317113dd301134532f3fd4?t=1789208089820",
+      "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bf9e94fa05e0198f6674a1b98e6ff74843b3a735869d008ed9b31c5ea159b8bb?t=1793525879896"
     }
   ],
   "fontSettings": {
@@ -142684,7 +142780,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-11-01T16:26:15.670Z",
+    "exportedAt": "2026-11-01T16:43:59.238Z",
     "totalMessages": 5473,
     "version": "7.0",
     "features": [
