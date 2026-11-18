@@ -124131,7 +124131,7 @@
       "id": "msg-4695",
       "channel": "主频道",
       "name": "掌局者",
-      "text": "数据库中没有她的婚前姓氏。",
+      "text": "数据库中显示她的婚前姓名为爱伦·卡拉德特。",
       "color": "#e0e0e0",
       "isDice": false,
       "extend": null,
@@ -150262,7 +150262,7 @@
       "id": "msg-5663",
       "time": 1782476730919,
       "name": "掌局者",
-      "text": "列车到站了，窗外的建筑密度重新回到了城市该有的样子，站台被雨水浸透了。你们跟着人流穿过闸机，走出了火车站。天还是灰蒙蒙的，与来时相比，纽约城的雨似乎没有减弱的趋势，雨丝又细又密。",
+      "text": "列车到站了，窗外的建筑密度重新回到了城市该有的样子，站台被雨水浸透了。你们跟着人流穿过闸机，走出了火车站。天还是灰蒙蒙的，与来时相比，纽约城的雨似乎没有减弱的趋势，，落下的雨点仍不停歇。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -311046,7 +311046,7 @@
       "id": "msg-11847",
       "time": 1786627469370,
       "name": "掌局者",
-      "text": "行贿警卫在受审后承认他还在当天为德克雷格往监狱外传递包裹，内容为包装成一整套的11本淡紫色精装册子，题名为《秘密之书》。在此事发生后，德克雷格公司也因未知原因迅速倒闭了。",
+      "text": "行贿警卫在受审后承认他先前有德克雷格往监狱外传递包裹，内容为包装成一整套的11本淡紫色精装册子，题名为《秘密之书》。在此事发生后，德克雷格公司也因未知原因迅速倒闭了。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -386760,7 +386760,7 @@
       "text": "在那之后李玫梦到了诺琳家的客厅，客厅里的陈设和她遥远的记忆中一样，沙发、落地灯、书架，但所有事物、整个客厅是完全镜像翻转过的，而窗外的景象是一片永无止境，向外不断衍生的无尽重复的客厅。她正和年幼的艾丽西亚坐在柔软的沙发上，如同多年前数个闲暇的周末午后那样，一起从柜子中随机抽出一张碟片来观看，而面前的电视机播放着一部矫揉造作的青春电影，它的女主角是个多愁善感的花季少女，正神色忧伤地自言自语，“我如何确定，我是否只是他的一场梦呢？”",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -386777,7 +386777,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14760",
@@ -386785,7 +386786,7 @@
       "text": "艾丽西亚却不怎么理解女主角的复杂心理，看着电视里的人流下眼泪，她嘟囔着说“如果你只是在别人的梦里，你就不可能真的哭呀？“",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -386802,7 +386803,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14761",
@@ -386810,7 +386812,7 @@
       "text": "她们很快看完了这部烂俗的电影，最后还附上了女主角对自己的“成长”感想，艾丽西亚虽然对电影没什么好评价，但也不由得联想，并问起李玫”我之后也要成长变成大人吗？”，但还未等李玫回答，她又像是想到了什么，自己回答了自己，“对了，我知道——一个人无法阻止自己变老。”",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -386827,7 +386829,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14762",
@@ -386835,7 +386838,7 @@
       "text": "而梦境就这样突然融化了，变为一片波澜不惊的水面，看不见一丝水纹，仿佛她们只是出于一面巨大镜子的上方。",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -386852,7 +386855,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14763",
@@ -386860,7 +386864,7 @@
       "text": "但她们正坐在一艘随风漂流的小船上，或许这证明了这里确实是一方水域。船桨搁置在船边，没有人动，而艾丽西亚眨眼睛已经成了二十多岁的样貌。",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -386877,7 +386881,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14764",
@@ -386885,7 +386890,7 @@
       "text": "她的手里正抱着一只带着蓝纹的猫面具，李玫询问她，这是她的面具吗，她只摇头，说这是有人递给她的。",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -386902,7 +386907,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14765",
@@ -386910,7 +386916,7 @@
       "text": "随后她弯下腰，看向水面，以一种奇怪的语调自言自语着，如同在朗诵一首诗歌，“镜子如此奇妙，有多少人是从它身上获得了自我的认同感呢？即使它是一个外部的、虚幻的意象，但人们仍能把它当成自己，而那些真实的感受，笨拙的、不协调的、控制不了的部分都能被如此完美的影像所覆盖。”",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -386927,7 +386933,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14766",
@@ -386935,7 +386942,7 @@
       "text": "伴随着艾丽西亚的话语，李玫的视线也不由得被这样的水面所吸引，然而在她看到的水面之下，不是自己的镜像，而是一个淡色的模糊人影——诺琳。",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -386952,7 +386959,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14767",
@@ -386960,7 +386968,7 @@
       "text": "她闭着眼，姿态松散，像在水中找到了某种宁和与美好的体验，随着某种律动轻轻晃动着，成为这静止的水面下流动着的事物，又像来自水底深处随时会消散的一缕暗影。",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -386977,7 +386985,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14768",
@@ -386985,7 +386994,7 @@
       "text": "而艾丽西亚仍在说着，“可那镜子中能实现的统一自我，只是对脑海中破碎状态的自己的一次想象性重组，真实何在？”",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -387002,7 +387011,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14769",
@@ -387010,7 +387020,7 @@
       "text": "一个人如此回答道：“不，不。我们并未赋予我们自身，”“那眼瞳代行了赋予之能。”“未经我们同意，就将那角色加诸我等；”“那是如此残酷，令我等如今求死不能。”",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -387027,7 +387037,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14770",
@@ -387035,7 +387046,7 @@
       "text": "醒来后，李玫很快意识到梦中艾丽西亚在船上说的大部分话应当与著名精神分析家、哲学家雅克·拉康的“镜像阶段”理论有关。此理论在拉康探讨了自我的形成问题。自我的形成开始于婴儿的笑。心理学与观察发现，大约6至18个月的婴儿，经常会冲着镜中自身的像发笑，拉康称之婴儿对“自身像快乐的攫取”。它表达了婴儿这么一种期待：尽管在身体上仍然处于一种机体不协调、无法自如活动、从而需要旁人照料的状态，但是他却在想象的层面上，通过与镜像的认同，期待着一种对身体整体性的自如控制。",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -387052,7 +387063,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14771",
@@ -387060,7 +387072,7 @@
       "text": "此理论给心理学的自我认同带来了新的思考角度，即自我从诞生起就是想象的产物，并非内在的、坚实的实体，而是通过外部形象建构出来的形象，自我的本质就是异化，人从一开始就把不是自己的东西认作了自己。\n",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -387077,7 +387089,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14772",
@@ -387085,7 +387098,7 @@
       "text": "她不知为何还想起了一件事，05年的夜楼之中从未出现过窗户。",
       "color": "#e83929",
       "channel": "主频道",
-      "icon": "",
+      "icon": null,
       "dice": null,
       "extend": null,
       "to": null,
@@ -387102,7 +387115,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "msg-14773",
@@ -388962,7 +388976,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-08-31T04:33:41.315Z",
+    "exportedAt": "2026-11-18T13:19:55.324Z",
     "totalMessages": 14809,
     "version": "7.0",
     "features": [
