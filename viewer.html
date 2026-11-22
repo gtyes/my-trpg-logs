@@ -28,6 +28,35 @@
             /*color: #333;*/
             min-height: 100vh;
         }
+        /* 固定在页面底部的分页条 */
+        #paginationContainer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1200;
+
+            display: none;              /* 默认隐藏，由 JS 切模式时控制 */
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+
+            margin: 0;
+            padding: 8px 12px;
+
+            background: rgba(0, 0, 0, 0.88);
+            border-radius: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.35);
+
+            flex-wrap: nowrap;          /* 强制一行 */
+            white-space: nowrap;
+        }
+
+        /* 避免底部内容被固定栏挡住 */
+        body {
+            padding-bottom: 70px;
+        }
+
         .top-controls.right-controls {
             gap: 8px;
             flex-wrap: wrap;
@@ -620,6 +649,41 @@
         }
         
         /* ========== 响应式设计 ========== */
+        @media (max-width: 768px) {
+            #paginationContainer {
+                gap: 5px;
+                padding: 6px 8px;
+            }
+
+            #paginationContainer .pagination-info {
+                font-size: 11px;
+                margin: 0;
+            }
+
+            #paginationContainer .pagination-btn,
+            #paginationContainer .control-btn {
+                padding: 5px 8px;
+                font-size: 11px;
+            }
+
+            #paginationContainer .pagination-jump input {
+                width: 42px;
+                padding: 3px;
+                font-size: 11px;
+            }
+        }
+
+        /* 特别窄的屏幕，进一步压缩 */
+        @media (max-width: 420px) {
+            #paginationContainer .pagination-info {
+                display: none;   /* 页码已经在输入框里，隐藏文字避免换行 */
+            }
+
+            #paginationContainer .pagination-jump input {
+                width: 38px;
+            }
+        }
+
         @media (max-width: 1100px) {
             .floating-image-right {
                 width: 300px;
@@ -753,19 +817,6 @@
             <button class="clear-search-btn" onclick="clearSearch()" style="display: none;">×</button>
         </div>
         <button class="control-btn" onclick="toggleFilterPanel()">筛选</button>
-        <!-- 分页控件 -->
-        <div class="pagination-container" id="paginationContainer" style="display: none;">
-            <button class="pagination-btn" id="prevPageBtn" onclick="prevPage()">上一页</button>
-            <div class="pagination-info">
-                第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">1</span> 页
-                <span style="margin-left: 8px;">(每页 <span id="pageSize">50</span> 条)</span>
-            </div>
-            <div class="pagination-jump">
-                <input type="number" id="jumpInput" min="1" value="1">
-                <button class="control-btn" onclick="jumpToPage()">跳转</button>
-            </div>
-            <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">下一页</button>
-        </div>
     </div>
 </div>
     <!-- 悬浮章节导航 -->
@@ -815,7 +866,21 @@
                 <!-- 消息将动态渲染在这里 -->
             </div>
         </div>
+        <!-- 分页控件：固定在页面底部，仅分页模式显示 -->
+        <div class="pagination-container" id="paginationContainer" style="display: none;">
+            <button class="pagination-btn" id="prevPageBtn" onclick="prevPage()">上一页</button>
 
+            <div class="pagination-info">
+                第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">1</span> 页
+            </div>
+
+            <div class="pagination-jump">
+                <input type="number" id="jumpInput" min="1" value="1">
+                <button class="control-btn" onclick="jumpToPage()">跳转</button>
+            </div>
+
+            <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">下一页</button>
+        </div>
     </div>
 
     <script>
@@ -1467,9 +1532,11 @@
             if (viewMode === 'scroll') {
                 btn.textContent = '切换分页模式';
                 pager.style.display = 'none';
+                document.body.style.paddingBottom = '0';
             } else {
                 btn.textContent = '切换连续模式';
                 pager.style.display = 'flex';
+                document.body.style.paddingBottom = '70px';
             }
         }
         
@@ -1567,6 +1634,7 @@
             if (!range) return;
 
             const chapterLength = range.end - range.start + 1;
+            currentRenderedChapter = findChapterByMessageIndex(range.start);
 
             if (reset) {
                 scrollLoadedCount = Math.min(pageSize, chapterLength);
@@ -1599,6 +1667,10 @@
             addMessageDoubleClickHandlers();
             updateChapterEndNav();
             setupScrollObserver();
+            setTimeout(() => {
+                updateChapterImages();
+            }, 100);
+
         }
 
         function loadMoreScroll() {
@@ -2419,7 +2491,6 @@ function getChannelMaskStyle(channel) {
 
             document.getElementById('currentPage').textContent = currentPage;
             document.getElementById('totalPages').textContent = totalPages;
-            document.getElementById('pageSize').textContent = pageSize;
 
             document.getElementById('prevPageBtn').disabled = currentPage === 1;
             document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
