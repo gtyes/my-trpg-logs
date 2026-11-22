@@ -1527,36 +1527,38 @@
             }, 100);
         }      
         // 清除筛选
-        function clearFilters() {
+        function clearFilters(shouldRender = true) {
             currentFilters = {
                 channels: [],
                 searchText: ''
             };
-            
-            // 清空搜索框
+
             document.getElementById('searchInput').value = '';
-            
-            // 取消所有频道筛选复选框
+
             document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
-            
-            // 取消闲聊折叠复选框
+
             const collapseCheckbox = document.getElementById('collapseChatCheckbox');
             if (collapseCheckbox) {
                 collapseCheckbox.checked = false;
             }
             collapseChatChannels = false;
-            
-            // 恢复为原始日志数据
+
             filteredLogs = logData.logs || [];
             currentPage = 1;
-            renderView(true);
             closeFilterPanel();
-            setTimeout(() => {
-                updateChapterImages();
-            }, 100);
+
+            // 只有需要时才立即渲染
+            if (shouldRender) {
+                renderView(true);
+
+                setTimeout(() => {
+                    updateChapterImages();
+                }, 100);
+            }
         }
+
         // 根据消息索引（在 filteredLogs 中的位置）查找所属章节
         function findChapterByMessageIndex(index) {
             if (!chapters || chapters.length === 0) return null;
@@ -1894,7 +1896,7 @@
             }
 
             // 回到完整日志
-            clearFilters();
+            clearFilters(false);
 
             setTimeout(() => {
                 currentPage = calculatePageForMessage(messageIndex);
@@ -2583,7 +2585,7 @@ function getChannelMaskStyle(channel) {
             const chapter = chapters[chapterIndex];
             if (!chapter) return;
 
-            clearFilters();
+            clearFilters(false);   // 只清状态，不渲染第一章
 
             setTimeout(() => {
                 if (viewMode === 'scroll') {
