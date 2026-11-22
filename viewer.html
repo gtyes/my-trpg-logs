@@ -688,6 +688,59 @@
         }
 
         @media (max-width: 768px) {
+            /* 顶部标题栏：保持普通布局，随页面正常滚走 */
+            .top-header {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px;
+                position: relative;          /* 关键：不要 sticky/fixed */
+                justify-content: flex-start;
+
+                /* 关键：否则内部 fixed 按钮会相对 header 固定 */
+                -webkit-backdrop-filter: none;
+                backdrop-filter: none;
+            }
+
+            .log-title {
+                margin: 10px 0;
+                order: 1;
+                font-weight: bold;
+            }
+
+            .top-controls.left-controls {
+                position: static;
+                order: 0;
+                justify-content: flex-start;
+                width: 100%;
+                padding-left: 90px; /* 给固定按钮让位 */
+            }
+
+            .top-controls.right-controls {
+                position: static;
+                order: 2;
+                justify-content: flex-end;
+                width: 100%;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            /* 只固定“章节导航”按钮 */
+            #chapterNavBtn {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1100;
+
+                padding: 8px 14px;
+                font-size: 14px;
+                line-height: 1.2;
+                white-space: nowrap;
+
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
+
             /* 悬浮图片 */
             .floating-image-right {
                 width: 200px;
@@ -710,51 +763,6 @@
 
             #channelFilters {
                 max-height: 150px;
-            }
-
-            /* 顶部标题栏 */
-            .log-title {
-                margin: 10px 0;
-                order: 1;
-                font-weight: bold;
-            }
-
-            .top-controls.left-controls {
-                position: static;
-                order: 0;
-                justify-content: flex-start;
-                width: 100%;
-                padding-left: 90px; /* 给固定的章节导航按钮让位 */
-            }
-
-            .top-controls.right-controls {
-                position: static;
-                order: 2;
-                justify-content: flex-end;
-                width: 100%;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            /* 手机端固定章节导航按钮 */
-            .top-header {
-                -webkit-backdrop-filter: none;
-                backdrop-filter: none;
-            }
-
-            #chapterNavBtn {
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                z-index: 1100;
-
-                /* 恢复按钮大小 */
-                padding: 8px 14px;
-                font-size: 14px;
-
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             }
 
             /* 章节侧栏 */
@@ -781,7 +789,7 @@
                 padding: 12px !important;
             }
 
-            /* 底部分页条：强制一行，不换行 */
+            /* 底部分页条：强制一行 */
             #paginationContainer {
                 flex-direction: row;
                 flex-wrap: nowrap;
