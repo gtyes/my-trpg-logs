@@ -28,6 +28,29 @@
             /*color: #333;*/
             min-height: 100vh;
         }
+        .top-controls.right-controls {
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .top-controls.right-controls .pagination-container {
+            margin: 0;
+            padding: 6px 10px;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.25);
+            box-shadow: none;
+        }
+
+        .top-controls.right-controls .pagination-info {
+            color: #fff;
+            font-size: 12px;
+            margin: 0 4px;
+        }
+
+        .top-controls.right-controls .pagination-jump input {
+            width: 45px;
+            padding: 3px;
+        }
 
         /* ========== 右侧悬浮图片 ========== */
         .floating-image-container {
@@ -87,7 +110,27 @@
             right: 0; /* 仍然保持在屏幕最右侧 */
             transform: none;
         }
-        
+        .chapter-end-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 8px;
+        }
+
+        .chapter-end-nav span {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .chapter-end-nav .pagination-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+        }
+
         /* ========== 顶部标题栏 ========== */
         .top-header {
             /* 背景设置 - 可以设置颜色或图片 */
@@ -165,20 +208,20 @@
             color: rgba(255,255,255,0.7);
         }
         
-.control-btn {
-    background: rgba(139, 0, 0, 0.9); /* 暗红色 */
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
-}
-        
-.control-btn:hover {
-    background: rgba(178, 34, 34, 0.9); /* 稍微亮一点的暗红色 */
-}
+        .control-btn {
+            background: rgba(139, 0, 0, 0.9); /* 暗红色 */
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+                
+        .control-btn:hover {
+            background: rgba(178, 34, 34, 0.9); /* 稍微亮一点的暗红色 */
+        }
         
         /* ========== 悬浮章节导航 ========== */
         .floating-sidebar {
@@ -692,6 +735,7 @@
     <!-- 左侧控制按钮 -->
     <div class="top-controls left-controls">
         <button class="control-btn" onclick="toggleChapterSidebar()">章节导航</button>
+        <button class="control-btn" id="viewModeBtn" onclick="toggleViewMode()">切换分页模式</button>
     </div>
     
     <!-- 标题 -->
@@ -709,6 +753,19 @@
             <button class="clear-search-btn" onclick="clearSearch()" style="display: none;">×</button>
         </div>
         <button class="control-btn" onclick="toggleFilterPanel()">筛选</button>
+        <!-- 分页控件 -->
+        <div class="pagination-container" id="paginationContainer" style="display: none;">
+            <button class="pagination-btn" id="prevPageBtn" onclick="prevPage()">上一页</button>
+            <div class="pagination-info">
+                第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">1</span> 页
+                <span style="margin-left: 8px;">(每页 <span id="pageSize">50</span> 条)</span>
+            </div>
+            <div class="pagination-jump">
+                <input type="number" id="jumpInput" min="1" value="1">
+                <button class="control-btn" onclick="jumpToPage()">跳转</button>
+            </div>
+            <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">下一页</button>
+        </div>
     </div>
 </div>
     <!-- 悬浮章节导航 -->
@@ -759,19 +816,6 @@
             </div>
         </div>
 
-        <!-- 分页控件 -->
-        <div class="pagination-container" id="paginationContainer" style="display: none;">
-            <button class="pagination-btn" id="prevPageBtn" onclick="prevPage()">上一页</button>
-            <div class="pagination-info">
-                第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">1</span> 页
-                <span style="margin-left: 8px;">(每页 <span id="pageSize">50</span> 条)</span>
-            </div>
-            <div class="pagination-jump">
-                <input type="number" id="jumpInput" min="1" value="1">
-                <button class="control-btn" onclick="jumpToPage()">跳转</button>
-            </div>
-            <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">下一页</button>
-        </div>
     </div>
 
     <script>
@@ -781,6 +825,9 @@
         let extendSettings = { ruleSystem: 'coc_houserule' };
         let logData = null;
         let filteredLogs = [];
+        let viewMode = 'scroll';          // 'scroll' 连续 | 'paged' 分页
+        let scrollLoadedCount = 0;        // 连续模式已经渲染了多少条
+        let scrollObserver = null;
         let currentPage = 1;
         const pageSize = 50;
         let currentFilters = {
@@ -795,202 +842,202 @@
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
         
-    function initChapterImages() {
-        chapterImageMap = {};
-        
-        // 从logData.chapters中读取每个章节的图片设置
-        if (logData.chapters && Array.isArray(logData.chapters)) {
-            logData.chapters.forEach(chapter => {
-                chapterImageMap[chapter.name] = {
-                    rightImage: chapter.rightImage || '',
-                    background: chapter.backgroundImage || ''
-                };
-            });
-        }
-        
-        // 如果没有设置某章节的图片，使用默认图片
-        const defaultImage =
-            logData.websiteSettings?.rightFloatingImage ||
-            logData.rightFloatingImage ||
-            '';
-
-        const defaultBackground = '';   // 没有设置章节背景时就不要硬塞本地图片
-
-        
-        // 确保每个章节都有默认图片
-        chapters.forEach(chapter => {
-            if (!chapterImageMap[chapter.name]) {
-                chapterImageMap[chapter.name] = {
-                    rightImage: defaultImage,
-                    background: defaultBackground
-                };
-            } else {
-                // 如果章节设置了图片但为空，使用默认
-                if (!chapterImageMap[chapter.name].rightImage) {
-                    chapterImageMap[chapter.name].rightImage = defaultImage;
-                }
-                if (!chapterImageMap[chapter.name].background) {
-                    chapterImageMap[chapter.name].background = defaultBackground;
-                }
-            }
-        });
-        // 没有章节时，也要应用默认右侧图片
-        if (chapters.length === 0) {
-            const rightEl = document.getElementById('rightFloatingImage');
-            if (rightEl) {
-                rightEl.style.backgroundImage = defaultImage
-                    ? `url('${defaultImage}')`
-                    : 'none';
-            }
-        }
-
-        console.log('章节图片初始化完成:', chapterImageMap);
-    }
-        
-    function updateChapterImages() {
-        const currentChapter = currentRenderedChapter;
-
-        if (!currentChapter) {
-            console.warn('当前没有可用的章节，跳过章节图片更新');
-            return;
-        }
-        
-        console.log('当前章节:', currentChapter.name);
-        console.log('章节图片映射:', chapterImageMap);
-        
-        if (currentChapter && chapterImageMap[currentChapter.name]) {
-            const images = chapterImageMap[currentChapter.name];
+        function initChapterImages() {
+            chapterImageMap = {};
             
-            console.log('获取到的图片:', images);
-            
-            // 更新网页背景
-            if (images.background) {
-                // 检查是否是同一张背景图片
-                const bodyStyle = window.getComputedStyle(document.body);
-                const currentBg = bodyStyle.backgroundImage;
-                const newBg = `url('${images.background}')`;
-                
-                console.log('当前背景:', currentBg);
-                console.log('新背景:', newBg);
-                
-                // 如果不是同一张图片，才应用过渡效果
-                if (currentBg !== newBg && currentBg !== `url("${images.background}")`) {
-                    // 添加过渡效果
-                    document.body.style.transition = 'background-image 0.8s ease';
-                    document.body.style.backgroundImage = `url('${images.background}')`;
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundAttachment = 'fixed';
-                    document.body.style.backgroundPosition = 'center';
-                    console.log('应用了新背景图片');
-                }
+            // 从logData.chapters中读取每个章节的图片设置
+            if (logData.chapters && Array.isArray(logData.chapters)) {
+                logData.chapters.forEach(chapter => {
+                    chapterImageMap[chapter.name] = {
+                        rightImage: chapter.rightImage || '',
+                        background: chapter.backgroundImage || ''
+                    };
+                });
             }
             
-            // 更新右侧图片（只有在图片展开状态下才更新）
-            if (!isImageCollapsed && images.rightImage) {
-                const rightImageElement = document.getElementById('rightFloatingImage');
-                const newImageUrl = `url('${images.rightImage}')`;
-                const currentImageUrl = rightImageElement.style.backgroundImage;
-                
-                console.log('当前右侧图片:', currentImageUrl);
-                console.log('新右侧图片:', newImageUrl);
-                
-                // 检查是否是同一张图片
-                if (newImageUrl !== currentImageUrl && 
-                    newImageUrl !== rightImageElement.style.backgroundImage) {
-                    
-                    // 如果不是同一张图片，添加淡入淡出效果
-                    rightImageElement.style.transition = 'opacity 0.5s ease';
-                    rightImageElement.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        rightImageElement.style.backgroundImage = newImageUrl;
-                        rightImageElement.style.opacity = '0.9';
-                        rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
-                        console.log('应用了新右侧图片');
-                    }, 300);
+            // 如果没有设置某章节的图片，使用默认图片
+            const defaultImage =
+                logData.websiteSettings?.rightFloatingImage ||
+                logData.rightFloatingImage ||
+                '';
+
+            const defaultBackground = '';   // 没有设置章节背景时就不要硬塞本地图片
+
+            
+            // 确保每个章节都有默认图片
+            chapters.forEach(chapter => {
+                if (!chapterImageMap[chapter.name]) {
+                    chapterImageMap[chapter.name] = {
+                        rightImage: defaultImage,
+                        background: defaultBackground
+                    };
                 } else {
-                    // 如果是同一张图片，直接设置不透明度（确保可见）
-                    rightImageElement.style.opacity = '0.9';
+                    // 如果章节设置了图片但为空，使用默认
+                    if (!chapterImageMap[chapter.name].rightImage) {
+                        chapterImageMap[chapter.name].rightImage = defaultImage;
+                    }
+                    if (!chapterImageMap[chapter.name].background) {
+                        chapterImageMap[chapter.name].background = defaultBackground;
+                    }
                 }
-                
-                currentRightImageUrl = images.rightImage;
+            });
+            // 没有章节时，也要应用默认右侧图片
+            if (chapters.length === 0) {
+                const rightEl = document.getElementById('rightFloatingImage');
+                if (rightEl) {
+                    rightEl.style.backgroundImage = defaultImage
+                        ? `url('${defaultImage}')`
+                        : 'none';
+                }
             }
-        } else {
-            console.log('未找到当前章节或章节图片映射');
-        }
-    }
 
-// 添加背景图片切换的CSS过渡效果
-function addBackgroundTransitions() {
-    // 在CSS中添加过渡效果
-    const style = document.createElement('style');
-    style.textContent = `
-        body {
-            transition: background-image 0.8s ease !important;
+            console.log('章节图片初始化完成:', chapterImageMap);
         }
-        .floating-image-right {
-            transition: background-image 0.5s ease, opacity 0.5s ease !important;
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-function toggleRightImage() {
-    const image = document.getElementById('rightFloatingImage');
-    const button = document.getElementById('toggleImageBtn');
-    
-    isImageCollapsed = !isImageCollapsed;
-    
-    if (isImageCollapsed) {
-        // 收起图片
-        image.classList.add('collapsed');
-        button.innerHTML = '▶';
-        button.title = "展开图片";
-        button.classList.add('collapsed');
-        // 收起时降低不透明度
-        image.style.opacity = '0';
-    } else {
-        // 展开图片
-        image.classList.remove('collapsed');
-        button.innerHTML = '◀';
-        button.title = "收起图片";
-        button.classList.remove('collapsed');
-        // 展开时恢复不透明度，并更新当前章节图片
-        setTimeout(() => {
-            image.style.opacity = '0.9';
-            // 确保显示当前章节的图片
+            
+        function updateChapterImages() {
             const currentChapter = currentRenderedChapter;
+
+            if (!currentChapter) {
+                console.warn('当前没有可用的章节，跳过章节图片更新');
+                return;
+            }
+            
+            console.log('当前章节:', currentChapter.name);
+            console.log('章节图片映射:', chapterImageMap);
+            
             if (currentChapter && chapterImageMap[currentChapter.name]) {
                 const images = chapterImageMap[currentChapter.name];
-                if (images.rightImage) {
-                    image.style.backgroundImage = `url('${images.rightImage}')`;
+                
+                console.log('获取到的图片:', images);
+                
+                // 更新网页背景
+                if (images.background) {
+                    // 检查是否是同一张背景图片
+                    const bodyStyle = window.getComputedStyle(document.body);
+                    const currentBg = bodyStyle.backgroundImage;
+                    const newBg = `url('${images.background}')`;
+                    
+                    console.log('当前背景:', currentBg);
+                    console.log('新背景:', newBg);
+                    
+                    // 如果不是同一张图片，才应用过渡效果
+                    if (currentBg !== newBg && currentBg !== `url("${images.background}")`) {
+                        // 添加过渡效果
+                        document.body.style.transition = 'background-image 0.8s ease';
+                        document.body.style.backgroundImage = `url('${images.background}')`;
+                        document.body.style.backgroundSize = 'cover';
+                        document.body.style.backgroundAttachment = 'fixed';
+                        document.body.style.backgroundPosition = 'center';
+                        console.log('应用了新背景图片');
+                    }
                 }
+                
+                // 更新右侧图片（只有在图片展开状态下才更新）
+                if (!isImageCollapsed && images.rightImage) {
+                    const rightImageElement = document.getElementById('rightFloatingImage');
+                    const newImageUrl = `url('${images.rightImage}')`;
+                    const currentImageUrl = rightImageElement.style.backgroundImage;
+                    
+                    console.log('当前右侧图片:', currentImageUrl);
+                    console.log('新右侧图片:', newImageUrl);
+                    
+                    // 检查是否是同一张图片
+                    if (newImageUrl !== currentImageUrl && 
+                        newImageUrl !== rightImageElement.style.backgroundImage) {
+                        
+                        // 如果不是同一张图片，添加淡入淡出效果
+                        rightImageElement.style.transition = 'opacity 0.5s ease';
+                        rightImageElement.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            rightImageElement.style.backgroundImage = newImageUrl;
+                            rightImageElement.style.opacity = '0.9';
+                            rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
+                            console.log('应用了新右侧图片');
+                        }, 300);
+                    } else {
+                        // 如果是同一张图片，直接设置不透明度（确保可见）
+                        rightImageElement.style.opacity = '0.9';
+                    }
+                    
+                    currentRightImageUrl = images.rightImage;
+                }
+            } else {
+                console.log('未找到当前章节或章节图片映射');
             }
-        }, 100);
-    }
-    
-    // 保存状态到localStorage
-    localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
-}
+        }
 
-// 页面加载时检查之前的状态
-function loadImageState() {
-    const savedState = localStorage.getItem('rightImageCollapsed');
-    if (savedState === 'true') {
-        // 如果之前是收起状态，应用收起状态
-        const image = document.getElementById('rightFloatingImage');
-        const button = document.getElementById('toggleImageBtn');
-        
-        isImageCollapsed = true;
-        image.classList.add('collapsed');
-        button.innerHTML = '▶';
-        button.title = "展开图片";
-        button.classList.add('collapsed');
-        image.style.opacity = '0';
-    } else {
-        isImageCollapsed = false;
-    }
-}
+        // 添加背景图片切换的CSS过渡效果
+        function addBackgroundTransitions() {
+            // 在CSS中添加过渡效果
+            const style = document.createElement('style');
+            style.textContent = `
+                body {
+                    transition: background-image 0.8s ease !important;
+                }
+                .floating-image-right {
+                    transition: background-image 0.5s ease, opacity 0.5s ease !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function toggleRightImage() {
+            const image = document.getElementById('rightFloatingImage');
+            const button = document.getElementById('toggleImageBtn');
+            
+            isImageCollapsed = !isImageCollapsed;
+            
+            if (isImageCollapsed) {
+                // 收起图片
+                image.classList.add('collapsed');
+                button.innerHTML = '▶';
+                button.title = "展开图片";
+                button.classList.add('collapsed');
+                // 收起时降低不透明度
+                image.style.opacity = '0';
+            } else {
+                // 展开图片
+                image.classList.remove('collapsed');
+                button.innerHTML = '◀';
+                button.title = "收起图片";
+                button.classList.remove('collapsed');
+                // 展开时恢复不透明度，并更新当前章节图片
+                setTimeout(() => {
+                    image.style.opacity = '0.9';
+                    // 确保显示当前章节的图片
+                    const currentChapter = currentRenderedChapter;
+                    if (currentChapter && chapterImageMap[currentChapter.name]) {
+                        const images = chapterImageMap[currentChapter.name];
+                        if (images.rightImage) {
+                            image.style.backgroundImage = `url('${images.rightImage}')`;
+                        }
+                    }
+                }, 100);
+            }
+            
+            // 保存状态到localStorage
+            localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
+        }
+
+        // 页面加载时检查之前的状态
+        function loadImageState() {
+            const savedState = localStorage.getItem('rightImageCollapsed');
+            if (savedState === 'true') {
+                // 如果之前是收起状态，应用收起状态
+                const image = document.getElementById('rightFloatingImage');
+                const button = document.getElementById('toggleImageBtn');
+                
+                isImageCollapsed = true;
+                image.classList.add('collapsed');
+                button.innerHTML = '▶';
+                button.title = "展开图片";
+                button.classList.add('collapsed');
+                image.style.opacity = '0';
+            } else {
+                isImageCollapsed = false;
+            }
+        }
 
         // 在页面加载完成后调用
         window.addEventListener('DOMContentLoaded', function() {
@@ -1156,16 +1203,14 @@ function loadImageState() {
                 
                 // 显示消息区域和分页
                 document.getElementById('logMessages').style.display = 'block';
-                document.getElementById('paginationContainer').style.display = 'flex';
+                updateViewModeUI();
+                renderView(true);
                 
                 // 渲染章节导航
                 renderChapterNavigation();
                 
                 // 渲染筛选选项
                 renderFilterOptions();
-                
-                // 渲染当前页
-                renderCurrentPage();
         
                 // 添加背景过渡效果
                 addBackgroundTransitions();
@@ -1291,23 +1336,23 @@ function loadImageState() {
         }
         
         // 渲染筛选选项
-function renderFilterOptions() {
-    if (!logData || !logData.logs) return;
-    
-    const logs = logData.logs;
-    
-    // 提取所有频道
-    const channels = [...new Set(logs.map(msg => msg.channel).filter(channel => channel))].sort();
-    
-    // 渲染频道筛选
-    document.getElementById('channelFilters').innerHTML = channels.map(channel => `
-        <label style="display: block; margin: 4px 0; font-size: 12px;">
-            <input type="checkbox" value="${channel}" 
-                   style="margin-right: 6px;">
-            ${channel}
-        </label>
-    `).join('');
-}
+        function renderFilterOptions() {
+            if (!logData || !logData.logs) return;
+            
+            const logs = logData.logs;
+            
+            // 提取所有频道
+            const channels = [...new Set(logs.map(msg => msg.channel).filter(channel => channel))].sort();
+            
+            // 渲染频道筛选
+            document.getElementById('channelFilters').innerHTML = channels.map(channel => `
+                <label style="display: block; margin: 4px 0; font-size: 12px;">
+                    <input type="checkbox" value="${channel}" 
+                        style="margin-right: 6px;">
+                    ${channel}
+                </label>
+            `).join('');
+        }
         
         // 更新筛选器
   
@@ -1355,13 +1400,13 @@ function renderFilterOptions() {
             
             filteredLogs = filtered;
             currentPage = 1;
-            renderCurrentPage();
+            renderView(true);
             closeFilterPanel();
             setTimeout(() => {
                 updateChapterImages();
             }, 100);
         }      
-                // 清除筛选
+        // 清除筛选
         function clearFilters() {
             currentFilters = {
                 channels: [],
@@ -1386,7 +1431,7 @@ function renderFilterOptions() {
             // 恢复为原始日志数据
             filteredLogs = logData.logs || [];
             currentPage = 1;
-            renderCurrentPage();
+            renderView(true);
             closeFilterPanel();
             setTimeout(() => {
                 updateChapterImages();
@@ -1407,8 +1452,154 @@ function renderFilterOptions() {
             }
             return result || sorted[0] || null;
         } 
+
+        function toggleViewMode() {
+            viewMode = viewMode === 'scroll' ? 'paged' : 'scroll';
+            updateViewModeUI();
+            renderView(true);
+        }
+
+        function updateViewModeUI() {
+            const btn = document.getElementById('viewModeBtn');
+            const pager = document.getElementById('paginationContainer');
+
+            if (viewMode === 'scroll') {
+                btn.textContent = '切换分页模式';
+                pager.style.display = 'none';
+            } else {
+                btn.textContent = '切换连续模式';
+                pager.style.display = 'flex';
+            }
+        }
+        
+        function renderView(resetScroll = true) {
+            if (viewMode === 'paged') {
+                renderCurrentPage();
+                return;
+            }
+            renderContinuous(resetScroll);
+        }
+
+        function renderContinuous(reset = true, upToIndex = null) {
+            const container = document.getElementById('logMessages');
+            const total = filteredLogs.length;
+
+            if (total === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:40px;color:#7f8c8d;">没有找到匹配的消息</div>';
+                return;
+            }
+
+            if (reset) {
+                scrollLoadedCount = Math.min(pageSize, total);
+            }
+
+            // 跳转到某条消息 / 某章节时，至少加载到目标位置
+            if (upToIndex !== null) {
+                scrollLoadedCount = Math.min(
+                    Math.max(pageSize, upToIndex + 1),
+                    total
+                );
+            }
+
+            const html = renderLogMessages(filteredLogs.slice(0, scrollLoadedCount));
+
+            container.innerHTML = html;
+
+            // 底部哨兵
+            container.insertAdjacentHTML('beforeend',
+                '<div id="scrollSentinel" style="height: 1px;"></div>'
+            );
+
+            addMessageDoubleClickHandlers();
+            updateChapterEndNav();
+            setupScrollObserver();
+        }
+
+        function loadMoreScroll() {
+            const total = filteredLogs.length;
+            if (scrollLoadedCount >= total) return;
+
+            const start = scrollLoadedCount;
+            scrollLoadedCount = Math.min(scrollLoadedCount + pageSize, total);
+
+            const html = renderLogMessages(filteredLogs.slice(start, scrollLoadedCount));
+            const sentinel = document.getElementById('scrollSentinel');
+
+            if (sentinel) {
+                sentinel.insertAdjacentHTML('beforebegin', html);
+            } else {
+                document.getElementById('logMessages').insertAdjacentHTML('beforeend', html);
+            }
+
+            addMessageDoubleClickHandlers();
+            updateChapterEndNav();
+        }
+
+        function setupScrollObserver() {
+            if (scrollObserver) scrollObserver.disconnect();
+
+            const sentinel = document.getElementById('scrollSentinel');
+            if (!sentinel) return;
+
+            scrollObserver = new IntersectionObserver(entries => {
+                if (entries[0].isIntersecting) {
+                    loadMoreScroll();
+                }
+            }, {
+                rootMargin: '300px 0px'
+            });
+
+            scrollObserver.observe(sentinel);
+        }
+
+        function updateChapterEndNav() {
+            const oldNav = document.getElementById('chapterEndNav');
+            if (oldNav) oldNav.remove();
+
+            if (viewMode !== 'scroll') return;
+
+            const total = filteredLogs.length;
+            const lastIndex = scrollLoadedCount - 1;
+            if (lastIndex < 0) return;
+
+            const nextIndex = scrollLoadedCount;
+            const atChapterEnd =
+                scrollLoadedCount >= total ||
+                (filteredLogs[nextIndex] && filteredLogs[nextIndex].isChapter);
+
+            if (!atChapterEnd) return;
+
+            const chapter = findChapterByMessageIndex(lastIndex);
+            if (!chapter) return;
+
+            const sorted = [...chapters].sort((a, b) => a.position - b.position);
+            const idx = sorted.findIndex(c => c.name === chapter.name);
+            if (idx === -1) return;
+
+            const prev = sorted[idx - 1];
+            const next = sorted[idx + 1];
+
+            const navHtml = `
+                <div id="chapterEndNav" class="chapter-end-nav">
+                    <button class="pagination-btn"
+                        onclick="jumpToChapter(${idx - 1})"
+                        ${prev ? '' : 'disabled'}>上一章</button>
+
+                    <span>${chapter.name}</span>
+
+                    <button class="pagination-btn"
+                        onclick="jumpToChapter(${idx + 1})"
+                        ${next ? '' : 'disabled'}>下一章</button>
+                </div>
+            `;
+
+            const sentinel = document.getElementById('scrollSentinel');
+            if (sentinel) {
+                sentinel.insertAdjacentHTML('beforebegin', navHtml);
+            }
+        }
+
         // 渲染当前页
-                // 替换原来的renderCurrentPage函数
         function renderCurrentPage() {
             const pages = computePages();
 
@@ -1464,13 +1655,21 @@ function renderFilterOptions() {
                 alert('未找到该消息，可能消息已被删除或修改');
                 return;
             }
+            if (viewMode === 'scroll') {
+                renderContinuous(true, messageIndex);
+                setTimeout(() => highlightMessage(String(messageId)), 300);
+            } else {
+                currentPage = calculatePageForMessage(messageIndex);
+                renderCurrentPage();
+                setTimeout(() => highlightMessage(String(messageId)), 500);
+            }
 
             // 回到完整日志
             clearFilters();
 
             setTimeout(() => {
                 currentPage = calculatePageForMessage(messageIndex);
-                renderCurrentPage();
+                renderView(true);
                 setTimeout(() => highlightMessage(targetId), 500);
             }, 100);
         }
@@ -2135,7 +2334,7 @@ function getChannelMaskStyle(channel) {
             const totalPages = parseInt(document.getElementById('totalPages').textContent);
             if (currentPage < totalPages) {
                 currentPage++;
-                renderCurrentPage();
+                renderView(false);
             }
         }
         
@@ -2165,6 +2364,19 @@ function getChannelMaskStyle(channel) {
                     // 计算章节所在的页
                     const targetPage = calculatePageForMessage(chapterMsgIndex);
                     currentPage = targetPage;
+                    renderView(true);
+                }
+                if (viewMode === 'scroll') {
+                    renderContinuous(true, chapterMsgIndex);
+
+                    setTimeout(() => {
+                        const chapterRow = document.querySelector('.chapter-title');
+                        if (chapterRow) {
+                            chapterRow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 100);
+                } else {
+                    currentPage = calculatePageForMessage(chapterMsgIndex);
                     renderCurrentPage();
                 }
             }
