@@ -28,31 +28,6 @@
             /*color: #333;*/
             min-height: 100vh;
         }
-        /* 背景图透明度层 */
-        .chapter-title,
-        .channel-group,
-        .character-name-box,
-        .message-bubble {
-            position: relative;
-            isolation: isolate;
-        }
-
-        .chapter-title::before,
-        .channel-group::before,
-        .character-name-box::before,
-        .message-bubble::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: var(--bg-image, none);
-            background-size: var(--bg-size, cover);
-            background-position: var(--bg-position, center);
-            background-repeat: var(--bg-repeat, no-repeat);
-            opacity: var(--bg-opacity, 1);
-            border-radius: inherit;
-            pointer-events: none;
-            z-index: -1;
-        }
 
         /* ========== 右侧悬浮图片 ========== */
         .floating-image-container {
@@ -1725,13 +1700,10 @@ function highlightMessage(messageId) {
             // 背景设置
             if (settings.useImage && settings.image) {
                 const opacity = settings.imageOpacity !== undefined ? settings.imageOpacity : 1.0;
-                const size = settings.imageSize === 'repeat' ? 'auto' : (settings.imageSize || 'cover');
-
-                style += `--bg-image: url('${settings.image}');`;
-                style += `--bg-size: ${size};`;
-                style += `--bg-position: center;`;
-                style += `--bg-repeat: ${settings.imageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
-                style += `--bg-opacity: ${opacity};`;
+                style += `background-image: url('${settings.image}') !important;`;
+                style += `background-size: ${settings.imageSize || 'cover'} !important;`;
+                style += `background-position: center !important;`;
+                style += `opacity: ${opacity};`;
             } else if (settings.backgroundColor) {
                 const opacity = settings.backgroundOpacity || 0.9;
                 style += `background-color: ${hexToRgba(settings.backgroundColor, opacity)} !important;`;
@@ -1759,13 +1731,11 @@ function highlightMessage(messageId) {
             
             if (rule.useImage && rule.image) {
                 const opacity = rule.imageOpacity !== undefined ? rule.imageOpacity : 1.0;
-                const size = rule.imageSize === 'repeat' ? 'auto' : (rule.imageSize || 'cover');
-
-                style += `--bg-image: url('${rule.image}');`;
-                style += `--bg-size: ${size};`;
-                style += `--bg-position: center;`;
-                style += `--bg-repeat: ${rule.imageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
-                style += `--bg-opacity: ${opacity};`;
+                style += `background-image: url(${rule.image});`;
+                style += `background-size: ${rule.imageSize || 'cover'};`;
+                style += `background-position: center;`;
+                style += `background-repeat: ${rule.imageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
+                style += `opacity: ${opacity};`;
             } else if (rule.color) {
                 const opacity = rule.opacity !== undefined ? rule.opacity : 0.1;
                 style += `background-color: rgba(${hexToRgb(rule.color)}, ${opacity});`;
@@ -1890,13 +1860,11 @@ function getChannelMaskStyle(channel) {
             // 背景
             if (rule.bubbleUseImage && rule.bubbleImage) {
                 const opacity = rule.bubbleImageOpacity !== undefined ? rule.bubbleImageOpacity : 1.0;
-                const size = rule.bubbleImageSize === 'repeat' ? 'auto' : (rule.bubbleImageSize || 'cover');
-
-                style += `--bg-image: url('${rule.bubbleImage}');`;
-                style += `--bg-size: ${size};`;
-                style += `--bg-position: center;`;
-                style += `--bg-repeat: ${rule.bubbleImageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
-                style += `--bg-opacity: ${opacity};`;
+                style += `background-image: url(${rule.bubbleImage});`;
+                style += `background-size: ${rule.bubbleImageSize || 'cover'};`;
+                style += `background-position: center;`;
+                style += `background-repeat: ${rule.bubbleImageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
+                style += `opacity: ${opacity};`;
             } else if (rule.bubbleColor) {
                 const opacity = rule.bubbleOpacity !== undefined ? rule.bubbleOpacity : 0.85;
                 style += `background-color: rgba(${hexToRgb(rule.bubbleColor)}, ${opacity});`;
@@ -2190,7 +2158,6 @@ function getChannelMaskStyle(channel) {
                     const targetPage = calculatePageForMessage(chapterMsgIndex);
                     currentPage = targetPage;
                     renderCurrentPage();
-                    closeChapterSidebar();
                 }
             }
         }
@@ -2221,24 +2188,9 @@ function getChannelMaskStyle(channel) {
                 closeFilterPanel();
             }
         }
-
-        function closeChapterSidebar() {
-            const sidebar = document.getElementById('chapterSidebar');
-            const isMobile = window.innerWidth <= 768;
-            
-            if (isMobile) {
-                sidebar.classList.remove('show');
-            } else {
-                sidebar.style.display = 'none';
-                sidebar.classList.remove('show');
-            }
-        }
                     
         function toggleFilterPanel() {
             document.getElementById('filterPanel').classList.toggle('show');
-            if (document.getElementById('chapterSidebar').classList.contains('show')) {
-                closeChapterSidebar();
-            }
         }
         
         function closeFilterPanel() {
@@ -2303,10 +2255,6 @@ function clearSearch() {
             const filterPanel = document.getElementById('filterPanel');
             const chapterBtn = document.querySelector('[onclick="toggleChapterSidebar()"]');
             const filterBtn = document.querySelector('[onclick="toggleFilterPanel()"]');
-            
-            if (!chapterSidebar.contains(event.target) && !chapterBtn.contains(event.target)) {
-                closeChapterSidebar();
-            }
             
             if (!filterPanel.contains(event.target) && !filterBtn.contains(event.target)) {
                 closeFilterPanel();
