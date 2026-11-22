@@ -713,14 +713,6 @@
             }
 
             /* 顶部标题栏 */
-            .top-header {
-                flex-direction: column;
-                gap: 12px;
-                padding: 12px;
-                position: relative;
-                justify-content: flex-start;
-            }
-
             .log-title {
                 margin: 10px 0;
                 order: 1;
@@ -747,13 +739,21 @@
             }
 
             /* 手机端固定章节导航按钮 */
+            .top-header {
+                -webkit-backdrop-filter: none;
+                backdrop-filter: none;
+            }
+
             #chapterNavBtn {
                 position: fixed;
                 top: 10px;
                 left: 10px;
                 z-index: 1100;
-                padding: 6px 10px;
-                font-size: 12px;
+
+                /* 恢复按钮大小 */
+                padding: 8px 14px;
+                font-size: 14px;
+
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             }
 
