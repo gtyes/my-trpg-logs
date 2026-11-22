@@ -37,6 +37,8 @@
             z-index: 1200;
 
             display: none;              /* 默认隐藏，由 JS 切模式时控制 */
+            flex-direction: row;        /* 关键：横向 */
+            flex-wrap: nowrap !important; /* 关键：不换行 */
             justify-content: center;
             align-items: center;
             gap: 10px;
@@ -44,13 +46,38 @@
             margin: 0;
             padding: 8px 12px;
 
-            background: rgba(0, 0, 0, 0.88);
+            /* 毛玻璃半透明 */
+            background: rgba(30, 30, 30, 0.42);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-top: 1px solid rgba(255, 255, 255, 0.16);
             border-radius: 0;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.35);
 
-            flex-wrap: nowrap;          /* 强制一行 */
+            white-space: nowrap;
+            overflow-x: auto;           /* 极端窄屏也不换行，改为横向滚动 */
+            overflow-y: hidden;
+        }
+
+        /* 分页条里的每一项都不收缩、不换行 */
+        #paginationContainer > * {
+            flex: 0 0 auto;
             white-space: nowrap;
         }
+
+        #paginationContainer .pagination-info {
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        #paginationContainer .pagination-jump {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 5px;
+            margin-left: 0;
+        }
+
 
         /* 避免底部内容被固定栏挡住 */
         body {
@@ -649,92 +676,43 @@
         }
         
         /* ========== 响应式设计 ========== */
-        @media (max-width: 768px) {
-            #paginationContainer {
-                gap: 5px;
-                padding: 6px 8px;
-            }
-
-            #paginationContainer .pagination-info {
-                font-size: 11px;
-                margin: 0;
-            }
-
-            #paginationContainer .pagination-btn,
-            #paginationContainer .control-btn {
-                padding: 5px 8px;
-                font-size: 11px;
-            }
-
-            #paginationContainer .pagination-jump input {
-                width: 42px;
-                padding: 3px;
-                font-size: 11px;
-            }
-            #chapterNavBtn {
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                z-index: 1100;       /* 高于 top-header 的 1000 */
-                padding: 6px 10px;
-                font-size: 12px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            }
-
-            /* 给固定按钮让出位置，避免和“切换分页模式”按钮重叠 */
-            .top-controls.left-controls {
-                padding-left: 90px;
-            }
-        }
-
-        /* 特别窄的屏幕，进一步压缩 */
-        @media (max-width: 420px) {
-            #paginationContainer .pagination-info {
-                display: none;   /* 页码已经在输入框里，隐藏文字避免换行 */
-            }
-
-            #paginationContainer .pagination-jump input {
-                width: 38px;
-            }
-        }
-
         @media (max-width: 1100px) {
             .floating-image-right {
                 width: 300px;
                 height: 300px;
             }
-            
+
             .image-toggle-btn {
                 top: 100px;
             }
         }
+
         @media (max-width: 768px) {
+            /* 悬浮图片 */
             .floating-image-right {
                 width: 200px;
                 height: 200px;
             }
-            
+
             .image-toggle-btn {
                 top: 80px;
                 width: 25px;
                 height: 35px;
                 font-size: 12px;
             }
-        }
-        @media (max-width: 768px) {
+
+            /* 筛选面板 */
             .filter-panel {
                 width: 90%;
                 right: -95%;
                 top: 80px;
             }
-            
-            #channelFilters {
-                max-height: 150px; /* 手机端稍矮一些 */
-            }
-        }
 
-        
-        @media (max-width: 768px) {
+            #channelFilters {
+                max-height: 150px;
+            }
+
+            /* 顶部标题栏 */
             .top-header {
                 flex-direction: column;
                 gap: 12px;
@@ -742,58 +720,112 @@
                 position: relative;
                 justify-content: flex-start;
             }
-            
+
             .log-title {
                 margin: 10px 0;
                 order: 1;
-                font-weight: bold; 
+                font-weight: bold;
             }
+
             .top-controls.left-controls {
                 position: static;
-                order: 0; /* 左侧按钮在上方 */
+                order: 0;
                 justify-content: flex-start;
                 width: 100%;
+                padding-left: 90px; /* 给固定的章节导航按钮让位 */
             }
-            
+
             .top-controls.right-controls {
                 position: static;
-                order: 2; /* 右侧按钮在下方 */
+                order: 2;
                 justify-content: flex-end;
                 width: 100%;
             }
-            
+
             .search-box input {
                 width: 100%;
             }
-            
+
+            /* 手机端固定章节导航按钮 */
+            #chapterNavBtn {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1100;
+                padding: 6px 10px;
+                font-size: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            /* 章节侧栏 */
             .floating-sidebar {
                 width: 90%;
                 left: 5%;
                 top: 80px;
-                display: none; /* 手机端默认关闭 */
+                display: none;
             }
-            
+
             .floating-sidebar.show {
                 display: block;
             }
-            
-            /* 修改点：让消息区域贴边 */
+
+            /* 主内容贴边 */
             .main-container {
-                padding: 0 !important;      /* 清除所有内边距 */
-                margin: 0 !important;       /* 清除外边距 */
+                padding: 0 !important;
+                margin: 0 !important;
                 max-width: 100% !important;
             }
-            
-            .pagination-container {
-                flex-direction: column;
-                gap: 8px;
-                padding: 12px;
-            }
-            
-            /* 修改点：让消息容器贴边，去掉圆角 */
+
             .log-container {
-                border-radius: 0 !important;   /* 完全贴边 */
-                padding: 12px !important;      /* 保留内部留白，文字不撞边 */
+                border-radius: 0 !important;
+                padding: 12px !important;
+            }
+
+            /* 底部分页条：强制一行，不换行 */
+            #paginationContainer {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 4px;
+                padding: 6px 8px;
+            }
+
+            #paginationContainer > * {
+                flex: 0 0 auto;
+            }
+
+            #paginationContainer .pagination-info {
+                font-size: 11px;
+                margin: 0 2px;
+                white-space: nowrap;
+            }
+
+            #paginationContainer .pagination-btn,
+            #paginationContainer .control-btn {
+                padding: 5px 7px;
+                font-size: 11px;
+                white-space: nowrap;
+            }
+
+            #paginationContainer .pagination-jump {
+                margin-left: 0;
+                gap: 3px;
+                flex-wrap: nowrap;
+            }
+
+            #paginationContainer .pagination-jump input {
+                width: 38px;
+                padding: 3px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            #paginationContainer .pagination-info {
+                display: none;
+            }
+
+            #paginationContainer .pagination-jump input {
+                width: 34px;
             }
         }
     </style>
