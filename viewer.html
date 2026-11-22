@@ -671,6 +671,20 @@
                 padding: 3px;
                 font-size: 11px;
             }
+            #chapterNavBtn {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1100;       /* 高于 top-header 的 1000 */
+                padding: 6px 10px;
+                font-size: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            /* 给固定按钮让出位置，避免和“切换分页模式”按钮重叠 */
+            .top-controls.left-controls {
+                padding-left: 90px;
+            }
         }
 
         /* 特别窄的屏幕，进一步压缩 */
@@ -798,7 +812,7 @@
 <div class="top-header">
     <!-- 左侧控制按钮 -->
     <div class="top-controls left-controls">
-        <button class="control-btn" onclick="toggleChapterSidebar()">章节导航</button>
+        <button class="control-btn" id="chapterNavBtn" onclick="toggleChapterSidebar()">章节导航</button>
         <button class="control-btn" id="viewModeBtn" onclick="toggleViewMode()">切换分页模式</button>
     </div>
     
