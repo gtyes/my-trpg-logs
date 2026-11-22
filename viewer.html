@@ -1081,7 +1081,7 @@
             const checkbox = document.getElementById('collapseChatCheckbox');
             if (checkbox) {
                 collapseChatChannels = checkbox.checked;
-                renderCurrentPage(); // 重新渲染当前页
+                renderView(false); // 重新渲染当前页
             }
         }
         // 从URL获取日志文件
