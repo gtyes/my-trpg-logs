@@ -828,6 +828,7 @@
         let viewMode = 'scroll';          // 'scroll' 连续 | 'paged' 分页
         let scrollLoadedCount = 0;        // 连续模式已经渲染了多少条
         let scrollObserver = null;
+        let currentContinuousChapter = 0; 
         let currentPage = 1;
         const pageSize = 50;
         let currentFilters = {
@@ -1477,37 +1478,122 @@
                 renderCurrentPage();
                 return;
             }
+
+            if (resetScroll) {
+                currentContinuousChapter = 0;
+            }
+
             renderContinuous(resetScroll);
+        }
+
+        // 把 filteredLogs 按章节切成一段一段
+        function getChapterRanges() {
+            const logs = filteredLogs;
+            const ranges = [];
+
+            if (!logs.length) return ranges;
+
+            const chapterStarts = [];
+            logs.forEach((msg, index) => {
+                if (msg.isChapter) chapterStarts.push(index);
+            });
+
+            // 没有任何章节，就当作一个整体
+            if (chapterStarts.length === 0) {
+                ranges.push({ start: 0, end: logs.length - 1, chapterName: '' });
+                return ranges;
+            }
+
+            // 第一个章节之前的消息
+            if (chapterStarts[0] > 0) {
+                ranges.push({
+                    start: 0,
+                    end: chapterStarts[0] - 1,
+                    chapterName: ''
+                });
+            }
+
+            // 每个章节：从章节消息开始，到下一个章节消息之前
+            chapterStarts.forEach((start, i) => {
+                const end = i + 1 < chapterStarts.length
+                    ? chapterStarts[i + 1] - 1
+                    : logs.length - 1;
+
+                const text = logs[start].text || '';
+                ranges.push({
+                    start,
+                    end,
+                    chapterName: text.replace('=== ', '').replace(' ===', '').trim()
+                });
+            });
+
+            return ranges;
+        }
+
+        // 获取当前连续章节范围
+        function getContinuousRange() {
+            const ranges = getChapterRanges();
+            if (!ranges.length) return null;
+
+            if (currentContinuousChapter < 0) currentContinuousChapter = 0;
+            if (currentContinuousChapter >= ranges.length) {
+                currentContinuousChapter = ranges.length - 1;
+            }
+
+            return ranges[currentContinuousChapter];
         }
 
         function renderContinuous(reset = true, upToIndex = null) {
             const container = document.getElementById('logMessages');
-            const total = filteredLogs.length;
+            const ranges = getChapterRanges();
 
-            if (total === 0) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#7f8c8d;">没有找到匹配的消息</div>';
+            if (!ranges.length) {
+                container.innerHTML =
+                    '<div style="text-align:center;padding:40px;color:#7f8c8d;">没有找到匹配的消息</div>';
                 return;
             }
 
-            if (reset) {
-                scrollLoadedCount = Math.min(pageSize, total);
+            // 如果目标是某条消息，先找到它属于哪个章节
+            if (upToIndex !== null) {
+                const targetRange = ranges.findIndex(r =>
+                    upToIndex >= r.start && upToIndex <= r.end
+                );
+                if (targetRange !== -1) {
+                    currentContinuousChapter = targetRange;
+                }
             }
 
-            // 跳转到某条消息 / 某章节时，至少加载到目标位置
+            const range = getContinuousRange();
+            if (!range) return;
+
+            const chapterLength = range.end - range.start + 1;
+
+            if (reset) {
+                scrollLoadedCount = Math.min(pageSize, chapterLength);
+            }
+
+            // 跳转到某条消息时，至少加载到那条消息
             if (upToIndex !== null) {
+                const wanted = upToIndex - range.start + 1;
                 scrollLoadedCount = Math.min(
-                    Math.max(pageSize, upToIndex + 1),
-                    total
+                    Math.max(pageSize, wanted),
+                    chapterLength
                 );
             }
 
-            const html = renderLogMessages(filteredLogs.slice(0, scrollLoadedCount));
+            if (scrollLoadedCount > chapterLength) scrollLoadedCount = chapterLength;
+            if (scrollLoadedCount <= 0) scrollLoadedCount = Math.min(pageSize, chapterLength);
 
-            container.innerHTML = html;
+            const startAbs = range.start;
+            const endAbs = range.start + scrollLoadedCount;
 
-            // 底部哨兵
-            container.insertAdjacentHTML('beforeend',
-                '<div id="scrollSentinel" style="height: 1px;"></div>'
+            container.innerHTML = renderLogMessages(
+                filteredLogs.slice(startAbs, endAbs)
+            );
+
+            container.insertAdjacentHTML(
+                'beforeend',
+                '<div id="scrollSentinel" style="height:1px;"></div>'
             );
 
             addMessageDoubleClickHandlers();
@@ -1516,23 +1602,44 @@
         }
 
         function loadMoreScroll() {
-            const total = filteredLogs.length;
-            if (scrollLoadedCount >= total) return;
+            const range = getContinuousRange();
+            if (!range) return;
 
-            const start = scrollLoadedCount;
-            scrollLoadedCount = Math.min(scrollLoadedCount + pageSize, total);
+            const chapterLength = range.end - range.start + 1;
+            if (scrollLoadedCount >= chapterLength) return;
 
-            const html = renderLogMessages(filteredLogs.slice(start, scrollLoadedCount));
+            const startAbs = range.start + scrollLoadedCount;
+            const newCount = Math.min(scrollLoadedCount + pageSize, chapterLength);
+            const endAbs = range.start + newCount;
+
+            const html = renderLogMessages(
+                filteredLogs.slice(startAbs, endAbs)
+            );
+
             const sentinel = document.getElementById('scrollSentinel');
-
             if (sentinel) {
                 sentinel.insertAdjacentHTML('beforebegin', html);
-            } else {
-                document.getElementById('logMessages').insertAdjacentHTML('beforeend', html);
             }
+
+            scrollLoadedCount = newCount;
 
             addMessageDoubleClickHandlers();
             updateChapterEndNav();
+        }
+
+        function jumpToContinuousChapter(index) {
+            const ranges = getChapterRanges();
+            if (index < 0 || index >= ranges.length) return;
+
+            currentContinuousChapter = index;
+            scrollLoadedCount = 0;
+
+            renderContinuous(true);
+
+            const container = document.getElementById('logMessages');
+            if (container) {
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
 
         function setupScrollObserver() {
@@ -1558,37 +1665,33 @@
 
             if (viewMode !== 'scroll') return;
 
-            const total = filteredLogs.length;
-            const lastIndex = scrollLoadedCount - 1;
-            if (lastIndex < 0) return;
+            const ranges = getChapterRanges();
+            const range = getContinuousRange();
+            if (!range) return;
 
-            const nextIndex = scrollLoadedCount;
-            const atChapterEnd =
-                scrollLoadedCount >= total ||
-                (filteredLogs[nextIndex] && filteredLogs[nextIndex].isChapter);
+            const chapterLength = range.end - range.start + 1;
 
-            if (!atChapterEnd) return;
+            // 当前章节还没加载完，不显示
+            if (scrollLoadedCount < chapterLength) return;
 
-            const chapter = findChapterByMessageIndex(lastIndex);
-            if (!chapter) return;
+            // 只有一个章节/整体时不显示
+            if (ranges.length <= 1) return;
 
-            const sorted = [...chapters].sort((a, b) => a.position - b.position);
-            const idx = sorted.findIndex(c => c.name === chapter.name);
-            if (idx === -1) return;
-
-            const prev = sorted[idx - 1];
-            const next = sorted[idx + 1];
+            const idx = currentContinuousChapter;
+            const prev = idx > 0 ? ranges[idx - 1] : null;
+            const next = idx < ranges.length - 1 ? ranges[idx + 1] : null;
+            const label = range.chapterName || '本章';
 
             const navHtml = `
                 <div id="chapterEndNav" class="chapter-end-nav">
                     <button class="pagination-btn"
-                        onclick="jumpToChapter(${idx - 1})"
+                        onclick="jumpToContinuousChapter(${idx - 1})"
                         ${prev ? '' : 'disabled'}>上一章</button>
 
-                    <span>${chapter.name}</span>
+                    <span>${label}</span>
 
                     <button class="pagination-btn"
-                        onclick="jumpToChapter(${idx + 1})"
+                        onclick="jumpToContinuousChapter(${idx + 1})"
                         ${next ? '' : 'disabled'}>下一章</button>
                 </div>
             `;
@@ -2352,34 +2455,37 @@ function getChannelMaskStyle(channel) {
         }
         // 章节跳转
         function jumpToChapter(chapterIndex) {
-            if (chapters[chapterIndex]) {
-                const chapter = chapters[chapterIndex];
-                
-                // 查找章节消息在日志中的位置
-                const chapterMsgIndex = filteredLogs.findIndex(msg => 
-                    msg.isChapter && msg.text.includes(chapter.name)
-                );
-                
-                if (chapterMsgIndex !== -1) {
-                    // 计算章节所在的页
-                    const targetPage = calculatePageForMessage(chapterMsgIndex);
-                    currentPage = targetPage;
-                    renderView(true);
-                }
-                if (viewMode === 'scroll') {
-                    renderContinuous(true, chapterMsgIndex);
+            const chapter = chapters[chapterIndex];
+            if (!chapter) return;
 
-                    setTimeout(() => {
-                        const chapterRow = document.querySelector('.chapter-title');
-                        if (chapterRow) {
-                            chapterRow.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    }, 100);
+            clearFilters();
+
+            setTimeout(() => {
+                if (viewMode === 'scroll') {
+                    const ranges = getChapterRanges();
+                    const rangeIndex = ranges.findIndex(
+                        r => r.chapterName === chapter.name
+                    );
+
+                    if (rangeIndex !== -1) {
+                        jumpToContinuousChapter(rangeIndex);
+                    }
                 } else {
-                    currentPage = calculatePageForMessage(chapterMsgIndex);
-                    renderCurrentPage();
+                    const chapterMsgIndex = filteredLogs.findIndex(msg => {
+                        if (!msg.isChapter) return false;
+                        const name = (msg.text || '')
+                            .replace('=== ', '')
+                            .replace(' ===', '')
+                            .trim();
+                        return name === chapter.name;
+                    });
+
+                    if (chapterMsgIndex !== -1) {
+                        currentPage = calculatePageForMessage(chapterMsgIndex);
+                        renderCurrentPage();
+                    }
                 }
-            }
+            }, 100);
         }
 
         // ========== UI控制函数 ==========
