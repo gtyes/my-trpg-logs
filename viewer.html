@@ -1322,171 +1322,179 @@ function renderFilterOptions() {
         }
         
         // 应用筛选
-function applyFilters() {
-    const searchText = document.getElementById('searchInput').value.toLowerCase();
-    currentFilters.searchText = searchText;
-    
-    // 重置频道筛选数组
-    currentFilters.channels = [];
-    
-    // 收集选中的频道
-    document.querySelectorAll('#channelFilters input[type="checkbox"]:checked').forEach(checkbox => {
-        currentFilters.channels.push(checkbox.value);
-    });
-    
-    let filtered = logData.logs || [];
-    
-    // 按频道筛选
-    if (currentFilters.channels.length > 0) {
-        filtered = filtered.filter(msg => 
-            currentFilters.channels.includes(msg.channel)
-        );
-    }
-    
-    // 按搜索文本筛选
-    if (searchText) {
-        filtered = filtered.filter(msg => 
-            (msg.text && msg.text.toLowerCase().includes(searchText)) ||
-            (msg.name && msg.name.toLowerCase().includes(searchText)) ||
-            (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
-            (typeof msg.dice === 'string' && msg.dice.toLowerCase().includes(searchText))
-        );
-    }
-    
-    filteredLogs = filtered;
-    currentPage = 1;
-    renderCurrentPage();
-    closeFilterPanel();
-    setTimeout(() => {
-        updateChapterImages();
-    }, 100);
-}      
-        // 清除筛选
-function clearFilters() {
-    currentFilters = {
-        channels: [],
-        searchText: ''
-    };
-    
-    // 清空搜索框
-    document.getElementById('searchInput').value = '';
-    
-    // 取消所有频道筛选复选框
-    document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    
-    // 取消闲聊折叠复选框
-    const collapseCheckbox = document.getElementById('collapseChatCheckbox');
-    if (collapseCheckbox) {
-        collapseCheckbox.checked = false;
-    }
-    collapseChatChannels = false;
-    
-    // 恢复为原始日志数据
-    filteredLogs = logData.logs || [];
-    currentPage = 1;
-    renderCurrentPage();
-    closeFilterPanel();
-    setTimeout(() => {
-        updateChapterImages();
-    }, 100);
-}
-// 根据消息索引（在 filteredLogs 中的位置）查找所属章节
-function findChapterByMessageIndex(index) {
-    if (!chapters || chapters.length === 0) return null;
-    const sorted = [...chapters].sort((a, b) => a.position - b.position);
-    // 找 filteredLogs 中最后一个 isChapter 且索引 <= index 的章节
-    let result = null;
-    for (let i = index; i >= 0; i--) {
-        if (filteredLogs[i] && filteredLogs[i].isChapter) {
-            const name = filteredLogs[i].text.replace('=== ', '').replace(' ===', '');
-            result = sorted.find(c => c.name === name) || null;
-            if (result) break;
-        }
-    }
-    return result || sorted[0] || null;
-} 
-// 渲染当前页
-        // 替换原来的renderCurrentPage函数
-function renderCurrentPage() {
-    const pages = computePages();
-
-    // 空数据保护
-    if (pages.length === 0) {
-        currentRenderedChapter = null;
-        document.getElementById('logMessages').innerHTML =
-            '<div style="text-align: center; padding: 40px; color: #7f8c8d;">没有找到匹配的消息</div>';
-        updatePaginationInfo();
-        return;
-    }
-
-    // 页码越界时夹紧（关键：防止 currentPage 超过真实页数导致空白）
-    if (currentPage < 1) currentPage = 1;
-    if (currentPage > pages.length) currentPage = pages.length;
-
-    const { start, end } = pages[currentPage - 1];
-    const pageMessages = filteredLogs.slice(start, end + 1);
-
-    currentRenderedChapter = findChapterByMessageIndex(start);
-
-    const container = document.getElementById('logMessages');
-    container.innerHTML = renderLogMessages(pageMessages);
-
-    updatePaginationInfo();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    setTimeout(() => { updateChapterImages(); }, 100);
-    addMessageDoubleClickHandlers();
-}
-
-// 添加双击事件处理函数
-function addMessageDoubleClickHandlers() {
-    const messageRows = document.querySelectorAll('.message-row');
-    messageRows.forEach(row => {
-        row.addEventListener('dblclick', function() {
-            const messageId = this.getAttribute('data-id');
-            if (messageId) {
-                jumpToMessage(messageId);
+        function applyFilters() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            currentFilters.searchText = searchText;
+            
+            // 重置频道筛选数组
+            currentFilters.channels = [];
+            
+            // 收集选中的频道
+            document.querySelectorAll('#channelFilters input[type="checkbox"]:checked').forEach(checkbox => {
+                currentFilters.channels.push(checkbox.value);
+            });
+            
+            let filtered = logData.logs || [];
+            
+            // 按频道筛选
+            if (currentFilters.channels.length > 0) {
+                filtered = filtered.filter(msg => 
+                    currentFilters.channels.includes(msg.channel)
+                );
             }
-        });
-    });
-}
-// 跳转到指定消息
-// 简化jumpToMessage函数，确保按filteredLogs的顺序计算
-// 修改jumpToMessage函数
-function jumpToMessage(messageId) {
-    clearFilters(); // 回到原始日志
-    setTimeout(() => {
-        const messageIndex = filteredLogs.findIndex(msg => msg.id === messageId);
-        if (messageIndex === -1) {
-            alert('未找到该消息，可能消息已被删除或修改');
-            return;
+            
+            // 按搜索文本筛选
+            if (searchText) {
+                filtered = filtered.filter(msg => 
+                    (msg.text && msg.text.toLowerCase().includes(searchText)) ||
+                    (msg.name && msg.name.toLowerCase().includes(searchText)) ||
+                    (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
+                    (typeof msg.dice === 'string' && msg.dice.toLowerCase().includes(searchText))
+                );
+            }
+            
+            filteredLogs = filtered;
+            currentPage = 1;
+            renderCurrentPage();
+            closeFilterPanel();
+            setTimeout(() => {
+                updateChapterImages();
+            }, 100);
+        }      
+                // 清除筛选
+        function clearFilters() {
+            currentFilters = {
+                channels: [],
+                searchText: ''
+            };
+            
+            // 清空搜索框
+            document.getElementById('searchInput').value = '';
+            
+            // 取消所有频道筛选复选框
+            document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // 取消闲聊折叠复选框
+            const collapseCheckbox = document.getElementById('collapseChatCheckbox');
+            if (collapseCheckbox) {
+                collapseCheckbox.checked = false;
+            }
+            collapseChatChannels = false;
+            
+            // 恢复为原始日志数据
+            filteredLogs = logData.logs || [];
+            currentPage = 1;
+            renderCurrentPage();
+            closeFilterPanel();
+            setTimeout(() => {
+                updateChapterImages();
+            }, 100);
         }
-        currentPage = calculatePageForMessage(messageIndex);
-        renderCurrentPage();
-        setTimeout(() => highlightMessage(messageId), 500);
-    }, 100);
-}
-// 添加高亮函数
-function highlightMessage(messageId) {
-    const targetRow = document.querySelector(`.message-row[data-id="${messageId}"]`);
-    if (targetRow) {
-        // 添加高亮样式
-        targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
-        targetRow.style.borderLeft = '3px solid #8b0000';
-        targetRow.style.transition = 'all 0.3s ease';
-        
-        // 滚动到该消息位置
-        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // 5秒后清除高亮
-        setTimeout(() => {
-            targetRow.style.backgroundColor = '';
-            targetRow.style.borderLeft = '';
-        }, 5000);
-    }
-}
+        // 根据消息索引（在 filteredLogs 中的位置）查找所属章节
+        function findChapterByMessageIndex(index) {
+            if (!chapters || chapters.length === 0) return null;
+            const sorted = [...chapters].sort((a, b) => a.position - b.position);
+            // 找 filteredLogs 中最后一个 isChapter 且索引 <= index 的章节
+            let result = null;
+            for (let i = index; i >= 0; i--) {
+                if (filteredLogs[i] && filteredLogs[i].isChapter) {
+                    const name = filteredLogs[i].text.replace('=== ', '').replace(' ===', '');
+                    result = sorted.find(c => c.name === name) || null;
+                    if (result) break;
+                }
+            }
+            return result || sorted[0] || null;
+        } 
+        // 渲染当前页
+                // 替换原来的renderCurrentPage函数
+        function renderCurrentPage() {
+            const pages = computePages();
+
+            // 空数据保护
+            if (pages.length === 0) {
+                currentRenderedChapter = null;
+                document.getElementById('logMessages').innerHTML =
+                    '<div style="text-align: center; padding: 40px; color: #7f8c8d;">没有找到匹配的消息</div>';
+                updatePaginationInfo();
+                return;
+            }
+
+            // 页码越界时夹紧（关键：防止 currentPage 超过真实页数导致空白）
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > pages.length) currentPage = pages.length;
+
+            const { start, end } = pages[currentPage - 1];
+            const pageMessages = filteredLogs.slice(start, end + 1);
+
+            currentRenderedChapter = findChapterByMessageIndex(start);
+
+            const container = document.getElementById('logMessages');
+            container.innerHTML = renderLogMessages(pageMessages);
+
+            updatePaginationInfo();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            setTimeout(() => { updateChapterImages(); }, 100);
+            addMessageDoubleClickHandlers();
+        }
+
+        // 添加双击事件处理函数
+        function addMessageDoubleClickHandlers() {
+            const messageRows = document.querySelectorAll('.message-row');
+            messageRows.forEach(row => {
+                row.addEventListener('dblclick', function() {
+                    const messageId = this.getAttribute('data-id');
+                    if (messageId) {
+                        jumpToMessage(messageId);
+                    }
+                });
+            });
+        }
+
+        function jumpToMessage(messageId) {
+            const allLogs = logData.logs || [];
+            const targetId = String(messageId);
+
+            // 先在完整日志里查找，避免受当前筛选/搜索状态影响
+            const messageIndex = allLogs.findIndex(msg => String(msg.id) === targetId);
+
+            if (messageIndex === -1) {
+                alert('未找到该消息，可能消息已被删除或修改');
+                return;
+            }
+
+            // 回到完整日志
+            clearFilters();
+
+            setTimeout(() => {
+                currentPage = calculatePageForMessage(messageIndex);
+                renderCurrentPage();
+                setTimeout(() => highlightMessage(targetId), 500);
+            }, 100);
+        }
+
+        // 添加高亮函数
+        function highlightMessage(messageId) {
+            const targetId = String(messageId);
+            const targetRow = Array.from(document.querySelectorAll('.message-row'))
+                .find(row => row.dataset.id === targetId);
+
+            if (targetRow) {
+                targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
+                targetRow.style.borderLeft = '3px solid #8b0000';
+                targetRow.style.transition = 'all 0.3s ease';
+
+                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                setTimeout(() => {
+                    targetRow.style.backgroundColor = '';
+                    targetRow.style.borderLeft = '';
+                }, 5000);
+            }
+        }
+
         // 渲染日志消息
         function renderLogMessages(logs) {
             if (logs.length === 0) {
@@ -1632,7 +1640,7 @@ function highlightMessage(messageId) {
 
             // ---- 组装消息行 ----
             return `
-                <div class="message-row" data-id="${msg.id}">
+                <div class="message-row" data-id="${String(msg.id)}">
                     <div class="avatar-box">
                         ${avatarHtml}
                     </div>
