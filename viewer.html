@@ -1310,22 +1310,33 @@
         let isImageCollapsed = false; // 记录图片是否收起
 
         function initVnMediaEvents() {
-            vnBgmEvents = (logData.bgmEvents || [])
-                .map(event => ({
-                    position: parseInt(event.position, 10) || 0,
-                    url: String(event.url || '')
-                }))
-                .filter(event => event.position > 0)
-                .sort((a, b) => a.position - b.position);
+            function normalizeEvents(list) {
+                return (Array.isArray(list) ? list : [])
+                    .map(event => ({
+                        position: parseInt(
+                            event.position !== undefined
+                                ? event.position
+                                : event.messageIndex,
+                            10
+                        ) || 0,
+                        url: String(
+                            event.url ||
+                            event.bgmUrl ||
+                            event.backgroundUrl ||
+                            ''
+                        )
+                    }))
+                    .filter(event => event.position > 0)
+                    .sort((a, b) => a.position - b.position);
+            }
 
-            vnBackgroundEvents = (logData.backgroundEvents || [])
-                .map(event => ({
-                    position: parseInt(event.position, 10) || 0,
-                    url: String(event.url || '')
-                }))
-                .filter(event => event.position > 0)
-                .sort((a, b) => a.position - b.position);
+            vnBgmEvents = normalizeEvents(logData.bgmEvents);
+            vnBackgroundEvents = normalizeEvents(logData.backgroundEvents);
+
+            console.log('[VN] BGM 事件:', vnBgmEvents);
+            console.log('[VN] 背景事件:', vnBackgroundEvents);
         }
+
 
         function getLatestBgmEvent(position) {
             let result = null;
