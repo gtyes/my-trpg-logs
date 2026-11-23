@@ -613,34 +613,53 @@
         }
 
         /* ========== 立绘 + 对话框整体 ========== */
+        /* 整体位置：比之前更靠下 */
         .vn-dialog-area {
             position: absolute;
             left: 50%;
-            bottom: 90px;
+            bottom: 50px;              /* 原来是 90px，往下移 */
             transform: translateX(-50%);
-            width: min(900px, 86vw);
+            width: min(1180px, 92vw);  /* 对话框左右拉长 */
             z-index: 2;
         }
 
-        /* 立绘紧贴对话框左上边缘 */
-        .vn-portrait-wrap {
+        /* 左右立绘层 */
+        .vn-portrait-layer {
             position: absolute;
-            left: 0;
-            bottom: 100%;
-            height: min(55vh, 520px);
-            display: flex;
-            align-items: flex-end;
+            inset: 0;
             pointer-events: none;
             z-index: 0;
-            margin: 0;
         }
 
-        .vn-portrait {
+        .vn-portrait-slot {
+            position: absolute;
+            bottom: 100%;              /* 贴在对话框上边缘 */
+            height: min(52vh, 480px);
+            display: none;
+            align-items: flex-end;
+        }
+
+        .vn-portrait-slot.left {
+            left: 0;
+        }
+
+        .vn-portrait-slot.right {
+            right: 0;
+        }
+
+        .vn-portrait-slot img {
             display: block;
             max-height: 100%;
-            max-width: 38vw;
+            max-width: 30vw;
             object-fit: contain;
             filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+
+        /* 非当前说话人：变暗 */
+        .vn-portrait-slot.dimmed img {
+            opacity: 0.55;
+            filter: grayscale(0.25) drop-shadow(0 10px 25px rgba(0, 0, 0, 0.4));
         }
 
         /* 对话框 */
@@ -1204,8 +1223,13 @@
         </div>
 
         <div class="vn-dialog-area">
-            <div class="vn-portrait-wrap" id="vnPortraitWrap">
-                <img id="vnPortrait" class="vn-portrait" alt="">
+            <div class="vn-portrait-layer">
+                <div class="vn-portrait-slot left" id="vnPortraitLeft">
+                    <img id="vnPortraitLeftImg" alt="">
+                </div>
+                <div class="vn-portrait-slot right" id="vnPortraitRight">
+                    <img id="vnPortraitRightImg" alt="">
+                </div>
             </div>
 
             <div class="vn-topbar">
@@ -1299,10 +1323,11 @@
             const range = getContinuousRange();
             return range ? range.start : 0;
         }
+
         function buildVnSteps() {
             vnPortraitMap = {};
 
-            // 先记录每个角色第一次出现的头像，作为缺省立绘
+            // 记录每个角色第一次出现的头像
             filteredLogs.forEach(msg => {
                 if (msg && msg.name && msg.icon && !vnPortraitMap[msg.name]) {
                     vnPortraitMap[msg.name] = msg.icon;
@@ -1312,10 +1337,13 @@
             const steps = [];
             let currentChapterName = '';
 
+            // 左右交替用
+            let lastPortraitName = '';
+            let lastPortraitSide = 'left';
+
             filteredLogs.forEach((msg, index) => {
                 if (!msg) return;
 
-                // 如果开启了“隐藏所有闲聊”，对话模式也跳过闲聊
                 if (hideChatChannels && msg.channel && isChatChannelName(msg.channel)) {
                     return;
                 }
@@ -1340,11 +1368,33 @@
                 const isSystem = msg.name &&
                     String(msg.name).toLowerCase() === 'system';
 
+                const portraitUrl = isSystem
+                    ? ''
+                    : (msg.icon || vnPortraitMap[msg.name] || '');
+
+                let side = null;
+
+                // 只有有立绘的角色才参与左右交替
+                if (portraitUrl) {
+                    if (!lastPortraitName) {
+                        side = 'left';
+                    } else if (msg.name === lastPortraitName) {
+                        side = lastPortraitSide;
+                    } else {
+                        side = lastPortraitSide === 'left' ? 'right' : 'left';
+                    }
+
+                    lastPortraitName = msg.name;
+                    lastPortraitSide = side;
+                }
+
                 steps.push({
                     type: isSystem ? 'system' : 'message',
                     index,
                     chapterName: currentChapterName,
-                    msg
+                    msg,
+                    portraitUrl,
+                    side
                 });
             });
 
@@ -1488,6 +1538,8 @@
             const chapterCard = document.getElementById('vnChapterCard');
             const imageStage = document.getElementById('vnImageStage');
             const stageImage = document.getElementById('vnStageImage');
+            // 新增：渲染左右立绘
+            renderVnPortraits(step);
             // 每次切换步骤先取消加暗
             bg.classList.remove('chat-dim');
             // 每次切换步骤，先把图片层收起来
@@ -1503,7 +1555,6 @@
             if (step.type === 'chapter') {
                 chapterCard.classList.add('show');
                 dialog.style.display = 'none';
-                document.getElementById('vnPortraitWrap').style.display = 'none';
 
                 document.getElementById('vnChapterName').textContent =
                     step.chapterName || '新章节';
@@ -1525,7 +1576,6 @@
             if (step.type === 'system') {
                 dialog.className = 'vn-dialog system';
                 document.getElementById('vnName').textContent = '旁白';
-                document.getElementById('vnPortraitWrap').style.display = 'none';
 
                 document.getElementById('vnExtend').style.display = 'none';
 
@@ -1534,8 +1584,6 @@
             }
 
             // 普通消息
-            document.getElementById('vnPortraitWrap').style.display = 'flex';
-
             const isChat = isChatChannelName(msg.channel);
 
             // 闲聊时背景加暗，其他频道不加暗
@@ -1556,9 +1604,6 @@
                 nameEl.textContent += ` > @${msg.to}`;
             }
 
-            // 立绘
-            const portraitUrl = msg.icon || vnPortraitMap[msg.name] || '';
-            updateVnPortrait(portraitUrl, msg.name);
 
             // 骰子/扩展信息
             const extendText = getFormattedExtendText(msg) || '';
@@ -1576,19 +1621,61 @@
             startVnTyping(msg.text || '');
         }
 
-        function updateVnPortrait(url) {
-            const wrap = document.getElementById('vnPortraitWrap');
-            const img = document.getElementById('vnPortrait');
-            if (!wrap || !img) return;
+        function setVnPortraitSlot(slotId, url, dimmed) {
+            const slot = document.getElementById(slotId);
+            if (!slot) return;
+
+            const img = slot.querySelector('img');
 
             if (!url) {
-                img.removeAttribute('src');
-                wrap.style.display = 'none';
+                slot.style.display = 'none';
+                if (img) img.removeAttribute('src');
+                slot.classList.remove('dimmed');
                 return;
             }
 
-            wrap.style.display = 'flex';
-            img.src = url;
+            slot.style.display = 'flex';
+            slot.classList.toggle('dimmed', !!dimmed);
+
+            if (img) img.src = url;
+        }
+
+        function getPreviousPortraitStep(index) {
+            for (let i = index - 1; i >= 0; i--) {
+                const step = vnSteps[i];
+                if (step.type === 'message' && step.portraitUrl) {
+                    return step;
+                }
+            }
+            return null;
+        }
+
+        function renderVnPortraits(step) {
+            const leftId = 'vnPortraitLeft';
+            const rightId = 'vnPortraitRight';
+
+            // 先清空两边
+            setVnPortraitSlot(leftId, '', false);
+            setVnPortraitSlot(rightId, '', false);
+
+            if (step.type !== 'message') return;
+
+            const prev = getPreviousPortraitStep(vnIndex);
+
+            if (step.portraitUrl) {
+                const currentSlotId = step.side === 'right' ? rightId : leftId;
+                setVnPortraitSlot(currentSlotId, step.portraitUrl, false);
+
+                // 上一句是另一个有立绘的角色，留在他那一侧并变暗
+                if (prev && prev.msg.name !== step.msg.name) {
+                    const prevSlotId = prev.side === 'right' ? rightId : leftId;
+                    setVnPortraitSlot(prevSlotId, prev.portraitUrl, true);
+                }
+            } else if (prev) {
+                // 当前消息没立绘，保留上一个角色立绘并变暗
+                const prevSlotId = prev.side === 'right' ? rightId : leftId;
+                setVnPortraitSlot(prevSlotId, prev.portraitUrl, true);
+            }
         }
 
         function startVnTyping(text) {
