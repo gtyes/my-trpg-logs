@@ -1272,6 +1272,8 @@
         let vnBackgroundEvents = [];
         let vnBgmAudio = new Audio();
         let vnCurrentBgmUrl = '';
+        let vnSfxEvents = [];
+        let vnSfxAudios = [];   // 当前步骤正在播放的音效
         let chapterImageMap = {}; // 章节名 -> 右侧图片URL
         let extendFormats = {};
         let extendSettings = { ruleSystem: 'coc_houserule' };
@@ -1326,16 +1328,9 @@
         function initVnMediaEvents() {
             vnBgmEvents = normalizeVnMediaEvents(logData.bgmEvents);
             vnBackgroundEvents = normalizeVnMediaEvents(logData.backgroundEvents);
+            vnSfxEvents = normalizeVnMediaEvents(logData.sfxEvents);
 
-            // 只打一行汇总，不再输出整个数组
-            console.log(`[VN] 媒体事件：BGM ${vnBgmEvents.length} 条 / 背景 ${vnBackgroundEvents.length} 条`);
-
-            if (!vnBgmEvents.length) {
-                console.warn('[VN] 没有读到 BGM 事件（检查 bgmEvents 的 position/messageIndex）');
-            }
-            if (!vnBackgroundEvents.length) {
-                console.warn('[VN] 没有读到背景事件（检查 backgroundEvents 的 position/messageIndex）');
-            }
+            console.log(`[VN] 媒体事件：BGM ${vnBgmEvents.length} / 背景 ${vnBackgroundEvents.length} / 音效 ${vnSfxEvents.length}`);
         }
 
         function getLatestBgmEvent(position) {
@@ -1468,6 +1463,49 @@
             if (finalUrl) {
                 console.log('[VN] 背景切换 @', stepPosition, '→', finalUrl);
             }
+        }
+
+        function stopVnSfx() {
+            vnSfxAudios.forEach(audio => {
+                try {
+                    audio.pause();
+                    audio.currentTime = 0;
+                } catch (e) { /* 忽略 */ }
+            });
+            vnSfxAudios = [];
+        }
+
+        function applySfxForPosition(position) {
+            // 每次切消息，先停掉上一条的音效
+            stopVnSfx();
+
+            const pos = Number(position) || 0;
+            if (!pos) return;
+
+            const events = vnSfxEvents.filter(event => event.position === pos);
+            if (!events.length) return;
+
+            events.forEach(event => {
+                const src = resolveMediaUrl(event.url);
+                if (!src || src === '__stop__') return;
+
+                const audio = new Audio(src);
+                audio.loop = false;        // 只播一次
+                audio.volume = 0.8;        // 音效音量，可自行调整
+                audio.preload = 'auto';
+
+                audio.addEventListener('ended', () => {
+                    vnSfxAudios = vnSfxAudios.filter(item => item !== audio);
+                }, { once: true });
+
+                const playPromise = audio.play();
+                if (playPromise && typeof playPromise.catch === 'function') {
+                    playPromise.catch(() => {});   // 自动播放被拦时静默失败
+                }
+
+                vnSfxAudios.push(audio);
+                console.log('[VN] 音效:', src);
+            });
         }
 
         // 获取当前阅读位置在 filteredLogs 中的索引
@@ -1626,6 +1664,7 @@
 
             // 退出对话模式时停止 BGM
             stopVnBgm();
+            stopVnSfx();
         }
 
 
@@ -1756,6 +1795,7 @@
             // 应用 BGM 切换事件
             applyBgmForPosition(step.position || 0);
 
+            applySfxForPosition(step.position || 0);
 
             // 章节卡
             if (step.type === 'chapter') {
@@ -1803,6 +1843,7 @@
             dialog.className = 'vn-dialog';
 
             const nameEl = document.getElementById('vnName');
+            nameEl.style.display = '';          // ← 从旁白分支恢复角色名显示
             nameEl.textContent = msg.name || '未知角色';
             nameEl.style.color =
                 msg.color ||
@@ -1813,6 +1854,7 @@
             if (msg.to) {
                 nameEl.textContent += ` > @${msg.to}`;
             }
+
 
 
             // 骰子/扩展信息
