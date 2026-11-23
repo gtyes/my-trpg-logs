@@ -1309,25 +1309,33 @@
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
 
+        function normalizeVnMediaEvents(list) {
+            return (list || [])
+                .map(event => ({
+                    // 兼容旧数据的 messageIndex 和新的 position
+                    position: parseInt(
+                        event.position !== undefined ? event.position : event.messageIndex,
+                        10
+                    ) || 0,
+                    url: String(event.url || event.bgmUrl || event.backgroundUrl || '')
+                }))
+                .filter(event => event.position > 0)
+                .sort((a, b) => a.position - b.position);
+        }
+
         function initVnMediaEvents() {
-            vnBgmEvents = (logData.bgmEvents || [])
-                .map(event => ({
-                    position: parseInt(event.position, 10) || 0,
-                    url: String(event.url || '')
-                }))
-                .filter(event => event.position > 0)
-                .sort((a, b) => a.position - b.position);
+            vnBgmEvents = normalizeVnMediaEvents(logData.bgmEvents);
+            vnBackgroundEvents = normalizeVnMediaEvents(logData.backgroundEvents);
 
-            vnBackgroundEvents = (logData.backgroundEvents || [])
-                .map(event => ({
-                    position: parseInt(event.position, 10) || 0,
-                    url: String(event.url || '')
-                }))
-                .filter(event => event.position > 0)
-                .sort((a, b) => a.position - b.position);
+            // 只打一行汇总，不再输出整个数组
+            console.log(`[VN] 媒体事件：BGM ${vnBgmEvents.length} 条 / 背景 ${vnBackgroundEvents.length} 条`);
 
-            console.log('[VN] BGM 事件:', vnBgmEvents);
-            console.log('[VN] 背景事件:', vnBackgroundEvents);
+            if (!vnBgmEvents.length) {
+                console.warn('[VN] 没有读到 BGM 事件（检查 bgmEvents 的 position/messageIndex）');
+            }
+            if (!vnBackgroundEvents.length) {
+                console.warn('[VN] 没有读到背景事件（检查 backgroundEvents 的 position/messageIndex）');
+            }
         }
 
         function getLatestBgmEvent(position) {
@@ -1341,9 +1349,7 @@
             return result;
         }
 
-        // 统一处理媒体地址：
-        // 1. 只写了文件名（如 "When She's Gone.mp3"）时，默认去 audio/ 目录找
-        // 2. 空格转义，避免 404
+        // 只写了文件名时默认去 audio/ 找；空格转义
         function resolveMediaUrl(rawUrl) {
             let url = String(rawUrl || '').trim();
             if (!url || url === '__stop__') return url;
@@ -1367,7 +1373,8 @@
             vnBgmAudio.volume = 0.6;
             vnBgmAudio.preload = 'auto';
 
-            console.log('[VN] 准备播放 BGM:', src);
+            // 只在真正换曲时打一条
+            console.log('[VN] BGM 切换 →', src);
 
             vnBgmAudio.addEventListener('error', () => {
                 console.error('[VN] BGM 加载失败（检查路径/文件是否存在）:', src);
@@ -1377,7 +1384,7 @@
 
             if (playPromise && typeof playPromise.catch === 'function') {
                 playPromise.catch(err => {
-                    console.warn('[VN] BGM 被浏览器拦截，等待用户点击重试:', err && err.name);
+                    console.warn('[VN] BGM 被浏览器拦截，点击页面后重试:', err && err.name);
 
                     const retry = () => {
                         vnBgmAudio.play()
@@ -1396,24 +1403,22 @@
             vnBgmAudio.pause();
             try {
                 vnBgmAudio.currentTime = 0;
-            } catch (e) { /* 忽略未加载时的异常 */ }
+            } catch (e) { /* 未加载时忽略 */ }
             vnCurrentBgmUrl = '';
         }
 
         function applyBgmForPosition(position) {
-            const pos = Number(position) || 0;
-            const event = getLatestBgmEvent(pos);
+            const event = getLatestBgmEvent(Number(position) || 0);
             if (!event) return;
 
             const url = (event.url || '').trim();
-
-            console.log('[VN] BGM 位置:', pos, '命中事件:', url);
 
             if (!url || url === '__stop__') {
                 stopVnBgm();
                 return;
             }
 
+            // 这里不再打日志，playVnBgm 内部只在换曲时输出一条
             playVnBgm(url);
         }
 
@@ -1433,7 +1438,7 @@
             const chapterInfo = chapterImageMap[step.chapterName];
             let backgroundUrl = chapterInfo ? chapterInfo.background : '';
 
-            // 只取「当前位置之前（含）」且「当前章节内」的最后一条背景事件
+            // 当前章节内、当前位置之前（含）的最后一条背景事件
             let eventUrl = '';
 
             if (stepPosition > 0) {
@@ -1449,18 +1454,21 @@
                 backgroundUrl = eventUrl;
             }
 
-            bg.style.backgroundImage = backgroundUrl
-                ? `url('${backgroundUrl}')`
+            const finalUrl = backgroundUrl || '';
+
+            // 背景没变化：不重设、不打印
+            if (bg.dataset.currentBg === finalUrl) return;
+            bg.dataset.currentBg = finalUrl;
+
+            bg.style.backgroundImage = finalUrl
+                ? `url('${finalUrl}')`
                 : 'none';
 
-            console.log(
-                '[VN] 背景 step:', stepPosition,
-                '章节起点:', chapterStart,
-                '事件:', eventUrl || '(无)',
-                '最终:', backgroundUrl || '(空)'
-            );
+            // 只在真正切换时打一条
+            if (finalUrl) {
+                console.log('[VN] 背景切换 @', stepPosition, '→', finalUrl);
+            }
         }
-
 
         // 获取当前阅读位置在 filteredLogs 中的索引
         function getCurrentReadingIndex() {
@@ -2258,7 +2266,7 @@
                 }
                 
                 logData = await response.json();
-                console.log('日志数据加载成功:', logData);
+                console.log('日志数据加载成功，消息数:', (logData.logs || []).length);
                 
                 // 设置标题
                 document.title = logData.title || '血色毡帽 - TRPG跑团日志';
