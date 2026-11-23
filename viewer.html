@@ -1263,6 +1263,10 @@
 
     <script>
         // 全局变量
+        let vnBgmEvents = [];
+        let vnBackgroundEvents = [];
+        let vnBgmAudio = new Audio();
+        let vnCurrentBgmUrl = '';
         let chapterImageMap = {}; // 章节名 -> 右侧图片URL
         let extendFormats = {};
         let extendSettings = { ruleSystem: 'coc_houserule' };
@@ -1300,10 +1304,108 @@
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
 
+        function initVnMediaEvents() {
+            vnBgmEvents = (logData.bgmEvents || [])
+                .map(event => ({
+                    position: parseInt(event.position, 10) || 0,
+                    url: String(event.url || '')
+                }))
+                .filter(event => event.position > 0)
+                .sort((a, b) => a.position - b.position);
+
+            vnBackgroundEvents = (logData.backgroundEvents || [])
+                .map(event => ({
+                    position: parseInt(event.position, 10) || 0,
+                    url: String(event.url || '')
+                }))
+                .filter(event => event.position > 0)
+                .sort((a, b) => a.position - b.position);
+        }
+
+        function getLatestBgmEvent(position) {
+            let result = null;
+
+            for (const event of vnBgmEvents) {
+                if (event.position > position) break;
+                result = event;
+            }
+
+            return result;
+        }
+
+        function playVnBgm(url) {
+            if (!url || vnCurrentBgmUrl === url) return;
+
+            vnBgmAudio.pause();
+            vnBgmAudio.src = url;
+            vnBgmAudio.loop = true;
+            vnBgmAudio.volume = 0.6;
+
+            const playPromise = vnBgmAudio.play();
+
+            if (playPromise) {
+                playPromise.catch(() => {
+                    // 浏览器拦截自动播放时，等用户点一下再播
+                    const retry = () => {
+                        vnBgmAudio.play().catch(() => {});
+                        document.removeEventListener('click', retry);
+                    };
+                    document.addEventListener('click', retry, { once: true });
+                });
+            }
+
+            vnCurrentBgmUrl = url;
+        }
+
+        function stopVnBgm() {
+            vnBgmAudio.pause();
+            vnBgmAudio.currentTime = 0;
+            vnCurrentBgmUrl = '';
+        }
+
+        function applyBgmForPosition(position) {
+            const event = getLatestBgmEvent(position);
+            if (!event) return;
+
+            const url = (event.url || '').trim();
+
+            if (!url || url === '__stop__') {
+                stopVnBgm();
+                return;
+            }
+
+            playVnBgm(url);
+        }
 
         function isChatChannelName(channel) {
             const name = channel || '默认频道';
             return chatChannelKeywords.some(keyword => name.includes(keyword));
+        }
+        
+        function applyVnBackgroundForStep(step) {
+            const bg = document.getElementById('vnBg');
+            if (!bg) return;
+
+            const chapterInfo = chapterImageMap[step.chapterName];
+            let backgroundUrl = chapterInfo ? chapterInfo.background : '';
+
+            // 只在当前章节范围内找最近的背景事件
+            let eventUrl = '';
+
+            for (const event of vnBackgroundEvents) {
+                if (event.position > step.position) break;
+                if (event.position >= (step.chapterStart || 0)) {
+                    eventUrl = event.url;
+                }
+            }
+
+            if (eventUrl) {
+                backgroundUrl = eventUrl;
+            }
+
+            bg.style.backgroundImage = backgroundUrl
+                ? `url('${backgroundUrl}')`
+                : 'none';
         }
 
         // 获取当前阅读位置在 filteredLogs 中的索引
