@@ -1467,7 +1467,9 @@
                 if (hideChatChannels && msg.channel && isChatChannelName(msg.channel)) {
                     return;
                 }
-
+                const logPosition = (msg.id !== undefined && logIndexById.has(String(msg.id)))
+                    ? logIndexById.get(String(msg.id)) + 1
+                    : index + 1;
                 if (msg.isChapter) {
                     const name = (msg.text || '')
                         .replace('=== ', '')
@@ -1488,9 +1490,7 @@
                     return;
                 }
 
-                const logPosition = (msg.id !== undefined && logIndexById.has(String(msg.id)))
-                    ? logIndexById.get(String(msg.id)) + 1
-                    : index + 1;
+
 
                 const isSystem = msg.name &&
                     String(msg.name).toLowerCase() === 'system';
