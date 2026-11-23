@@ -1444,30 +1444,33 @@
             if (!bg) return;
 
             const stepPosition = Number(step.position) || 0;
-            const chapterStart = Number(step.chapterStart) || 0;
 
-            const chapterInfo = chapterImageMap[step.chapterName];
-            let backgroundUrl = chapterInfo ? chapterInfo.background : '';
-
-            // 当前章节内、当前位置之前（含）的最后一条背景事件
+            // 找当前位置之前（含）的最后一条背景事件，不再限制在章节内
             let eventUrl = '';
 
             if (stepPosition > 0) {
                 for (const event of vnBackgroundEvents) {
                     if (event.position > stepPosition) break;
-                    if (event.position >= chapterStart) {
-                        eventUrl = event.url;
-                    }
+                    eventUrl = event.url;
                 }
             }
 
-            if (eventUrl) {
-                backgroundUrl = eventUrl;
+            // __stop__ 视为“取消事件”，回到章节背景
+            if (eventUrl === '__stop__') {
+                eventUrl = '';
+            }
+
+            // 有设置就用设置，没有设置才用章节背景
+            let backgroundUrl = eventUrl;
+
+            if (!backgroundUrl) {
+                const chapterInfo = chapterImageMap[step.chapterName];
+                backgroundUrl = chapterInfo ? chapterInfo.background : '';
             }
 
             const finalUrl = backgroundUrl || '';
 
-            // 背景没变化：不重设、不打印
+            // 背景没变化就不重设、不打印
             if (bg.dataset.currentBg === finalUrl) return;
             bg.dataset.currentBg = finalUrl;
 
@@ -1475,7 +1478,6 @@
                 ? `url('${finalUrl}')`
                 : 'none';
 
-            // 只在真正切换时打一条
             if (finalUrl) {
                 console.log('[VN] 背景切换 @', stepPosition, '→', finalUrl);
             }
@@ -1918,7 +1920,7 @@
 
             if (step.type !== 'message') return;
 
-            // 当前消息没有立绘：两边都不显示，旧立绘也不保留
+            // 当前消息没有立绘：两边都不显示
             if (!step.portraitUrl) return;
 
             const currentSlotId = step.side === 'right' ? rightId : leftId;
@@ -1926,6 +1928,15 @@
 
             // 只看紧挨着的上一条消息
             const prevStep = vnSteps[vnIndex - 1];
+
+            // ★ 上一条是闲聊：不保留它的半透明立绘，直接按当前消息重新显示
+            if (
+                prevStep &&
+                prevStep.type === 'message' &&
+                isChatChannelName(prevStep.msg.channel)
+            ) {
+                return;
+            }
 
             if (
                 prevStep &&
