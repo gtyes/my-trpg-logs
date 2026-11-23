@@ -666,7 +666,7 @@
         .vn-dialog {
             position: relative;
             width: 100%;
-            height: 240px;             /* 原来 160px 的 min-height，改成固定高度 */
+            height: 235px;             /* 原来 160px 的 min-height，改成固定高度 */
             padding: 18px 24px 30px;
 
             display: flex;
@@ -1344,10 +1344,6 @@
             const steps = [];
             let currentChapterName = '';
 
-            // 左右交替用
-            let lastPortraitName = '';
-            let lastPortraitSide = 'left';
-
             filteredLogs.forEach((msg, index) => {
                 if (!msg) return;
 
@@ -1383,16 +1379,21 @@
 
                 // 只有有立绘的角色才参与左右交替
                 if (portraitUrl) {
-                    if (!lastPortraitName) {
-                        side = 'left';
-                    } else if (msg.name === lastPortraitName) {
-                        side = lastPortraitSide;
-                    } else {
-                        side = lastPortraitSide === 'left' ? 'right' : 'left';
-                    }
+                    const prevStep = steps[steps.length - 1];
 
-                    lastPortraitName = msg.name;
-                    lastPortraitSide = side;
+                    // 只有紧挨着的上一条“有立绘的消息”才参与左右交替
+                    if (prevStep && prevStep.type === 'message' && prevStep.portraitUrl) {
+                        if (prevStep.msg.name === msg.name) {
+                            // 同一角色连续说话，保持同一边
+                            side = prevStep.side;
+                        } else {
+                            // 换成另一个有立绘角色，左右交替
+                            side = prevStep.side === 'left' ? 'right' : 'left';
+                        }
+                    } else {
+                        // 上一条没有立绘 / 是旁白 / 是章节 → 重新从左边开始
+                        side = 'left';
+                    }
                 }
 
                 steps.push({
@@ -1647,16 +1648,6 @@
             if (img) img.src = url;
         }
 
-        function getPreviousPortraitStep(index) {
-            for (let i = index - 1; i >= 0; i--) {
-                const step = vnSteps[i];
-                if (step.type === 'message' && step.portraitUrl) {
-                    return step;
-                }
-            }
-            return null;
-        }
-
         function renderVnPortraits(step) {
             const leftId = 'vnPortraitLeft';
             const rightId = 'vnPortraitRight';
@@ -1667,18 +1658,24 @@
 
             if (step.type !== 'message') return;
 
-            const prev = getPreviousPortraitStep(vnIndex);
+            // 当前消息没有立绘：两边都不显示，旧立绘也不保留
+            if (!step.portraitUrl) return;
 
-            if (step.portraitUrl) {
-                const currentSlotId = step.side === 'right' ? rightId : leftId;
-                setVnPortraitSlot(currentSlotId, step.portraitUrl, false);
+            const currentSlotId = step.side === 'right' ? rightId : leftId;
+            setVnPortraitSlot(currentSlotId, step.portraitUrl, false);
 
-                // 上一句是另一个有立绘的角色，留在他那一侧并变暗
-                if (prev && prev.msg.name !== step.msg.name) {
-                    const prevSlotId = prev.side === 'right' ? rightId : leftId;
-                    setVnPortraitSlot(prevSlotId, prev.portraitUrl, true);
-                }
-            } 
+            // 只看紧挨着的上一条消息
+            const prevStep = vnSteps[vnIndex - 1];
+
+            if (
+                prevStep &&
+                prevStep.type === 'message' &&
+                prevStep.portraitUrl &&
+                prevStep.msg.name !== step.msg.name
+            ) {
+                const prevSlotId = prevStep.side === 'right' ? rightId : leftId;
+                setVnPortraitSlot(prevSlotId, prevStep.portraitUrl, true);
+            }
         }
 
         function startVnTyping(text) {
