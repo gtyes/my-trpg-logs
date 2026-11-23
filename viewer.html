@@ -1311,27 +1311,43 @@
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
 
-        function normalizeVnMediaEvents(list) {
+        function normalizeVnMediaEvents(list, idToIndex) {
             return (list || [])
-                .map(event => ({
-                    // 兼容旧数据的 messageIndex 和新的 position
-                    position: parseInt(
+                .map(event => {
+                    let position = parseInt(
                         event.position !== undefined ? event.position : event.messageIndex,
                         10
-                    ) || 0,
-                    url: String(event.url || event.bgmUrl || event.backgroundUrl || '')
-                }))
+                    ) || 0;
+
+                    // 有 messageId 就以它为准
+                    if (event.messageId && idToIndex.has(String(event.messageId))) {
+                        position = idToIndex.get(String(event.messageId)) + 1;
+                    }
+
+                    return {
+                        position,
+                        url: String(event.url || '')
+                    };
+                })
                 .filter(event => event.position > 0)
                 .sort((a, b) => a.position - b.position);
         }
 
         function initVnMediaEvents() {
-            vnBgmEvents = normalizeVnMediaEvents(logData.bgmEvents);
-            vnBackgroundEvents = normalizeVnMediaEvents(logData.backgroundEvents);
-            vnSfxEvents = normalizeVnMediaEvents(logData.sfxEvents);
+            const idToIndex = new Map();
+            (logData.logs || []).forEach((msg, index) => {
+                if (msg && msg.id !== undefined) {
+                    idToIndex.set(String(msg.id), index);
+                }
+            });
+
+            vnBgmEvents = normalizeVnMediaEvents(logData.bgmEvents, idToIndex);
+            vnBackgroundEvents = normalizeVnMediaEvents(logData.backgroundEvents, idToIndex);
+            vnSfxEvents = normalizeVnMediaEvents(logData.sfxEvents, idToIndex);
 
             console.log(`[VN] 媒体事件：BGM ${vnBgmEvents.length} / 背景 ${vnBackgroundEvents.length} / 音效 ${vnSfxEvents.length}`);
         }
+
 
         function getLatestBgmEvent(position) {
             let result = null;
