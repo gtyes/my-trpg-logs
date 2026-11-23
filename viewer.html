@@ -563,121 +563,104 @@
             display: block;
         }
 
+        /* 背景：默认正常亮度 */
         .vn-bg {
             position: absolute;
             inset: 0;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            transition: background-image 0.5s ease, filter 0.3s ease;
+        }
+
+        /* 只有闲聊频道背景加暗 */
+        .vn-bg.chat-dim {
             filter: brightness(0.55);
-            transition: background-image 0.5s ease;
         }
 
-        .vn-portrait-wrap {
-            position: absolute;
-            left: 4vw;
-            bottom: 150px;
-            height: 65vh;
-            display: flex;
-            align-items: flex-end;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .vn-portrait {
-            max-height: 100%;
-            max-width: 38vw;
-            object-fit: contain;
-            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
-        }
-
-        .vn-portrait-fallback {
+        /* ========== 消息内图片：居中材料展示 ========== */
+        .vn-image-stage {
             display: none;
-            width: 220px;
-            height: 300px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 56px;
-            font-weight: bold;
+            position: absolute;
+            inset: 70px 0 240px 0;
+            z-index: 1;
             align-items: center;
             justify-content: center;
+            pointer-events: none;
         }
 
-        .vn-topbar {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .vn-image-stage.show {
             display: flex;
-            gap: 8px;
-            z-index: 4;
         }
 
-        .vn-btn {
-            padding: 7px 14px;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 6px;
+        .vn-image-frame {
+            max-width: 70vw;
+            max-height: 60vh;
+            padding: 14px;
             background: rgba(0, 0, 0, 0.45);
-            color: #fff;
-            font-size: 13px;
-            cursor: pointer;
-            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
-        .vn-btn:hover {
-            background: rgba(139, 0, 0, 0.75);
+        .vn-image-frame img {
+            max-width: 66vw;
+            max-height: 56vh;
+            display: block;
+            border-radius: 6px;
         }
-        
+
+        /* ========== 立绘 + 对话框整体 ========== */
         .vn-dialog-area {
             position: absolute;
             left: 50%;
-            bottom: 36px;
+            bottom: 90px;
             transform: translateX(-50%);
             width: min(900px, 86vw);
             z-index: 2;
         }
 
+        /* 立绘紧贴对话框左上边缘 */
         .vn-portrait-wrap {
             position: absolute;
-            left: 6px;
-            bottom: calc(100% - 8px);
+            left: 0;
+            bottom: 100%;
             height: min(55vh, 520px);
             display: flex;
             align-items: flex-end;
             pointer-events: none;
             z-index: 0;
+            margin: 0;
         }
 
         .vn-portrait {
+            display: block;
             max-height: 100%;
             max-width: 38vw;
             object-fit: contain;
             filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
         }
 
+        /* 对话框 */
         .vn-dialog {
             position: relative;
             width: 100%;
             min-height: 160px;
+            padding: 18px 24px 30px;
+
+            background: rgba(10, 10, 15, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            color: #fff;
+
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+
+            cursor: pointer;
             z-index: 1;
-        }
-
-        .vn-dialog.chat {
-            background: rgba(28, 34, 40, 0.72);
-            border: 1px dashed rgba(160, 180, 200, 0.35);
-        }
-
-        .vn-dialog.chat .vn-name {
-            font-size: 17px;
-            font-weight: 600;
-            color: #9fb1bd;
-        }
-
-        .vn-dialog.chat .vn-text {
-            font-size: 16px;
-            font-style: italic;
-            color: #c7d0d6;
         }
 
         /* system 旁白 */
@@ -716,22 +699,6 @@
             color: #f1c40f;
             white-space: pre-wrap;
         }
-        .vn-dialog.chat .vn-extend {
-            font-size: 16px;
-            color: #b8c4cc;
-        }
-        
-        .vn-message-image-wrap {
-            display: none;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .vn-message-image-wrap img {
-            max-width: 100%;
-            max-height: 180px;
-            border-radius: 6px;
-        }
 
         .vn-hint {
             position: absolute;
@@ -741,6 +708,35 @@
             color: rgba(255, 255, 255, 0.45);
         }
 
+        /* ========== 控制条：对话框右下方、半透明 ========== */
+        .vn-topbar {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            display: flex;
+            gap: 8px;
+            z-index: 3;
+            opacity: 0.82;
+        }
+
+        .vn-btn {
+            padding: 5px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.35);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .vn-btn:hover {
+            background: rgba(0, 0, 0, 0.55);
+            opacity: 1;
+        }
+
+        /* ========== 章节卡 ========== */
         .vn-chapter-card {
             display: none;
             position: absolute;
@@ -775,38 +771,7 @@
         body.vn-active {
             overflow: hidden;
         }
-        .vn-image-stage {
-            display: none;
-            position: absolute;
-            inset: 70px 0 240px 0;
-            z-index: 1;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-        }
 
-        .vn-image-stage.show {
-            display: flex;
-        }
-
-        .vn-image-frame {
-            max-width: 70vw;
-            max-height: 60vh;
-            padding: 14px;
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 12px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-        }
-
-        .vn-image-frame img {
-            max-width: 66vw;
-            max-height: 56vh;
-            display: block;
-            border-radius: 6px;
-        }
 
         /* ========== 系统消息样式 ========== */
         .system-message {
@@ -1231,11 +1196,13 @@
     <!-- 对话阅读模式 -->
     <div id="vnOverlay" class="vn-overlay" onclick="vnHandleClick(event)">
         <div class="vn-bg" id="vnBg"></div>
+
         <div class="vn-image-stage" id="vnImageStage">
             <div class="vn-image-frame">
                 <img id="vnStageImage" alt="消息图片">
             </div>
         </div>
+
         <div class="vn-dialog-area">
             <div class="vn-portrait-wrap" id="vnPortraitWrap">
                 <img id="vnPortrait" class="vn-portrait" alt="">
@@ -1249,19 +1216,18 @@
                 <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
             </div>
 
-            <div class="vn-chapter-card" id="vnChapterCard">
-                <div class="vn-chapter-name" id="vnChapterName"></div>
-                <div class="vn-chapter-hint">点击继续</div>
-            </div>
-
             <div class="vn-dialog" id="vnDialog">
                 <div class="vn-name" id="vnName"></div>
                 <div class="vn-text" id="vnText"></div>
                 <div class="vn-extend" id="vnExtend"></div>
-
-
                 <div class="vn-hint" id="vnHint">点击继续 / 空格</div>
             </div>
+        </div>
+
+        <!-- 章节卡移到这里，才能铺满整个 vnOverlay -->
+        <div class="vn-chapter-card" id="vnChapterCard">
+            <div class="vn-chapter-name" id="vnChapterName"></div>
+            <div class="vn-chapter-hint">点击继续</div>
         </div>
     </div>
 
@@ -1511,6 +1477,8 @@
 
         function renderVnStep() {
             clearVnTimers();
+            // 每次切换步骤先取消加暗
+            bg.classList.remove('chat-dim');
 
             const step = vnSteps[vnIndex];
             if (!step) return;
@@ -1535,7 +1503,6 @@
             if (step.type === 'chapter') {
                 chapterCard.classList.add('show');
                 dialog.style.display = 'none';
-                document.getElementById('vnPortraitWrap').style.display = 'none';
 
                 document.getElementById('vnChapterName').textContent =
                     step.chapterName || '新章节';
@@ -1569,7 +1536,12 @@
             document.getElementById('vnPortraitWrap').style.display = 'flex';
 
             const isChat = isChatChannelName(msg.channel);
-            dialog.className = 'vn-dialog' + (isChat ? ' chat' : '');
+
+            // 闲聊时背景加暗，其他频道不加暗
+            bg.classList.toggle('chat-dim', isChat);
+
+            // 对话框不再加 chat 类
+            dialog.className = 'vn-dialog';
 
             const nameEl = document.getElementById('vnName');
             nameEl.textContent = msg.name || '未知角色';
