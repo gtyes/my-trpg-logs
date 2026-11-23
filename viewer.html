@@ -374,14 +374,14 @@
         }
         
         /* ========== 日志容器 ========== */
-.log-container {
-    margin-top: 20px;
-    background: rgba(0, 0, 0, 0.3);;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.8);
-    padding: 15px;
-    font-size: 16px; /* 增加基础字号 */
-}
+        .log-container {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            padding: 15px;
+            font-size: 16px; /* 增加基础字号 */
+        }
         
         /* ========== 频道组样式 ========== */
         .channel-group {
@@ -628,30 +628,56 @@
         .vn-btn:hover {
             background: rgba(139, 0, 0, 0.75);
         }
-
-        .vn-dialog {
+        
+        .vn-dialog-area {
             position: absolute;
             left: 50%;
             bottom: 36px;
             transform: translateX(-50%);
             width: min(900px, 86vw);
-            min-height: 160px;
-            padding: 18px 24px 30px;
-            background: rgba(10, 10, 15, 0.78);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 12px;
-            color: #fff;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
-            cursor: pointer;
             z-index: 2;
         }
 
-        /* 闲聊频道：不同颜色 */
+        .vn-portrait-wrap {
+            position: absolute;
+            left: 6px;
+            bottom: calc(100% - 8px);
+            height: min(55vh, 520px);
+            display: flex;
+            align-items: flex-end;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .vn-portrait {
+            max-height: 100%;
+            max-width: 38vw;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
+        }
+
+        .vn-dialog {
+            position: relative;
+            width: 100%;
+            min-height: 160px;
+            z-index: 1;
+        }
+
         .vn-dialog.chat {
-            background: rgba(78, 48, 18, 0.82);
-            border-color: rgba(230, 126, 34, 0.65);
+            background: rgba(28, 34, 40, 0.72);
+            border: 1px dashed rgba(160, 180, 200, 0.35);
+        }
+
+        .vn-dialog.chat .vn-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #9fb1bd;
+        }
+
+        .vn-dialog.chat .vn-text {
+            font-size: 16px;
+            font-style: italic;
+            color: #c7d0d6;
         }
 
         /* system 旁白 */
@@ -684,12 +710,17 @@
         }
 
         .vn-extend {
-            margin-top: 8px;
-            font-size: 14px;
+            font-size: inherit;
+            line-height: 1.7;
+            margin-top: 0;
             color: #f1c40f;
             white-space: pre-wrap;
         }
-
+        .vn-dialog.chat .vn-extend {
+            font-size: 16px;
+            color: #b8c4cc;
+        }
+        
         .vn-message-image-wrap {
             display: none;
             margin-top: 10px;
@@ -744,6 +775,38 @@
         body.vn-active {
             overflow: hidden;
         }
+        .vn-image-stage {
+            display: none;
+            position: absolute;
+            inset: 70px 0 240px 0;
+            z-index: 1;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .vn-image-stage.show {
+            display: flex;
+        }
+
+        .vn-image-frame {
+            max-width: 70vw;
+            max-height: 60vh;
+            padding: 14px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .vn-image-frame img {
+            max-width: 66vw;
+            max-height: 56vh;
+            display: block;
+            border-radius: 6px;
+        }
 
         /* ========== 系统消息样式 ========== */
         .system-message {
@@ -770,23 +833,23 @@
             flex-wrap: wrap;
         }
         
-.pagination-btn {
-    background: #8b0000; /* 暗红色 */
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-}
-        
-.pagination-btn:hover:not(:disabled) {
-    background: #a52a2a; /* 更亮的暗红色 */
-}
-        .pagination-btn:disabled {
-    background: #bdc3c7;
-    cursor: not-allowed;
-}
+        .pagination-btn {
+            background: #8b0000; /* 暗红色 */
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+                
+        .pagination-btn:hover:not(:disabled) {
+            background: #a52a2a; /* 更亮的暗红色 */
+        }
+                .pagination-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
         
         .pagination-info {
             font-size: 13px;
@@ -1168,35 +1231,37 @@
     <!-- 对话阅读模式 -->
     <div id="vnOverlay" class="vn-overlay" onclick="vnHandleClick(event)">
         <div class="vn-bg" id="vnBg"></div>
-
-        <div class="vn-portrait-wrap" id="vnPortraitWrap">
-            <img id="vnPortrait" class="vn-portrait" alt="">
-            <div id="vnPortraitFallback" class="vn-portrait-fallback"></div>
+        <div class="vn-image-stage" id="vnImageStage">
+            <div class="vn-image-frame">
+                <img id="vnStageImage" alt="消息图片">
+            </div>
         </div>
-
-        <div class="vn-topbar">
-            <button class="vn-btn" onclick="event.stopPropagation(); prevVn()">上一句</button>
-            <button class="vn-btn" onclick="event.stopPropagation(); nextVn()">下一句</button>
-            <button class="vn-btn" id="vnAutoBtn"
-                    onclick="event.stopPropagation(); toggleVnAuto()">自动：关</button>
-            <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
-        </div>
-
-        <div class="vn-chapter-card" id="vnChapterCard">
-            <div class="vn-chapter-name" id="vnChapterName"></div>
-            <div class="vn-chapter-hint">点击继续</div>
-        </div>
-
-        <div class="vn-dialog" id="vnDialog">
-            <div class="vn-name" id="vnName"></div>
-            <div class="vn-text" id="vnText"></div>
-            <div class="vn-extend" id="vnExtend"></div>
-
-            <div class="vn-message-image-wrap" id="vnMessageImageWrap">
-                <img id="vnMessageImage" alt="消息图片">
+        <div class="vn-dialog-area">
+            <div class="vn-portrait-wrap" id="vnPortraitWrap">
+                <img id="vnPortrait" class="vn-portrait" alt="">
             </div>
 
-            <div class="vn-hint" id="vnHint">点击继续 / 空格</div>
+            <div class="vn-topbar">
+                <button class="vn-btn" onclick="event.stopPropagation(); prevVn()">上一句</button>
+                <button class="vn-btn" onclick="event.stopPropagation(); nextVn()">下一句</button>
+                <button class="vn-btn" id="vnAutoBtn"
+                        onclick="event.stopPropagation(); toggleVnAuto()">自动：关</button>
+                <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
+            </div>
+
+            <div class="vn-chapter-card" id="vnChapterCard">
+                <div class="vn-chapter-name" id="vnChapterName"></div>
+                <div class="vn-chapter-hint">点击继续</div>
+            </div>
+
+            <div class="vn-dialog" id="vnDialog">
+                <div class="vn-name" id="vnName"></div>
+                <div class="vn-text" id="vnText"></div>
+                <div class="vn-extend" id="vnExtend"></div>
+
+
+                <div class="vn-hint" id="vnHint">点击继续 / 空格</div>
+            </div>
         </div>
     </div>
 
@@ -1454,6 +1519,12 @@
             const bg = document.getElementById('vnBg');
             const dialog = document.getElementById('vnDialog');
             const chapterCard = document.getElementById('vnChapterCard');
+            const imageStage = document.getElementById('vnImageStage');
+            const stageImage = document.getElementById('vnStageImage');
+
+            // 每次切换步骤，先把图片层收起来
+            imageStage.classList.remove('show');
+            stageImage.removeAttribute('src');
 
             // 章节背景
             const chapterInfo = chapterImageMap[step.chapterName];
@@ -1523,33 +1594,31 @@
             extendEl.style.display = extendText ? 'block' : 'none';
             extendEl.style.visibility = 'hidden';
 
-            // 消息内图片
-            const imageWrap = document.getElementById('vnMessageImageWrap');
-            const imageEl = document.getElementById('vnMessageImage');
+            // 消息内图片：居中材料展示
             if (msg.messageImage) {
-                imageEl.src = msg.messageImage;
-                imageWrap.style.display = 'block';
-            } else {
-                imageEl.removeAttribute('src');
-                imageWrap.style.display = 'none';
+                stageImage.src = msg.messageImage;
+                imageStage.classList.add('show');
+
+                // 有材料图时隐藏立绘，避免画面太挤
+                document.getElementById('vnPortraitWrap').style.display = 'none';
             }
 
             startVnTyping(msg.text || '');
         }
 
-        function updateVnPortrait(url, name) {
+        function updateVnPortrait(url) {
+            const wrap = document.getElementById('vnPortraitWrap');
             const img = document.getElementById('vnPortrait');
-            const fallback = document.getElementById('vnPortraitFallback');
+            if (!wrap || !img) return;
 
-            if (url) {
-                img.src = url;
-                img.style.display = 'block';
-                fallback.style.display = 'none';
-            } else {
-                img.style.display = 'none';
-                fallback.style.display = 'flex';
-                fallback.textContent = (name || '?').charAt(0);
+            if (!url) {
+                img.removeAttribute('src');
+                wrap.style.display = 'none';
+                return;
             }
+
+            wrap.style.display = 'flex';
+            img.src = url;
         }
 
         function startVnTyping(text) {
@@ -1576,15 +1645,14 @@
                 return;
             }
 
-            // 每 20ms 显示 2 个字符
             vnTypeTimer = setInterval(() => {
-                vnTextIndex += 2;
+                vnTextIndex += 1;
                 textEl.textContent = vnCurrentText.slice(0, vnTextIndex);
 
                 if (vnTextIndex >= vnCurrentText.length) {
                     completeVnTyping();
                 }
-            }, 20);
+            }, 30);
         }
 
         function completeVnTyping() {
