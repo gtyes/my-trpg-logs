@@ -687,12 +687,17 @@
 
         /* system 旁白 */
         .vn-dialog.system {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(10, 10, 15, 0.78);
+            border-color: rgba(255, 255, 255, 0.18);
             text-align: center;
             font-style: italic;
-            color: #d8d8d8;
+            color: #e8e8e8;
         }
+
+        .vn-dialog.system .vn-name {
+            display: none;
+        }
+
 
         .vn-dialog.system .vn-name {
             font-size: 14px;
@@ -1381,7 +1386,7 @@
             const name = channel || '默认频道';
             return chatChannelKeywords.some(keyword => name.includes(keyword));
         }
-        
+
         function applyVnBackgroundForStep(step) {
             const bg = document.getElementById('vnBg');
             if (!bg) return;
@@ -1436,6 +1441,15 @@
 
         function buildVnSteps() {
             vnPortraitMap = {};
+            const logIndexById = new Map();
+
+            (logData.logs || []).forEach((msg, index) => {
+                if (msg && msg.id !== undefined) {
+                    logIndexById.set(String(msg.id), index);
+                }
+            });
+
+            let currentChapterStart = 0;
 
             // 记录每个角色第一次出现的头像
             filteredLogs.forEach(msg => {
@@ -1461,22 +1475,29 @@
                         .trim();
 
                     currentChapterName = name;
+                    currentChapterStart = logPosition;
 
                     steps.push({
                         type: 'chapter',
                         index,
+                        position: logPosition,
+                        chapterStart: currentChapterStart,
                         chapterName: name,
                         msg
                     });
                     return;
                 }
 
+                const logPosition = (msg.id !== undefined && logIndexById.has(String(msg.id)))
+                    ? logIndexById.get(String(msg.id)) + 1
+                    : index + 1;
+
                 const isSystem = msg.name &&
                     String(msg.name).toLowerCase() === 'system';
 
                 const portraitUrl = isSystem
                     ? ''
-                    : (msg.icon || vnPortraitMap[msg.name] || '');
+                    : (msg.icon || '');
 
                 let side = null;
 
@@ -1532,6 +1553,7 @@
             document.body.classList.add('vn-active');
 
             document.addEventListener('keydown', vnKeyHandler);
+            initVnMediaEvents();
 
             renderVnStep();
         }
@@ -1666,10 +1688,12 @@
             imageStage.classList.remove('show');
             stageImage.removeAttribute('src');
 
-            // 章节背景
-            const chapterInfo = chapterImageMap[step.chapterName];
-            const background = chapterInfo ? chapterInfo.background : '';
-            bg.style.backgroundImage = background ? `url('${background}')` : 'none';
+            // 应用背景切换事件
+            applyVnBackgroundForStep(step);
+
+            // 应用 BGM 切换事件
+            applyBgmForPosition(step.position || 0);
+
 
             // 章节卡
             if (step.type === 'chapter') {
@@ -1695,13 +1719,17 @@
             // 旁白
             if (step.type === 'system') {
                 dialog.className = 'vn-dialog system';
-                document.getElementById('vnName').textContent = '旁白';
+
+                const nameEl = document.getElementById('vnName');
+                nameEl.textContent = '';
+                nameEl.style.display = 'none';   // 不显示“旁白”这个词
 
                 document.getElementById('vnExtend').style.display = 'none';
 
                 startVnTyping(msg.text || '');
                 return;
             }
+
 
             // 普通消息
             const isChat = isChatChannelName(msg.channel);
