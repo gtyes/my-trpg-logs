@@ -534,14 +534,14 @@
             border-radius: 4px;
         }
         /* 搜索标红 */
-.search-highlight {
-    background-color: #8b0000; /* 暗红色背景 */
-    color: #000000; /* 黑色字体 */
-    font-weight: bold;
-    padding: 1px 3px;
-    border-radius: 3px;
-    border: 1px solid #660000; /* 深红色边框 */
-}
+        .search-highlight {
+            background-color: #8b0000; /* 暗红色背景 */
+            color: #000000; /* 黑色字体 */
+            font-weight: bold;
+            padding: 1px 3px;
+            border-radius: 3px;
+            border: 1px solid #660000; /* 深红色边框 */
+        }
         
         .dice-result {
             margin-top: 8px;
@@ -549,7 +549,202 @@
             font-family: 'Consolas, Monaco, monospace';
             font-size: 1em;
         }
-        
+        /* ========== 对话阅读模式 ========== */
+        .vn-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            overflow: hidden;
+            background: #111;
+        }
+
+        .vn-overlay.show {
+            display: block;
+        }
+
+        .vn-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.55);
+            transition: background-image 0.5s ease;
+        }
+
+        .vn-portrait-wrap {
+            position: absolute;
+            left: 4vw;
+            bottom: 150px;
+            height: 65vh;
+            display: flex;
+            align-items: flex-end;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .vn-portrait {
+            max-height: 100%;
+            max-width: 38vw;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
+        }
+
+        .vn-portrait-fallback {
+            display: none;
+            width: 220px;
+            height: 300px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 56px;
+            font-weight: bold;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vn-topbar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 4;
+        }
+
+        .vn-btn {
+            padding: 7px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.45);
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+        }
+
+        .vn-btn:hover {
+            background: rgba(139, 0, 0, 0.75);
+        }
+
+        .vn-dialog {
+            position: absolute;
+            left: 50%;
+            bottom: 36px;
+            transform: translateX(-50%);
+            width: min(900px, 86vw);
+            min-height: 160px;
+            padding: 18px 24px 30px;
+            background: rgba(10, 10, 15, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            color: #fff;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        /* 闲聊频道：不同颜色 */
+        .vn-dialog.chat {
+            background: rgba(78, 48, 18, 0.82);
+            border-color: rgba(230, 126, 34, 0.65);
+        }
+
+        /* system 旁白 */
+        .vn-dialog.system {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
+            text-align: center;
+            font-style: italic;
+            color: #d8d8d8;
+        }
+
+        .vn-dialog.system .vn-name {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .vn-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .vn-text {
+            font-size: 18px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            min-height: 60px;
+        }
+
+        .vn-extend {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #f1c40f;
+            white-space: pre-wrap;
+        }
+
+        .vn-message-image-wrap {
+            display: none;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .vn-message-image-wrap img {
+            max-width: 100%;
+            max-height: 180px;
+            border-radius: 6px;
+        }
+
+        .vn-hint {
+            position: absolute;
+            right: 18px;
+            bottom: 8px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .vn-chapter-card {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.55);
+            cursor: pointer;
+        }
+
+        .vn-chapter-card.show {
+            display: flex;
+        }
+
+        .vn-chapter-name {
+            font-size: 42px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .vn-chapter-hint {
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        body.vn-active {
+            overflow: hidden;
+        }
+
         /* ========== 系统消息样式 ========== */
         .system-message {
             text-align: center;
@@ -615,68 +810,68 @@
         }
         
         /* ========== 筛选面板 ========== */
-.filter-panel {
-    position: fixed;
-    right: -350px;
-    top: 100px;
-    width: 280px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    padding: 15px;
-    z-index: 999;
-    transition: right 0.3s;
-    border: 1px solid rgba(139, 0, 0, 0.2);
-}
-/* 频道筛选部分添加滚动条 */
-#channelFilters {
-    max-height: 200px; /* 固定高度 */
-    overflow-y: auto; /* 垂直滚动 */
-    padding-right: 5px; /* 给滚动条留空间 */
-}
+        .filter-panel {
+            position: fixed;
+            right: -350px;
+            top: 100px;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 15px;
+            z-index: 999;
+            transition: right 0.3s;
+            border: 1px solid rgba(139, 0, 0, 0.2);
+        }
+        /* 频道筛选部分添加滚动条 */
+        #channelFilters {
+            max-height: 200px; /* 固定高度 */
+            overflow-y: auto; /* 垂直滚动 */
+            padding-right: 5px; /* 给滚动条留空间 */
+        }
 
-/* 自定义滚动条样式 */
-#channelFilters::-webkit-scrollbar {
-    width: 6px;
-}
+        /* 自定义滚动条样式 */
+        #channelFilters::-webkit-scrollbar {
+            width: 6px;
+        }
 
-#channelFilters::-webkit-scrollbar-track {
-    background: rgba(139, 0, 0, 0.1);
-    border-radius: 3px;
-}
+        #channelFilters::-webkit-scrollbar-track {
+            background: rgba(139, 0, 0, 0.1);
+            border-radius: 3px;
+        }
 
-#channelFilters::-webkit-scrollbar-thumb {
-    background: rgba(139, 0, 0, 0.3);
-    border-radius: 3px;
-}
+        #channelFilters::-webkit-scrollbar-thumb {
+            background: rgba(139, 0, 0, 0.3);
+            border-radius: 3px;
+        }
 
-#channelFilters::-webkit-scrollbar-thumb:hover {
-    background: rgba(139, 0, 0, 0.5);
-}
-/* 筛选选项样式 */
-#channelFilters label {
-    display: flex;
-    align-items: center;
-    padding: 8px 5px;
-    margin: 2px 0;
-    border-radius: 4px;
-    transition: background 0.2s;
-    cursor: pointer;
-}
+        #channelFilters::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 0, 0, 0.5);
+        }
+        /* 筛选选项样式 */
+        #channelFilters label {
+            display: flex;
+            align-items: center;
+            padding: 8px 5px;
+            margin: 2px 0;
+            border-radius: 4px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
 
-#channelFilters label:hover {
-    background: rgba(139, 0, 0, 0.05);
-}
+        #channelFilters label:hover {
+            background: rgba(139, 0, 0, 0.05);
+        }
 
-#channelFilters input[type="checkbox"] {
-    margin-right: 8px;
-    cursor: pointer;
-}
+        #channelFilters input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
 
-#channelFilters span {
-    font-size: 13px;
-    color: #333;
-}        
+        #channelFilters span {
+            font-size: 13px;
+            color: #333;
+        }        
         .filter-panel.show {
             right: 20px;
         }
@@ -716,6 +911,9 @@
 
         @media (max-width: 768px) {
             /* 顶部标题栏：保持普通布局，随页面正常滚走 */
+            #vnModeBtn {
+                display: none !important;
+            }
             .top-header {
                 flex-direction: column;
                 gap: 12px;
@@ -881,6 +1079,7 @@
     <div class="top-controls left-controls">
         <button class="control-btn" id="chapterNavBtn" onclick="toggleChapterSidebar()">章节导航</button>
         <button class="control-btn" id="viewModeBtn" onclick="toggleViewMode()">切换分页模式</button>
+        <button class="control-btn" id="vnModeBtn" onclick="openVnMode()">对话模式</button>
     </div>
     
     <!-- 标题 -->
@@ -966,6 +1165,40 @@
             <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">下一页</button>
         </div>
     </div>
+    <!-- 对话阅读模式 -->
+    <div id="vnOverlay" class="vn-overlay" onclick="vnHandleClick(event)">
+        <div class="vn-bg" id="vnBg"></div>
+
+        <div class="vn-portrait-wrap" id="vnPortraitWrap">
+            <img id="vnPortrait" class="vn-portrait" alt="">
+            <div id="vnPortraitFallback" class="vn-portrait-fallback"></div>
+        </div>
+
+        <div class="vn-topbar">
+            <button class="vn-btn" onclick="event.stopPropagation(); prevVn()">上一句</button>
+            <button class="vn-btn" onclick="event.stopPropagation(); nextVn()">下一句</button>
+            <button class="vn-btn" id="vnAutoBtn"
+                    onclick="event.stopPropagation(); toggleVnAuto()">自动：关</button>
+            <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
+        </div>
+
+        <div class="vn-chapter-card" id="vnChapterCard">
+            <div class="vn-chapter-name" id="vnChapterName"></div>
+            <div class="vn-chapter-hint">点击继续</div>
+        </div>
+
+        <div class="vn-dialog" id="vnDialog">
+            <div class="vn-name" id="vnName"></div>
+            <div class="vn-text" id="vnText"></div>
+            <div class="vn-extend" id="vnExtend"></div>
+
+            <div class="vn-message-image-wrap" id="vnMessageImageWrap">
+                <img id="vnMessageImage" alt="消息图片">
+            </div>
+
+            <div class="vn-hint" id="vnHint">点击继续 / 空格</div>
+        </div>
+    </div>
 
     <script>
         // 全局变量
@@ -974,6 +1207,15 @@
         let extendSettings = { ruleSystem: 'coc_houserule' };
         let logData = null;
         let filteredLogs = [];
+        let vnSteps = [];
+        let vnIndex = 0;
+        let vnAuto = false;
+        let vnTyping = false;
+        let vnTypeTimer = null;
+        let vnAutoTimer = null;
+        let vnCurrentText = '';
+        let vnTextIndex = 0;
+        let vnPortraitMap = {};
         let viewMode = 'scroll';          // 'scroll' 连续 | 'paged' 分页
         let scrollLoadedCount = 0;        // 连续模式已经渲染了多少条
         let scrollObserver = null;
@@ -994,7 +1236,379 @@
         const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
-        
+
+
+        function isChatChannelName(channel) {
+            const name = channel || '默认频道';
+            return chatChannelKeywords.some(keyword => name.includes(keyword));
+        }
+
+        // 获取当前阅读位置在 filteredLogs 中的索引
+        function getCurrentReadingIndex() {
+            if (viewMode === 'paged') {
+                const pages = computePages();
+                const page = pages[currentPage - 1];
+                return page ? page.start : 0;
+            }
+
+            const container = document.getElementById('logMessages');
+            const rows = container.querySelectorAll('.message-row');
+
+            for (const row of rows) {
+                const rect = row.getBoundingClientRect();
+                if (rect.bottom > 0) {
+                    const id = row.dataset.id;
+                    const idx = filteredLogs.findIndex(
+                        msg => String(msg.id) === String(id)
+                    );
+                    if (idx !== -1) return idx;
+                }
+            }
+
+            const range = getContinuousRange();
+            return range ? range.start : 0;
+        }
+        function buildVnSteps() {
+            vnPortraitMap = {};
+
+            // 先记录每个角色第一次出现的头像，作为缺省立绘
+            filteredLogs.forEach(msg => {
+                if (msg && msg.name && msg.icon && !vnPortraitMap[msg.name]) {
+                    vnPortraitMap[msg.name] = msg.icon;
+                }
+            });
+
+            const steps = [];
+            let currentChapterName = '';
+
+            filteredLogs.forEach((msg, index) => {
+                if (!msg) return;
+
+                // 如果开启了“隐藏所有闲聊”，对话模式也跳过闲聊
+                if (hideChatChannels && msg.channel && isChatChannelName(msg.channel)) {
+                    return;
+                }
+
+                if (msg.isChapter) {
+                    const name = (msg.text || '')
+                        .replace('=== ', '')
+                        .replace(' ===', '')
+                        .trim();
+
+                    currentChapterName = name;
+
+                    steps.push({
+                        type: 'chapter',
+                        index,
+                        chapterName: name,
+                        msg
+                    });
+                    return;
+                }
+
+                const isSystem = msg.name &&
+                    String(msg.name).toLowerCase() === 'system';
+
+                steps.push({
+                    type: isSystem ? 'system' : 'message',
+                    index,
+                    chapterName: currentChapterName,
+                    msg
+                });
+            });
+
+            return steps;
+        }
+
+        function openVnMode() {
+            if (window.innerWidth <= 768) return;
+
+            const startIndex = getCurrentReadingIndex();
+            vnSteps = buildVnSteps();
+
+            if (!vnSteps.length) {
+                alert('没有可阅读的消息');
+                return;
+            }
+
+            let stepIndex = vnSteps.findIndex(s => s.index >= startIndex);
+            if (stepIndex === -1) stepIndex = 0;
+
+            vnIndex = stepIndex;
+
+            document.getElementById('vnOverlay').classList.add('show');
+            document.body.classList.add('vn-active');
+
+            document.addEventListener('keydown', vnKeyHandler);
+
+            renderVnStep();
+        }
+
+        function closeVnMode() {
+            clearVnTimers();
+
+            document.getElementById('vnOverlay').classList.remove('show');
+            document.body.classList.remove('vn-active');
+
+            document.removeEventListener('keydown', vnKeyHandler);
+        }
+
+        function clearVnTimers() {
+            if (vnTypeTimer) {
+                clearInterval(vnTypeTimer);
+                vnTypeTimer = null;
+            }
+            if (vnAutoTimer) {
+                clearTimeout(vnAutoTimer);
+                vnAutoTimer = null;
+            }
+        }
+
+        function vnKeyHandler(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ' || event.key === 'Enter') {
+                event.preventDefault();
+                nextVn();
+            } else if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                prevVn();
+            } else if (event.key === 'Escape') {
+                closeVnMode();
+            }
+        }
+
+        function vnHandleClick(event) {
+            if (event.target.closest('.vn-topbar')) return;
+            nextVn();
+        }
+
+        function nextVn() {
+            if (vnTyping) {
+                completeVnTyping();
+                return;
+            }
+
+            if (vnIndex >= vnSteps.length - 1) {
+                document.getElementById('vnHint').textContent = '已经是最后一句';
+                if (vnAutoTimer) {
+                    clearTimeout(vnAutoTimer);
+                    vnAutoTimer = null;
+                }
+                return;
+            }
+
+            vnIndex++;
+            renderVnStep();
+        }
+
+        function prevVn() {
+            clearVnTimers();
+
+            if (vnIndex <= 0) {
+                renderVnStep();
+                return;
+            }
+
+            vnIndex--;
+            renderVnStep();
+        }
+
+        function toggleVnAuto() {
+            vnAuto = !vnAuto;
+
+            const btn = document.getElementById('vnAutoBtn');
+            btn.textContent = vnAuto ? '自动：开' : '自动：关';
+
+            if (vnAuto) {
+                if (!vnTyping) {
+                    scheduleVnAuto();
+                }
+            } else if (vnAutoTimer) {
+                clearTimeout(vnAutoTimer);
+                vnAutoTimer = null;
+            }
+        }
+
+        function scheduleVnAuto(delay) {
+            if (!vnAuto) return;
+
+            if (vnAutoTimer) {
+                clearTimeout(vnAutoTimer);
+            }
+
+            const wait = delay !== undefined
+                ? delay
+                : 1200 + vnCurrentText.length * 45;
+
+            vnAutoTimer = setTimeout(() => {
+                if (vnAuto) nextVn();
+            }, wait);
+        }
+
+        function renderVnStep() {
+            clearVnTimers();
+
+            const step = vnSteps[vnIndex];
+            if (!step) return;
+
+            const overlay = document.getElementById('vnOverlay');
+            const bg = document.getElementById('vnBg');
+            const dialog = document.getElementById('vnDialog');
+            const chapterCard = document.getElementById('vnChapterCard');
+
+            // 章节背景
+            const chapterInfo = chapterImageMap[step.chapterName];
+            const background = chapterInfo ? chapterInfo.background : '';
+            bg.style.backgroundImage = background ? `url('${background}')` : 'none';
+
+            // 章节卡
+            if (step.type === 'chapter') {
+                chapterCard.classList.add('show');
+                dialog.style.display = 'none';
+                document.getElementById('vnPortraitWrap').style.display = 'none';
+
+                document.getElementById('vnChapterName').textContent =
+                    step.chapterName || '新章节';
+
+                vnTyping = false;
+                vnCurrentText = '';
+
+                if (vnAuto) scheduleVnAuto(2000);
+                return;
+            }
+
+            chapterCard.classList.remove('show');
+            dialog.style.display = 'block';
+
+            const msg = step.msg;
+
+            // 旁白
+            if (step.type === 'system') {
+                dialog.className = 'vn-dialog system';
+                document.getElementById('vnName').textContent = '旁白';
+                document.getElementById('vnPortraitWrap').style.display = 'none';
+
+                document.getElementById('vnExtend').style.display = 'none';
+                document.getElementById('vnMessageImageWrap').style.display = 'none';
+
+                startVnTyping(msg.text || '');
+                return;
+            }
+
+            // 普通消息
+            document.getElementById('vnPortraitWrap').style.display = 'flex';
+
+            const isChat = isChatChannelName(msg.channel);
+            dialog.className = 'vn-dialog' + (isChat ? ' chat' : '');
+
+            const nameEl = document.getElementById('vnName');
+            nameEl.textContent = msg.name || '未知角色';
+            nameEl.style.color =
+                msg.color ||
+                (logData.characterRules && logData.characterRules[msg.name]
+                    ? logData.characterRules[msg.name].nameColor
+                    : '#ffffff');
+
+            if (msg.to) {
+                nameEl.textContent += ` > @${msg.to}`;
+            }
+
+            // 立绘
+            const portraitUrl = msg.icon || vnPortraitMap[msg.name] || '';
+            updateVnPortrait(portraitUrl, msg.name);
+
+            // 骰子/扩展信息
+            const extendText = getFormattedExtendText(msg) || '';
+            const extendEl = document.getElementById('vnExtend');
+            extendEl.textContent = extendText;
+            extendEl.style.display = extendText ? 'block' : 'none';
+            extendEl.style.visibility = 'hidden';
+
+            // 消息内图片
+            const imageWrap = document.getElementById('vnMessageImageWrap');
+            const imageEl = document.getElementById('vnMessageImage');
+            if (msg.messageImage) {
+                imageEl.src = msg.messageImage;
+                imageWrap.style.display = 'block';
+            } else {
+                imageEl.removeAttribute('src');
+                imageWrap.style.display = 'none';
+            }
+
+            startVnTyping(msg.text || '');
+        }
+
+        function updateVnPortrait(url, name) {
+            const img = document.getElementById('vnPortrait');
+            const fallback = document.getElementById('vnPortraitFallback');
+
+            if (url) {
+                img.src = url;
+                img.style.display = 'block';
+                fallback.style.display = 'none';
+            } else {
+                img.style.display = 'none';
+                fallback.style.display = 'flex';
+                fallback.textContent = (name || '?').charAt(0);
+            }
+        }
+
+        function startVnTyping(text) {
+            clearVnTimers();
+
+            const textEl = document.getElementById('vnText');
+            const extendEl = document.getElementById('vnExtend');
+            const hintEl = document.getElementById('vnHint');
+
+            vnTyping = true;
+            vnCurrentText = text || '';
+            vnTextIndex = 0;
+            textEl.textContent = '';
+
+            if (extendEl) {
+                extendEl.style.visibility = 'hidden';
+            }
+            if (hintEl) {
+                hintEl.textContent = '点击继续 / 空格';
+            }
+
+            if (!vnCurrentText) {
+                completeVnTyping();
+                return;
+            }
+
+            // 每 20ms 显示 2 个字符
+            vnTypeTimer = setInterval(() => {
+                vnTextIndex += 2;
+                textEl.textContent = vnCurrentText.slice(0, vnTextIndex);
+
+                if (vnTextIndex >= vnCurrentText.length) {
+                    completeVnTyping();
+                }
+            }, 20);
+        }
+
+        function completeVnTyping() {
+            if (vnTypeTimer) {
+                clearInterval(vnTypeTimer);
+                vnTypeTimer = null;
+            }
+
+            const textEl = document.getElementById('vnText');
+            const extendEl = document.getElementById('vnExtend');
+
+            textEl.textContent = vnCurrentText;
+
+            if (extendEl) {
+                extendEl.style.visibility = 'visible';
+            }
+
+            vnTyping = false;
+
+            if (vnAuto) {
+                scheduleVnAuto();
+            }
+        }
+
         function initChapterImages() {
             chapterImageMap = {};
             
