@@ -1840,10 +1840,14 @@
                 filteredLogs.slice(startAbs, endAbs)
             );
 
-            appendRenderedChunk(html);
+            appendRenderedChunk(html);appendRenderedChunk(html);
 
             scrollLoadedCount = newCount;
 
+            // 如果这一批全部被隐藏，继续加载下一批，避免卡住
+            if (!html && scrollLoadedCount < chapterLength) {
+                setTimeout(loadMoreScroll, 0);
+            }
 
             addMessageDoubleClickHandlers();
             updateChapterEndNav();
@@ -2025,7 +2029,20 @@
 
         // 渲染日志消息
         function renderLogMessages(logs) {
-            if (logs.length === 0) {
+            // 隐藏所有闲聊频道时，先过滤掉闲聊消息，再分组
+            // 否则闲聊会像“隐形分隔符”把前后同频道拆成两组
+            const visibleLogs = hideChatChannels
+                ? logs.filter(msg => {
+                    if (!msg) return false;
+                    const channel = msg.channel || '默认频道';
+                    const isChat = chatChannelKeywords.some(keyword =>
+                        channel.includes(keyword)
+                    );
+                    return !isChat;
+                })
+                : logs;
+
+            if (visibleLogs.length === 0) {
                 return '<div style="text-align: center; padding: 40px; color: #7f8c8d;">没有找到匹配的消息</div>';
             }
             
@@ -2033,7 +2050,7 @@
             const groups = [];
             let currentGroup = null;
             
-            logs.forEach((msg, index) => {
+            visibleLogs.forEach((msg, index) => {
                 // 章节消息特殊处理
                 if (msg.isChapter) {
                     if (currentGroup) {
