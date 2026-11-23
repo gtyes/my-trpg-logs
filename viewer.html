@@ -58,6 +58,33 @@
             overflow-x: auto;           /* 极端窄屏也不换行，改为横向滚动 */
             overflow-y: hidden;
         }
+        /* 可点击的闲聊频道名 */
+        .chat-channel-name {
+            cursor: pointer;
+        }
+
+        .chat-channel-name:hover {
+            opacity: 0.85;
+        }
+
+        .channel-collapse-label {
+            font-size: 10px;
+            color: #f39c12;
+            margin-left: 6px;
+            white-space: nowrap;
+        }
+
+        /* 折叠时隐藏消息 */
+        .channel-group.collapsed .channel-messages {
+            display: none;
+        }
+
+        .channel-collapsed-tip {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+            font-style: italic;
+        }
 
         /* 分页条里的每一项都不收缩、不换行 */
         #paginationContainer > * {
@@ -958,6 +985,8 @@
         let chapters = [];
         let currentRenderedChapter = null; 
         let collapseChatChannels = false;
+        const collapsedChannelGroups = new Set();
+        const expandedChannelGroups = new Set();
         const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
@@ -1199,11 +1228,17 @@
         // 闲聊折叠功能
         function toggleChatCollapse() {
             const checkbox = document.getElementById('collapseChatCheckbox');
-            if (checkbox) {
-                collapseChatChannels = checkbox.checked;
-                renderView(false); // 重新渲染当前页
-            }
+            if (!checkbox) return;
+
+            collapseChatChannels = checkbox.checked;
+
+            // 全局切换时清空单组的手动状态
+            collapsedChannelGroups.clear();
+            expandedChannelGroups.clear();
+
+            renderView(false);
         }
+        
         // 从URL获取日志文件
         function getLogFileFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -1996,33 +2031,93 @@
             const channelBackgroundStyle = getChannelBackgroundStyle(group.channel);
             const channelMaskStyle = getChannelMaskStyle(group.channel);
             const channelNameTextStyle = getChannelNameTextStyle(group.channel);
-            
-            // 判断是否为闲聊频道
-            const isChatChannel = chatChannelKeywords.some(keyword => 
+
+            const isChatChannel = chatChannelKeywords.some(keyword =>
                 group.channel.includes(keyword)
             );
-            
-            // 判断是否应该折叠
-            const shouldCollapse = collapseChatChannels && isChatChannel;
-            
-            // 根据折叠状态决定显示哪些消息
-            const messagesToShow = shouldCollapse ? [] : group.messages;
-            const messagesHtml = messagesToShow.map(msg => renderMessage(msg)).join('');
-            
+
+            // 每一段连续的频道组用“频道名 + 第一条消息 id”作为唯一 key
+            const firstMsg = group.messages[0] || {};
+            const groupKey = group.channel + '::' + (firstMsg.id || firstMsg.text || '');
+            const safeKey = String(groupKey).replace(/"/g, '&quot;');
+
+            const isCollapsed = isChatChannel && isChannelGroupCollapsed(groupKey);
+
+            // 始终渲染消息，用 CSS 控制显示/隐藏，点击展开时不需要重新渲染
+            const messagesHtml = group.messages.map(msg => renderMessage(msg)).join('');
+
             return `
-                <div class="channel-group" style="${channelBackgroundStyle}">
+                <div class="channel-group ${isCollapsed ? 'collapsed' : ''}" style="${channelBackgroundStyle}">
                     ${channelMaskStyle ? `<div class="channel-mask" style="${channelMaskStyle}"></div>` : ''}
-                    <div class="channel-name" style="${channelNameTextStyle}">
-                        ${group.channel}
-                        ${isChatChannel ? '<span style="font-size: 10px; color: #8b0000; margin-left: 5px;">[可折叠]</span>' : ''}
+
+                    <div class="channel-name ${isChatChannel ? 'chat-channel-name' : ''}"
+                        style="${channelNameTextStyle}"
+                        ${isChatChannel ? `data-group-key="${safeKey}" data-chat="1" onclick="toggleChannelGroup(this)" title="点击折叠/展开本段闲聊"` : ''}>
+                        <span>${group.channel}</span>
+                        ${isChatChannel
+                            ? `<span class="channel-collapse-label">${isCollapsed ? '[展开]' : '[折叠]'}</span>`
+                            : ''}
                     </div>
+
                     <div class="channel-messages">
                         ${messagesHtml}
-                        ${shouldCollapse ? '<div style="text-align: center; padding: 10px; color: #666; font-style: italic;">频道内容已折叠</div>' : ''}
                     </div>
+
+                    ${isChatChannel
+                        ? `<div class="channel-collapsed-tip" style="display:${isCollapsed ? 'block' : 'none'};">频道内容已折叠，点击频道名展开</div>`
+                        : ''}
                 </div>
             `;
-        }     
+        }
+
+        // 判断某个频道组当前是否折叠
+        function isChannelGroupCollapsed(key) {
+            if (collapseChatChannels) {
+                // 全局折叠开启时，默认折叠；点开过的加入 expanded
+                return !expandedChannelGroups.has(key);
+            }
+            // 全局折叠关闭时，只有手动点过的才折叠
+            return collapsedChannelGroups.has(key);
+        }
+
+        // 点击频道名：只折叠/展开当前这一段
+        function toggleChannelGroup(el) {
+            const key = el.getAttribute('data-group-key');
+            if (!key) return;
+
+            if (collapseChatChannels) {
+                if (expandedChannelGroups.has(key)) {
+                    expandedChannelGroups.delete(key);
+                } else {
+                    expandedChannelGroups.add(key);
+                }
+            } else {
+                if (collapsedChannelGroups.has(key)) {
+                    collapsedChannelGroups.delete(key);
+                } else {
+                    collapsedChannelGroups.add(key);
+                }
+            }
+
+            const groupEl = el.closest('.channel-group');
+            const messagesEl = groupEl.querySelector('.channel-messages');
+            const labelEl = el.querySelector('.channel-collapse-label');
+            const tipEl = groupEl.querySelector('.channel-collapsed-tip');
+
+            const collapsed = isChannelGroupCollapsed(key);
+
+            groupEl.classList.toggle('collapsed', collapsed);
+
+            if (messagesEl) {
+                messagesEl.style.display = collapsed ? 'none' : '';
+            }
+            if (labelEl) {
+                labelEl.textContent = collapsed ? '[展开]' : '[折叠]';
+            }
+            if (tipEl) {
+                tipEl.style.display = collapsed ? 'block' : 'none';
+            }
+        }
 
         // 渲染单条消息
         function renderMessage(msg) {
