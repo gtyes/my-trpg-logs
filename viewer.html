@@ -709,13 +709,12 @@
         .vn-text {
             flex: 1 1 auto;
             min-height: 0;
-            overflow-y: auto;          /* 正文太长时内部滚动 */
+            overflow: hidden;          /* 关键：不显示滚动条，超出部分靠分页继续 */
             font-size: 18px;
             line-height: 1.7;
             white-space: pre-wrap;
             word-break: break-word;
         }
-
 
         .vn-extend {
             flex: 0 0 auto;            /* 骰点不撑高整体，只占固定位置 */
@@ -1289,6 +1288,8 @@
             channels: [],
             searchText: ''
         };
+        let vnPageStart = 0;      // 当前这一页从整段文本的哪个位置开始
+        let vnHasMoreText = false; // 当前消息是否还有下一页
         let chapters = [];
         let currentRenderedChapter = null; 
         let collapseChatChannels = false;
@@ -1471,13 +1472,22 @@
         }
 
         function nextVn() {
+            // 还在打字：先把当前页打完
             if (vnTyping) {
                 completeVnTyping();
                 return;
             }
 
+            // 当前消息还有下一页：从对话框顶部继续打
+            if (vnHasMoreText) {
+                startVnTyping(vnCurrentText, vnTextIndex);
+                return;
+            }
+
+            // 没有下一页，进入下一条消息
             if (vnIndex >= vnSteps.length - 1) {
                 document.getElementById('vnHint').textContent = '已经是最后一句';
+
                 if (vnAutoTimer) {
                     clearTimeout(vnAutoTimer);
                     vnAutoTimer = null;
@@ -1678,16 +1688,19 @@
             }
         }
 
-        function startVnTyping(text) {
+        function startVnTyping(text, startOffset = 0) {
             clearVnTimers();
 
             const textEl = document.getElementById('vnText');
             const extendEl = document.getElementById('vnExtend');
             const hintEl = document.getElementById('vnHint');
 
-            vnTyping = true;
             vnCurrentText = text || '';
-            vnTextIndex = 0;
+            vnPageStart = Math.max(0, startOffset);
+            vnTextIndex = vnPageStart;
+            vnHasMoreText = false;
+            vnTyping = true;
+
             textEl.textContent = '';
 
             if (extendEl) {
@@ -1697,19 +1710,48 @@
                 hintEl.textContent = '点击继续 / 空格';
             }
 
-            if (!vnCurrentText) {
+            if (!vnCurrentText || vnTextIndex >= vnCurrentText.length) {
                 completeVnTyping();
                 return;
             }
 
-            vnTypeTimer = setInterval(() => {
-                vnTextIndex += 1;
-                textEl.textContent = vnCurrentText.slice(0, vnTextIndex);
+            typeVnNextChar();
+        }
 
-                if (vnTextIndex >= vnCurrentText.length) {
-                    completeVnTyping();
+        function typeVnNextChar() {
+            if (!vnTyping) return;
+
+            const textEl = document.getElementById('vnText');
+            const hintEl = document.getElementById('vnHint');
+
+            if (vnTextIndex >= vnCurrentText.length) {
+                completeVnTyping();
+                return;
+            }
+
+            vnTextIndex++;
+            textEl.textContent = vnCurrentText.slice(vnPageStart, vnTextIndex);
+
+            // 当前页已经装不下了
+            if (textEl.scrollHeight > textEl.clientHeight + 1) {
+                // 退回一个字，保证不超出边框
+                vnTextIndex--;
+                textEl.textContent = vnCurrentText.slice(vnPageStart, vnTextIndex);
+
+                vnTyping = false;
+                vnHasMoreText = vnTextIndex < vnCurrentText.length;
+
+                if (hintEl) {
+                    hintEl.textContent = '点击继续';
                 }
-            }, 30);
+
+                if (vnAuto) {
+                    scheduleVnAuto(1500);
+                }
+                return;
+            }
+
+            vnTypeTimer = setTimeout(typeVnNextChar, 30);
         }
 
         function completeVnTyping() {
@@ -1720,14 +1762,37 @@
 
             const textEl = document.getElementById('vnText');
             const extendEl = document.getElementById('vnExtend');
+            const hintEl = document.getElementById('vnHint');
 
-            textEl.textContent = vnCurrentText;
+            // 快速填满当前页，遇到溢出就停下
+            while (vnTextIndex < vnCurrentText.length) {
+                vnTextIndex++;
+                textEl.textContent = vnCurrentText.slice(vnPageStart, vnTextIndex);
+
+                if (textEl.scrollHeight > textEl.clientHeight + 1) {
+                    vnTextIndex--;
+                    textEl.textContent = vnCurrentText.slice(vnPageStart, vnTextIndex);
+
+                    vnTyping = false;
+                    vnHasMoreText = vnTextIndex < vnCurrentText.length;
+
+                    if (hintEl) hintEl.textContent = '点击继续';
+                    if (vnAuto) scheduleVnAuto(1500);
+                    return;
+                }
+            }
+
+            // 整段已经打完
+            vnTyping = false;
+            vnHasMoreText = false;
+            textEl.textContent = vnCurrentText.slice(vnPageStart);
 
             if (extendEl) {
                 extendEl.style.visibility = 'visible';
             }
-
-            vnTyping = false;
+            if (hintEl) {
+                hintEl.textContent = '点击继续 / 空格';
+            }
 
             if (vnAuto) {
                 scheduleVnAuto();
