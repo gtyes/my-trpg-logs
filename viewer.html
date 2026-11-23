@@ -1678,11 +1678,7 @@
                     const prevSlotId = prev.side === 'right' ? rightId : leftId;
                     setVnPortraitSlot(prevSlotId, prev.portraitUrl, true);
                 }
-            } else if (prev) {
-                // 当前消息没立绘，保留上一个角色立绘并变暗
-                const prevSlotId = prev.side === 'right' ? rightId : leftId;
-                setVnPortraitSlot(prevSlotId, prev.portraitUrl, true);
-            }
+            } 
         }
 
         function startVnTyping(text) {
