@@ -1477,8 +1477,7 @@
 
         function renderVnStep() {
             clearVnTimers();
-            // 每次切换步骤先取消加暗
-            bg.classList.remove('chat-dim');
+
 
             const step = vnSteps[vnIndex];
             if (!step) return;
@@ -1489,7 +1488,8 @@
             const chapterCard = document.getElementById('vnChapterCard');
             const imageStage = document.getElementById('vnImageStage');
             const stageImage = document.getElementById('vnStageImage');
-
+            // 每次切换步骤先取消加暗
+            bg.classList.remove('chat-dim');
             // 每次切换步骤，先把图片层收起来
             imageStage.classList.remove('show');
             stageImage.removeAttribute('src');
@@ -1503,6 +1503,7 @@
             if (step.type === 'chapter') {
                 chapterCard.classList.add('show');
                 dialog.style.display = 'none';
+                document.getElementById('vnPortraitWrap').style.display = 'none';
 
                 document.getElementById('vnChapterName').textContent =
                     step.chapterName || '新章节';
@@ -1513,6 +1514,7 @@
                 if (vnAuto) scheduleVnAuto(2000);
                 return;
             }
+
 
             chapterCard.classList.remove('show');
             dialog.style.display = 'block';
@@ -1526,7 +1528,6 @@
                 document.getElementById('vnPortraitWrap').style.display = 'none';
 
                 document.getElementById('vnExtend').style.display = 'none';
-                document.getElementById('vnMessageImageWrap').style.display = 'none';
 
                 startVnTyping(msg.text || '');
                 return;
@@ -1570,9 +1571,6 @@
             if (msg.messageImage) {
                 stageImage.src = msg.messageImage;
                 imageStage.classList.add('show');
-
-                // 有材料图时隐藏立绘，避免画面太挤
-                document.getElementById('vnPortraitWrap').style.display = 'none';
             }
 
             startVnTyping(msg.text || '');
