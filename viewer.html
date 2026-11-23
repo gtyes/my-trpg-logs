@@ -922,7 +922,10 @@
                 折叠所有"闲聊"频道
             </label>
         </div>
-        
+        <label style="display: block; margin: 4px 0; font-size: 12px;">
+            <input type="checkbox" id="hideChatCheckbox" onchange="toggleHideChatChannels()">
+            隐藏所有“闲聊”频道
+        </label>
         <div class="filter-section">
             <h4>按频道筛选</h4>
             <div id="channelFilters">
@@ -985,6 +988,7 @@
         let chapters = [];
         let currentRenderedChapter = null; 
         let collapseChatChannels = false;
+        let hideChatChannels = false;
         const collapsedChannelGroups = new Set();
         const expandedChannelGroups = new Set();
         const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
@@ -1238,7 +1242,16 @@
 
             renderView(false);
         }
-        
+        // 隐藏所有闲聊频道
+        function toggleHideChatChannels() {
+            const checkbox = document.getElementById('hideChatCheckbox');
+            if (!checkbox) return;
+
+            hideChatChannels = checkbox.checked;
+
+            // 按当前模式重新渲染，但保留连续模式已加载数量
+            renderView(false);
+        }
         // 从URL获取日志文件
         function getLogFileFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -1579,6 +1592,11 @@
                 collapseCheckbox.checked = false;
             }
             collapseChatChannels = false;
+            const hideCheckbox = document.getElementById('hideChatCheckbox');
+            if (hideCheckbox) {
+                hideCheckbox.checked = false;
+            }
+            hideChatChannels = false;
 
             filteredLogs = logData.logs || [];
             currentPage = 1;
@@ -1763,6 +1781,49 @@
             }, 100);
 
         }
+        // 连续模式追加一块 HTML，并处理跨块的同频道合并
+        function appendRenderedChunk(html) {
+            const container = document.getElementById('logMessages');
+            const sentinel = document.getElementById('scrollSentinel');
+            if (!container || !html) return;
+
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+
+            const nodes = Array.from(temp.children);
+            if (!nodes.length) return;
+
+            const insertBefore = sentinel || null;
+            const prev = insertBefore
+                ? insertBefore.previousElementSibling
+                : container.lastElementChild;
+
+            // 上一块结尾和新块开头是同一个频道 → 合并成一个组
+            if (
+                prev &&
+                prev.classList.contains('channel-group') &&
+                nodes[0].classList.contains('channel-group') &&
+                prev.dataset.channel === nodes[0].dataset.channel
+            ) {
+                const prevMessages = prev.querySelector('.channel-messages');
+                const newMessages = nodes[0].querySelector('.channel-messages');
+
+                if (prevMessages && newMessages) {
+                    while (newMessages.firstChild) {
+                        prevMessages.appendChild(newMessages.firstChild);
+                    }
+                    nodes.shift(); // 删除新块里重复的频道组外壳
+                }
+            }
+
+            nodes.forEach(node => {
+                if (insertBefore) {
+                    insertBefore.parentNode.insertBefore(node, insertBefore);
+                } else {
+                    container.appendChild(node);
+                }
+            });
+        }
 
         function loadMoreScroll() {
             const range = getContinuousRange();
@@ -1779,12 +1840,10 @@
                 filteredLogs.slice(startAbs, endAbs)
             );
 
-            const sentinel = document.getElementById('scrollSentinel');
-            if (sentinel) {
-                sentinel.insertAdjacentHTML('beforebegin', html);
-            }
+            appendRenderedChunk(html);
 
             scrollLoadedCount = newCount;
+
 
             addMessageDoubleClickHandlers();
             updateChapterEndNav();
@@ -1900,7 +1959,11 @@
         // 添加双击事件处理函数
         function addMessageDoubleClickHandlers() {
             const messageRows = document.querySelectorAll('.message-row');
+
             messageRows.forEach(row => {
+                if (row.dataset.dblclickBound === '1') return;
+                row.dataset.dblclickBound = '1';
+
                 row.addEventListener('dblclick', function() {
                     const messageId = this.getAttribute('data-id');
                     if (messageId) {
@@ -2035,6 +2098,10 @@
             const isChatChannel = chatChannelKeywords.some(keyword =>
                 group.channel.includes(keyword)
             );
+            // 隐藏所有闲聊频道：整组不渲染
+            if (isChatChannel && hideChatChannels) {
+                return '';
+            }
 
             // 每一段连续的频道组用“频道名 + 第一条消息 id”作为唯一 key
             const firstMsg = group.messages[0] || {};
@@ -2047,7 +2114,9 @@
             const messagesHtml = group.messages.map(msg => renderMessage(msg)).join('');
 
             return `
-                <div class="channel-group ${isCollapsed ? 'collapsed' : ''}" style="${channelBackgroundStyle}">
+                <div class="channel-group ${isCollapsed ? 'collapsed' : ''}"
+                    data-channel="${String(group.channel).replace(/"/g, '&quot;')}"
+                    style="${channelBackgroundStyle}">
                     ${channelMaskStyle ? `<div class="channel-mask" style="${channelMaskStyle}"></div>` : ''}
 
                     <div class="channel-name ${isChatChannel ? 'chat-channel-name' : ''}"
