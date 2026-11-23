@@ -1310,33 +1310,25 @@
         let isImageCollapsed = false; // 记录图片是否收起
 
         function initVnMediaEvents() {
-            function normalizeEvents(list) {
-                return (Array.isArray(list) ? list : [])
-                    .map(event => ({
-                        position: parseInt(
-                            event.position !== undefined
-                                ? event.position
-                                : event.messageIndex,
-                            10
-                        ) || 0,
-                        url: String(
-                            event.url ||
-                            event.bgmUrl ||
-                            event.backgroundUrl ||
-                            ''
-                        )
-                    }))
-                    .filter(event => event.position > 0)
-                    .sort((a, b) => a.position - b.position);
-            }
+            vnBgmEvents = (logData.bgmEvents || [])
+                .map(event => ({
+                    position: parseInt(event.position, 10) || 0,
+                    url: String(event.url || '')
+                }))
+                .filter(event => event.position > 0)
+                .sort((a, b) => a.position - b.position);
 
-            vnBgmEvents = normalizeEvents(logData.bgmEvents);
-            vnBackgroundEvents = normalizeEvents(logData.backgroundEvents);
+            vnBackgroundEvents = (logData.backgroundEvents || [])
+                .map(event => ({
+                    position: parseInt(event.position, 10) || 0,
+                    url: String(event.url || '')
+                }))
+                .filter(event => event.position > 0)
+                .sort((a, b) => a.position - b.position);
 
             console.log('[VN] BGM 事件:', vnBgmEvents);
             console.log('[VN] 背景事件:', vnBackgroundEvents);
         }
-
 
         function getLatestBgmEvent(position) {
             let result = null;
@@ -1349,41 +1341,73 @@
             return result;
         }
 
+        // 统一处理媒体地址：
+        // 1. 只写了文件名（如 "When She's Gone.mp3"）时，默认去 audio/ 目录找
+        // 2. 空格转义，避免 404
+        function resolveMediaUrl(rawUrl) {
+            let url = String(rawUrl || '').trim();
+            if (!url || url === '__stop__') return url;
+
+            if (!/^(https?:|data:|blob:)/i.test(url) &&
+                !url.startsWith('/') &&
+                !url.includes('/')) {
+                url = 'audio/' + url;
+            }
+
+            return url.replace(/ /g, '%20');
+        }
+
         function playVnBgm(url) {
-            if (!url || vnCurrentBgmUrl === url) return;
+            const src = resolveMediaUrl(url);
+            if (!src || vnCurrentBgmUrl === src) return;
 
             vnBgmAudio.pause();
-            vnBgmAudio.src = url;
+            vnBgmAudio.src = src;
             vnBgmAudio.loop = true;
             vnBgmAudio.volume = 0.6;
+            vnBgmAudio.preload = 'auto';
+
+            console.log('[VN] 准备播放 BGM:', src);
+
+            vnBgmAudio.addEventListener('error', () => {
+                console.error('[VN] BGM 加载失败（检查路径/文件是否存在）:', src);
+            }, { once: true });
 
             const playPromise = vnBgmAudio.play();
 
-            if (playPromise) {
-                playPromise.catch(() => {
-                    // 浏览器拦截自动播放时，等用户点一下再播
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(err => {
+                    console.warn('[VN] BGM 被浏览器拦截，等待用户点击重试:', err && err.name);
+
                     const retry = () => {
-                        vnBgmAudio.play().catch(() => {});
+                        vnBgmAudio.play()
+                            .then(() => console.log('[VN] BGM 重试播放成功'))
+                            .catch(e => console.warn('[VN] BGM 重试仍失败:', e && e.name));
                         document.removeEventListener('click', retry);
                     };
                     document.addEventListener('click', retry, { once: true });
                 });
             }
 
-            vnCurrentBgmUrl = url;
+            vnCurrentBgmUrl = src;
         }
 
         function stopVnBgm() {
             vnBgmAudio.pause();
-            vnBgmAudio.currentTime = 0;
+            try {
+                vnBgmAudio.currentTime = 0;
+            } catch (e) { /* 忽略未加载时的异常 */ }
             vnCurrentBgmUrl = '';
         }
 
         function applyBgmForPosition(position) {
-            const event = getLatestBgmEvent(position);
+            const pos = Number(position) || 0;
+            const event = getLatestBgmEvent(pos);
             if (!event) return;
 
             const url = (event.url || '').trim();
+
+            console.log('[VN] BGM 位置:', pos, '命中事件:', url);
 
             if (!url || url === '__stop__') {
                 stopVnBgm();
@@ -1392,6 +1416,7 @@
 
             playVnBgm(url);
         }
+
 
         function isChatChannelName(channel) {
             const name = channel || '默认频道';
@@ -1402,16 +1427,21 @@
             const bg = document.getElementById('vnBg');
             if (!bg) return;
 
+            const stepPosition = Number(step.position) || 0;
+            const chapterStart = Number(step.chapterStart) || 0;
+
             const chapterInfo = chapterImageMap[step.chapterName];
             let backgroundUrl = chapterInfo ? chapterInfo.background : '';
 
-            // 只在当前章节范围内找最近的背景事件
+            // 只取「当前位置之前（含）」且「当前章节内」的最后一条背景事件
             let eventUrl = '';
 
-            for (const event of vnBackgroundEvents) {
-                if (event.position > step.position) break;
-                if (event.position >= (step.chapterStart || 0)) {
-                    eventUrl = event.url;
+            if (stepPosition > 0) {
+                for (const event of vnBackgroundEvents) {
+                    if (event.position > stepPosition) break;
+                    if (event.position >= chapterStart) {
+                        eventUrl = event.url;
+                    }
                 }
             }
 
@@ -1422,7 +1452,15 @@
             bg.style.backgroundImage = backgroundUrl
                 ? `url('${backgroundUrl}')`
                 : 'none';
+
+            console.log(
+                '[VN] 背景 step:', stepPosition,
+                '章节起点:', chapterStart,
+                '事件:', eventUrl || '(无)',
+                '最终:', backgroundUrl || '(空)'
+            );
         }
+
 
         // 获取当前阅读位置在 filteredLogs 中的索引
         function getCurrentReadingIndex() {
@@ -1478,9 +1516,13 @@
                 if (hideChatChannels && msg.channel && isChatChannelName(msg.channel)) {
                     return;
                 }
+
+                // 绝对位置：在完整 logData.logs 中的序号（从 1 开始）
+                // 必须放在最前面，章节分支也要用它
                 const logPosition = (msg.id !== undefined && logIndexById.has(String(msg.id)))
                     ? logIndexById.get(String(msg.id)) + 1
                     : index + 1;
+
                 if (msg.isChapter) {
                     const name = (msg.text || '')
                         .replace('=== ', '')
@@ -1501,8 +1543,6 @@
                     return;
                 }
 
-
-
                 const isSystem = msg.name &&
                     String(msg.name).toLowerCase() === 'system';
 
@@ -1516,24 +1556,23 @@
                 if (portraitUrl) {
                     const prevStep = steps[steps.length - 1];
 
-                    // 只有紧挨着的上一条“有立绘的消息”才参与左右交替
                     if (prevStep && prevStep.type === 'message' && prevStep.portraitUrl) {
                         if (prevStep.msg.name === msg.name) {
-                            // 同一角色连续说话，保持同一边
                             side = prevStep.side;
                         } else {
-                            // 换成另一个有立绘角色，左右交替
                             side = prevStep.side === 'left' ? 'right' : 'left';
                         }
                     } else {
-                        // 上一条没有立绘 / 是旁白 / 是章节 → 重新从左边开始
                         side = 'left';
                     }
                 }
 
+                // 关键：普通消息也要带上 position / chapterStart
                 steps.push({
                     type: isSystem ? 'system' : 'message',
                     index,
+                    position: logPosition,
+                    chapterStart: currentChapterStart,
                     chapterName: currentChapterName,
                     msg,
                     portraitUrl,
@@ -1576,7 +1615,11 @@
             document.body.classList.remove('vn-active');
 
             document.removeEventListener('keydown', vnKeyHandler);
+
+            // 退出对话模式时停止 BGM
+            stopVnBgm();
         }
+
 
         function clearVnTimers() {
             if (vnTypeTimer) {
