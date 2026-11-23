@@ -666,8 +666,11 @@
         .vn-dialog {
             position: relative;
             width: 100%;
-            min-height: 160px;
+            height: 250px;             /* 原来 160px 的 min-height，改成固定高度 */
             padding: 18px 24px 30px;
+
+            display: flex;
+            flex-direction: column;
 
             background: rgba(10, 10, 15, 0.78);
             border: 1px solid rgba(255, 255, 255, 0.18);
@@ -704,17 +707,21 @@
         }
 
         .vn-text {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;          /* 正文太长时内部滚动 */
             font-size: 18px;
             line-height: 1.7;
             white-space: pre-wrap;
             word-break: break-word;
-            min-height: 60px;
         }
 
+
         .vn-extend {
+            flex: 0 0 auto;            /* 骰点不撑高整体，只占固定位置 */
             font-size: inherit;
             line-height: 1.7;
-            margin-top: 0;
+            margin-top: 4px;
             color: #f1c40f;
             white-space: pre-wrap;
         }
