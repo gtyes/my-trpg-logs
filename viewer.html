@@ -2291,11 +2291,18 @@
             document.addEventListener('keydown', vnKeyHandler);
             initVnMediaEvents();
 
-            if (hasVnOpeningVideo() && vnIndex === 0) {
+            const firstMessageStep = vnSteps.findIndex(step => step.type !== 'chapter');
+
+            const atFirstMessage =
+                vnIndex === 0 ||
+                vnIndex === firstMessageStep;
+
+            if (hasVnOpeningVideo() && atFirstMessage) {
                 openVnOpening(() => renderVnStep());
             } else {
                 renderVnStep();
             }
+
         }
 
 
