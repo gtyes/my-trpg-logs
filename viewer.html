@@ -3824,31 +3824,29 @@
             const allLogs = logData.logs || [];
             const targetId = String(messageId);
 
-            // 先在完整日志里查找，避免受当前筛选/搜索状态影响
-            const messageIndex = allLogs.findIndex(msg => String(msg.id) === targetId);
+            const messageIndex = allLogs.findIndex(
+                msg => String(msg.id) === targetId
+            );
 
             if (messageIndex === -1) {
                 alert('未找到该消息，可能消息已被删除或修改');
                 return;
             }
+
+            // 先清筛选（只改状态，不渲染），让 filteredLogs 回到完整日志
+            clearFilters(false);
+
             if (viewMode === 'scroll') {
+                // 用完整日志里的索引定位章节，并加载到目标消息
                 renderContinuous(true, messageIndex);
-                setTimeout(() => highlightMessage(String(messageId)), 300);
+                setTimeout(() => highlightMessage(targetId), 350);
             } else {
                 currentPage = calculatePageForMessage(messageIndex);
                 renderCurrentPage();
-                setTimeout(() => highlightMessage(String(messageId)), 500);
+                setTimeout(() => highlightMessage(targetId), 350);
             }
-
-            // 回到完整日志
-            clearFilters(false);
-
-            setTimeout(() => {
-                currentPage = calculatePageForMessage(messageIndex);
-                renderView(true);
-                setTimeout(() => highlightMessage(targetId), 500);
-            }, 100);
         }
+
 
         // 添加高亮函数
         function highlightMessage(messageId) {
