@@ -888,6 +888,7 @@
             -webkit-backdrop-filter: none;
             scrollbar-width: thin;
             scrollbar-color: rgba(150, 150, 150, 0.55) transparent;
+            scrollbar-gutter: stable both-edges;
         }
 
         .vn-log-drawer .vn-log-menu::-webkit-scrollbar {
@@ -1000,29 +1001,29 @@
             background: rgba(255, 255, 255, 0.22);
         }
 
-        /* 打开抽屉时，舞台缩到左侧 82% */
+        /* 打开抽屉时：右侧让出 25% */
         .vn-overlay.vn-log-open .vn-image-stage,
         .vn-overlay.vn-log-open .vn-chapter-card,
         .vn-overlay.vn-log-open .vn-extend-image-overlay {
-            right: 20%;
+            right: 25%;
         }
 
         .vn-overlay.vn-log-open .vn-dialog-area {
-            left: 0;
-            right: 25%;
-            width: auto;
+            left: max(2.5vw, calc((75vw - 1180px) / 2));
+            width: min(calc(75vw - 5vw), 1180px);
+            right: auto;
+
             max-width: none;
             transform: none;
-            padding: 0 2.5vw;
+            padding: 0;              /* ★ 去掉了 padding，立绘才能贴住对话框边缘 */
             box-sizing: border-box;
         }
 
         .vn-overlay.vn-log-open .vn-dialog {
-            max-width: 1180px;
-            margin-left: auto;
-            margin-right: auto;
+            width: 100%;
+            max-width: none;         /* ★ 宽度交给 vn-dialog-area 控制 */
+            margin: 0;
         }
-
 
         .vn-chapter-item {
             display: block;
@@ -2198,20 +2199,14 @@
         }
 
         function vnHandleClick(event) {
-            // 点抽屉内部不翻页
             if (event.target.closest('.vn-log-drawer')) return;
 
             const chapterMenu = document.getElementById('vnChapterMenu');
-            const drawer = document.getElementById('vnLogDrawer');
 
-            const menuOpen =
-                (chapterMenu && chapterMenu.classList.contains('show')) ||
-                (drawer && drawer.classList.contains('show'));
-
-            // 有菜单/抽屉开着时，点左侧先收起来，不触发下一句
-            if (menuOpen && !event.target.closest('.vn-topbar')) {
-                if (chapterMenu) chapterMenu.classList.remove('show');
-                setVnLogDrawerOpen(false);
+            if (chapterMenu &&
+                chapterMenu.classList.contains('show') &&
+                !event.target.closest('.vn-topbar')) {
+                chapterMenu.classList.remove('show');
                 return;
             }
 
@@ -2219,6 +2214,7 @@
 
             nextVn();
         }
+
 
         function nextVn() {
             // 还在打字：先把当前页打完
@@ -2294,7 +2290,7 @@
 
         function renderVnStep() {
             clearVnTimers();
-            setVnLogDrawerOpen(false);
+            refreshVnLogMenuCurrent();
             const chapterMenu = document.getElementById('vnChapterMenu');
             if (chapterMenu) chapterMenu.classList.remove('show');
 
@@ -3156,12 +3152,42 @@
             if (menu) menu.classList.toggle('show', open);
             if (overlay) overlay.classList.toggle('vn-log-open', open);
         }
+        function refreshVnLogMenuCurrent() {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || !menu.classList.contains('show')) return;
+
+            // 当前句已经不在已渲染的窗口里，重新以它为中心加载
+            if (vnIndex < vnLogMenuStart || vnIndex >= vnLogMenuEnd) {
+                renderVnLogMenu(true);
+                return;
+            }
+
+            menu.querySelectorAll('.vn-log-item.current')
+                .forEach(el => el.classList.remove('current'));
+
+            const current = menu.querySelector(`[data-step-index="${vnIndex}"]`);
+            if (!current) return;
+
+            current.classList.add('current');
+
+            // 如果当前项在可视区外，滚动到中间
+            const menuRect = menu.getBoundingClientRect();
+            const itemRect = current.getBoundingClientRect();
+
+            if (itemRect.top < menuRect.top || itemRect.bottom > menuRect.bottom) {
+                menu.scrollTop +=
+                    itemRect.top - menuRect.top
+                    - menu.clientHeight / 2
+                    + itemRect.height / 2;
+            }
+        }
 
 
         function createVnLogItem(step, index) {
             const el = document.createElement(step.type === 'chapter' ? 'div' : 'button');
             if (step.type !== 'chapter') el.type = 'button';
             el.className = 'vn-log-item';
+            el.dataset.stepIndex = index;
 
             if (step.type === 'chapter') {
                 el.classList.add('vn-log-chapter');
@@ -3309,8 +3335,6 @@
         }
 
         function jumpVnLogStep(stepIndex) {
-            setVnLogDrawerOpen(false);
-
             if (stepIndex < 0 || stepIndex >= vnSteps.length) return;
 
             vnIndex = stepIndex;
