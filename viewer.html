@@ -827,14 +827,14 @@
             right: 0;
             bottom: 0;
 
-            width: 20%;
-            min-width: 160px;
-            max-width: 380px;
+            width: 25%;
+            min-width: 220px;
+            max-width: 520px;
 
             display: none;
             flex-direction: column;
 
-            background: rgba(12, 12, 16, 0.96);
+            background: rgba(12, 12, 16, 0.72);
             border-left: 1px solid rgba(255, 255, 255, 0.14);
             box-shadow: -10px 0 30px rgba(0, 0, 0, 0.45);
             backdrop-filter: blur(12px);
@@ -850,7 +850,7 @@
             flex: 0 0 auto;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;   /* ← 标题居中 */
             padding: 12px 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.12);
             color: #fff;
@@ -939,8 +939,7 @@
             width: 100%;
             padding: 7px 10px;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-left: 3px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.10);
             background: rgba(255, 255, 255, 0.07);
             box-sizing: border-box;
         }
@@ -989,7 +988,6 @@
         }
 
         /* 打开抽屉时，舞台缩到左侧 82% */
-        .vn-overlay.vn-log-open .vn-bg,
         .vn-overlay.vn-log-open .vn-image-stage,
         .vn-overlay.vn-log-open .vn-chapter-card,
         .vn-overlay.vn-log-open .vn-extend-image-overlay {
@@ -3109,10 +3107,6 @@
                     : 0.22;
                 bubble.style.backgroundColor =
                     `rgba(${hexToRgb(rule.bubbleColor)}, ${opacity})`;
-            }
-
-            if (msg.color) {
-                bubble.style.borderLeftColor = msg.color;
             }
 
             // 正文：不截断，全部显示
