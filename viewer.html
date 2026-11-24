@@ -796,6 +796,83 @@
         .vn-chapter-menu.show {
             display: block;
         }
+        .vn-log-menu {
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 8px);
+            width: 360px;
+            max-width: 80vw;
+            max-height: 50vh;
+            overflow-y: auto;
+            display: none;
+            padding: 6px;
+
+            background: rgba(15, 15, 20, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .vn-log-menu.show {
+            display: block;
+        }
+
+        .vn-log-item {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            padding: 7px 9px;
+            border: none;
+            border-radius: 5px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .vn-log-item:hover {
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+        .vn-log-item.current {
+            background: rgba(241, 196, 15, 0.16);
+            color: #f1c40f;
+        }
+
+        .vn-log-speaker {
+            flex: 0 0 auto;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #9fd3ff;
+        }
+
+        .vn-log-text {
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .vn-log-item.system .vn-log-speaker {
+            color: #ffb86c;
+        }
+
+        .vn-log-chapter {
+            display: block;
+            padding: 8px 9px;
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 4px;
+        }
 
         .vn-chapter-item {
             display: block;
@@ -1308,11 +1385,14 @@
                 <button class="vn-btn" onclick="event.stopPropagation(); nextVn()">下一句</button>
                 <button class="vn-btn" id="vnChapterBtn"
                         onclick="event.stopPropagation(); toggleVnChapterMenu()">章节</button>
+                <button class="vn-btn" id="vnLogBtn"
+                        onclick="event.stopPropagation(); toggleVnLogMenu()">对话</button>
                 <button class="vn-btn" id="vnAutoBtn"
                         onclick="event.stopPropagation(); toggleVnAuto()">自动：关</button>
                 <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
 
                 <div class="vn-chapter-menu" id="vnChapterMenu"></div>
+                <div class="vn-log-menu" id="vnLogMenu"></div>
             </div>
 
             <div class="vn-dialog" id="vnDialog">
@@ -1350,6 +1430,8 @@
         let vnTypeTimer = null;
         let vnAutoTimer = null;
         let vnPageTimer = null;
+        let vnLogMenuStart = 0;
+        let vnLogMenuEnd = 0;
         let vnCurrentText = '';
         let vnTextIndex = 0;
         let vnPortraitMap = {};
@@ -1753,6 +1835,9 @@
         }
 
         function toggleVnChapterMenu() {
+            const logMenu = document.getElementById('vnLogMenu');
+            if (logMenu) logMenu.classList.remove('show');
+
             const menu = document.getElementById('vnChapterMenu');
             if (!menu) return;
 
@@ -1867,12 +1952,17 @@
         }
 
         function vnHandleClick(event) {
-            const menu = document.getElementById('vnChapterMenu');
+            const chapterMenu = document.getElementById('vnChapterMenu');
+            const logMenu = document.getElementById('vnLogMenu');
 
-            // 章节菜单打开时，点外面先关菜单，不触发“下一句”
-            if (menu && menu.classList.contains('show') &&
-                !event.target.closest('.vn-topbar')) {
-                menu.classList.remove('show');
+            const menuOpen =
+                (chapterMenu && chapterMenu.classList.contains('show')) ||
+                (logMenu && logMenu.classList.contains('show'));
+
+            // 菜单打开时，点外面先关菜单，不翻页
+            if (menuOpen && !event.target.closest('.vn-topbar')) {
+                if (chapterMenu) chapterMenu.classList.remove('show');
+                if (logMenu) logMenu.classList.remove('show');
                 return;
             }
 
@@ -1880,8 +1970,6 @@
 
             nextVn();
         }
-
-
 
         function nextVn() {
             // 还在打字：先把当前页打完
@@ -1959,6 +2047,9 @@
             clearVnTimers();
             const chapterMenu = document.getElementById('vnChapterMenu');
             if (chapterMenu) chapterMenu.classList.remove('show');
+
+            const logMenu = document.getElementById('vnLogMenu');
+            if (logMenu) logMenu.classList.remove('show');
 
 
             const step = vnSteps[vnIndex];
@@ -2738,7 +2829,152 @@
                 </div>
             `).join('');
         }
-        
+
+        function toggleVnLogMenu() {
+            // 和章节菜单互斥
+            const chapterMenu = document.getElementById('vnChapterMenu');
+            if (chapterMenu) chapterMenu.classList.remove('show');
+
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu) return;
+
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+                return;
+            }
+
+            renderVnLogMenu(true);
+            menu.classList.add('show');
+
+            if (!menu.dataset.scrollBound) {
+                menu.addEventListener('scroll', handleVnLogMenuScroll);
+                menu.dataset.scrollBound = '1';
+            }
+        }
+
+        function createVnLogItem(step, index) {
+            const el = document.createElement(step.type === 'chapter' ? 'div' : 'button');
+            if (step.type !== 'chapter') el.type = 'button';
+
+            el.className = 'vn-log-item';
+
+            if (step.type === 'chapter') {
+                el.classList.add('vn-log-chapter');
+                el.textContent = '◆ ' + (step.chapterName || '未命名章节');
+            } else {
+                if (step.type === 'system') el.classList.add('system');
+
+                const speaker = document.createElement('span');
+                speaker.className = 'vn-log-speaker';
+                speaker.textContent = step.type === 'system'
+                    ? '旁白'
+                    : (step.msg.name || '未知角色');
+
+                const text = document.createElement('span');
+                text.className = 'vn-log-text';
+
+                const raw = (step.msg.text || '').replace(/\s+/g, ' ').trim();
+                text.textContent = raw.length > 56 ? raw.slice(0, 56) + '…' : raw;
+
+                el.appendChild(speaker);
+                el.appendChild(text);
+            }
+
+            if (index === vnIndex) {
+                el.classList.add('current');
+            }
+
+            el.addEventListener('click', event => {
+                event.stopPropagation();
+                jumpVnLogStep(index);
+            });
+
+            return el;
+        }
+
+        function appendVnLogItems(start, end) {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu) return;
+
+            const frag = document.createDocumentFragment();
+            for (let i = start; i < end; i++) {
+                const step = vnSteps[i];
+                if (!step) continue;
+                frag.appendChild(createVnLogItem(step, i));
+            }
+            menu.appendChild(frag);
+        }
+
+        function prependVnLogItems(start, end) {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu) return;
+
+            const prevHeight = menu.scrollHeight;
+            const prevTop = menu.scrollTop;
+
+            const frag = document.createDocumentFragment();
+            for (let i = start; i < end; i++) {
+                const step = vnSteps[i];
+                if (!step) continue;
+                frag.appendChild(createVnLogItem(step, i));
+            }
+
+            menu.insertBefore(frag, menu.firstChild);
+            menu.scrollTop = prevTop + (menu.scrollHeight - prevHeight);
+        }
+
+        function renderVnLogMenu(reset = true) {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || !reset) return;
+
+            // 默认加载当前位置上下各 50 条
+            vnLogMenuStart = Math.max(0, vnIndex - 50);
+            vnLogMenuEnd = Math.min(vnSteps.length, vnIndex + 50);
+
+            menu.innerHTML = '';
+            appendVnLogItems(vnLogMenuStart, vnLogMenuEnd);
+
+            requestAnimationFrame(() => {
+                const current = menu.querySelector('.vn-log-item.current');
+                if (!current) return;
+
+                const menuRect = menu.getBoundingClientRect();
+                const itemRect = current.getBoundingClientRect();
+                menu.scrollTop += itemRect.top - menuRect.top
+                    - menu.clientHeight / 2 + itemRect.height / 2;
+            });
+        }
+
+        function handleVnLogMenuScroll() {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || !menu.classList.contains('show')) return;
+
+            // 接近顶部：往前补 50 条
+            if (menu.scrollTop < 40 && vnLogMenuStart > 0) {
+                const newStart = Math.max(0, vnLogMenuStart - 50);
+                prependVnLogItems(newStart, vnLogMenuStart);
+                vnLogMenuStart = newStart;
+            }
+
+            // 接近底部：往后补 50 条
+            if (menu.scrollTop + menu.clientHeight > menu.scrollHeight - 40 &&
+                vnLogMenuEnd < vnSteps.length) {
+                const newEnd = Math.min(vnSteps.length, vnLogMenuEnd + 50);
+                appendVnLogItems(vnLogMenuEnd, newEnd);
+                vnLogMenuEnd = newEnd;
+            }
+        }
+
+        function jumpVnLogStep(stepIndex) {
+            const menu = document.getElementById('vnLogMenu');
+            if (menu) menu.classList.remove('show');
+
+            if (stepIndex < 0 || stepIndex >= vnSteps.length) return;
+
+            vnIndex = stepIndex;
+            renderVnStep();
+        }
+
         // 渲染筛选选项
         function renderFilterOptions() {
             if (!logData || !logData.logs) return;
