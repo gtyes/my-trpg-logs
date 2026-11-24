@@ -903,6 +903,7 @@
             width: 100%;
             max-height: none;
             flex: 1 1 auto;
+            min-height: 0;  
             overflow-y: auto;
             padding: 4px 10px 10px;
             margin: 0;
@@ -3350,13 +3351,21 @@
             appendVnLogItems(vnLogMenuStart, vnLogMenuEnd);
 
             requestAnimationFrame(() => {
-                const current = menu.querySelector('.vn-log-item.current');
-                if (!current) return;
+                // 内容没撑满就继续往后加载
+                if (menu.scrollHeight <= menu.clientHeight + 1) {
+                    loadNextVnLogBatch();
+                }
 
-                const menuRect = menu.getBoundingClientRect();
-                const itemRect = current.getBoundingClientRect();
-                menu.scrollTop += itemRect.top - menuRect.top
-                    - menu.clientHeight / 2 + itemRect.height / 2;
+                // 滚动到当前项
+                const current = menu.querySelector('.vn-log-item.current');
+                if (current) {
+                    const menuRect = menu.getBoundingClientRect();
+                    const itemRect = current.getBoundingClientRect();
+                    menu.scrollTop +=
+                        itemRect.top - menuRect.top
+                        - menu.clientHeight / 2
+                        + itemRect.height / 2;
+                }
             });
         }
 
@@ -3364,21 +3373,46 @@
             const menu = document.getElementById('vnLogMenu');
             if (!menu || !menu.classList.contains('show')) return;
 
-            // 接近顶部：往前补 50 条
-            if (menu.scrollTop < 40 && vnLogMenuStart > 0) {
-                const newStart = Math.max(0, vnLogMenuStart - 50);
-                prependVnLogItems(newStart, vnLogMenuStart);
-                vnLogMenuStart = newStart;
+            // 接近顶部 → 往前加载
+            if (menu.scrollTop < 40) {
+                loadPreviousVnLogBatch();
             }
 
-            // 接近底部：往后补 50 条
-            if (menu.scrollTop + menu.clientHeight > menu.scrollHeight - 40 &&
-                vnLogMenuEnd < vnSteps.length) {
-                const newEnd = Math.min(vnSteps.length, vnLogMenuEnd + 50);
-                appendVnLogItems(vnLogMenuEnd, newEnd);
-                vnLogMenuEnd = newEnd;
+            // 接近底部 → 往后加载
+            if (menu.scrollTop + menu.clientHeight >= menu.scrollHeight - 60) {
+                loadNextVnLogBatch();
             }
         }
+
+        function loadNextVnLogBatch() {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || vnLogMenuEnd >= vnSteps.length) return;
+
+            const newEnd = Math.min(vnSteps.length, vnLogMenuEnd + 50);
+            if (newEnd === vnLogMenuEnd) return;
+
+            appendVnLogItems(vnLogMenuEnd, newEnd);
+            vnLogMenuEnd = newEnd;
+
+            // 如果加载完还没撑出滚动条，继续补，直到能滚动或到底
+            requestAnimationFrame(() => {
+                if (menu.scrollHeight <= menu.clientHeight + 1) {
+                    loadNextVnLogBatch();
+                }
+            });
+        }
+
+        function loadPreviousVnLogBatch() {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || vnLogMenuStart <= 0) return;
+
+            const newStart = Math.max(0, vnLogMenuStart - 50);
+            if (newStart === vnLogMenuStart) return;
+
+            prependVnLogItems(newStart, vnLogMenuStart);
+            vnLogMenuStart = newStart;
+        }
+
 
         function jumpVnLogStep(stepIndex) {
             if (stepIndex < 0 || stepIndex >= vnSteps.length) return;
