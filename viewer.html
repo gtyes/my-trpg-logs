@@ -1005,7 +1005,8 @@
         .vn-overlay.vn-log-open .vn-image-stage,
         .vn-overlay.vn-log-open .vn-chapter-card,
         .vn-overlay.vn-log-open .vn-extend-image-overlay {
-            right: 25%;
+            left: 2.5vw;
+            right: calc(25% + 2.5vw);
         }
 
         .vn-overlay.vn-log-open .vn-dialog-area {
@@ -1411,19 +1412,22 @@
         .vn-extend-image-overlay {
             position: absolute;
             inset: 0;
+
             display: none;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;      /* 不挡点击 */
-            z-index: 9;                /* 高于立绘、对话框、抽屉 */
-            
-            padding-bottom: 12vh;      /* ← 新增：整体上移约 6vh */
-            box-sizing: border-box;    /* ← 新增 */
+            align-items: center;        /* 垂直居中 */
+            justify-content: center;    /* ★ 水平居中，漏了就会贴左 */
+
+            pointer-events: none;
+            z-index: 9;
+
+            padding-bottom: 12vh;       /* 整体稍微往上 */
+            box-sizing: border-box;
         }
 
         .vn-extend-image-overlay.show {
             display: flex;
         }
+
 
         .vn-extend-image-overlay img {
             max-width: min(560px, 50vw);
@@ -1439,10 +1443,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* 右侧抽屉打开时，图片在左侧 70% 区域居中 */
-        .vn-overlay.vn-log-open .vn-extend-image-overlay {
-            right: 30%;
-        }
 
     </style>
 </head>
