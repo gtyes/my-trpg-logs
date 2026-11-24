@@ -2455,15 +2455,17 @@
             // 只看紧挨着的上一条消息
             const prevStep = vnSteps[vnIndex - 1];
 
-            // ★ 上一条是闲聊：不保留它的半透明立绘，直接按当前消息重新显示
+            // ★ 上一条是闲聊、且当前不是闲聊：不保留闲聊的立绘
             if (
                 prevStep &&
                 prevStep.type === 'message' &&
-                isChatChannelName(prevStep.msg.channel)
+                isChatChannelName(prevStep.msg.channel) &&
+                !isChatChannelName(step.msg.channel)
             ) {
                 return;
             }
 
+            // 正常情况：上一条是不同角色就保留为半透明
             if (
                 prevStep &&
                 prevStep.type === 'message' &&
@@ -2474,6 +2476,7 @@
                 setVnPortraitSlot(prevSlotId, prevStep.portraitUrl, true);
             }
         }
+
 
         function startVnTyping(text, startOffset = 0) {
             clearVnTimers();
