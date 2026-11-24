@@ -827,7 +827,7 @@
             right: 0;
             bottom: 0;
 
-            width: 18%;
+            width: 20%;
             min-width: 160px;
             max-width: 380px;
 
@@ -873,8 +873,27 @@
             box-shadow: none;
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(150, 150, 150, 0.55) transparent;
         }
 
+        .vn-log-drawer .vn-log-menu::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .vn-log-drawer .vn-log-menu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .vn-log-drawer .vn-log-menu::-webkit-scrollbar-thumb {
+            background: rgba(150, 150, 150, 0.5);
+            border-radius: 4px;
+        }
+
+        .vn-log-drawer .vn-log-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(175, 175, 175, 0.7);
+        }
         /* 消息列表风格 */
         .vn-log-item {
             display: flex;
@@ -915,16 +934,39 @@
             font-weight: bold;
         }
 
-        .vn-log-text {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-clamp: 2;
-            overflow: hidden;
-            white-space: normal;
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.78);
+        /* 气泡容器 */
+        .vn-log-bubble {
+            width: 100%;
+            padding: 7px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 3px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.07);
+            box-sizing: border-box;
         }
+
+        /* 正文：全部显示 */
+        .vn-log-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 13px;
+            line-height: 1.55;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        /* 骰点/扩展结果 */
+        .vn-log-extend {
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.12);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            color: rgba(241, 196, 15, 0.85);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
 
         /* 章节分隔：白色、稍大字号 */
         .vn-log-chapter {
@@ -951,12 +993,12 @@
         .vn-overlay.vn-log-open .vn-image-stage,
         .vn-overlay.vn-log-open .vn-chapter-card,
         .vn-overlay.vn-log-open .vn-extend-image-overlay {
-            right: 18%;
+            right: 20%;
         }
 
         .vn-overlay.vn-log-open .vn-dialog-area {
-            left: 41%;
-            width: min(1180px, 80vw);
+            left: 40%;
+            width: min(1180px, 78vw);
         }
 
         .vn-chapter-item {
@@ -1350,6 +1392,9 @@
             justify-content: center;
             pointer-events: none;      /* 不挡点击 */
             z-index: 9;                /* 高于立绘、对话框、抽屉 */
+            
+            padding-bottom: 12vh;      /* ← 新增：整体上移约 6vh */
+            box-sizing: border-box;    /* ← 新增 */
         }
 
         .vn-extend-image-overlay.show {
@@ -3020,42 +3065,75 @@
         function createVnLogItem(step, index) {
             const el = document.createElement(step.type === 'chapter' ? 'div' : 'button');
             if (step.type !== 'chapter') el.type = 'button';
-
             el.className = 'vn-log-item';
 
             if (step.type === 'chapter') {
                 el.classList.add('vn-log-chapter');
                 el.textContent = '◆ ' + (step.chapterName || '未命名章节');
-            } else {
-                if (step.type === 'system') el.classList.add('system');
 
-                const speaker = document.createElement('span');
-                speaker.className = 'vn-log-speaker';
-                speaker.textContent = step.type === 'system'
-                    ? '旁白'
-                    : (step.msg.name || '未知角色');
+                if (index === vnIndex) el.classList.add('current');
 
-                const rules = logData.characterRules || {};
-                const defaultRule = logData.defaultCharacterRule || {};
-                const rule = rules[step.msg.name] || defaultRule;
-
-                speaker.style.color = step.type === 'system'
-                    ? 'rgba(255, 255, 255, 0.55)'
-                    : (step.msg.color || (rule && rule.nameColor) || 'rgba(255, 255, 255, 0.9)');
-
-                const text = document.createElement('span');
-                text.className = 'vn-log-text';
-
-                const raw = (step.msg.text || '').replace(/\s+/g, ' ').trim();
-                text.textContent = raw.length > 56 ? raw.slice(0, 56) + '…' : raw;
-
-                el.appendChild(speaker);
-                el.appendChild(text);
+                el.addEventListener('click', event => {
+                    event.stopPropagation();
+                    jumpVnLogStep(index);
+                });
+                return el;
             }
 
-            if (index === vnIndex) {
-                el.classList.add('current');
+            if (step.type === 'system') el.classList.add('system');
+
+            const msg = step.msg;
+
+            // 角色名
+            const speaker = document.createElement('span');
+            speaker.className = 'vn-log-speaker';
+            speaker.textContent = step.type === 'system'
+                ? '旁白'
+                : (msg.name || '未知角色');
+
+            const rules = logData.characterRules || {};
+            const defaultRule = logData.defaultCharacterRule || {};
+            const rule = rules[msg.name] || defaultRule;
+
+            speaker.style.color = step.type === 'system'
+                ? 'rgba(255, 255, 255, 0.55)'
+                : (msg.color || (rule && rule.nameColor) || 'rgba(255, 255, 255, 0.9)');
+
+            // 气泡
+            const bubble = document.createElement('div');
+            bubble.className = 'vn-log-bubble';
+
+            if (rule && rule.bubbleColor && typeof hexToRgb === 'function') {
+                const opacity = rule.bubbleOpacity !== undefined
+                    ? Math.min(rule.bubbleOpacity, 0.35)
+                    : 0.22;
+                bubble.style.backgroundColor =
+                    `rgba(${hexToRgb(rule.bubbleColor)}, ${opacity})`;
             }
+
+            if (msg.color) {
+                bubble.style.borderLeftColor = msg.color;
+            }
+
+            // 正文：不截断，全部显示
+            const text = document.createElement('div');
+            text.className = 'vn-log-text';
+            text.textContent = msg.text || '';
+            bubble.appendChild(text);
+
+            // 骰点/扩展结果
+            const extendText = getFormattedExtendText(msg) || '';
+            if (extendText) {
+                const extend = document.createElement('div');
+                extend.className = 'vn-log-extend';
+                extend.textContent = extendText;
+                bubble.appendChild(extend);
+            }
+
+            el.appendChild(speaker);
+            el.appendChild(bubble);
+
+            if (index === vnIndex) el.classList.add('current');
 
             el.addEventListener('click', event => {
                 event.stopPropagation();
