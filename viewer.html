@@ -1500,8 +1500,9 @@
 
         .vn-opening-stage {
             position: relative;
-            width: min(1200px, 92vw);
-            aspect-ratio: 16 / 9;
+            width: 100vw;
+            height: 100vh;
+            aspect-ratio: auto;
             background: #000;
         }
 
@@ -1517,16 +1518,20 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
+
             width: 86px;
             height: 86px;
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.85);
             background: rgba(0, 0, 0, 0.55);
             color: #fff;
+
             font-size: 32px;
             line-height: 1;
             cursor: pointer;
             padding-left: 6px;
+
+            z-index: 2;
         }
 
         .vn-opening-play:hover {
@@ -1537,6 +1542,7 @@
             position: absolute;
             inset: 0;
             display: none;
+            z-index: 1;
         }
 
         .vn-opening-iframe-wrap.show {
@@ -1549,6 +1555,7 @@
             border: 0;
             display: block;
         }
+
 
     </style>
 </head>
@@ -2201,10 +2208,15 @@
 
             const params = new URLSearchParams({
                 autoplay: '1',
+                controls: '0',      // 隐藏进度条、播放按钮、右上角图标
                 title: '0',
                 byline: '0',
                 portrait: '0',
-                dnt: '1'
+                badge: '0',
+                pip: '0',
+                autopause: '0',
+                dnt: '1',
+                playsinline: '1'
             });
 
             if (hash) params.set('h', hash);
