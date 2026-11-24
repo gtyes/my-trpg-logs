@@ -1566,6 +1566,49 @@
             z-index: 1;
         }
 
+        .vn-log-drawer-header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .vn-log-drawer-tools {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vn-log-drawer-tools input {
+            width: 110px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.35);
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .vn-log-drawer-tools input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .vn-log-empty {
+            padding: 16px 10px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+        }
 
     </style>
 </head>
@@ -1738,11 +1781,13 @@
         <!-- 右侧对话抽屉 -->
         <div class="vn-log-drawer" id="vnLogDrawer">
             <div class="vn-log-drawer-header">
-                <span>对话列表</span>
-                <button class="vn-btn"
-                        onclick="event.stopPropagation(); toggleVnLogMenu()">关闭</button>
+                <span class="vn-log-drawer-title">对话列表</span>
+                <div class="vn-log-drawer-tools">
+                    <input type="search" id="vnLogSearchInput" placeholder="搜索…"
+                        oninput="onVnLogSearchInput(this.value)">
+                    <button class="vn-btn" onclick="event.stopPropagation(); toggleVnLogMenu()">关闭</button>
+                </div>
             </div>
-            <div class="vn-log-menu" id="vnLogMenu"></div>
         </div>
     </div>
     <script src="https://player.vimeo.com/api/player.js"></script>
@@ -1767,6 +1812,9 @@
         let vnTypeTimer = null;
         let vnAutoTimer = null;
         let vnPageTimer = null;
+        let vnLogSearchKeyword = '';
+        let vnLogSearchTimer = null;
+        let vnLogSearchResults = [];
         let vnLogMenuStart = 0;
         let vnLogMenuEnd = 0;
         let vnCurrentText = '';
@@ -1794,6 +1842,75 @@
         const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
+
+        function onVnLogSearchInput(value) {
+            if (vnLogSearchTimer) clearTimeout(vnLogSearchTimer);
+
+            vnLogSearchTimer = setTimeout(() => {
+                vnLogSearchKeyword = (value || '').trim().toLowerCase();
+
+                const menu = document.getElementById('vnLogMenu');
+                if (menu && menu.classList.contains('show')) {
+                    renderVnLogMenu(true);
+                }
+            }, 200);
+        }
+
+        function renderVnLogSearchResults() {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu) return;
+
+            const kw = vnLogSearchKeyword;
+            const results = [];
+
+            vnSteps.forEach((step, index) => {
+                if (step.type === 'chapter') {
+                    if ((step.chapterName || '').toLowerCase().includes(kw)) {
+                        results.push(index);
+                    }
+                    return;
+                }
+
+                const msg = step.msg;
+                const haystack = [
+                    msg.text || '',
+                    msg.name || '',
+                    typeof msg.dice === 'string' ? msg.dice : '',
+                    msg.extend ? JSON.stringify(msg.extend) : ''
+                ].join('\n').toLowerCase();
+
+                if (haystack.includes(kw)) {
+                    results.push(index);
+                }
+            });
+
+            vnLogSearchResults = results.slice(0, 300);   // 最多显示 300 条
+            menu.innerHTML = '';
+
+            if (!results.length) {
+                const empty = document.createElement('div');
+                empty.className = 'vn-log-empty';
+                empty.textContent = '没有匹配的对话';
+                menu.appendChild(empty);
+                return;
+            }
+
+            appendVnLogItemsByIndexes(vnLogSearchResults);
+        }
+
+        function appendVnLogItemsByIndexes(indexes) {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu) return;
+
+            const frag = document.createDocumentFragment();
+
+            indexes.forEach(i => {
+                const step = vnSteps[i];
+                if (step) frag.appendChild(createVnLogItem(step, i));
+            });
+
+            menu.appendChild(frag);
+        }
 
         function normalizeVnMediaEvents(list, idToIndex) {
             return (list || [])
@@ -3529,6 +3646,19 @@
             if (overlay) overlay.classList.toggle('vn-log-open', open);
         }
         function refreshVnLogMenuCurrent() {
+            if (vnLogSearchKeyword) {
+                const menu = document.getElementById('vnLogMenu');
+                if (!menu || !menu.classList.contains('show')) return;
+
+                menu.querySelectorAll('.vn-log-item.current')
+                    .forEach(el => el.classList.remove('current'));
+
+                const current = menu.querySelector(`[data-step-index="${vnIndex}"]`);
+                if (current) current.classList.add('current');
+
+                return;
+            }
+
             const menu = document.getElementById('vnLogMenu');
             if (!menu || !menu.classList.contains('show')) return;
 
@@ -3677,6 +3807,10 @@
             // 默认加载当前位置上下各 50 条
             vnLogMenuStart = Math.max(0, vnIndex - 50);
             vnLogMenuEnd = Math.min(vnSteps.length, vnIndex + 50);
+            if (vnLogSearchKeyword) {
+                renderVnLogSearchResults();
+                return;
+            }
 
             menu.innerHTML = '';
             appendVnLogItems(vnLogMenuStart, vnLogMenuEnd);
@@ -3701,6 +3835,7 @@
         }
 
         function handleVnLogMenuScroll() {
+            if (vnLogSearchKeyword) return;
             const menu = document.getElementById('vnLogMenu');
             if (!menu || !menu.classList.contains('show')) return;
 
