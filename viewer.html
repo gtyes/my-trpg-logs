@@ -819,6 +819,78 @@
         .vn-log-menu.show {
             display: block;
         }
+        /* ===== 右侧对话抽屉 ===== */
+        .vn-log-drawer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 30%;
+            min-width: 240px;
+            max-width: 520px;
+
+            display: none;
+            flex-direction: column;
+
+            background: rgba(12, 12, 16, 0.96);
+            border-left: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 5;
+        }
+
+        .vn-log-drawer.show {
+            display: flex;
+        }
+
+        .vn-log-drawer-header {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 抽屉里的列表容器，覆盖原来下拉菜单的定位/尺寸 */
+        .vn-log-drawer .vn-log-menu {
+            position: static;
+            display: block;
+            width: 100%;
+            max-height: none;
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 6px;
+            margin: 0;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        /* 打开抽屉时，VN 舞台压到左侧 70% */
+        .vn-overlay.vn-log-open .vn-bg {
+            right: 30%;
+        }
+
+        .vn-overlay.vn-log-open .vn-image-stage {
+            right: 30%;
+        }
+
+        .vn-overlay.vn-log-open .vn-dialog-area {
+            left: 35%;
+            width: min(1180px, 62vw);
+        }
+
+        .vn-overlay.vn-log-open .vn-chapter-card {
+            right: 30%;
+        }
 
         .vn-log-item {
             display: flex;
@@ -1392,7 +1464,6 @@
                 <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
 
                 <div class="vn-chapter-menu" id="vnChapterMenu"></div>
-                <div class="vn-log-menu" id="vnLogMenu"></div>
             </div>
 
             <div class="vn-dialog" id="vnDialog">
@@ -1407,6 +1478,15 @@
         <div class="vn-chapter-card" id="vnChapterCard">
             <div class="vn-chapter-name" id="vnChapterName"></div>
             <div class="vn-chapter-hint">点击继续</div>
+        </div>
+        <!-- 右侧对话抽屉 -->
+        <div class="vn-log-drawer" id="vnLogDrawer">
+            <div class="vn-log-drawer-header">
+                <span>对话列表</span>
+                <button class="vn-btn"
+                        onclick="event.stopPropagation(); toggleVnLogMenu()">关闭</button>
+            </div>
+            <div class="vn-log-menu" id="vnLogMenu"></div>
         </div>
     </div>
 
@@ -1835,6 +1915,7 @@
         }
 
         function toggleVnChapterMenu() {
+            setVnLogDrawerOpen(false);
             const logMenu = document.getElementById('vnLogMenu');
             if (logMenu) logMenu.classList.remove('show');
 
@@ -1952,17 +2033,20 @@
         }
 
         function vnHandleClick(event) {
+            // 点抽屉内部不翻页
+            if (event.target.closest('.vn-log-drawer')) return;
+
             const chapterMenu = document.getElementById('vnChapterMenu');
-            const logMenu = document.getElementById('vnLogMenu');
+            const drawer = document.getElementById('vnLogDrawer');
 
             const menuOpen =
                 (chapterMenu && chapterMenu.classList.contains('show')) ||
-                (logMenu && logMenu.classList.contains('show'));
+                (drawer && drawer.classList.contains('show'));
 
-            // 菜单打开时，点外面先关菜单，不翻页
+            // 有菜单/抽屉开着时，点左侧先收起来，不触发下一句
             if (menuOpen && !event.target.closest('.vn-topbar')) {
                 if (chapterMenu) chapterMenu.classList.remove('show');
-                if (logMenu) logMenu.classList.remove('show');
+                setVnLogDrawerOpen(false);
                 return;
             }
 
@@ -2045,6 +2129,7 @@
 
         function renderVnStep() {
             clearVnTimers();
+            setVnLogDrawerOpen(false);
             const chapterMenu = document.getElementById('vnChapterMenu');
             if (chapterMenu) chapterMenu.classList.remove('show');
 
@@ -2809,25 +2894,37 @@
             console.log('章节数量:', chapters.length);
         }
         // 渲染章节导航
-        function renderChapterNavigation() {
-            const chapterList = document.getElementById('chapterList');
-            
-            if (chapters.length === 0) {
-                chapterList.innerHTML = '<div style="padding: 20px; text-align: center; color: #ccc;">暂无章节信息</div>';
+        function toggleVnLogMenu() {
+            // 和章节菜单互斥
+            const chapterMenu = document.getElementById('vnChapterMenu');
+            if (chapterMenu) chapterMenu.classList.remove('show');
+
+            const drawer = document.getElementById('vnLogDrawer');
+            if (!drawer) return;
+
+            if (drawer.classList.contains('show')) {
+                setVnLogDrawerOpen(false);
                 return;
             }
-            
-            // 按位置排序
-            const sortedChapters = [...chapters].sort((a, b) => a.position - b.position);
-            
-            chapterList.innerHTML = sortedChapters.map((chapter, index) => `
-                <div class="chapter-item" onclick="jumpToChapter(${index})">
-                    <div style="font-weight: bold; margin-bottom: 2px;">${chapter.name}</div>
-                    <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 1px;">
-                        消息 ${chapter.position} <!-- 移除#号 -->
-                    </div>
-                </div>
-            `).join('');
+
+            renderVnLogMenu(true);
+            setVnLogDrawerOpen(true);
+
+            const menu = document.getElementById('vnLogMenu');
+            if (menu && !menu.dataset.scrollBound) {
+                menu.addEventListener('scroll', handleVnLogMenuScroll);
+                menu.dataset.scrollBound = '1';
+            }
+        }
+
+        function setVnLogDrawerOpen(open) {
+            const drawer = document.getElementById('vnLogDrawer');
+            const menu = document.getElementById('vnLogMenu');
+            const overlay = document.getElementById('vnOverlay');
+
+            if (drawer) drawer.classList.toggle('show', open);
+            if (menu) menu.classList.toggle('show', open);
+            if (overlay) overlay.classList.toggle('vn-log-open', open);
         }
 
         function toggleVnLogMenu() {
@@ -2966,8 +3063,7 @@
         }
 
         function jumpVnLogStep(stepIndex) {
-            const menu = document.getElementById('vnLogMenu');
-            if (menu) menu.classList.remove('show');
+            setVnLogDrawerOpen(false);
 
             if (stepIndex < 0 || stepIndex >= vnSteps.length) return;
 
