@@ -2191,6 +2191,8 @@
             const overlay = document.getElementById('vnOpeningOverlay');
             const poster = document.getElementById('vnOpeningPoster');
             const wrap = document.getElementById('vnOpeningIframeWrap');
+            const playBtn = document.getElementById('vnOpeningPlayBtn');
+            const video = document.getElementById('vnOpeningVideo');
 
             if (!overlay || !poster || !wrap) {
                 if (typeof callback === 'function') callback();
@@ -2199,20 +2201,42 @@
 
             vnOpeningCallback = callback || null;
 
-            const videoId = String(logData.openingVideo.videoId);
-            const posterUrl = logData.openingVideo.poster
-                ? logData.openingVideo.poster
-                : `https://vumbnail.com/${videoId}.jpg`;
-            const playBtn = document.getElementById('vnOpeningPlayBtn');
-            if (playBtn) playBtn.style.display = 'block';
+            const ov = logData.openingVideo;
 
-            const video = document.getElementById('vnOpeningVideo');
-            if (video) video.style.display = 'none';
-            poster.src = posterUrl;
-            poster.style.display = 'block';
+            // 封面
+            const videoId = ov && ov.videoId ? String(ov.videoId) : '';
+            const posterUrl = ov && ov.poster
+                ? ov.poster
+                : (videoId ? `https://vumbnail.com/${videoId}.jpg` : '');
+
+            if (posterUrl) {
+                poster.src = posterUrl;
+                poster.style.display = 'block';
+            } else {
+                poster.removeAttribute('src');
+                poster.style.display = 'none';
+            }
+
+            // 重置播放按钮和 iframe
+            if (playBtn) playBtn.style.display = 'block';
 
             wrap.innerHTML = '';
             wrap.classList.remove('show');
+
+            // ★ 关键：显示封面时就开始预加载 MP4
+            if (video) {
+                if (ov && ov.mp4) {
+                    video.style.display = 'none';
+                    video.preload = 'auto';
+                    video.src = ov.mp4;
+                    video.load();
+                } else {
+                    video.pause();
+                    video.removeAttribute('src');
+                    video.load();
+                    video.style.display = 'none';
+                }
+            }
 
             overlay.classList.add('show');
         }
@@ -2242,8 +2266,13 @@
                 }
 
                 video.style.display = 'block';
-                video.src = ov.mp4;
+
+                if (!video.src) {
+                    video.src = ov.mp4;
+                }
+
                 video.currentTime = 0;
+
                 video.onended = closeVnOpening;
 
                 video.play().catch(() => {
