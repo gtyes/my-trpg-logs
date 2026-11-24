@@ -885,18 +885,6 @@
             display: flex;
         }
 
-        .vn-log-drawer-header {
-            flex: 0 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;   /* ← 标题居中 */
-            padding: 12px 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            color: #fff;
-            font-size: 15px;
-            font-weight: bold;
-        }
-
         .vn-log-drawer .vn-log-menu {
             position: static;
             display: block;
@@ -1577,7 +1565,13 @@
             font-size: 15px;
             font-weight: bold;
         }
-
+        .vn-log-drawer-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            white-space: nowrap;
+        }
         .vn-log-drawer-tools {
             position: absolute;
             right: 8px;
@@ -1587,6 +1581,7 @@
             align-items: center;
             gap: 6px;
         }
+
 
         .vn-log-drawer-tools input {
             width: 110px;
@@ -1781,13 +1776,15 @@
         <!-- 右侧对话抽屉 -->
         <div class="vn-log-drawer" id="vnLogDrawer">
             <div class="vn-log-drawer-header">
-                <span class="vn-log-drawer-title">对话列表</span>
+                <span class="vn-log-drawer-title">对话</span>
                 <div class="vn-log-drawer-tools">
                     <input type="search" id="vnLogSearchInput" placeholder="搜索…"
                         oninput="onVnLogSearchInput(this.value)">
-                    <button class="vn-btn" onclick="event.stopPropagation(); toggleVnLogMenu()">关闭</button>
+                    <button class="vn-btn"
+                            onclick="event.stopPropagation(); toggleVnLogMenu()">关闭</button>
                 </div>
             </div>
+            <div class="vn-log-menu" id="vnLogMenu"></div>
         </div>
     </div>
     <script src="https://player.vimeo.com/api/player.js"></script>
