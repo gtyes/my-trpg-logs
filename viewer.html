@@ -564,13 +564,25 @@
         }
 
         /* 背景：默认正常亮度 */
-        .vn-bg {
+        .vn-bg,
+        .vn-bg-next {
             position: absolute;
             inset: 0;
-            background-size: cover;
+            background-size: cover;        /* 自适应裁剪，不拉伸 */
             background-position: center;
             background-repeat: no-repeat;
-            transition: background-image 0.5s ease, filter 0.3s ease;
+        }
+
+        .vn-bg-next {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+
+        /* 闲聊变暗也要同时作用于两层 */
+        .vn-bg.chat-dim,
+        .vn-bg-next.chat-dim {
+            filter: brightness(0.55);
         }
 
         /* 只有闲聊频道背景加暗 */
@@ -1525,6 +1537,8 @@
     <!-- 对话阅读模式 -->
     <div id="vnOverlay" class="vn-overlay" onclick="vnHandleClick(event)">
         <div class="vn-bg" id="vnBg"></div>
+        <div class="vn-bg" id="vnBg"></div>
+        <div class="vn-bg vn-bg-next" id="vnBgNext"></div>
 
         <div class="vn-image-stage" id="vnImageStage">
             <div class="vn-image-frame">
@@ -1759,6 +1773,53 @@
             const name = channel || '默认频道';
             return chatChannelKeywords.some(keyword => name.includes(keyword));
         }
+        let vnBgCurrentUrl = '';
+
+        function setVnBackground(url) {
+            const base = document.getElementById('vnBg');
+            const next = document.getElementById('vnBgNext');
+            if (!base || !next) return;
+
+            const target = url || '';
+            if (target === vnBgCurrentUrl) return;
+
+            const cssUrl = target ? `url('${target}')` : 'none';
+
+            // 首次设置：直接显示，不做过渡
+            if (!vnBgCurrentUrl) {
+                base.style.backgroundImage = cssUrl;
+                vnBgCurrentUrl = target;
+                return;
+            }
+
+            // 交叉淡入：先把新图放到上层，再淡入
+            next.style.transition = 'none';
+            next.style.backgroundImage = cssUrl;
+            next.style.opacity = '0';
+
+            void next.offsetWidth; // 强制回流，让过渡生效
+
+            next.style.transition = 'opacity 0.8s ease';
+            next.style.opacity = '1';
+
+            let finished = false;
+
+            const finish = () => {
+                if (finished) return;
+                finished = true;
+
+                // 把新图落到底层，再把上层清空
+                base.style.backgroundImage = cssUrl;
+                next.style.transition = 'none';
+                next.style.opacity = '0';
+                next.style.backgroundImage = 'none';
+
+                vnBgCurrentUrl = target;
+            };
+
+            next.addEventListener('transitionend', finish, { once: true });
+            setTimeout(finish, 900); // 兜底
+        }
 
         function applyVnBackgroundForStep(step) {
             const bg = document.getElementById('vnBg');
@@ -1791,17 +1852,14 @@
 
             const finalUrl = backgroundUrl || '';
 
-            // 背景没变化就不重设、不打印
-            if (bg.dataset.currentBg === finalUrl) return;
-            bg.dataset.currentBg = finalUrl;
+            if (finalUrl !== vnBgCurrentUrl) {
+                setVnBackground(finalUrl);
 
-            bg.style.backgroundImage = finalUrl
-                ? `url('${finalUrl}')`
-                : 'none';
-
-            if (finalUrl) {
-                console.log('[VN] 背景切换 @', stepPosition, '→', finalUrl);
+                if (finalUrl) {
+                    console.log('[VN] 背景切换 @', stepPosition, '→', finalUrl);
+                }
             }
+
         }
 
         function stopVnSfx() {
@@ -2236,6 +2294,7 @@
 
             const overlay = document.getElementById('vnOverlay');
             const bg = document.getElementById('vnBg');
+            const bgNext = document.getElementById('vnBgNext');
             const dialog = document.getElementById('vnDialog');
             const chapterCard = document.getElementById('vnChapterCard');
             const imageStage = document.getElementById('vnImageStage');
@@ -2247,6 +2306,7 @@
             renderVnPortraits(step);
             // 每次切换步骤先取消加暗
             bg.classList.remove('chat-dim');
+            if (bgNext) bgNext.classList.remove('chat-dim');
             // 每次切换步骤，先把图片层收起来
             imageStage.classList.remove('show');
             stageImage.removeAttribute('src');
@@ -2302,6 +2362,7 @@
 
             // 闲聊时背景加暗，其他频道不加暗
             bg.classList.toggle('chat-dim', isChat);
+            if (bgNext) bgNext.classList.toggle('chat-dim', isChat);
 
             // 对话框不再加 chat 类
             dialog.className = 'vn-dialog';
