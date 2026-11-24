@@ -1483,6 +1483,72 @@
             pointer-events: none;
             z-index: 2;
         }
+        /* ===== 对话模式开场视频 ===== */
+        .vn-opening-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: #000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vn-opening-overlay.show {
+            display: flex;
+        }
+
+        .vn-opening-stage {
+            position: relative;
+            width: min(1200px, 92vw);
+            aspect-ratio: 16 / 9;
+            background: #000;
+        }
+
+        .vn-opening-poster {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .vn-opening-play {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+            font-size: 32px;
+            line-height: 1;
+            cursor: pointer;
+            padding-left: 6px;
+        }
+
+        .vn-opening-play:hover {
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .vn-opening-iframe-wrap {
+            position: absolute;
+            inset: 0;
+            display: none;
+        }
+
+        .vn-opening-iframe-wrap.show {
+            display: block;
+        }
+
+        .vn-opening-iframe-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
 
     </style>
 </head>
@@ -1585,6 +1651,15 @@
             <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">下一页</button>
         </div>
     </div>
+    <div class="vn-opening-overlay" id="vnOpeningOverlay">
+        <div class="vn-opening-stage">
+            <img class="vn-opening-poster" id="vnOpeningPoster" alt="OP 封面">
+            <button class="vn-opening-play" id="vnOpeningPlayBtn"
+                    onclick="playVnOpening()">▶</button>
+            <div class="vn-opening-iframe-wrap" id="vnOpeningIframeWrap"></div>
+        </div>
+    </div>
+
     <!-- 对话阅读模式 -->
     <div id="vnOverlay" class="vn-overlay" onclick="vnHandleClick(event)">
         <div class="vn-bg" id="vnBg"></div>
@@ -1648,6 +1723,7 @@
             <div class="vn-log-menu" id="vnLogMenu"></div>
         </div>
     </div>
+    <script src="https://player.vimeo.com/api/player.js"></script>
 
     <script>
         // 全局变量
@@ -2078,6 +2154,120 @@
 
             return steps;
         }
+        let vnOpeningCallback = null;
+        let vnVimeoPlayer = null;
+
+        function hasVnOpeningVideo() {
+            return !!(
+                logData &&
+                logData.openingVideo &&
+                logData.openingVideo.videoId
+            );
+        }
+
+        function openVnOpening(callback) {
+            const overlay = document.getElementById('vnOpeningOverlay');
+            const poster = document.getElementById('vnOpeningPoster');
+            const wrap = document.getElementById('vnOpeningIframeWrap');
+
+            if (!overlay || !poster || !wrap) {
+                if (typeof callback === 'function') callback();
+                return;
+            }
+
+            vnOpeningCallback = callback || null;
+
+            const videoId = String(logData.openingVideo.videoId);
+            const posterUrl = logData.openingVideo.poster
+                ? logData.openingVideo.poster
+                : `https://vumbnail.com/${videoId}.jpg`;
+
+            poster.src = posterUrl;
+            poster.style.display = 'block';
+
+            wrap.innerHTML = '';
+            wrap.classList.remove('show');
+
+            overlay.classList.add('show');
+        }
+
+        function playVnOpening() {
+            const poster = document.getElementById('vnOpeningPoster');
+            const wrap = document.getElementById('vnOpeningIframeWrap');
+            if (!wrap || !logData.openingVideo) return;
+
+            const videoId = String(logData.openingVideo.videoId);
+            const hash = (logData.openingVideo.hash || '').trim();
+
+            const params = new URLSearchParams({
+                autoplay: '1',
+                title: '0',
+                byline: '0',
+                portrait: '0',
+                dnt: '1'
+            });
+
+            if (hash) params.set('h', hash);
+
+            const iframe = document.createElement('iframe');
+            iframe.id = 'vnOpeningIframe';
+            iframe.src = `https://player.vimeo.com/video/${videoId}?${params.toString()}`;
+            iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+
+            wrap.innerHTML = '';
+            wrap.appendChild(iframe);
+            wrap.classList.add('show');
+
+            if (poster) poster.style.display = 'none';
+
+            if (window.Vimeo && window.Vimeo.Player) {
+                vnVimeoPlayer = new Vimeo.Player(iframe);
+                vnVimeoPlayer.on('ended', closeVnOpening);
+            }
+        }
+
+        function closeVnOpening() {
+            const overlay = document.getElementById('vnOpeningOverlay');
+            const wrap = document.getElementById('vnOpeningIframeWrap');
+
+            if (overlay) overlay.classList.remove('show');
+
+            if (vnVimeoPlayer) {
+                try { vnVimeoPlayer.destroy(); } catch (e) {}
+                vnVimeoPlayer = null;
+            }
+
+            if (wrap) {
+                wrap.innerHTML = '';
+                wrap.classList.remove('show');
+            }
+
+            const cb = vnOpeningCallback;
+            vnOpeningCallback = null;
+
+            if (typeof cb === 'function') cb();
+        }
+
+        function cancelVnOpening() {
+            const overlay = document.getElementById('vnOpeningOverlay');
+            const wrap = document.getElementById('vnOpeningIframeWrap');
+
+            if (overlay) overlay.classList.remove('show');
+
+            if (vnVimeoPlayer) {
+                try { vnVimeoPlayer.destroy(); } catch (e) {}
+                vnVimeoPlayer = null;
+            }
+
+            if (wrap) {
+                wrap.innerHTML = '';
+                wrap.classList.remove('show');
+            }
+
+            vnOpeningCallback = null;
+        }
 
         function openVnMode() {
             if (window.innerWidth <= 768) return;
@@ -2101,8 +2291,13 @@
             document.addEventListener('keydown', vnKeyHandler);
             initVnMediaEvents();
 
-            renderVnStep();
+            if (hasVnOpeningVideo() && vnIndex === 0) {
+                openVnOpening(() => renderVnStep());
+            } else {
+                renderVnStep();
+            }
         }
+
 
         function closeVnMode() {
             clearVnTimers();
@@ -2115,6 +2310,7 @@
             // 退出对话模式时停止 BGM
             stopVnBgm();
             stopVnSfx();
+            cancelVnOpening();
         }
 
         function toggleVnChapterMenu() {
@@ -2224,6 +2420,16 @@
         }
 
         function vnKeyHandler(event) {
+            const opOverlay = document.getElementById('vnOpeningOverlay');
+
+            if (opOverlay && opOverlay.classList.contains('show')) {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeVnOpening();
+                }
+                return;
+            }
+
             if (event.key === 'ArrowRight' || event.key === ' ' || event.key === 'Enter') {
                 event.preventDefault();
                 nextVn();
