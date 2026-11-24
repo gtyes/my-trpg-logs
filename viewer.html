@@ -1555,6 +1555,16 @@
             border: 0;
             display: block;
         }
+        .vn-opening-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;   /* 想裁切铺满就改 cover */
+            background: #000;
+            display: none;
+            z-index: 1;
+        }
 
 
     </style>
@@ -1661,8 +1671,13 @@
     <div class="vn-opening-overlay" id="vnOpeningOverlay">
         <div class="vn-opening-stage">
             <img class="vn-opening-poster" id="vnOpeningPoster" alt="OP 封面">
+
+            <video class="vn-opening-video" id="vnOpeningVideo"
+                playsinline preload="metadata"></video>
+
             <button class="vn-opening-play" id="vnOpeningPlayBtn"
                     onclick="playVnOpening()">▶</button>
+
             <div class="vn-opening-iframe-wrap" id="vnOpeningIframeWrap"></div>
         </div>
     </div>
@@ -2168,7 +2183,7 @@
             return !!(
                 logData &&
                 logData.openingVideo &&
-                logData.openingVideo.videoId
+                (logData.openingVideo.mp4 || logData.openingVideo.videoId)
             );
         }
 
@@ -2191,6 +2206,8 @@
             const playBtn = document.getElementById('vnOpeningPlayBtn');
             if (playBtn) playBtn.style.display = 'block';
 
+            const video = document.getElementById('vnOpeningVideo');
+            if (video) video.style.display = 'none';
             poster.src = posterUrl;
             poster.style.display = 'block';
 
@@ -2202,12 +2219,48 @@
 
         function playVnOpening() {
             const poster = document.getElementById('vnOpeningPoster');
-            const wrap = document.getElementById('vnOpeningIframeWrap');
             const playBtn = document.getElementById('vnOpeningPlayBtn');
-            if (!wrap || !logData.openingVideo) return;
+            const wrap = document.getElementById('vnOpeningIframeWrap');
+            const video = document.getElementById('vnOpeningVideo');
+            const ov = logData.openingVideo;
 
-            const videoId = String(logData.openingVideo.videoId);
-            const hash = (logData.openingVideo.hash || '').trim();
+            if (!ov) return;
+
+            // ===== 优先播放本地 MP4 =====
+            if (ov.mp4) {
+                if (wrap) {
+                    wrap.innerHTML = '';
+                    wrap.classList.remove('show');
+                }
+
+                if (poster) poster.style.display = 'none';
+                if (playBtn) playBtn.style.display = 'none';
+
+                if (!video) {
+                    alert('找不到 OP 视频元素');
+                    return;
+                }
+
+                video.style.display = 'block';
+                video.src = ov.mp4;
+                video.currentTime = 0;
+                video.onended = closeVnOpening;
+
+                video.play().catch(() => {
+                    // 播放失败就退回封面 + 播放按钮
+                    video.style.display = 'none';
+                    if (poster) poster.style.display = 'block';
+                    if (playBtn) playBtn.style.display = 'block';
+                });
+
+                return;
+            }
+
+            // ===== 没有 MP4 才走原来的 Vimeo =====
+            if (!wrap) return;
+
+            const videoId = String(ov.videoId || '');
+            const hash = (ov.hash || '').trim();
 
             const params = new URLSearchParams({
                 autoplay: '1',
@@ -2221,7 +2274,6 @@
                 dnt: '1',
                 playsinline: '1'
             });
-
             if (hash) params.set('h', hash);
 
             const iframe = document.createElement('iframe');
@@ -2240,37 +2292,10 @@
 
             if (window.Vimeo && window.Vimeo.Player) {
                 vnVimeoPlayer = new Vimeo.Player(iframe);
-                let vnQualityTimer = null;
-                let vnQualityFixCount = 0;
-
                 vnVimeoPlayer.ready().then(() => {
-                    vnVimeoPlayer.setQuality('1080p').catch(() => {});
-                    vnVimeoPlayer.play().catch(() => {});
-
-                    // 看看这个视频到底支持哪些清晰度
-                    vnVimeoPlayer.getQualities()
-                        .then(list => console.log('[OP] 可用画质:', list))
-                        .catch(() => {});
-                });
-
-                vnVimeoPlayer.on('qualitychange', data => {
-                    if (!data || data.quality === '1080p') return;
-                    if (vnQualityFixCount >= 5) return;   // 防止无限重试
-
-                    if (vnQualityTimer) clearTimeout(vnQualityTimer);
-
-                    vnQualityTimer = setTimeout(() => {
-                        vnQualityFixCount++;
-                        vnVimeoPlayer.setQuality('1080p').catch(() => {});
-                    }, 1200);
-                });
-
-                vnVimeoPlayer.ready().then(() => {
-                    // 尽量固定 1080p；没有 1080p 时自动降级
                     vnVimeoPlayer.setQuality('1080p').catch(() => {});
                     vnVimeoPlayer.play().catch(() => {});
                 }).catch(() => {});
-
                 vnVimeoPlayer.on('ended', closeVnOpening);
             }
         }
@@ -2285,6 +2310,14 @@
                 try { vnVimeoPlayer.destroy(); } catch (e) {}
                 vnVimeoPlayer = null;
             }
+            const video = document.getElementById('vnOpeningVideo');
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+                video.style.display = 'none';
+                video.removeAttribute('src');
+                video.load();
+            }
 
             if (wrap) {
                 wrap.innerHTML = '';
@@ -2293,13 +2326,22 @@
 
             const cb = vnOpeningCallback;
             vnOpeningCallback = null;
-
+            const playBtn = document.getElementById('vnOpeningPlayBtn');
+            if (playBtn) playBtn.style.display = 'block';
             if (typeof cb === 'function') cb();
         }
 
         function cancelVnOpening() {
             const overlay = document.getElementById('vnOpeningOverlay');
             const wrap = document.getElementById('vnOpeningIframeWrap');
+            const video = document.getElementById('vnOpeningVideo');
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+                video.style.display = 'none';
+                video.removeAttribute('src');
+                video.load();
+            }
 
             if (overlay) overlay.classList.remove('show');
 
