@@ -1,0 +1,5076 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* ========== 网站背景 ========== */
+        html {
+            background: #111;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+            min-height: 100vh;
+            background: transparent;
+        }
+
+        #pageBackground {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+
+            background-color: #111;
+            background-size: cover;        /* 自适应裁剪，不拉伸 */
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* 固定在页面底部的分页条 */
+        #paginationContainer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1200;
+
+            display: none;              /* 默认隐藏，由 JS 切模式时控制 */
+            flex-direction: row;        /* 关键：横向 */
+            flex-wrap: nowrap !important; /* 关键：不换行 */
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+
+            margin: 0;
+            padding: 8px 12px;
+
+            /* 毛玻璃半透明 */
+            background: rgba(30, 30, 30, 0.42);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-top: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.35);
+
+            white-space: nowrap;
+            overflow-x: auto;           /* 极端窄屏也不换行，改为横向滚动 */
+            overflow-y: hidden;
+        }
+        /* 可点击的闲聊频道名 */
+        .chat-channel-name {
+            cursor: pointer;
+        }
+
+        .chat-channel-name:hover {
+            opacity: 0.85;
+        }
+
+        .channel-collapse-label {
+            font-size: 10px;
+            color: #f39c12;
+            margin-left: 6px;
+            white-space: nowrap;
+        }
+
+        /* 折叠时隐藏消息 */
+        .channel-group.collapsed .channel-messages {
+            display: none;
+        }
+
+        .channel-collapsed-tip {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* 分页条里的每一项都不收缩、不换行 */
+        #paginationContainer > * {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        #paginationContainer .pagination-info {
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        #paginationContainer .pagination-jump {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 5px;
+            margin-left: 0;
+        }
+
+
+        /* 避免底部内容被固定栏挡住 */
+        body {
+            padding-bottom: 70px;
+        }
+
+        .top-controls.right-controls {
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .top-controls.right-controls .pagination-container {
+            margin: 0;
+            padding: 6px 10px;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.25);
+            box-shadow: none;
+        }
+
+        .top-controls.right-controls .pagination-info {
+            color: #fff;
+            font-size: 12px;
+            margin: 0 4px;
+        }
+
+        .top-controls.right-controls .pagination-jump input {
+            width: 45px;
+            padding: 3px;
+        }
+
+        /* ========== 右侧悬浮图片 ========== */
+        .floating-image-container {
+            position: fixed;
+            right: 0;
+            top: 120px;
+            z-index: 800;
+            display: flex;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+        .floating-image-right {
+            width: 475px;
+            height: 475px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: right center;
+            opacity: 0.9;
+            pointer-events: none;
+            filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        .floating-image-right.collapsed {
+            width: 0;
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        /* 控制按钮样式 */
+        .image-toggle-btn {
+            position: fixed;
+            right: 0;
+            top: 120px;
+            width: 30px;
+            height: 40px;
+            background: rgba(139, 0, 0, 0.9);
+            color: white;
+            border: none;
+            border-radius: 8px 0 0 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+            z-index: 801;
+            margin: 0 !important; /* 确保没有外边距影响位置 */
+        }
+
+        .image-toggle-btn:hover {
+            background: rgba(178, 34, 34, 0.9);
+            transform: scale(1.05);
+        }
+        /* 图片收起时按钮位置调整 */
+        .image-toggle-btn.collapsed {
+            right: 0; /* 仍然保持在屏幕最右侧 */
+            transform: none;
+        }
+        .chapter-end-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 8px;
+        }
+
+        .chapter-end-nav span {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .chapter-end-nav .pagination-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        /* ========== 顶部标题栏 ========== */
+        .top-header {
+            /* 背景设置 - 可以设置颜色或图片 */
+            /*background: rgba(0, 0, 0, 0.4);  深蓝色半透明 */
+            /* 图片背景示例（取消注释使用）: */
+            
+            background-image: url('https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/6543cc9b219cc8d56aa000ed9e658292aca59f747fc620e764a842801019ab3d?t=1763109742381');
+            background-size: cover;
+            
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .log-title {
+            font-size: 2.4rem;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+            margin: 0 auto;
+            font-family: 'STZhongsong', '华文中宋', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 移除可能覆盖内联样式的规则 */
+        .log-title .title-character {
+            /* 这里不要设置颜色或阴影，完全由内联样式控制 */
+            display: inline-block; /* 确保每个字都是独立的块 */
+            line-height: 1; /* 确保行高一致 */
+        }
+
+            /* 左侧控制按钮容器 */
+        .top-controls.left-controls {
+            position: absolute;
+            left: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 右侧控制按钮容器 */
+        .top-controls.right-controls {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }   
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding: 8px 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            width: 200px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .search-box input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .control-btn {
+            background: rgba(139, 0, 0, 0.9); /* 暗红色 */
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+                
+        .control-btn:hover {
+            background: rgba(178, 34, 34, 0.9); /* 稍微亮一点的暗红色 */
+        }
+        
+        /* ========== 悬浮章节导航 ========== */
+        .floating-sidebar {
+            position: fixed;
+            left: 20px;
+            top: 100px;
+            width: 250px;
+            /* 背景设置 - 可以设置颜色或图片 */
+            background: rgba(0, 0, 0, 0.6);
+            /* 图片背景示例（取消注释使用）: */
+            /*
+            background-image: url('https://example.com/sidebar-bg.jpg');
+            background-size: cover;
+            */
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            z-index: 999;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+            display: block; /* 默认打开 */
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .chapter-list {
+            padding: 10px 0;
+        }
+        
+        .chapter-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            color: white;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .chapter-item:hover {
+            background: rgba(255,255,255,0.1);
+            opacity: 1;
+        }
+        
+        .chapter-item.active {
+            background: rgba(52, 152, 219, 0.3);
+            border-left-color: #3498db;
+            opacity: 1;
+        }
+        
+        /* ========== 主内容容器 ========== */
+        .main-container {
+            max-width: 850px;
+            margin: 20px auto;
+            padding: 0 20px;
+            position: relative;
+        }
+        
+        /* ========== 日志容器 ========== */
+        .log-container {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            padding: 15px;
+            font-size: 16px; /* 增加基础字号 */
+        }
+        
+        /* ========== 频道组样式 ========== */
+        .channel-group {
+            margin-bottom: 8px;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            padding: 6px; /* 减小内边距 */
+        }
+        
+        .channel-name {
+            font-weight: 600;
+            padding: 5px 10px; /* 减小内边距 */
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+        
+        .channel-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* ========== 章节标题样式 ========== */
+        .chapter-title {
+            text-align: center;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 25px 20px; /* 减小内边距 */
+            border-radius: 8px;
+            color: white;
+            background-size: cover;
+            background-position: center;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            page-break-before: always;
+            break-before: page;
+        }
+        
+        /* ========== 消息样式 ========== */
+        .message-row {
+            display: flex;
+            margin-bottom: 10px; /* 减小间距 */
+            position: relative;
+        }
+        
+        .avatar-box {
+            width: 45px; /* 减小宽度 */
+            flex-shrink: 0;
+            margin-right: 8px; /* 减小边距 */
+        }
+        
+        .avatar {
+            width: 42px; /* 减小尺寸 */
+            height: 42px;
+            border-radius: 6px;
+            object-fit: cover;
+            object-position: top center;
+        }
+        
+        .content-box {
+            flex-grow: 1;
+            min-width: 0;
+        }
+        
+        .character-name-box {
+            padding: 4px 8px; /* 减小内边距 */
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 4px; /* 减小间距 */
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .character-name {
+            font-weight: bold;
+            font-size: 1.1em; /* 相对大小 */
+        }
+        
+        .to-name {
+            color: #666;
+            font-weight: normal;
+            margin-left: 4px;
+            font-size: 11px;
+        }
+        
+        /* 气泡样式 - 减小内边距 */
+        .message-bubble {
+            padding: 8px 12px; /* 减小内边距 */
+            border-radius: 6px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        
+        .message-text {
+            margin-bottom: 6px;
+            line-height: 1.5; /* 增加行高 */
+            font-size: 1em; /* 使用相对单位 */
+            white-space: pre-wrap;        /* 保留 \n 换行，同时自动换行 */
+            word-wrap: break-word;        /* 长单词换行（兼容旧浏览器） */
+            overflow-wrap: break-word;    /* 现代浏览器标准 */
+            word-break: break-word;       /* 更激进地断行，防止溢出 */
+        }
+        
+        .message-image {
+            margin-top: 6px; /* 减小间距 */
+            text-align: center;
+        }
+        
+        /* 消息图片自适应 */
+        .message-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 4px;
+            cursor: pointer;
+            object-fit: contain; /* 保持比例 */
+            height: auto;
+        }
+        
+        /* 扩展图片样式 */
+        .extend-image {
+            margin-top: 6px;
+            text-align: center;
+        }
+        
+        .extend-image img {
+            max-width: 250px;
+            max-height: 120px;
+            border-radius: 4px;
+        }
+        /* 搜索标红 */
+        .search-highlight {
+            background-color: #8b0000; /* 暗红色背景 */
+            color: #000000; /* 黑色字体 */
+            font-weight: bold;
+            padding: 1px 3px;
+            border-radius: 3px;
+            border: 1px solid #660000; /* 深红色边框 */
+        }
+        
+        .dice-result {
+            margin-top: 8px;
+            /* 删除 border-top 和 padding-top */
+            font-family: 'Consolas, Monaco, monospace';
+            font-size: 1em;
+        }
+        /* ========== 对话阅读模式 ========== */
+        .vn-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            overflow: hidden;
+            background: #111;
+        }
+
+        .vn-overlay.show {
+            display: block;
+        }
+
+        /* 背景：默认正常亮度 */
+        .vn-bg,
+        .vn-bg-next {
+            position: absolute;
+            inset: 0;
+            background-size: cover;        /* 自适应裁剪，不拉伸 */
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .vn-bg-next {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+
+        /* 闲聊变暗也要同时作用于两层 */
+        .vn-bg.chat-dim,
+        .vn-bg-next.chat-dim {
+            filter: brightness(0.55);
+        }
+
+        /* 只有闲聊频道背景加暗 */
+        .vn-bg.chat-dim {
+            filter: brightness(0.55);
+        }
+
+        /* ========== 消息内图片：居中材料展示 ========== */
+        .vn-image-stage {
+            display: none;
+            position: absolute;
+            inset: 70px 0 240px 0;
+            z-index: 1;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .vn-image-stage.show {
+            display: flex;
+        }
+
+        .vn-image-frame {
+            max-width: 70vw;
+            max-height: 60vh;
+            padding: 14px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .vn-image-frame.no-frame {
+            padding: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        .vn-image-frame img {
+            max-width: 66vw;
+            max-height: 56vh;
+            display: block;
+            border-radius: 6px;
+        }
+
+        /* ========== 立绘 + 对话框整体 ========== */
+        /* 整体位置：比之前更靠下 */
+        .vn-dialog-area {
+            position: absolute;
+            left: 50%;
+            bottom: 50px;              /* 原来是 90px，往下移 */
+            transform: translateX(-50%);
+            width: min(1180px, 92vw);  /* 对话框左右拉长 */
+            z-index: 2;
+        }
+
+        /* 左右立绘层 */
+        .vn-portrait-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .vn-portrait-slot {
+            position: absolute;
+            bottom: 100%;              /* 贴在对话框上边缘 */
+            height: min(52vh, 480px);
+            display: none;
+            align-items: flex-end;
+        }
+
+        .vn-portrait-slot.left {
+            left: 0;
+        }
+
+        .vn-portrait-slot.right {
+            right: 0;
+        }
+
+        .vn-portrait-slot img {
+            display: block;
+            max-height: 100%;
+            max-width: 30vw;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+
+        /* 非当前说话人：变暗 */
+        .vn-portrait-slot.dimmed img {
+            opacity: 0.55;
+            filter: grayscale(0.25) drop-shadow(0 10px 25px rgba(0, 0, 0, 0.4));
+        }
+
+        /* 对话框 */
+        .vn-dialog {
+            position: relative;
+            width: 100%;
+            height: 235px;             /* 原来 160px 的 min-height，改成固定高度 */
+            padding: 18px 24px 30px;
+
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; 
+            background: transparent;
+            isolation: isolate;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            color: #fff;
+
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        .vn-dialog::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: -1;
+
+            background-color: rgba(0, 0, 0, 0.8);   /* 固定 90% 黑 */
+        }
+
+        /* system 旁白 */
+        .vn-dialog.system {
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.18);
+            text-align: center;
+            font-style: italic;
+            color: #e8e8e8;
+
+            justify-content: center;   /* ★ 垂直方向也居中 */
+        }
+
+        /* 旁白文本不再强行撑满，短文本整体居中 */
+        .vn-dialog.system .vn-text {
+            flex: 0 1 auto;
+            width: 100%;
+        }
+
+        .vn-dialog.system .vn-name {
+            display: none;
+        }
+
+
+        .vn-dialog.system .vn-name {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .vn-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .vn-text {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow: hidden;          /* 关键：不显示滚动条，超出部分靠分页继续 */
+            font-size: 18px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .vn-extend {
+            flex: 0 0 auto;            /* 骰点不撑高整体，只占固定位置 */
+            font-size: inherit;
+            line-height: 1.7;
+            margin-top: 4px;
+            color: #f1c40f;
+            white-space: pre-wrap;
+        }
+
+        .vn-hint {
+            position: absolute;
+            right: 18px;
+            bottom: 8px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        /* ========== 控制条：对话框右下方、半透明 ========== */
+        .vn-topbar {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            display: flex;
+            gap: 8px;
+            z-index: 3;
+        }
+
+        .vn-btn {
+            padding: 5px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.35);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0.82;                 /* 从 topbar 挪到这里 */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .vn-btn:hover {
+            background: rgba(0, 0, 0, 0.55);
+            opacity: 1;
+        }
+
+        .vn-chapter-menu {
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 8px);
+            width: 260px;
+            max-height: 45vh;
+            overflow-y: auto;
+            display: none;
+            padding: 6px;
+
+            background: rgba(15, 15, 20, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .vn-chapter-menu.show {
+            display: block;
+        }
+        .vn-log-menu {
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 8px);
+            width: 360px;
+            max-width: 80vw;
+            max-height: 50vh;
+            overflow-y: auto;
+            display: none;
+            padding: 6px;
+
+            background: rgba(15, 15, 20, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .vn-log-menu.show {
+            display: block;
+        }
+
+        /* ===== 右侧对话抽屉 ===== */
+        .vn-log-drawer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+
+            width: 25%;
+            min-width: 220px;
+            max-width: 520px;
+
+            display: none;
+            flex-direction: column;
+
+            background-color: #0c0c10;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-left: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.45);
+            z-index: 5;
+        }
+
+        .vn-log-drawer.show {
+            display: flex;
+        }
+
+        .vn-log-drawer-header {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;   /* ← 标题居中 */
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .vn-log-drawer .vn-log-menu {
+            position: static;
+            display: block;
+            width: 100%;
+            max-height: none;
+            flex: 1 1 auto;
+            min-height: 0;  
+            overflow-y: auto;
+            padding: 4px 10px 10px;
+            margin: 0;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(150, 150, 150, 0.55) transparent;
+            scrollbar-gutter: stable both-edges;
+        }
+
+        .vn-log-drawer .vn-log-menu::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .vn-log-drawer .vn-log-menu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .vn-log-drawer .vn-log-menu::-webkit-scrollbar-thumb {
+            background: rgba(150, 150, 150, 0.5);
+            border-radius: 4px;
+        }
+
+        .vn-log-drawer .vn-log-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(175, 175, 175, 0.7);
+        }
+        /* 消息列表风格 */
+        .vn-log-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 3px;
+            width: 100%;
+            padding: 9px 4px 9px 8px;
+
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            line-height: 1.5;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .vn-log-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .vn-log-item.current {
+            background: rgba(241, 196, 15, 0.12);
+            box-shadow: inset 3px 0 0 #f1c40f;
+        }
+
+        /* 角色名：默认白色，实际颜色由 JS 按消息设置 */
+        .vn-log-speaker {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 气泡容器 */
+        .vn-log-bubble {
+            width: 100%;
+            padding: 7px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            background: rgba(255, 255, 255, 0.07);
+            box-sizing: border-box;
+        }
+
+        /* 正文：全部显示 */
+        .vn-log-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 13px;
+            line-height: 1.55;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        /* 骰点/扩展结果 */
+        .vn-log-extend {
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.12);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            color: rgba(241, 196, 15, 0.85);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+
+        /* 章节分隔：白色、稍大字号 */
+        .vn-log-chapter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 4px 8px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: bold;
+            border-bottom: none;
+        }
+
+        .vn-log-chapter::before,
+        .vn-log-chapter::after {
+            content: '';
+            flex: 1 1 auto;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* 打开抽屉时：右侧让出 25% */
+        .vn-overlay.vn-log-open .vn-image-stage,
+        .vn-overlay.vn-log-open .vn-chapter-card,
+        .vn-overlay.vn-log-open .vn-extend-image-overlay {
+            left: 2.5vw;
+            right: calc(25% + 2.5vw);
+        }
+
+        .vn-overlay.vn-log-open .vn-dialog-area {
+            left: max(2.5vw, calc((75vw - 1180px) / 2));
+            width: min(calc(75vw - 5vw), 1180px);
+            right: auto;
+
+            max-width: none;
+            transform: none;
+            padding: 0;              /* ★ 去掉了 padding，立绘才能贴住对话框边缘 */
+            box-sizing: border-box;
+        }
+
+        .vn-overlay.vn-log-open .vn-dialog {
+            width: 100%;
+            max-width: none;         /* ★ 宽度交给 vn-dialog-area 控制 */
+            margin: 0;
+        }
+
+        .vn-chapter-item {
+            display: block;
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 5px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            text-align: left;
+            white-space: normal;
+            cursor: pointer;
+        }
+
+        .vn-chapter-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .vn-chapter-item.current {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+
+        .vn-chapter-empty {
+            padding: 10px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        /* ========== 章节卡 ========== */
+        .vn-chapter-card {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.55);
+            cursor: pointer;
+        }
+
+        .vn-chapter-card.show {
+            display: flex;
+        }
+
+        .vn-chapter-name {
+            font-size: 42px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .vn-chapter-hint {
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        body.vn-active {
+            overflow: hidden;
+        }
+
+
+        /* ========== 系统消息样式 ========== */
+        .system-message {
+            text-align: center;
+            margin: 8px 0; /* 减小间距 */
+            padding: 8px 10px; /* 减小内边距 */
+            color: #7f8c8d;
+            background: rgba(0,0,0,0.02);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        /* ========== 分页控件 ========== */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px; /* 减小间距 */
+            margin: 20px 0 30px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+        }
+        
+        .pagination-btn {
+            background: #8b0000; /* 暗红色 */
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+                
+        .pagination-btn:hover:not(:disabled) {
+            background: #a52a2a; /* 更亮的暗红色 */
+        }
+                .pagination-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .pagination-info {
+            font-size: 13px;
+            color: #bdc3c7;
+            margin: 0 8px;
+        }
+        
+        .pagination-jump {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .pagination-jump input {
+            width: 50px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        /* ========== 筛选面板 ========== */
+        .filter-panel {
+            position: fixed;
+            right: -350px;
+            top: 100px;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 15px;
+            z-index: 999;
+            transition: right 0.3s;
+            border: 1px solid rgba(139, 0, 0, 0.2);
+        }
+        /* 频道筛选部分添加滚动条 */
+        #channelFilters {
+            max-height: 200px; /* 固定高度 */
+            overflow-y: auto; /* 垂直滚动 */
+            padding-right: 5px; /* 给滚动条留空间 */
+        }
+
+        /* 自定义滚动条样式 */
+        #channelFilters::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #channelFilters::-webkit-scrollbar-track {
+            background: rgba(139, 0, 0, 0.1);
+            border-radius: 3px;
+        }
+
+        #channelFilters::-webkit-scrollbar-thumb {
+            background: rgba(139, 0, 0, 0.3);
+            border-radius: 3px;
+        }
+
+        #channelFilters::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 0, 0, 0.5);
+        }
+        /* 筛选选项样式 */
+        #channelFilters label {
+            display: flex;
+            align-items: center;
+            padding: 8px 5px;
+            margin: 2px 0;
+            border-radius: 4px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        #channelFilters label:hover {
+            background: rgba(139, 0, 0, 0.05);
+        }
+
+        #channelFilters input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        #channelFilters span {
+            font-size: 13px;
+            color: #333;
+        }        
+        .filter-panel.show {
+            right: 20px;
+        }
+        
+        .filter-section {
+            margin-bottom: 15px;
+        }
+        
+        .filter-section h4 {
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 13px;
+        }
+        
+        /* ========== 加载状态 ========== */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+            background: white;
+            border-radius: 6px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        
+        /* ========== 响应式设计 ========== */
+        @media (max-width: 1100px) {
+            .floating-image-right {
+                width: 300px;
+                height: 300px;
+            }
+
+            .image-toggle-btn {
+                top: 100px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* 顶部标题栏：保持普通布局，随页面正常滚走 */
+            #vnModeBtn {
+                display: none !important;
+            }
+            .top-header {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px;
+                position: relative;          /* 关键：不要 sticky/fixed */
+                justify-content: flex-start;
+
+                /* 关键：否则内部 fixed 按钮会相对 header 固定 */
+                -webkit-backdrop-filter: none;
+                backdrop-filter: none;
+            }
+
+            .log-title {
+                margin: 10px 0;
+                order: 1;
+                font-weight: bold;
+            }
+
+            .top-controls.left-controls {
+                position: static;
+                order: 0;
+                justify-content: flex-start;
+                width: 100%;
+                padding-left: 90px; /* 给固定按钮让位 */
+            }
+
+            .top-controls.right-controls {
+                position: static;
+                order: 2;
+                justify-content: flex-end;
+                width: 100%;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            /* 只固定“章节导航”按钮 */
+            #chapterNavBtn {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1100;
+
+                padding: 8px 14px;
+                font-size: 14px;
+                line-height: 1.2;
+                white-space: nowrap;
+
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            /* 悬浮图片 */
+            .floating-image-right {
+                width: 200px;
+                height: 200px;
+            }
+
+            .image-toggle-btn {
+                top: 80px;
+                width: 25px;
+                height: 35px;
+                font-size: 12px;
+            }
+
+            /* 筛选面板 */
+            .filter-panel {
+                width: 90%;
+                right: -95%;
+                top: 80px;
+            }
+
+            #channelFilters {
+                max-height: 150px;
+            }
+
+            /* 章节侧栏 */
+            .floating-sidebar {
+                width: 90%;
+                left: 5%;
+                top: 80px;
+                display: none;
+            }
+
+            .floating-sidebar.show {
+                display: block;
+            }
+
+            /* 主内容贴边 */
+            .main-container {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+
+            .log-container {
+                border-radius: 0 !important;
+                padding: 12px !important;
+            }
+
+            /* 底部分页条：强制一行 */
+            #paginationContainer {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 4px;
+                padding: 6px 8px;
+            }
+
+            #paginationContainer > * {
+                flex: 0 0 auto;
+            }
+
+            #paginationContainer .pagination-info {
+                font-size: 11px;
+                margin: 0 2px;
+                white-space: nowrap;
+            }
+
+            #paginationContainer .pagination-btn,
+            #paginationContainer .control-btn {
+                padding: 5px 7px;
+                font-size: 11px;
+                white-space: nowrap;
+            }
+
+            #paginationContainer .pagination-jump {
+                margin-left: 0;
+                gap: 3px;
+                flex-wrap: nowrap;
+            }
+
+            #paginationContainer .pagination-jump input {
+                width: 38px;
+                padding: 3px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            #paginationContainer .pagination-info {
+                display: none;
+            }
+
+            #paginationContainer .pagination-jump input {
+                width: 34px;
+            }
+        }
+        /* ===== VN 大成功/大失败图片：居中最高层 ===== */
+        .vn-extend-image-overlay {
+            position: absolute;
+            inset: 0;
+
+            display: none;
+            align-items: center;        /* 垂直居中 */
+            justify-content: center;    /* ★ 水平居中，漏了就会贴左 */
+
+            pointer-events: none;
+            z-index: 9;
+
+            padding-bottom: 12vh;       /* 整体稍微往上 */
+            box-sizing: border-box;
+        }
+
+        .vn-extend-image-overlay.show {
+            display: flex;
+        }
+
+
+        .vn-extend-image-overlay img {
+            max-width: min(560px, 50vw);
+            max-height: 50vh;
+            object-fit: contain;
+            border-radius: 10px;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.65));
+            animation: vnExtendPop 0.25s ease-out;
+        }
+
+        @keyframes vnExtendPop {
+            0%   { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .vn-log-item.chat {
+            position: relative;
+        }
+
+        /* 在整条消息上面盖一层 20% 透明度的黑色 */
+        .vn-log-item.chat::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.30);
+            pointer-events: none;
+            z-index: 2;
+        }
+        /* ===== 对话模式开场视频 ===== */
+        .vn-opening-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: #000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vn-opening-overlay.show {
+            display: flex;
+        }
+
+        .vn-opening-stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            aspect-ratio: auto;
+            background: #000;
+        }
+
+        .vn-opening-poster {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .vn-opening-play {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+
+            font-size: 32px;
+            line-height: 1;
+            cursor: pointer;
+            padding-left: 6px;
+
+            z-index: 2;
+        }
+
+        .vn-opening-play:hover {
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .vn-opening-iframe-wrap {
+            position: absolute;
+            inset: 0;
+            display: none;
+            z-index: 1;
+        }
+
+        .vn-opening-iframe-wrap.show {
+            display: block;
+        }
+
+        .vn-opening-iframe-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="pageBackground"></div>
+    <!-- 右侧悬浮图片 -->
+<!-- 修改右侧悬浮图片部分 -->
+<div class="floating-image-container" id="rightImageContainer">
+    <div class="floating-image-right" id="rightFloatingImage"></div>
+    <button class="image-toggle-btn" id="toggleImageBtn" onclick="toggleRightImage()" title="收起/展开图片">
+        ◀
+    </button>
+</div>
+
+    <!-- 顶部标题栏 -->
+<div class="top-header">
+    <!-- 左侧控制按钮 -->
+    <div class="top-controls left-controls">
+        <button class="control-btn" id="chapterNavBtn" onclick="toggleChapterSidebar()">章节导航</button>
+        <button class="control-btn" id="viewModeBtn" onclick="toggleViewMode()">切换分页模式</button>
+        <button class="control-btn" id="vnModeBtn" onclick="openVnMode()">对话模式</button>
+    </div>
+    
+    <!-- 标题 -->
+    <div class="log-title" id="logTitle"></div>
+
+    
+    <!-- 右侧控制按钮 -->
+    <div class="top-controls right-controls">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索消息内容..." autocomplete="off">
+            <button class="clear-search-btn" onclick="clearSearch()" style="display: none;">×</button>
+        </div>
+        <button class="control-btn" onclick="toggleFilterPanel()">筛选</button>
+    </div>
+</div>
+    <!-- 悬浮章节导航 -->
+    <div class="floating-sidebar" id="chapterSidebar">
+        <div class="sidebar-header">
+            <h2>章节导航</h2>
+        </div>
+        <div class="chapter-list" id="chapterList">
+            <!-- 动态生成 -->
+        </div>
+    </div>
+
+    <!-- 筛选面板 -->
+    <div class="filter-panel" id="filterPanel">
+        <h3 style="margin-bottom: 15px; color: #2c3e50;">筛选消息</h3>
+        
+        <!-- 添加闲聊折叠选项 -->
+        <div class="filter-section">
+            <h4>频道折叠</h4>
+            <label style="display: block; margin: 4px 0; font-size: 12px;">
+                <input type="checkbox" id="collapseChatCheckbox" onchange="toggleChatCollapse()">
+                折叠所有"闲聊"频道
+            </label>
+        </div>
+        <label style="display: block; margin: 4px 0; font-size: 12px;">
+            <input type="checkbox" id="hideChatCheckbox" onchange="toggleHideChatChannels()">
+            隐藏所有“闲聊”频道
+        </label>
+        <div class="filter-section">
+            <h4>按频道筛选</h4>
+            <div id="channelFilters">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <button class="control-btn" onclick="applyFilters()" style="width: 100%;">应用筛选</button>
+            <button class="control-btn" onclick="clearFilters()" style="width: 100%; margin-top: 8px;">清除筛选</button>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <!-- 日志消息容器 -->
+        <div id="logContainer">
+            <div class="loading" id="loadingState" style="display: none;">
+                <div>正在加载日志数据...</div>
+            </div>
+            <div class="log-container" id="logMessages" style="display: none;">
+                <!-- 消息将动态渲染在这里 -->
+            </div>
+        </div>
+        <!-- 分页控件：固定在页面底部，仅分页模式显示 -->
+        <div class="pagination-container" id="paginationContainer" style="display: none;">
+            <button class="pagination-btn" id="prevPageBtn" onclick="prevPage()">上一页</button>
+
+            <div class="pagination-info">
+                第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">1</span> 页
+            </div>
+
+            <div class="pagination-jump">
+                <input type="number" id="jumpInput" min="1" value="1">
+                <button class="control-btn" onclick="jumpToPage()">跳转</button>
+            </div>
+
+            <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">下一页</button>
+        </div>
+    </div>
+    <div class="vn-opening-overlay" id="vnOpeningOverlay">
+        <div class="vn-opening-stage">
+            <img class="vn-opening-poster" id="vnOpeningPoster" alt="OP 封面">
+            <button class="vn-opening-play" id="vnOpeningPlayBtn"
+                    onclick="playVnOpening()">▶</button>
+            <div class="vn-opening-iframe-wrap" id="vnOpeningIframeWrap"></div>
+        </div>
+    </div>
+
+    <!-- 对话阅读模式 -->
+    <div id="vnOverlay" class="vn-overlay" onclick="vnHandleClick(event)">
+        <div class="vn-bg" id="vnBg"></div>
+        <div class="vn-bg" id="vnBg"></div>
+        <div class="vn-bg vn-bg-next" id="vnBgNext"></div>
+
+        <div class="vn-image-stage" id="vnImageStage">
+            <div class="vn-image-frame">
+                <img id="vnStageImage" alt="消息图片">
+            </div>
+        </div>
+        <!-- 大成功/大失败图片：居中最高层 -->
+        <div class="vn-extend-image-overlay" id="vnExtendImageOverlay">
+            <img id="vnExtendImage" alt="判定结果图片">
+        </div>
+
+        <div class="vn-dialog-area">
+            <div class="vn-portrait-layer">
+                <div class="vn-portrait-slot left" id="vnPortraitLeft">
+                    <img id="vnPortraitLeftImg" alt="">
+                </div>
+                <div class="vn-portrait-slot right" id="vnPortraitRight">
+                    <img id="vnPortraitRightImg" alt="">
+                </div>
+            </div>
+
+            <div class="vn-topbar">
+                <button class="vn-btn" onclick="event.stopPropagation(); prevVn()">上一句</button>
+                <button class="vn-btn" onclick="event.stopPropagation(); nextVn()">下一句</button>
+                <button class="vn-btn" id="vnChapterBtn"
+                        onclick="event.stopPropagation(); toggleVnChapterMenu()">章节</button>
+                <button class="vn-btn" id="vnLogBtn"
+                        onclick="event.stopPropagation(); toggleVnLogMenu()">对话</button>
+                <button class="vn-btn" id="vnAutoBtn"
+                        onclick="event.stopPropagation(); toggleVnAuto()">自动：关</button>
+                <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
+
+                <div class="vn-chapter-menu" id="vnChapterMenu"></div>
+            </div>
+
+            <div class="vn-dialog" id="vnDialog">
+                <div class="vn-name" id="vnName"></div>
+                <div class="vn-text" id="vnText"></div>
+                <div class="vn-extend" id="vnExtend"></div>
+                <div class="vn-hint" id="vnHint">点击继续 / 空格</div>
+            </div>
+        </div>
+
+        <!-- 章节卡移到这里，才能铺满整个 vnOverlay -->
+        <div class="vn-chapter-card" id="vnChapterCard">
+            <div class="vn-chapter-name" id="vnChapterName"></div>
+            <div class="vn-chapter-hint">点击继续</div>
+        </div>
+        <!-- 右侧对话抽屉 -->
+        <div class="vn-log-drawer" id="vnLogDrawer">
+            <div class="vn-log-drawer-header">
+                <span>对话列表</span>
+                <button class="vn-btn"
+                        onclick="event.stopPropagation(); toggleVnLogMenu()">关闭</button>
+            </div>
+            <div class="vn-log-menu" id="vnLogMenu"></div>
+        </div>
+    </div>
+    <script src="https://player.vimeo.com/api/player.js"></script>
+
+    <script>
+        // 全局变量
+        let vnBgmEvents = [];
+        let vnBackgroundEvents = [];
+        let vnBgmAudio = new Audio();
+        let vnCurrentBgmUrl = '';
+        let vnSfxEvents = [];
+        let vnSfxAudios = [];   // 当前步骤正在播放的音效
+        let chapterImageMap = {}; // 章节名 -> 右侧图片URL
+        let extendFormats = {};
+        let extendSettings = { ruleSystem: 'coc_houserule' };
+        let logData = null;
+        let filteredLogs = [];
+        let vnSteps = [];
+        let vnIndex = 0;
+        let vnAuto = false;
+        let vnTyping = false;
+        let vnTypeTimer = null;
+        let vnAutoTimer = null;
+        let vnPageTimer = null;
+        let vnLogMenuStart = 0;
+        let vnLogMenuEnd = 0;
+        let vnCurrentText = '';
+        let vnTextIndex = 0;
+        let vnPortraitMap = {};
+        let viewMode = 'scroll';          // 'scroll' 连续 | 'paged' 分页
+        let scrollLoadedCount = 0;        // 连续模式已经渲染了多少条
+        let scrollObserver = null;
+        let currentContinuousChapter = 0; 
+        let currentPage = 1;
+        const pageSize = 50;
+        let currentFilters = {
+            characters: [],
+            channels: [],
+            searchText: ''
+        };
+        let vnPageStart = 0;      // 当前这一页从整段文本的哪个位置开始
+        let vnHasMoreText = false; // 当前消息是否还有下一页
+        let chapters = [];
+        let currentRenderedChapter = null; 
+        let collapseChatChannels = false;
+        let hideChatChannels = false;
+        const collapsedChannelGroups = new Set();
+        const expandedChannelGroups = new Set();
+        const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
+        let currentRightImageUrl = ''; // 记录当前右侧图片URL
+        let isImageCollapsed = false; // 记录图片是否收起
+
+        function normalizeVnMediaEvents(list, idToIndex) {
+            return (list || [])
+                .map(event => {
+                    let position = parseInt(
+                        event.position !== undefined ? event.position : event.messageIndex,
+                        10
+                    ) || 0;
+
+                    // 有 messageId 就以它为准
+                    if (event.messageId && idToIndex.has(String(event.messageId))) {
+                        position = idToIndex.get(String(event.messageId)) + 1;
+                    }
+
+                    return {
+                        position,
+                        url: String(event.url || '')
+                    };
+                })
+                .filter(event => event.position > 0)
+                .sort((a, b) => a.position - b.position);
+        }
+
+        function initVnMediaEvents() {
+            const idToIndex = new Map();
+            (logData.logs || []).forEach((msg, index) => {
+                if (msg && msg.id !== undefined) {
+                    idToIndex.set(String(msg.id), index);
+                }
+            });
+
+            vnBgmEvents = normalizeVnMediaEvents(logData.bgmEvents, idToIndex);
+            vnBackgroundEvents = normalizeVnMediaEvents(logData.backgroundEvents, idToIndex);
+            vnSfxEvents = normalizeVnMediaEvents(logData.sfxEvents, idToIndex);
+
+            console.log(`[VN] 媒体事件：BGM ${vnBgmEvents.length} / 背景 ${vnBackgroundEvents.length} / 音效 ${vnSfxEvents.length}`);
+        }
+
+
+        function getLatestBgmEvent(position) {
+            let result = null;
+
+            for (const event of vnBgmEvents) {
+                if (event.position > position) break;
+                result = event;
+            }
+
+            return result;
+        }
+
+        // 只写了文件名时默认去 audio/ 找；空格转义
+        function resolveMediaUrl(rawUrl) {
+            let url = String(rawUrl || '').trim();
+            if (!url || url === '__stop__') return url;
+
+            if (!/^(https?:|data:|blob:)/i.test(url) &&
+                !url.startsWith('/') &&
+                !url.includes('/')) {
+                url = 'audio/' + url;
+            }
+
+            return url.replace(/ /g, '%20');
+        }
+
+        function playVnBgm(url) {
+            const src = resolveMediaUrl(url);
+            if (!src || vnCurrentBgmUrl === src) return;
+
+            vnBgmAudio.pause();
+            vnBgmAudio.src = src;
+            vnBgmAudio.loop = true;
+            vnBgmAudio.volume = 0.6;
+            vnBgmAudio.preload = 'auto';
+
+            // 只在真正换曲时打一条
+            console.log('[VN] BGM 切换 →', src);
+
+            vnBgmAudio.addEventListener('error', () => {
+                console.error('[VN] BGM 加载失败（检查路径/文件是否存在）:', src);
+            }, { once: true });
+
+            const playPromise = vnBgmAudio.play();
+
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(err => {
+                    console.warn('[VN] BGM 被浏览器拦截，点击页面后重试:', err && err.name);
+
+                    const retry = () => {
+                        vnBgmAudio.play()
+                            .then(() => console.log('[VN] BGM 重试播放成功'))
+                            .catch(e => console.warn('[VN] BGM 重试仍失败:', e && e.name));
+                        document.removeEventListener('click', retry);
+                    };
+                    document.addEventListener('click', retry, { once: true });
+                });
+            }
+
+            vnCurrentBgmUrl = src;
+        }
+
+        function stopVnBgm() {
+            vnBgmAudio.pause();
+            try {
+                vnBgmAudio.currentTime = 0;
+            } catch (e) { /* 未加载时忽略 */ }
+            vnCurrentBgmUrl = '';
+        }
+
+        function applyBgmForPosition(position) {
+            const event = getLatestBgmEvent(Number(position) || 0);
+            if (!event) return;
+
+            const url = (event.url || '').trim();
+
+            if (!url || url === '__stop__') {
+                stopVnBgm();
+                return;
+            }
+
+            // 这里不再打日志，playVnBgm 内部只在换曲时输出一条
+            playVnBgm(url);
+        }
+
+
+        function isChatChannelName(channel) {
+            const name = channel || '默认频道';
+            return chatChannelKeywords.some(keyword => name.includes(keyword));
+        }
+        let vnBgCurrentUrl = '';
+
+        function setVnBackground(url) {
+            const base = document.getElementById('vnBg');
+            const next = document.getElementById('vnBgNext');
+            if (!base || !next) return;
+
+            const target = url || '';
+            if (target === vnBgCurrentUrl) return;
+
+            const cssUrl = target ? `url('${target}')` : 'none';
+
+            // 首次设置：直接显示，不做过渡
+            if (!vnBgCurrentUrl) {
+                base.style.backgroundImage = cssUrl;
+                vnBgCurrentUrl = target;
+                return;
+            }
+
+            // 交叉淡入：先把新图放到上层，再淡入
+            next.style.transition = 'none';
+            next.style.backgroundImage = cssUrl;
+            next.style.opacity = '0';
+
+            void next.offsetWidth; // 强制回流，让过渡生效
+
+            next.style.transition = 'opacity 0.8s ease';
+            next.style.opacity = '1';
+
+            let finished = false;
+
+            const finish = () => {
+                if (finished) return;
+                finished = true;
+
+                // 把新图落到底层，再把上层清空
+                base.style.backgroundImage = cssUrl;
+                next.style.transition = 'none';
+                next.style.opacity = '0';
+                next.style.backgroundImage = 'none';
+
+                vnBgCurrentUrl = target;
+            };
+
+            next.addEventListener('transitionend', finish, { once: true });
+            setTimeout(finish, 900); // 兜底
+        }
+
+        function applyVnBackgroundForStep(step) {
+            const bg = document.getElementById('vnBg');
+            if (!bg) return;
+
+            const stepPosition = Number(step.position) || 0;
+
+            // 找当前位置之前（含）的最后一条背景事件，不再限制在章节内
+            let eventUrl = '';
+
+            if (stepPosition > 0) {
+                for (const event of vnBackgroundEvents) {
+                    if (event.position > stepPosition) break;
+                    eventUrl = event.url;
+                }
+            }
+
+            // __stop__ 视为“取消事件”，回到章节背景
+            if (eventUrl === '__stop__') {
+                eventUrl = '';
+            }
+
+            // 有设置就用设置，没有设置才用章节背景
+            let backgroundUrl = eventUrl;
+
+            if (!backgroundUrl) {
+                const chapterInfo = chapterImageMap[step.chapterName];
+                backgroundUrl = chapterInfo ? chapterInfo.background : '';
+            }
+
+            const finalUrl = backgroundUrl || '';
+
+            if (finalUrl !== vnBgCurrentUrl) {
+                setVnBackground(finalUrl);
+
+                if (finalUrl) {
+                    console.log('[VN] 背景切换 @', stepPosition, '→', finalUrl);
+                }
+            }
+
+        }
+
+        function stopVnSfx() {
+            vnSfxAudios.forEach(audio => {
+                try {
+                    audio.pause();
+                    audio.currentTime = 0;
+                } catch (e) { /* 忽略 */ }
+            });
+            vnSfxAudios = [];
+        }
+
+        function applySfxForPosition(position) {
+            const pos = Number(position) || 0;
+            if (!pos) return;
+
+            const events = vnSfxEvents.filter(event => event.position === pos);
+
+            // 这一条没有音效：不打断上一条正在播放的音效
+            if (!events.length) return;
+
+            // 这一条有新音效：先停掉旧的，再播新的
+            stopVnSfx();
+
+            events.forEach(event => {
+                const src = resolveMediaUrl(event.url);
+                if (!src || src === '__stop__') return;
+
+                const audio = new Audio(src);
+                audio.loop = false;        // 只播一次
+                audio.volume = 0.8;
+                audio.preload = 'auto';
+
+                audio.addEventListener('ended', () => {
+                    vnSfxAudios = vnSfxAudios.filter(item => item !== audio);
+                }, { once: true });
+
+                const playPromise = audio.play();
+                if (playPromise && typeof playPromise.catch === 'function') {
+                    playPromise.catch(() => {});
+                }
+
+                vnSfxAudios.push(audio);
+                console.log('[VN] 音效:', src);
+            });
+        }
+
+        // 获取当前阅读位置在 filteredLogs 中的索引
+        function getCurrentReadingIndex() {
+            if (viewMode === 'paged') {
+                const pages = computePages();
+                const page = pages[currentPage - 1];
+                return page ? page.start : 0;
+            }
+
+            const container = document.getElementById('logMessages');
+            const rows = container.querySelectorAll('.message-row');
+
+            for (const row of rows) {
+                const rect = row.getBoundingClientRect();
+                if (rect.bottom > 0) {
+                    const id = row.dataset.id;
+                    const idx = filteredLogs.findIndex(
+                        msg => String(msg.id) === String(id)
+                    );
+                    if (idx !== -1) return idx;
+                }
+            }
+
+            const range = getContinuousRange();
+            return range ? range.start : 0;
+        }
+
+        function buildVnSteps() {
+            vnPortraitMap = {};
+            const logIndexById = new Map();
+
+            (logData.logs || []).forEach((msg, index) => {
+                if (msg && msg.id !== undefined) {
+                    logIndexById.set(String(msg.id), index);
+                }
+            });
+
+            let currentChapterStart = 0;
+
+            // 记录每个角色第一次出现的头像
+            filteredLogs.forEach(msg => {
+                if (msg && msg.name && msg.icon && !vnPortraitMap[msg.name]) {
+                    vnPortraitMap[msg.name] = msg.icon;
+                }
+            });
+
+            const steps = [];
+            let currentChapterName = '';
+
+            filteredLogs.forEach((msg, index) => {
+                if (!msg) return;
+
+                if (hideChatChannels && msg.channel && isChatChannelName(msg.channel)) {
+                    return;
+                }
+
+                // 绝对位置：在完整 logData.logs 中的序号（从 1 开始）
+                // 必须放在最前面，章节分支也要用它
+                const logPosition = (msg.id !== undefined && logIndexById.has(String(msg.id)))
+                    ? logIndexById.get(String(msg.id)) + 1
+                    : index + 1;
+
+                if (msg.isChapter) {
+                    const name = (msg.text || '')
+                        .replace('=== ', '')
+                        .replace(' ===', '')
+                        .trim();
+
+                    currentChapterName = name;
+                    currentChapterStart = logPosition;
+
+                    steps.push({
+                        type: 'chapter',
+                        index,
+                        position: logPosition,
+                        chapterStart: currentChapterStart,
+                        chapterName: name,
+                        msg
+                    });
+                    return;
+                }
+
+                const isSystem = msg.name &&
+                    String(msg.name).toLowerCase() === 'system';
+
+                const portraitUrl = isSystem
+                    ? ''
+                    : (msg.icon || '');
+
+                let side = null;
+
+                // 只有有立绘的角色才参与左右交替
+                if (portraitUrl) {
+                    const prevStep = steps[steps.length - 1];
+
+                    if (prevStep && prevStep.type === 'message' && prevStep.portraitUrl) {
+                        if (prevStep.msg.name === msg.name) {
+                            side = prevStep.side;
+                        } else {
+                            side = prevStep.side === 'left' ? 'right' : 'left';
+                        }
+                    } else {
+                        side = 'left';
+                    }
+                }
+
+                // 关键：普通消息也要带上 position / chapterStart
+                steps.push({
+                    type: isSystem ? 'system' : 'message',
+                    index,
+                    position: logPosition,
+                    chapterStart: currentChapterStart,
+                    chapterName: currentChapterName,
+                    msg,
+                    portraitUrl,
+                    side
+                });
+            });
+
+            return steps;
+        }
+        let vnOpeningCallback = null;
+        let vnVimeoPlayer = null;
+
+        function hasVnOpeningVideo() {
+            return !!(
+                logData &&
+                logData.openingVideo &&
+                logData.openingVideo.videoId
+            );
+        }
+
+        function openVnOpening(callback) {
+            const overlay = document.getElementById('vnOpeningOverlay');
+            const poster = document.getElementById('vnOpeningPoster');
+            const wrap = document.getElementById('vnOpeningIframeWrap');
+
+            if (!overlay || !poster || !wrap) {
+                if (typeof callback === 'function') callback();
+                return;
+            }
+
+            vnOpeningCallback = callback || null;
+
+            const videoId = String(logData.openingVideo.videoId);
+            const posterUrl = logData.openingVideo.poster
+                ? logData.openingVideo.poster
+                : `https://vumbnail.com/${videoId}.jpg`;
+
+            poster.src = posterUrl;
+            poster.style.display = 'block';
+
+            wrap.innerHTML = '';
+            wrap.classList.remove('show');
+
+            overlay.classList.add('show');
+        }
+
+        function playVnOpening() {
+            const poster = document.getElementById('vnOpeningPoster');
+            const wrap = document.getElementById('vnOpeningIframeWrap');
+            const playBtn = document.getElementById('vnOpeningPlayBtn');
+            if (!wrap || !logData.openingVideo) return;
+
+            const videoId = String(logData.openingVideo.videoId);
+            const hash = (logData.openingVideo.hash || '').trim();
+
+            const params = new URLSearchParams({
+                autoplay: '1',
+                controls: '0',
+                title: '0',
+                byline: '0',
+                portrait: '0',
+                badge: '0',
+                pip: '0',
+                autopause: '0',
+                dnt: '1',
+                playsinline: '1'
+            });
+
+            if (hash) params.set('h', hash);
+
+            const iframe = document.createElement('iframe');
+            iframe.id = 'vnOpeningIframe';
+            iframe.src = `https://player.vimeo.com/video/${videoId}?${params.toString()}`;
+            iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+
+            wrap.innerHTML = '';
+            wrap.appendChild(iframe);
+            wrap.classList.add('show');
+
+            if (poster) poster.style.display = 'none';
+            if (playBtn) playBtn.style.display = 'none';
+
+            if (window.Vimeo && window.Vimeo.Player) {
+                vnVimeoPlayer = new Vimeo.Player(iframe);
+
+                vnVimeoPlayer.ready().then(() => {
+                    // 尽量固定 1080p；没有 1080p 时自动降级
+                    vnVimeoPlayer.setQuality('1080p').catch(() => {});
+                    vnVimeoPlayer.play().catch(() => {});
+                }).catch(() => {});
+
+                vnVimeoPlayer.on('ended', closeVnOpening);
+            }
+        }
+
+        function closeVnOpening() {
+            const overlay = document.getElementById('vnOpeningOverlay');
+            const wrap = document.getElementById('vnOpeningIframeWrap');
+
+            if (overlay) overlay.classList.remove('show');
+
+            if (vnVimeoPlayer) {
+                try { vnVimeoPlayer.destroy(); } catch (e) {}
+                vnVimeoPlayer = null;
+            }
+
+            if (wrap) {
+                wrap.innerHTML = '';
+                wrap.classList.remove('show');
+            }
+
+            const cb = vnOpeningCallback;
+            vnOpeningCallback = null;
+
+            if (typeof cb === 'function') cb();
+        }
+
+        function cancelVnOpening() {
+            const overlay = document.getElementById('vnOpeningOverlay');
+            const wrap = document.getElementById('vnOpeningIframeWrap');
+
+            if (overlay) overlay.classList.remove('show');
+
+            if (vnVimeoPlayer) {
+                try { vnVimeoPlayer.destroy(); } catch (e) {}
+                vnVimeoPlayer = null;
+            }
+
+            if (wrap) {
+                wrap.innerHTML = '';
+                wrap.classList.remove('show');
+            }
+
+            vnOpeningCallback = null;
+        }
+
+        function openVnMode() {
+            if (window.innerWidth <= 768) return;
+
+            const startIndex = getCurrentReadingIndex();
+            vnSteps = buildVnSteps();
+
+            if (!vnSteps.length) {
+                alert('没有可阅读的消息');
+                return;
+            }
+
+            let stepIndex = vnSteps.findIndex(s => s.index >= startIndex);
+            if (stepIndex === -1) stepIndex = 0;
+
+            vnIndex = stepIndex;
+
+            document.getElementById('vnOverlay').classList.add('show');
+            document.body.classList.add('vn-active');
+
+            document.addEventListener('keydown', vnKeyHandler);
+            initVnMediaEvents();
+
+            const firstMessageStep = vnSteps.findIndex(step => step.type !== 'chapter');
+
+            const atFirstMessage =
+                vnIndex === 0 ||
+                vnIndex === firstMessageStep;
+
+            if (hasVnOpeningVideo() && atFirstMessage) {
+                openVnOpening(() => renderVnStep());
+            } else {
+                renderVnStep();
+            }
+
+        }
+
+
+        function closeVnMode() {
+            clearVnTimers();
+
+            document.getElementById('vnOverlay').classList.remove('show');
+            document.body.classList.remove('vn-active');
+
+            document.removeEventListener('keydown', vnKeyHandler);
+
+            // 退出对话模式时停止 BGM
+            stopVnBgm();
+            stopVnSfx();
+            cancelVnOpening();
+        }
+
+        function toggleVnChapterMenu() {
+            setVnLogDrawerOpen(false);
+            const logMenu = document.getElementById('vnLogMenu');
+            if (logMenu) logMenu.classList.remove('show');
+
+            const menu = document.getElementById('vnChapterMenu');
+            if (!menu) return;
+
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+                return;
+            }
+
+            renderVnChapterMenu();
+            menu.classList.add('show');
+        }
+
+        function renderVnChapterMenu() {
+            const menu = document.getElementById('vnChapterMenu');
+            if (!menu) return;
+
+            menu.innerHTML = '';
+
+            const chapterSteps = [];
+            vnSteps.forEach((step, index) => {
+                if (step.type === 'chapter') {
+                    chapterSteps.push({ step, index });
+                }
+            });
+
+            if (!chapterSteps.length) {
+                const empty = document.createElement('div');
+                empty.className = 'vn-chapter-empty';
+                empty.textContent = '没有章节';
+                menu.appendChild(empty);
+                return;
+            }
+
+            const currentStep = vnSteps[vnIndex];
+            const currentChapterName = currentStep ? currentStep.chapterName : '';
+
+            chapterSteps.forEach(({ step, index }) => {
+                const btn = document.createElement('button');
+                btn.className = 'vn-chapter-item';
+                btn.textContent = step.chapterName || '未命名章节';
+
+                if (step.chapterName === currentChapterName) {
+                    btn.classList.add('current');
+                }
+
+                btn.addEventListener('click', event => {
+                    event.stopPropagation();
+                    jumpVnChapter(index);
+                });
+
+                menu.appendChild(btn);
+            });
+        }
+
+        function jumpVnChapter(stepIndex) {
+            const menu = document.getElementById('vnChapterMenu');
+            if (menu) menu.classList.remove('show');
+
+            if (stepIndex < 0 || stepIndex >= vnSteps.length) return;
+
+            vnIndex = stepIndex;
+            renderVnStep();
+        }
+
+        function clearVnTimers() {
+            if (vnTypeTimer) {
+                clearInterval(vnTypeTimer);
+                vnTypeTimer = null;
+            }
+            if (vnAutoTimer) {
+                clearTimeout(vnAutoTimer);
+                vnAutoTimer = null;
+            }
+            if (vnPageTimer) {
+                clearTimeout(vnPageTimer);
+                vnPageTimer = null;
+            }
+        }
+        function scheduleVnNextPage(delay = 1500) {
+            if (vnPageTimer) {
+                clearTimeout(vnPageTimer);
+                vnPageTimer = null;
+            }
+
+            const expectedStep = vnIndex;
+            const expectedPageStart = vnPageStart;
+
+            vnPageTimer = setTimeout(() => {
+                vnPageTimer = null;
+
+                // 用户已经手动翻走，或者已经不是这一页了
+                if (!vnHasMoreText) return;
+                if (vnTyping) return;
+                if (vnIndex !== expectedStep) return;
+                if (vnPageStart !== expectedPageStart) return;
+
+                // 只继续文本，不重新 render step，所以立绘不会被清掉
+                startVnTyping(vnCurrentText, vnTextIndex);
+            }, delay);
+        }
+
+        function vnKeyHandler(event) {
+            const opOverlay = document.getElementById('vnOpeningOverlay');
+
+            if (opOverlay && opOverlay.classList.contains('show')) {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeVnOpening();
+                }
+                return;
+            }
+
+            if (event.key === 'ArrowRight' || event.key === ' ' || event.key === 'Enter') {
+                event.preventDefault();
+                nextVn();
+            } else if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                prevVn();
+            } else if (event.key === 'Escape') {
+                closeVnMode();
+            }
+        }
+
+        function vnHandleClick(event) {
+            if (event.target.closest('.vn-log-drawer')) return;
+
+            const chapterMenu = document.getElementById('vnChapterMenu');
+
+            if (chapterMenu &&
+                chapterMenu.classList.contains('show') &&
+                !event.target.closest('.vn-topbar')) {
+                chapterMenu.classList.remove('show');
+                return;
+            }
+
+            if (event.target.closest('.vn-topbar')) return;
+
+            nextVn();
+        }
+
+
+        function nextVn() {
+            // 还在打字：先把当前页打完
+            if (vnTyping) {
+                completeVnTyping();
+                return;
+            }
+
+            // 当前消息还有下一页：从对话框顶部继续打
+            if (vnHasMoreText) {
+                startVnTyping(vnCurrentText, vnTextIndex);
+                return;
+            }
+
+            // 没有下一页，进入下一条消息
+            if (vnIndex >= vnSteps.length - 1) {
+                document.getElementById('vnHint').textContent = '已经是最后一句';
+
+                if (vnAutoTimer) {
+                    clearTimeout(vnAutoTimer);
+                    vnAutoTimer = null;
+                }
+                return;
+            }
+
+            vnIndex++;
+            renderVnStep();
+        }
+
+        function prevVn() {
+            clearVnTimers();
+
+            if (vnIndex <= 0) {
+                renderVnStep();
+                return;
+            }
+
+            vnIndex--;
+            renderVnStep();
+        }
+
+        function toggleVnAuto() {
+            vnAuto = !vnAuto;
+
+            const btn = document.getElementById('vnAutoBtn');
+            btn.textContent = vnAuto ? '自动：开' : '自动：关';
+
+            if (vnAuto) {
+                if (!vnTyping) {
+                    scheduleVnAuto();
+                }
+            } else if (vnAutoTimer) {
+                clearTimeout(vnAutoTimer);
+                vnAutoTimer = null;
+            }
+        }
+
+        function scheduleVnAuto(delay) {
+            if (!vnAuto) return;
+
+            if (vnAutoTimer) {
+                clearTimeout(vnAutoTimer);
+            }
+
+            const wait = delay !== undefined
+                ? delay
+                : 1200 + vnCurrentText.length * 45;
+
+            vnAutoTimer = setTimeout(() => {
+                if (vnAuto) nextVn();
+            }, wait);
+        }
+
+        function renderVnStep() {
+            clearVnTimers();
+            refreshVnLogMenuCurrent();
+            const chapterMenu = document.getElementById('vnChapterMenu');
+            if (chapterMenu) chapterMenu.classList.remove('show');
+
+            const logMenu = document.getElementById('vnLogMenu');
+            if (logMenu) logMenu.classList.remove('show');
+
+
+            const step = vnSteps[vnIndex];
+            if (!step) return;
+            updateVnLogDrawerBackground(); 
+            const overlay = document.getElementById('vnOverlay');
+            const bg = document.getElementById('vnBg');
+            const bgNext = document.getElementById('vnBgNext');
+            const dialog = document.getElementById('vnDialog');
+            const chapterCard = document.getElementById('vnChapterCard');
+            const imageStage = document.getElementById('vnImageStage');
+            const stageImage = document.getElementById('vnStageImage');
+            const extendImageOverlay = document.getElementById('vnExtendImageOverlay');
+            const extendImageEl = document.getElementById('vnExtendImage');
+
+            // 新增：渲染左右立绘
+            renderVnPortraits(step);
+            // 每次切换步骤先取消加暗
+            bg.classList.remove('chat-dim');
+            if (bgNext) bgNext.classList.remove('chat-dim');
+            // 每次切换步骤，先把图片层收起来
+            imageStage.classList.remove('show');
+            stageImage.removeAttribute('src');
+            extendImageOverlay.classList.remove('show');
+            extendImageEl.removeAttribute('src');
+
+            // 应用背景切换事件
+            applyVnBackgroundForStep(step);
+
+            // 应用 BGM 切换事件
+            applyBgmForPosition(step.position || 0);
+
+            applySfxForPosition(step.position || 0);
+
+            // 章节卡
+            if (step.type === 'chapter') {
+                chapterCard.classList.add('show');
+                dialog.style.display = 'none';
+
+                document.getElementById('vnChapterName').textContent =
+                    step.chapterName || '新章节';
+
+                vnTyping = false;
+                vnCurrentText = '';
+
+                if (vnAuto) scheduleVnAuto(2000);
+                return;
+            }
+
+
+            chapterCard.classList.remove('show');
+            dialog.style.display = '';   // 清掉内联样式，回到 CSS 的 flex
+
+            const msg = step.msg;
+
+            // 旁白
+            if (step.type === 'system') {
+                dialog.className = 'vn-dialog system';
+                const nameEl = document.getElementById('vnName');
+                nameEl.textContent = '';
+                nameEl.style.display = 'none';   // 不显示“旁白”这个词
+
+                document.getElementById('vnExtend').style.display = 'none';
+
+                startVnTyping(msg.text || '');
+                return;
+            }
+
+
+            // 普通消息
+            const isChat = isChatChannelName(msg.channel);
+
+            // 闲聊时背景加暗，其他频道不加暗
+            bg.classList.toggle('chat-dim', isChat);
+            if (bgNext) bgNext.classList.toggle('chat-dim', isChat);
+
+            // 对话框不再加 chat 类
+            dialog.className = 'vn-dialog';
+
+            const nameEl = document.getElementById('vnName');
+            nameEl.style.display = '';          // ← 从旁白分支恢复角色名显示
+            nameEl.textContent = msg.name || '未知角色';
+            nameEl.style.color =
+                msg.color ||
+                (logData.characterRules && logData.characterRules[msg.name]
+                    ? logData.characterRules[msg.name].nameColor
+                    : '#ffffff');
+
+            if (msg.to) {
+                nameEl.textContent += ` > @${msg.to}`;
+            }
+
+
+
+            // 骰子/扩展信息
+            const extendText = getFormattedExtendText(msg) || '';
+            const extendEl = document.getElementById('vnExtend');
+            extendEl.textContent = extendText;
+            extendEl.style.display = extendText ? 'block' : 'none';
+            extendEl.style.visibility = 'hidden';
+            // 大成功/大失败的图片：居中最高层显示
+            if (msg.dice || msg.extend) {
+                const resultType = getExtendResultType(msg);
+                const resultImage = getExtendImage(resultType);
+
+                if (resultImage) {
+                    extendImageEl.src = resultImage;
+                    extendImageOverlay.classList.add('show');
+                }
+            }
+
+            // 消息内图片：居中材料展示
+            if (msg.messageImage) {
+                stageImage.src = msg.messageImage;
+                imageStage.classList.add('show');
+
+                const frame = imageStage.querySelector('.vn-image-frame');
+                if (frame) {
+                    // 闲聊频道不显示黑色底框
+                    frame.classList.toggle('no-frame', isChatChannelName(msg.channel));
+                }
+            }
+
+            startVnTyping(msg.text || '');
+        }
+
+        function setVnPortraitSlot(slotId, url, dimmed) {
+            const slot = document.getElementById(slotId);
+            if (!slot) return;
+
+            const img = slot.querySelector('img');
+
+            if (!url) {
+                slot.style.display = 'none';
+                if (img) img.removeAttribute('src');
+                slot.classList.remove('dimmed');
+                return;
+            }
+
+            slot.style.display = 'flex';
+            slot.classList.toggle('dimmed', !!dimmed);
+
+            if (img) img.src = url;
+        }
+
+        function renderVnPortraits(step) {
+            const leftId = 'vnPortraitLeft';
+            const rightId = 'vnPortraitRight';
+
+            // 先清空两边
+            setVnPortraitSlot(leftId, '', false);
+            setVnPortraitSlot(rightId, '', false);
+
+            if (step.type !== 'message') return;
+
+            // 当前消息没有立绘：两边都不显示
+            if (!step.portraitUrl) return;
+
+            const currentSlotId = step.side === 'right' ? rightId : leftId;
+            setVnPortraitSlot(currentSlotId, step.portraitUrl, false);
+
+            // 只看紧挨着的上一条消息
+            const prevStep = vnSteps[vnIndex - 1];
+
+            // ★ 上一条是闲聊、且当前不是闲聊：不保留闲聊的立绘
+            if (
+                prevStep &&
+                prevStep.type === 'message' &&
+                isChatChannelName(prevStep.msg.channel) &&
+                !isChatChannelName(step.msg.channel)
+            ) {
+                return;
+            }
+
+            // 正常情况：上一条是不同角色就保留为半透明
+            if (
+                prevStep &&
+                prevStep.type === 'message' &&
+                prevStep.portraitUrl &&
+                prevStep.msg.name !== step.msg.name
+            ) {
+                const prevSlotId = prevStep.side === 'right' ? rightId : leftId;
+                setVnPortraitSlot(prevSlotId, prevStep.portraitUrl, true);
+            }
+        }
+
+
+        function startVnTyping(text, startOffset = 0) {
+            clearVnTimers();
+
+            const textEl = document.getElementById('vnText');
+            const extendEl = document.getElementById('vnExtend');
+            const hintEl = document.getElementById('vnHint');
+
+            vnCurrentText = text || '';
+            vnPageStart = Math.max(0, startOffset);
+            vnTextIndex = vnPageStart;
+            vnHasMoreText = false;
+            vnTyping = true;
+
+            textEl.textContent = '';
+
+            if (extendEl) {
+                extendEl.style.visibility = 'hidden';
+            }
+            if (hintEl) {
+                hintEl.textContent = '点击继续 / 空格';
+            }
+
+            if (!vnCurrentText || vnTextIndex >= vnCurrentText.length) {
+                completeVnTyping();
+                return;
+            }
+
+            typeVnNextChar();
+        }
+
+        function typeVnNextChar() {
+            if (!vnTyping) return;
+
+            const textEl = document.getElementById('vnText');
+            const hintEl = document.getElementById('vnHint');
+
+            if (vnTextIndex >= vnCurrentText.length) {
+                completeVnTyping();
+                return;
+            }
+
+            vnTextIndex++;
+            textEl.textContent = vnCurrentText.slice(vnPageStart, vnTextIndex);
+
+            // 当前页已经装不下了
+            if (textEl.scrollHeight > textEl.clientHeight + 1) {
+                // 退回一个字，保证不超出边框
+                vnTextIndex--;
+                textEl.textContent = vnCurrentText.slice(vnPageStart, vnTextIndex);
+
+                vnTyping = false;
+                vnHasMoreText = vnTextIndex < vnCurrentText.length;
+
+                if (hintEl) {
+                    hintEl.textContent = '即将继续…';
+                }
+
+                // 长文本分页后自动翻页，不再等手动点击
+                scheduleVnNextPage(1500);
+                return;
+
+            }
+
+            vnTypeTimer = setTimeout(typeVnNextChar, 30);
+        }
+
+        function completeVnTyping() {
+            if (vnTypeTimer) {
+                clearInterval(vnTypeTimer);
+                vnTypeTimer = null;
+            }
+
+            const textEl = document.getElementById('vnText');
+            const extendEl = document.getElementById('vnExtend');
+            const hintEl = document.getElementById('vnHint');
+
+            // 快速填满当前页，遇到溢出就停下
+            while (vnTextIndex < vnCurrentText.length) {
+                vnTextIndex++;
+                textEl.textContent = vnCurrentText.slice(vnPageStart, vnTextIndex);
+
+                if (textEl.scrollHeight > textEl.clientHeight + 1) {
+                    vnTextIndex--;
+                    textEl.textContent = vnCurrentText.slice(vnPageStart, vnTextIndex);
+
+                    vnTyping = false;
+                    vnHasMoreText = vnTextIndex < vnCurrentText.length;
+
+                    if (hintEl) hintEl.textContent = '点击继续';
+                    if (vnAuto) scheduleVnAuto(1500);
+                    return;
+                }
+            }
+
+            // 整段已经打完
+            vnTyping = false;
+            vnHasMoreText = false;
+            textEl.textContent = vnCurrentText.slice(vnPageStart);
+
+            if (extendEl) {
+                extendEl.style.visibility = 'visible';
+            }
+            if (hintEl) {
+                hintEl.textContent = '点击继续 / 空格';
+            }
+
+            if (vnAuto) {
+                scheduleVnAuto();
+            }
+        }
+
+        function initChapterImages() {
+            chapterImageMap = {};
+            
+            // 从logData.chapters中读取每个章节的图片设置
+            if (logData.chapters && Array.isArray(logData.chapters)) {
+                logData.chapters.forEach(chapter => {
+                    chapterImageMap[chapter.name] = {
+                        rightImage: chapter.rightImage || '',
+                        background: chapter.backgroundImage || ''
+                    };
+                });
+            }
+            
+            // 如果没有设置某章节的图片，使用默认图片
+            const defaultImage =
+                logData.websiteSettings?.rightFloatingImage ||
+                logData.rightFloatingImage ||
+                '';
+
+            const defaultBackground = '';   // 没有设置章节背景时就不要硬塞本地图片
+
+            
+            // 确保每个章节都有默认图片
+            chapters.forEach(chapter => {
+                if (!chapterImageMap[chapter.name]) {
+                    chapterImageMap[chapter.name] = {
+                        rightImage: defaultImage,
+                        background: defaultBackground
+                    };
+                } else {
+                    // 如果章节设置了图片但为空，使用默认
+                    if (!chapterImageMap[chapter.name].rightImage) {
+                        chapterImageMap[chapter.name].rightImage = defaultImage;
+                    }
+                    if (!chapterImageMap[chapter.name].background) {
+                        chapterImageMap[chapter.name].background = defaultBackground;
+                    }
+                }
+            });
+            // 没有章节时，也要应用默认右侧图片
+            if (chapters.length === 0) {
+                const rightEl = document.getElementById('rightFloatingImage');
+                if (rightEl) {
+                    rightEl.style.backgroundImage = defaultImage
+                        ? `url('${defaultImage}')`
+                        : 'none';
+                }
+            }
+
+            console.log('章节图片初始化完成:', chapterImageMap);
+        }
+            
+        function updateChapterImages() {
+            const currentChapter = currentRenderedChapter;
+
+            if (!currentChapter) {
+                console.warn('当前没有可用的章节，跳过章节图片更新');
+                return;
+            }
+            
+            console.log('当前章节:', currentChapter.name);
+            console.log('章节图片映射:', chapterImageMap);
+            
+            if (currentChapter && chapterImageMap[currentChapter.name]) {
+                const images = chapterImageMap[currentChapter.name];
+                
+                console.log('获取到的图片:', images);
+                
+                // 更新网页背景
+                if (images.background) {
+                    const pageBg = document.getElementById('pageBackground');
+                    if (!pageBg) return;
+
+                    const newBg = `url('${images.background}')`;
+                    const currentBg = pageBg.style.backgroundImage;
+
+                    if (currentBg !== newBg &&
+                        currentBg !== `url("${images.background}")`) {
+
+                        pageBg.style.transition = 'background-image 0.8s ease';
+                        pageBg.style.backgroundImage = newBg;
+                        pageBg.style.backgroundSize = 'cover';
+                        pageBg.style.backgroundPosition = 'center';
+                        pageBg.style.backgroundRepeat = 'no-repeat';
+
+                        console.log('应用了新背景图片');
+                    }
+                }
+
+                
+                // 更新右侧图片（只有在图片展开状态下才更新）
+                if (!isImageCollapsed && images.rightImage) {
+                    const rightImageElement = document.getElementById('rightFloatingImage');
+                    const newImageUrl = `url('${images.rightImage}')`;
+                    const currentImageUrl = rightImageElement.style.backgroundImage;
+                    
+                    console.log('当前右侧图片:', currentImageUrl);
+                    console.log('新右侧图片:', newImageUrl);
+                    
+                    // 检查是否是同一张图片
+                    if (newImageUrl !== currentImageUrl && 
+                        newImageUrl !== rightImageElement.style.backgroundImage) {
+                        
+                        // 如果不是同一张图片，添加淡入淡出效果
+                        rightImageElement.style.transition = 'opacity 0.5s ease';
+                        rightImageElement.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            rightImageElement.style.backgroundImage = newImageUrl;
+                            rightImageElement.style.opacity = '0.9';
+                            rightImageElement.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,0.4))';
+                            console.log('应用了新右侧图片');
+                        }, 300);
+                    } else {
+                        // 如果是同一张图片，直接设置不透明度（确保可见）
+                        rightImageElement.style.opacity = '0.9';
+                    }
+                    
+                    currentRightImageUrl = images.rightImage;
+                }
+            } else {
+                console.log('未找到当前章节或章节图片映射');
+            }
+        }
+
+        // 添加背景图片切换的CSS过渡效果
+        function addBackgroundTransitions() {
+            // 在CSS中添加过渡效果
+            const style = document.createElement('style');
+            style.textContent = `
+                #pageBackground {
+                    transition: background-image 0.8s ease !important;
+                }
+
+                .floating-image-right {
+                    transition: background-image 0.5s ease, opacity 0.5s ease !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function toggleRightImage() {
+            const image = document.getElementById('rightFloatingImage');
+            const button = document.getElementById('toggleImageBtn');
+            
+            isImageCollapsed = !isImageCollapsed;
+            
+            if (isImageCollapsed) {
+                // 收起图片
+                image.classList.add('collapsed');
+                button.innerHTML = '▶';
+                button.title = "展开图片";
+                button.classList.add('collapsed');
+                // 收起时降低不透明度
+                image.style.opacity = '0';
+            } else {
+                // 展开图片
+                image.classList.remove('collapsed');
+                button.innerHTML = '◀';
+                button.title = "收起图片";
+                button.classList.remove('collapsed');
+                // 展开时恢复不透明度，并更新当前章节图片
+                setTimeout(() => {
+                    image.style.opacity = '0.9';
+                    // 确保显示当前章节的图片
+                    const currentChapter = currentRenderedChapter;
+                    if (currentChapter && chapterImageMap[currentChapter.name]) {
+                        const images = chapterImageMap[currentChapter.name];
+                        if (images.rightImage) {
+                            image.style.backgroundImage = `url('${images.rightImage}')`;
+                        }
+                    }
+                }, 100);
+            }
+            
+            // 保存状态到localStorage
+            localStorage.setItem('rightImageCollapsed', isImageCollapsed.toString());
+        }
+
+        // 页面加载时检查之前的状态
+        function loadImageState() {
+            const savedState = localStorage.getItem('rightImageCollapsed');
+            if (savedState === 'true') {
+                // 如果之前是收起状态，应用收起状态
+                const image = document.getElementById('rightFloatingImage');
+                const button = document.getElementById('toggleImageBtn');
+                
+                isImageCollapsed = true;
+                image.classList.add('collapsed');
+                button.innerHTML = '▶';
+                button.title = "展开图片";
+                button.classList.add('collapsed');
+                image.style.opacity = '0';
+            } else {
+                isImageCollapsed = false;
+            }
+        }
+
+        // 在页面加载完成后调用
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(loadImageState, 100);
+        });
+        // ========== 统一分页计算 ==========
+        // 规则：章节消息强制另起一页；每页最多 pageSize 条
+        function computePages() {
+            const pages = [];
+            let i = 0;
+            const n = filteredLogs.length;
+            while (i < n) {
+                const start = i;
+                let count = 0;
+                while (i < n && count < pageSize) {
+                    // 章节消息若不是本页第一条，则本页在此结束（章节归新页）
+                    if (count > 0 && filteredLogs[i].isChapter) {
+                        break;
+                    }
+                    i++;
+                    count++;
+                }
+                pages.push({ start, end: i - 1, count: i - start });
+            }
+            return pages;
+        }
+
+        // 根据 filteredLogs 中的索引找到页号
+        // 保留同名函数，只是换成基于 computePages 的实现
+        function calculatePageForMessage(messageIndex) {
+            const pages = computePages();
+            for (let i = 0; i < pages.length; i++) {
+                if (messageIndex >= pages[i].start && messageIndex <= pages[i].end) {
+                    return i + 1;
+                }
+            }
+            return pages.length || 1;
+        }
+        // 闲聊折叠功能
+        function toggleChatCollapse() {
+            const checkbox = document.getElementById('collapseChatCheckbox');
+            if (!checkbox) return;
+
+            collapseChatChannels = checkbox.checked;
+
+            // 全局切换时清空单组的手动状态
+            collapsedChannelGroups.clear();
+            expandedChannelGroups.clear();
+
+            renderView(false);
+        }
+        // 隐藏所有闲聊频道
+        function toggleHideChatChannels() {
+            const checkbox = document.getElementById('hideChatCheckbox');
+            if (!checkbox) return;
+
+            hideChatChannels = checkbox.checked;
+
+            // 按当前模式重新渲染，但保留连续模式已加载数量
+            renderView(false);
+        }
+        // 从URL获取日志文件
+        function getLogFileFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('log') || 'data/log1.json';
+        }
+        
+        // 加载日志数据
+        async function loadLogData() {
+            try {
+                const logFile = getLogFileFromUrl();
+                console.log('正在加载日志文件:', logFile);
+                
+                const response = await fetch(logFile);
+                if (!response.ok) {
+                    throw new Error(`HTTP错误: ${response.status}`);
+                }
+                
+                logData = await response.json();
+                console.log('日志数据加载成功，消息数:', (logData.logs || []).length);
+                
+                // 设置标题
+                document.title = logData.title || logData.websiteSettings?.title || '';
+
+                // 从网站设置中获取标题和颜色设置
+                const siteTitle = logData.websiteSettings?.title || logData.title || '';
+                const titleColors = logData.websiteSettings?.titleColors || [];
+
+                console.log('标题:', siteTitle);
+                console.log('标题颜色设置:', titleColors);
+
+                // 生成标题HTML
+                let titleHTML = '';
+                if (titleColors && titleColors.length > 0) {
+                    // 使用设置的颜色渲染每个字
+                    const chars = siteTitle.split('');
+                    console.log('标题字符:', chars);
+                    
+                    titleHTML = chars.map((char, index) => {
+                        // 获取对应的颜色设置
+                        let colorSetting;
+                        if (index < titleColors.length) {
+                            colorSetting = titleColors[index];
+                        } else {
+                            // 如果没有对应的设置，使用第一个设置或默认值
+                            colorSetting = titleColors[0] || {
+                                color: '#ffffff',
+                                shadowColor: '#000000',
+                                shadowSize: '1px 1px 2px'
+                            };
+                        }
+                        
+                        console.log(`字符 "${char}" 的样式设置:`, colorSetting);
+                        
+                        // 构建样式字符串
+                        const styles = [];
+                        styles.push(`color: ${colorSetting.color}`);
+                        
+                        // 如果有阴影设置
+                        if (colorSetting.shadowColor && colorSetting.shadowSize && colorSetting.shadowSize !== '') {
+                            styles.push(`text-shadow: ${colorSetting.shadowSize} ${colorSetting.shadowColor}`);
+                        }
+                        
+                        // 添加一些基础样式
+                        styles.push('transition: all 0.3s');
+                        
+                        return `<span class="title-character" style="${styles.join('; ')}">${char}</span>`;
+                    }).join('');
+                    
+                    console.log('生成的标题HTML:', titleHTML);
+                } else {
+                    titleHTML = siteTitle
+                        ? `
+                            <span class="title-character" style="color: #8b0000;">${siteTitle[0]}</span>
+                            <span class="title-character" style="color: white;">${siteTitle.substring(1)}</span>
+                        `
+                        : '';
+                }
+
+                document.getElementById('logTitle').innerHTML = titleHTML;
+                
+                // 设置右侧悬浮图片
+                const rightImageUrl =
+                    logData.websiteSettings?.rightFloatingImage ||
+                    logData.rightFloatingImage ||
+                    '';
+
+                const rightEl = document.getElementById('rightFloatingImage');
+                if (rightImageUrl) {
+                    rightEl.style.backgroundImage = `url('${rightImageUrl}')`;
+                } else {
+                    rightEl.style.backgroundImage = 'none';
+                }
+
+                document.getElementById('rightFloatingImage').style.backgroundImage = `url('${rightImageUrl}')`;
+                
+                // 初始化章节数据
+                chapters = logData.chapters || [];
+                
+                // 加载 extend 规则和格式
+                if (logData.extendSettings) {
+                    extendSettings = logData.extendSettings;
+                } else {
+                    extendSettings = { ruleSystem: 'coc_houserule' };
+                }
+                if (logData.extendFormats) {
+                    extendFormats = logData.extendFormats;
+                }
+                
+                // 根据章节重新组织日志数据
+                organizeLogsByChapters();
+
+                // 先初始化章节图片映射，必须放在渲染当前页之前
+                initChapterImages();
+
+                // 隐藏加载状态
+                document.getElementById('loadingState').style.display = 'none';
+                
+                // 显示消息区域和分页
+                document.getElementById('logMessages').style.display = 'block';
+                updateViewModeUI();
+                renderView(true);
+                
+                // 渲染章节导航
+                renderChapterNavigation();
+                
+                // 渲染筛选选项
+                renderFilterOptions();
+        
+                // 添加背景过渡效果
+                addBackgroundTransitions();
+        
+                // 加载完成后更新图片
+                setTimeout(() => {
+                    updateChapterImages();
+                }, 500);
+            } catch (error) {
+                console.error('加载日志数据失败:', error);
+
+                const loadingState = document.getElementById('loadingState');
+                loadingState.style.display = 'block';
+                loadingState.innerHTML = `...原来的错误 HTML...`;
+            }
+
+            // 应用网站设置
+            setTimeout(() => {
+                applyWebsiteSettings();
+            }, 100);
+        }
+        // 应用网站主题设置
+        function applyWebsiteSettings() {
+            if (!logData || !logData.websiteSettings) {
+                console.log('没有网站设置数据');
+                return;
+            }
+            
+            const settings = logData.websiteSettings;
+            
+            console.log('应用网站设置:', settings);
+            console.log('标题颜色设置:', settings.titleColors);
+            
+            // 应用左侧章节导航背景
+            const sidebar = document.querySelector('.floating-sidebar');
+            if (sidebar) {
+                if (settings.leftSidebar) {
+                    if (settings.leftSidebar.useImage && settings.leftSidebar.image) {
+                        sidebar.style.backgroundImage = `url('${settings.leftSidebar.image}')`;
+                        sidebar.style.backgroundColor = 'transparent';
+                        console.log('应用左侧导航背景图片');
+                    } else if (settings.leftSidebar.color) {
+                        sidebar.style.backgroundColor = `rgba(${hexToRgb(settings.leftSidebar.color)}, ${settings.leftSidebar.opacity || 0.6})`;
+                        sidebar.style.backgroundImage = 'none';
+                        console.log('应用左侧导航背景颜色:', settings.leftSidebar.color);
+                    }
+                }
+            }
+            
+            // 应用主题颜色
+            if (settings.theme) {
+                // 应用到控制按钮
+                const controlBtns = document.querySelectorAll('.control-btn, .pagination-btn');
+                controlBtns.forEach(btn => {
+                    if (settings.theme.lightColor) {
+                        btn.style.backgroundColor = settings.theme.lightColor;
+                    }
+                });
+                
+                // 应用到搜索高亮
+                const style = document.createElement('style');
+                style.textContent = `
+                    .control-btn:hover {
+                        background-color: ${settings.theme.darkColor || '#a52a2a'} !important;
+                    }
+                    .pagination-btn:hover:not(:disabled) {
+                        background-color: ${settings.theme.darkColor || '#a52a2a'} !important;
+                    }
+                    .search-highlight {
+                        background-color: ${settings.theme.lightColor || '#8b0000'};
+                        border-color: ${settings.theme.darkColor || '#660000'};
+                    }
+                    .image-toggle-btn {
+                        background-color: ${settings.theme.lightColor || '#8b0000'};
+                    }
+                    .image-toggle-btn:hover {
+                        background-color: ${settings.theme.darkColor || '#a52a2a'};
+                    }
+                `;
+                document.head.appendChild(style);
+                console.log('应用了主题颜色');
+            }
+        }
+                
+        // 根据章节重新组织日志数据
+        function organizeLogsByChapters() {
+            const logs = logData.logs || [];
+            
+            if (chapters.length === 0) {
+                filteredLogs = logs;
+                return;
+            }
+            
+            // 按位置排序
+            chapters.sort((a, b) => a.position - b.position);
+            
+            // 重新构建filteredLogs，确保章节消息正确放置
+            filteredLogs = [...logs];
+            // 章节消息已经在logs中，我们只需要标记它们的位置
+            console.log('章节数量:', chapters.length);
+        }
+        // 渲染章节导航
+        function renderChapterNavigation() {
+            const chapterList = document.getElementById('chapterList');
+            if (!chapterList) return;
+
+            if (!chapters || chapters.length === 0) {
+                chapterList.innerHTML =
+                    '<div style="padding: 20px; text-align: center; color: #ccc;">暂无章节信息</div>';
+                return;
+            }
+
+            const sortedChapters = [...chapters].sort((a, b) => a.position - b.position);
+
+            chapterList.innerHTML = sortedChapters.map((chapter, index) => `
+                <div class="chapter-item" onclick="jumpToChapter(${index})">
+                    <div style="font-weight: bold; margin-bottom: 2px;">${chapter.name}</div>
+                    <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 1px;">
+                        消息 ${chapter.position}
+                    </div>
+                </div>
+            `).join('');
+        }
+        function updateVnLogDrawerBackground() {
+            const drawer = document.getElementById('vnLogDrawer');
+            if (!drawer) return;
+
+            const settings = (logData && logData.chapterSettings) || {};
+
+            if (settings.useImage && settings.image) {
+                drawer.style.backgroundImage = `url('${settings.image}')`;
+                drawer.style.backgroundSize = 'cover';      // 强制自适应裁剪，不拉伸
+                drawer.style.backgroundPosition = 'center';
+                drawer.style.backgroundRepeat = 'no-repeat';
+                drawer.style.backgroundColor = 'transparent';
+            } else if (settings.backgroundColor) {
+                drawer.style.backgroundImage = 'none';
+                drawer.style.backgroundColor = hexToRgba(
+                    settings.backgroundColor,
+                    settings.backgroundOpacity !== undefined ? settings.backgroundOpacity : 0.9
+                );
+            } else {
+                drawer.style.backgroundImage = 'none';
+                drawer.style.backgroundColor = 'rgba(12, 12, 16, 0.92)';
+            }
+        }
+
+        // 渲染章节导航
+        function toggleVnLogMenu() {
+            // 和章节菜单互斥
+            const chapterMenu = document.getElementById('vnChapterMenu');
+            if (chapterMenu) chapterMenu.classList.remove('show');
+
+            const drawer = document.getElementById('vnLogDrawer');
+            if (!drawer) return;
+
+            if (drawer.classList.contains('show')) {
+                setVnLogDrawerOpen(false);
+                return;
+            }
+
+            renderVnLogMenu(true);
+            setVnLogDrawerOpen(true);
+            updateVnLogDrawerBackground(); 
+
+            const menu = document.getElementById('vnLogMenu');
+            if (menu && !menu.dataset.scrollBound) {
+                menu.addEventListener('scroll', handleVnLogMenuScroll);
+                menu.dataset.scrollBound = '1';
+            }
+        }
+
+        function setVnLogDrawerOpen(open) {
+            const drawer = document.getElementById('vnLogDrawer');
+            const menu = document.getElementById('vnLogMenu');
+            const overlay = document.getElementById('vnOverlay');
+
+            if (drawer) drawer.classList.toggle('show', open);
+            if (menu) menu.classList.toggle('show', open);
+            if (overlay) overlay.classList.toggle('vn-log-open', open);
+        }
+        function refreshVnLogMenuCurrent() {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || !menu.classList.contains('show')) return;
+
+            // 当前句已经不在已渲染的窗口里，重新以它为中心加载
+            if (vnIndex < vnLogMenuStart || vnIndex >= vnLogMenuEnd) {
+                renderVnLogMenu(true);
+                return;
+            }
+
+            menu.querySelectorAll('.vn-log-item.current')
+                .forEach(el => el.classList.remove('current'));
+
+            const current = menu.querySelector(`[data-step-index="${vnIndex}"]`);
+            if (!current) return;
+
+            current.classList.add('current');
+
+            // 如果当前项在可视区外，滚动到中间
+            const menuRect = menu.getBoundingClientRect();
+            const itemRect = current.getBoundingClientRect();
+
+            if (itemRect.top < menuRect.top || itemRect.bottom > menuRect.bottom) {
+                menu.scrollTop +=
+                    itemRect.top - menuRect.top
+                    - menu.clientHeight / 2
+                    + itemRect.height / 2;
+            }
+        }
+
+
+        function createVnLogItem(step, index) {
+            const el = document.createElement(step.type === 'chapter' ? 'div' : 'button');
+            if (step.type !== 'chapter') el.type = 'button';
+            el.className = 'vn-log-item';
+            el.dataset.stepIndex = index;
+
+            if (step.type === 'chapter') {
+                el.classList.add('vn-log-chapter');
+                el.textContent = '◆ ' + (step.chapterName || '未命名章节');
+
+                if (index === vnIndex) el.classList.add('current');
+
+                el.addEventListener('click', event => {
+                    event.stopPropagation();
+                    jumpVnLogStep(index);
+                });
+                return el;
+            }
+
+            if (step.type === 'system') el.classList.add('system');
+
+            const msg = step.msg;
+            if (isChatChannelName(msg.channel)) el.classList.add('chat');
+
+
+            // 角色名
+            const speaker = document.createElement('span');
+            speaker.className = 'vn-log-speaker';
+            speaker.textContent = step.type === 'system'
+                ? '旁白'
+                : (msg.name || '未知角色');
+
+            const rules = logData.characterRules || {};
+            const defaultRule = logData.defaultCharacterRule || {};
+            const rule = rules[msg.name] || defaultRule;
+
+            speaker.style.color = step.type === 'system'
+                ? 'rgba(255, 255, 255, 0.55)'
+                : (msg.color || (rule && rule.nameColor) || 'rgba(255, 255, 255, 0.9)');
+
+            // 气泡
+            const bubble = document.createElement('div');
+            bubble.className = 'vn-log-bubble';
+
+            if (rule && rule.bubbleColor && typeof hexToRgb === 'function') {
+                const opacity = rule.bubbleOpacity !== undefined
+                    ? Math.min(rule.bubbleOpacity, 0.35)
+                    : 0.22;
+                bubble.style.backgroundColor =
+                    `rgba(${hexToRgb(rule.bubbleColor)}, ${opacity})`;
+            }
+
+            // 正文：不截断，全部显示
+            const text = document.createElement('div');
+            text.className = 'vn-log-text';
+            text.textContent = msg.text || '';
+            bubble.appendChild(text);
+
+            // 骰点/扩展结果
+            const extendText = getFormattedExtendText(msg) || '';
+            if (extendText) {
+                const extend = document.createElement('div');
+                extend.className = 'vn-log-extend';
+                extend.textContent = extendText;
+                bubble.appendChild(extend);
+            }
+
+            el.appendChild(speaker);
+            el.appendChild(bubble);
+
+            if (index === vnIndex) el.classList.add('current');
+
+            el.addEventListener('click', event => {
+                event.stopPropagation();
+                jumpVnLogStep(index);
+            });
+
+            return el;
+        }
+
+        function appendVnLogItems(start, end) {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu) return;
+
+            const frag = document.createDocumentFragment();
+            for (let i = start; i < end; i++) {
+                const step = vnSteps[i];
+                if (!step) continue;
+                frag.appendChild(createVnLogItem(step, i));
+            }
+            menu.appendChild(frag);
+        }
+
+        function prependVnLogItems(start, end) {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu) return;
+
+            const prevHeight = menu.scrollHeight;
+            const prevTop = menu.scrollTop;
+
+            const frag = document.createDocumentFragment();
+            for (let i = start; i < end; i++) {
+                const step = vnSteps[i];
+                if (!step) continue;
+                frag.appendChild(createVnLogItem(step, i));
+            }
+
+            menu.insertBefore(frag, menu.firstChild);
+            menu.scrollTop = prevTop + (menu.scrollHeight - prevHeight);
+        }
+
+        function renderVnLogMenu(reset = true) {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || !reset) return;
+
+            // 默认加载当前位置上下各 50 条
+            vnLogMenuStart = Math.max(0, vnIndex - 50);
+            vnLogMenuEnd = Math.min(vnSteps.length, vnIndex + 50);
+
+            menu.innerHTML = '';
+            appendVnLogItems(vnLogMenuStart, vnLogMenuEnd);
+
+            requestAnimationFrame(() => {
+                // 内容没撑满就继续往后加载
+                if (menu.scrollHeight <= menu.clientHeight + 1) {
+                    loadNextVnLogBatch();
+                }
+
+                // 滚动到当前项
+                const current = menu.querySelector('.vn-log-item.current');
+                if (current) {
+                    const menuRect = menu.getBoundingClientRect();
+                    const itemRect = current.getBoundingClientRect();
+                    menu.scrollTop +=
+                        itemRect.top - menuRect.top
+                        - menu.clientHeight / 2
+                        + itemRect.height / 2;
+                }
+            });
+        }
+
+        function handleVnLogMenuScroll() {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || !menu.classList.contains('show')) return;
+
+            // 接近顶部 → 往前加载
+            if (menu.scrollTop < 40) {
+                loadPreviousVnLogBatch();
+            }
+
+            // 接近底部 → 往后加载
+            if (menu.scrollTop + menu.clientHeight >= menu.scrollHeight - 60) {
+                loadNextVnLogBatch();
+            }
+        }
+
+        function loadNextVnLogBatch() {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || vnLogMenuEnd >= vnSteps.length) return;
+
+            const newEnd = Math.min(vnSteps.length, vnLogMenuEnd + 50);
+            if (newEnd === vnLogMenuEnd) return;
+
+            appendVnLogItems(vnLogMenuEnd, newEnd);
+            vnLogMenuEnd = newEnd;
+
+            // 如果加载完还没撑出滚动条，继续补，直到能滚动或到底
+            requestAnimationFrame(() => {
+                if (menu.scrollHeight <= menu.clientHeight + 1) {
+                    loadNextVnLogBatch();
+                }
+            });
+        }
+
+        function loadPreviousVnLogBatch() {
+            const menu = document.getElementById('vnLogMenu');
+            if (!menu || vnLogMenuStart <= 0) return;
+
+            const newStart = Math.max(0, vnLogMenuStart - 50);
+            if (newStart === vnLogMenuStart) return;
+
+            prependVnLogItems(newStart, vnLogMenuStart);
+            vnLogMenuStart = newStart;
+        }
+
+
+        function jumpVnLogStep(stepIndex) {
+            if (stepIndex < 0 || stepIndex >= vnSteps.length) return;
+
+            vnIndex = stepIndex;
+            renderVnStep();
+        }
+
+        // 渲染筛选选项
+        function renderFilterOptions() {
+            if (!logData || !logData.logs) return;
+            
+            const logs = logData.logs;
+            
+            // 提取所有频道
+            const channels = [...new Set(logs.map(msg => msg.channel).filter(channel => channel))].sort();
+            
+            // 渲染频道筛选
+            document.getElementById('channelFilters').innerHTML = channels.map(channel => `
+                <label style="display: block; margin: 4px 0; font-size: 12px;">
+                    <input type="checkbox" value="${channel}" 
+                        style="margin-right: 6px;">
+                    ${channel}
+                </label>
+            `).join('');
+        }
+        
+        // 更新筛选器
+  
+        function updateChannelFilter(channel, checked) {
+            if (checked) {
+                if (!currentFilters.channels.includes(channel)) {
+                    currentFilters.channels.push(channel);
+                }
+            } else {
+                currentFilters.channels = currentFilters.channels.filter(c => c !== channel);
+            }
+        }
+        
+        // 应用筛选
+        function applyFilters() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            currentFilters.searchText = searchText;
+            
+            // 重置频道筛选数组
+            currentFilters.channels = [];
+            
+            // 收集选中的频道
+            document.querySelectorAll('#channelFilters input[type="checkbox"]:checked').forEach(checkbox => {
+                currentFilters.channels.push(checkbox.value);
+            });
+            
+            let filtered = logData.logs || [];
+            
+            // 按频道筛选
+            if (currentFilters.channels.length > 0) {
+                filtered = filtered.filter(msg => 
+                    currentFilters.channels.includes(msg.channel)
+                );
+            }
+            
+            // 按搜索文本筛选
+            if (searchText) {
+                filtered = filtered.filter(msg => 
+                    (msg.text && msg.text.toLowerCase().includes(searchText)) ||
+                    (msg.name && msg.name.toLowerCase().includes(searchText)) ||
+                    (msg.extend && JSON.stringify(msg.extend).toLowerCase().includes(searchText)) ||
+                    (typeof msg.dice === 'string' && msg.dice.toLowerCase().includes(searchText))
+                );
+            }
+            
+            filteredLogs = filtered;
+            currentPage = 1;
+            renderView(true);
+            closeFilterPanel();
+            setTimeout(() => {
+                updateChapterImages();
+            }, 100);
+        }      
+        // 清除筛选
+        function clearFilters(shouldRender = true) {
+            currentFilters = {
+                channels: [],
+                searchText: ''
+            };
+
+            document.getElementById('searchInput').value = '';
+
+            document.querySelectorAll('#channelFilters input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            const collapseCheckbox = document.getElementById('collapseChatCheckbox');
+            if (collapseCheckbox) {
+                collapseCheckbox.checked = false;
+            }
+            collapseChatChannels = false;
+            const hideCheckbox = document.getElementById('hideChatCheckbox');
+            if (hideCheckbox) {
+                hideCheckbox.checked = false;
+            }
+            hideChatChannels = false;
+
+            filteredLogs = logData.logs || [];
+            currentPage = 1;
+            closeFilterPanel();
+
+            // 只有需要时才立即渲染
+            if (shouldRender) {
+                renderView(true);
+
+                setTimeout(() => {
+                    updateChapterImages();
+                }, 100);
+            }
+        }
+
+        // 根据消息索引（在 filteredLogs 中的位置）查找所属章节
+        function findChapterByMessageIndex(index) {
+            if (!chapters || chapters.length === 0) return null;
+            const sorted = [...chapters].sort((a, b) => a.position - b.position);
+            // 找 filteredLogs 中最后一个 isChapter 且索引 <= index 的章节
+            let result = null;
+            for (let i = index; i >= 0; i--) {
+                if (filteredLogs[i] && filteredLogs[i].isChapter) {
+                    const name = filteredLogs[i].text.replace('=== ', '').replace(' ===', '');
+                    result = sorted.find(c => c.name === name) || null;
+                    if (result) break;
+                }
+            }
+            return result || sorted[0] || null;
+        } 
+
+        function toggleViewMode() {
+            viewMode = viewMode === 'scroll' ? 'paged' : 'scroll';
+            updateViewModeUI();
+            renderView(true);
+        }
+
+        function updateViewModeUI() {
+            const btn = document.getElementById('viewModeBtn');
+            const pager = document.getElementById('paginationContainer');
+
+            if (viewMode === 'scroll') {
+                btn.textContent = '切换分页模式';
+                pager.style.display = 'none';
+                document.body.style.paddingBottom = '0';
+            } else {
+                btn.textContent = '切换连续模式';
+                pager.style.display = 'flex';
+                document.body.style.paddingBottom = '70px';
+            }
+        }
+        
+        function renderView(resetScroll = true) {
+            if (viewMode === 'paged') {
+                renderCurrentPage();
+                return;
+            }
+
+            if (resetScroll) {
+                currentContinuousChapter = 0;
+            }
+
+            renderContinuous(resetScroll);
+        }
+
+        // 把 filteredLogs 按章节切成一段一段
+        function getChapterRanges() {
+            const logs = filteredLogs;
+            const ranges = [];
+
+            if (!logs.length) return ranges;
+
+            const chapterStarts = [];
+            logs.forEach((msg, index) => {
+                if (msg.isChapter) chapterStarts.push(index);
+            });
+
+            // 没有任何章节，就当作一个整体
+            if (chapterStarts.length === 0) {
+                ranges.push({ start: 0, end: logs.length - 1, chapterName: '' });
+                return ranges;
+            }
+
+            // 第一个章节之前的消息
+            if (chapterStarts[0] > 0) {
+                ranges.push({
+                    start: 0,
+                    end: chapterStarts[0] - 1,
+                    chapterName: ''
+                });
+            }
+
+            // 每个章节：从章节消息开始，到下一个章节消息之前
+            chapterStarts.forEach((start, i) => {
+                const end = i + 1 < chapterStarts.length
+                    ? chapterStarts[i + 1] - 1
+                    : logs.length - 1;
+
+                const text = logs[start].text || '';
+                ranges.push({
+                    start,
+                    end,
+                    chapterName: text.replace('=== ', '').replace(' ===', '').trim()
+                });
+            });
+
+            return ranges;
+        }
+
+        // 获取当前连续章节范围
+        function getContinuousRange() {
+            const ranges = getChapterRanges();
+            if (!ranges.length) return null;
+
+            if (currentContinuousChapter < 0) currentContinuousChapter = 0;
+            if (currentContinuousChapter >= ranges.length) {
+                currentContinuousChapter = ranges.length - 1;
+            }
+
+            return ranges[currentContinuousChapter];
+        }
+
+        function renderContinuous(reset = true, upToIndex = null) {
+            const container = document.getElementById('logMessages');
+            const ranges = getChapterRanges();
+
+            if (!ranges.length) {
+                container.innerHTML =
+                    '<div style="text-align:center;padding:40px;color:#7f8c8d;">没有找到匹配的消息</div>';
+                return;
+            }
+
+            // 如果目标是某条消息，先找到它属于哪个章节
+            if (upToIndex !== null) {
+                const targetRange = ranges.findIndex(r =>
+                    upToIndex >= r.start && upToIndex <= r.end
+                );
+                if (targetRange !== -1) {
+                    currentContinuousChapter = targetRange;
+                }
+            }
+
+            const range = getContinuousRange();
+            if (!range) return;
+
+            const chapterLength = range.end - range.start + 1;
+            currentRenderedChapter = findChapterByMessageIndex(range.start);
+
+            if (reset) {
+                scrollLoadedCount = Math.min(pageSize, chapterLength);
+            }
+
+            // 跳转到某条消息时，至少加载到那条消息
+            if (upToIndex !== null) {
+                const wanted = upToIndex - range.start + 1;
+                scrollLoadedCount = Math.min(
+                    Math.max(pageSize, wanted),
+                    chapterLength
+                );
+            }
+
+            if (scrollLoadedCount > chapterLength) scrollLoadedCount = chapterLength;
+            if (scrollLoadedCount <= 0) scrollLoadedCount = Math.min(pageSize, chapterLength);
+
+            const startAbs = range.start;
+            const endAbs = range.start + scrollLoadedCount;
+
+            container.innerHTML = renderLogMessages(
+                filteredLogs.slice(startAbs, endAbs)
+            );
+
+            container.insertAdjacentHTML(
+                'beforeend',
+                '<div id="scrollSentinel" style="height:1px;"></div>'
+            );
+
+            addMessageDoubleClickHandlers();
+            updateChapterEndNav();
+            setupScrollObserver();
+            setTimeout(() => {
+                updateChapterImages();
+            }, 100);
+
+        }
+        // 连续模式追加一块 HTML，并处理跨块的同频道合并
+        function appendRenderedChunk(html) {
+            const container = document.getElementById('logMessages');
+            const sentinel = document.getElementById('scrollSentinel');
+            if (!container || !html) return;
+
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+
+            const nodes = Array.from(temp.children);
+            if (!nodes.length) return;
+
+            const insertBefore = sentinel || null;
+            const prev = insertBefore
+                ? insertBefore.previousElementSibling
+                : container.lastElementChild;
+
+            // 上一块结尾和新块开头是同一个频道 → 合并成一个组
+            if (
+                prev &&
+                prev.classList.contains('channel-group') &&
+                nodes[0].classList.contains('channel-group') &&
+                prev.dataset.channel === nodes[0].dataset.channel
+            ) {
+                const prevMessages = prev.querySelector('.channel-messages');
+                const newMessages = nodes[0].querySelector('.channel-messages');
+
+                if (prevMessages && newMessages) {
+                    while (newMessages.firstChild) {
+                        prevMessages.appendChild(newMessages.firstChild);
+                    }
+                    nodes.shift(); // 删除新块里重复的频道组外壳
+                }
+            }
+
+            nodes.forEach(node => {
+                if (insertBefore) {
+                    insertBefore.parentNode.insertBefore(node, insertBefore);
+                } else {
+                    container.appendChild(node);
+                }
+            });
+        }
+
+        function loadMoreScroll() {
+            const range = getContinuousRange();
+            if (!range) return;
+
+            const chapterLength = range.end - range.start + 1;
+            if (scrollLoadedCount >= chapterLength) return;
+
+            const startAbs = range.start + scrollLoadedCount;
+            const newCount = Math.min(scrollLoadedCount + pageSize, chapterLength);
+            const endAbs = range.start + newCount;
+
+            const html = renderLogMessages(
+                filteredLogs.slice(startAbs, endAbs)
+            );
+
+            // 只插入一次
+            appendRenderedChunk(html);
+
+            scrollLoadedCount = newCount;
+
+            // 如果这一批全部被隐藏，继续加载下一批，避免卡住
+            if (!html && scrollLoadedCount < chapterLength) {
+                setTimeout(loadMoreScroll, 0);
+            }
+
+            addMessageDoubleClickHandlers();
+            updateChapterEndNav();
+        }
+
+
+        function jumpToContinuousChapter(index) {
+            const ranges = getChapterRanges();
+            if (index < 0 || index >= ranges.length) return;
+
+            currentContinuousChapter = index;
+            scrollLoadedCount = 0;
+
+            renderContinuous(true);
+
+            const container = document.getElementById('logMessages');
+            if (container) {
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function setupScrollObserver() {
+            if (scrollObserver) scrollObserver.disconnect();
+
+            const sentinel = document.getElementById('scrollSentinel');
+            if (!sentinel) return;
+
+            scrollObserver = new IntersectionObserver(entries => {
+                if (entries[0].isIntersecting) {
+                    loadMoreScroll();
+                }
+            }, {
+                rootMargin: '300px 0px'
+            });
+
+            scrollObserver.observe(sentinel);
+        }
+
+        function updateChapterEndNav() {
+            const oldNav = document.getElementById('chapterEndNav');
+            if (oldNav) oldNav.remove();
+
+            if (viewMode !== 'scroll') return;
+
+            const ranges = getChapterRanges();
+            const range = getContinuousRange();
+            if (!range) return;
+
+            const chapterLength = range.end - range.start + 1;
+
+            // 当前章节还没加载完，不显示
+            if (scrollLoadedCount < chapterLength) return;
+
+            // 只有一个章节/整体时不显示
+            if (ranges.length <= 1) return;
+
+            const idx = currentContinuousChapter;
+            const prev = idx > 0 ? ranges[idx - 1] : null;
+            const next = idx < ranges.length - 1 ? ranges[idx + 1] : null;
+            const label = range.chapterName || '本章';
+
+            const navHtml = `
+                <div id="chapterEndNav" class="chapter-end-nav">
+                    <button class="pagination-btn"
+                        onclick="jumpToContinuousChapter(${idx - 1})"
+                        ${prev ? '' : 'disabled'}>上一章</button>
+
+                    <span>${label}</span>
+
+                    <button class="pagination-btn"
+                        onclick="jumpToContinuousChapter(${idx + 1})"
+                        ${next ? '' : 'disabled'}>下一章</button>
+                </div>
+            `;
+
+            const sentinel = document.getElementById('scrollSentinel');
+            if (sentinel) {
+                sentinel.insertAdjacentHTML('beforebegin', navHtml);
+            }
+        }
+
+        // 渲染当前页
+        function renderCurrentPage() {
+            const pages = computePages();
+
+            // 空数据保护
+            if (pages.length === 0) {
+                currentRenderedChapter = null;
+                document.getElementById('logMessages').innerHTML =
+                    '<div style="text-align: center; padding: 40px; color: #7f8c8d;">没有找到匹配的消息</div>';
+                updatePaginationInfo();
+                return;
+            }
+
+            // 页码越界时夹紧（关键：防止 currentPage 超过真实页数导致空白）
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > pages.length) currentPage = pages.length;
+
+            const { start, end } = pages[currentPage - 1];
+            const pageMessages = filteredLogs.slice(start, end + 1);
+
+            currentRenderedChapter = findChapterByMessageIndex(start);
+
+            const container = document.getElementById('logMessages');
+            container.innerHTML = renderLogMessages(pageMessages);
+
+            updatePaginationInfo();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            setTimeout(() => { updateChapterImages(); }, 100);
+            addMessageDoubleClickHandlers();
+        }
+
+        // 添加双击事件处理函数
+        function addMessageDoubleClickHandlers() {
+            const messageRows = document.querySelectorAll('.message-row');
+
+            messageRows.forEach(row => {
+                if (row.dataset.dblclickBound === '1') return;
+                row.dataset.dblclickBound = '1';
+
+                row.addEventListener('dblclick', function() {
+                    const messageId = this.getAttribute('data-id');
+                    if (messageId) {
+                        jumpToMessage(messageId);
+                    }
+                });
+            });
+        }
+
+        function jumpToMessage(messageId) {
+            const allLogs = logData.logs || [];
+            const targetId = String(messageId);
+
+            const messageIndex = allLogs.findIndex(
+                msg => String(msg.id) === targetId
+            );
+
+            if (messageIndex === -1) {
+                alert('未找到该消息，可能消息已被删除或修改');
+                return;
+            }
+
+            // 先清筛选（只改状态，不渲染），让 filteredLogs 回到完整日志
+            clearFilters(false);
+
+            if (viewMode === 'scroll') {
+                // 用完整日志里的索引定位章节，并加载到目标消息
+                renderContinuous(true, messageIndex);
+                setTimeout(() => highlightMessage(targetId), 350);
+            } else {
+                currentPage = calculatePageForMessage(messageIndex);
+                renderCurrentPage();
+                setTimeout(() => highlightMessage(targetId), 350);
+            }
+        }
+
+
+        // 添加高亮函数
+        function highlightMessage(messageId) {
+            const targetId = String(messageId);
+            const targetRow = Array.from(document.querySelectorAll('.message-row'))
+                .find(row => row.dataset.id === targetId);
+
+            if (targetRow) {
+                targetRow.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
+                targetRow.style.borderLeft = '3px solid #8b0000';
+                targetRow.style.transition = 'all 0.3s ease';
+
+                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                setTimeout(() => {
+                    targetRow.style.backgroundColor = '';
+                    targetRow.style.borderLeft = '';
+                }, 5000);
+            }
+        }
+
+        // 渲染日志消息
+        function renderLogMessages(logs) {
+            // 隐藏所有闲聊频道时，先过滤掉闲聊消息，再分组
+            // 否则闲聊会像“隐形分隔符”把前后同频道拆成两组
+            const visibleLogs = hideChatChannels
+                ? logs.filter(msg => {
+                    if (!msg) return false;
+                    const channel = msg.channel || '默认频道';
+                    const isChat = chatChannelKeywords.some(keyword =>
+                        channel.includes(keyword)
+                    );
+                    return !isChat;
+                })
+                : logs;
+
+            if (visibleLogs.length === 0) {
+                return '<div style="text-align: center; padding: 40px; color: #7f8c8d;">没有找到匹配的消息</div>';
+            }
+            
+            // 按频道分组
+            const groups = [];
+            let currentGroup = null;
+            
+            visibleLogs.forEach((msg, index) => {
+                // 章节消息特殊处理
+                if (msg.isChapter) {
+                    if (currentGroup) {
+                        groups.push(currentGroup);
+                        currentGroup = null;
+                    }
+                    
+                    groups.push({
+                        isChapter: true,
+                        chapter: msg
+                    });
+                    return;
+                }
+                
+                // 频道分组
+                const channel = msg.channel || '默认频道';
+                
+                if (!currentGroup || currentGroup.channel !== channel) {
+                    if (currentGroup) groups.push(currentGroup);
+                    currentGroup = {
+                        channel: channel,
+                        messages: [msg]
+                    };
+                } else {
+                    currentGroup.messages.push(msg);
+                }
+            });
+            
+            if (currentGroup) groups.push(currentGroup);
+            
+            // 生成HTML
+            let html = '';
+            groups.forEach(group => {
+                if (group.isChapter) {
+                    html += renderChapter(group.chapter);
+                } else {
+                    html += renderChannelGroup(group);
+                }
+            });
+            
+            return html;
+        }
+        
+        // 渲染章节
+        function renderChapter(chapter) {
+            const chapterStyle = getChapterStyle(chapter);
+            const chapterName = chapter.text.replace('=== ', '').replace(' ===', '');
+            
+            return `
+                <div class="chapter-title" style="${chapterStyle}">
+                    ${chapterName}
+                </div>
+            `;
+        }
+        
+        // 渲染频道组
+        function renderChannelGroup(group) {
+            const channelBackgroundStyle = getChannelBackgroundStyle(group.channel);
+            const channelMaskStyle = getChannelMaskStyle(group.channel);
+            const channelNameTextStyle = getChannelNameTextStyle(group.channel);
+
+            const isChatChannel = chatChannelKeywords.some(keyword =>
+                group.channel.includes(keyword)
+            );
+            // 隐藏所有闲聊频道：整组不渲染
+            if (isChatChannel && hideChatChannels) {
+                return '';
+            }
+
+            // 每一段连续的频道组用“频道名 + 第一条消息 id”作为唯一 key
+            const firstMsg = group.messages[0] || {};
+            const groupKey = group.channel + '::' + (firstMsg.id || firstMsg.text || '');
+            const safeKey = String(groupKey).replace(/"/g, '&quot;');
+
+            const isCollapsed = isChatChannel && isChannelGroupCollapsed(groupKey);
+
+            // 始终渲染消息，用 CSS 控制显示/隐藏，点击展开时不需要重新渲染
+            const messagesHtml = group.messages.map(msg => renderMessage(msg)).join('');
+
+            return `
+                <div class="channel-group ${isCollapsed ? 'collapsed' : ''}"
+                    data-channel="${String(group.channel).replace(/"/g, '&quot;')}"
+                    style="${channelBackgroundStyle}">
+                    ${channelMaskStyle ? `<div class="channel-mask" style="${channelMaskStyle}"></div>` : ''}
+
+                    <div class="channel-name ${isChatChannel ? 'chat-channel-name' : ''}"
+                        style="${channelNameTextStyle}"
+                        ${isChatChannel ? `data-group-key="${safeKey}" data-chat="1" onclick="toggleChannelGroup(this)" title="点击折叠/展开本段闲聊"` : ''}>
+                        <span>${group.channel}</span>
+                        ${isChatChannel
+                            ? `<span class="channel-collapse-label">${isCollapsed ? '[展开]' : '[折叠]'}</span>`
+                            : ''}
+                    </div>
+
+                    <div class="channel-messages">
+                        ${messagesHtml}
+                    </div>
+
+                    ${isChatChannel
+                        ? `<div class="channel-collapsed-tip" style="display:${isCollapsed ? 'block' : 'none'};">频道内容已折叠，点击频道名展开</div>`
+                        : ''}
+                </div>
+            `;
+        }
+
+        // 判断某个频道组当前是否折叠
+        function isChannelGroupCollapsed(key) {
+            if (collapseChatChannels) {
+                // 全局折叠开启时，默认折叠；点开过的加入 expanded
+                return !expandedChannelGroups.has(key);
+            }
+            // 全局折叠关闭时，只有手动点过的才折叠
+            return collapsedChannelGroups.has(key);
+        }
+
+        // 点击频道名：只折叠/展开当前这一段
+        function toggleChannelGroup(el) {
+            const key = el.getAttribute('data-group-key');
+            if (!key) return;
+
+            if (collapseChatChannels) {
+                if (expandedChannelGroups.has(key)) {
+                    expandedChannelGroups.delete(key);
+                } else {
+                    expandedChannelGroups.add(key);
+                }
+            } else {
+                if (collapsedChannelGroups.has(key)) {
+                    collapsedChannelGroups.delete(key);
+                } else {
+                    collapsedChannelGroups.add(key);
+                }
+            }
+
+            const groupEl = el.closest('.channel-group');
+            const messagesEl = groupEl.querySelector('.channel-messages');
+            const labelEl = el.querySelector('.channel-collapse-label');
+            const tipEl = groupEl.querySelector('.channel-collapsed-tip');
+
+            const collapsed = isChannelGroupCollapsed(key);
+
+            groupEl.classList.toggle('collapsed', collapsed);
+
+            if (messagesEl) {
+                messagesEl.style.display = collapsed ? 'none' : '';
+            }
+            if (labelEl) {
+                labelEl.textContent = collapsed ? '[展开]' : '[折叠]';
+            }
+            if (tipEl) {
+                tipEl.style.display = collapsed ? 'block' : 'none';
+            }
+        }
+
+        // 渲染单条消息
+        function renderMessage(msg) {
+            // 系统消息特殊处理（保持不变）
+            if (msg.name.toLowerCase() === 'system' && !msg.isChapter) {
+                const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
+                return `
+                    <div class="system-message" style="${getSystemMessageStyle()}">
+                        ${logData.systemSettings && logData.systemSettings.prefix ? logData.systemSettings.prefix + ' ' : ''}${highlightedText}
+                    </div>
+                `;
+            }
+
+            // 角色样式
+            const nameStyle = getCharacterNameStyle(msg.name);
+            const bubbleStyle = getCharacterBubbleStyle(msg.name);
+            const avatarHtml = msg.icon ? `<img src="${msg.icon}" class="avatar" alt="${msg.name}" onerror="this.style.display='none'">` : '';
+
+            // ---- 1️⃣ 对话文本 ----
+            const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
+            let html = `<div class="message-text">${highlightedText}</div>`;
+
+            // ---- 2️⃣ 消息内嵌图片（如果有） ----
+            if (msg.messageImage) {
+                html += renderMessageImage(msg.messageImage);
+            }
+
+            // ---- 3️⃣ 骰子/扩展结果（如果有） ----
+            const hasDice = !!(msg.dice || msg.extend);
+            if (hasDice) {
+                const diceDisplayText = getFormattedExtendText(msg);
+                if (diceDisplayText) {
+                    const resultType = getExtendResultType(msg);
+                    const extendStyle = getExtendStyle(resultType);
+                    const highlightedDice = highlightSearchText(diceDisplayText, currentFilters.searchText);
+                    html += `<div class="dice-result" style="${extendStyle}">${highlightedDice}</div>`;
+
+                    // 骰子结果对应的特殊图片（大成功/大失败图标）
+                    const extendImage = getExtendImage(resultType);
+                    if (extendImage) {
+                        html += `<div class="extend-image"><img src="${extendImage}" alt="${resultType}图片"></div>`;
+                    }
+                }
+            }
+
+            // ---- 组装消息行 ----
+            return `
+                <div class="message-row" data-id="${String(msg.id)}">
+                    <div class="avatar-box">
+                        ${avatarHtml}
+                    </div>
+                    <div class="content-box">
+                        <div class="character-name-box" style="${nameStyle}">
+                            <span class="character-name">${msg.name}</span>
+                            ${msg.to ? `<span class="to-name"> > @${msg.to}</span>` : ''}
+                        </div>
+                        <div class="message-bubble" style="${bubbleStyle}">
+                            ${html}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 添加高亮函数
+        function highlightSearchText(text, searchText) {
+            if (!searchText || !text) return text;
+            
+            const regex = new RegExp(`(${escapeRegExp(searchText)})`, 'gi');
+            return text.replace(regex, '<span class="search-highlight">$1</span>');
+        }
+
+        // 转义正则表达式特殊字符
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+                
+        // 渲染消息中的图片
+        function renderMessageImage(imageUrl) {
+            return `
+                <div class="message-image">
+                    <img src="${imageUrl}" alt="消息图片" onclick="showImageModal('${imageUrl}')">
+                </div>
+            `;
+        }
+        
+         
+        // ========== 样式获取函数 ==========
+        
+        // 获取章节样式
+        function getChapterStyle(chapter) {
+            const settings = logData.chapterSettings || {};
+            let style = '';
+            
+            // 字体设置
+            if (settings.fontFamily) {
+                style += `font-family: ${settings.fontFamily};`;
+            }
+            if (settings.color) {
+                style += `color: ${settings.color};`;
+            }
+            if (settings.fontSize) {
+                style += `font-size: ${settings.fontSize}px !important;`; // 使用重要标志
+            }
+            if (settings.bold) {
+                style += `font-weight: bold;`;
+            }
+            if (settings.shadow) {
+                style += `text-shadow: 1px 1px 3px rgba(0,0,0,0.5);`;
+            }
+            
+            // 背景设置
+            if (settings.useImage && settings.image) {
+                const opacity = settings.imageOpacity !== undefined ? settings.imageOpacity : 1.0;
+                style += `background-image: url('${settings.image}') !important;`;
+                style += `background-size: ${settings.imageSize || 'cover'} !important;`;
+                style += `background-position: center !important;`;
+                style += `opacity: ${opacity};`;
+            } else if (settings.backgroundColor) {
+                const opacity = settings.backgroundOpacity || 0.9;
+                style += `background-color: ${hexToRgba(settings.backgroundColor, opacity)} !important;`;
+            }
+            
+            return style;
+        }
+
+        // 添加hexToRgba辅助函数
+        function hexToRgba(hex, opacity) {
+            hex = hex.replace('#', '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        }
+
+        // 获取频道背景样式
+        function getChannelBackgroundStyle(channel) {
+            const rules = logData.channelRules || {};
+            const defaultRule = logData.defaultChannelRule || {};
+            const rule = rules[channel] || defaultRule;
+            
+            let style = '';
+            
+            if (rule.useImage && rule.image) {
+                const opacity = rule.imageOpacity !== undefined ? rule.imageOpacity : 1.0;
+                style += `background-image: url(${rule.image});`;
+                style += `background-size: ${rule.imageSize || 'cover'};`;
+                style += `background-position: center;`;
+                style += `background-repeat: ${rule.imageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
+                style += `opacity: ${opacity};`;
+            } else if (rule.color) {
+                const opacity = rule.opacity !== undefined ? rule.opacity : 0.1;
+                style += `background-color: rgba(${hexToRgb(rule.color)}, ${opacity});`;
+            }
+            
+            return style;
+        }
+        // HEX转RGB
+        function hexToRgb(hex) {
+            if (!hex) return '0, 0, 0';
+            
+            hex = hex.replace(/^#/, '');
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            return `${r}, ${g}, ${b}`;
+        }
+              
+        // 获取频道遮罩样式
+function getChannelMaskStyle(channel) {
+    const rules = logData.channelRules || {};
+    const defaultRule = logData.defaultChannelRule || {};
+    const rule = rules[channel] || defaultRule;
+    
+    // 调试输出
+    console.log(`频道 "${channel}" 的遮罩设置:`, {
+        useMask: rule.useMask,
+        maskColor: rule.maskColor,
+        maskOpacity: rule.maskOpacity,
+        hasChannelRules: rules[channel] !== undefined,
+        hasDefaultRule: rule === defaultRule
+    });
+    
+    if (rule.useMask) {
+        const maskOpacity = rule.maskOpacity !== undefined ? rule.maskOpacity : 0.3;
+        const maskColor = rule.maskColor || '#cccccc';
+        
+        // 使用hexToRgb函数转换颜色
+        const rgbColor = hexToRgb(maskColor);
+        const style = `background-color: rgba(${rgbColor}, ${maskOpacity});`;
+        
+        console.log(`频道 "${channel}" 的遮罩样式:`, style);
+        return style;
+    }
+    
+    return null;
+}
+        
+        // 获取频道名文字样式
+        function getChannelNameTextStyle(channel) {
+            const fontSettings = logData.fontSettings || {};
+            let style = '';
+            
+            if (fontSettings.channelName) style += `font-family: ${fontSettings.channelName};`;
+            if (fontSettings.channelNameColor) style += `color: ${fontSettings.channelNameColor};`;
+            if (fontSettings.channelNameSize) style += `font-size: ${fontSettings.channelNameSize}px;`;
+            
+            return style;
+        }
+        
+        // 获取角色名样式
+        // 修改getCharacterNameStyle函数
+        function getCharacterNameStyle(character) {
+            const rules = logData.characterRules || {};
+            const defaultRule = logData.defaultCharacterRule || {};
+            const rule = rules[character] || defaultRule;
+            
+            let style = '';
+            
+            const fontSettings = logData.fontSettings || {};
+            
+            // 添加角色名字体设置
+            if (fontSettings.characterName) {
+                style += `font-family: ${fontSettings.characterName};`;
+            }
+            
+            // 添加角色名字号设置 - 确保这里正确读取
+            if (fontSettings.characterNameSize) {
+                style += `font-size: ${fontSettings.characterNameSize}px;`;
+            } else {
+                // 如果没有设置，使用默认大小
+                style += `font-size: 14px;`;
+            }
+            
+            if (rule.nameColor) style += `color: ${rule.nameColor};`;
+            
+            // 背景
+            if (rule.nameUseImage && rule.nameImage) {
+                const opacity = rule.nameImageOpacity !== undefined ? rule.nameImageOpacity : 1.0;
+                const size = rule.nameImageSize === 'repeat' ? 'auto' : (rule.nameImageSize || 'cover');
+
+                style += `--bg-image: url('${rule.nameImage}');`;
+                style += `--bg-size: ${size};`;
+                style += `--bg-position: center;`;
+                style += `--bg-repeat: ${rule.nameImageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
+                style += `--bg-opacity: ${opacity};`;
+            } else if (rule.nameBackground) {
+                const opacity = rule.nameOpacity !== undefined ? rule.nameOpacity : 0.85;
+                style += `background-color: rgba(${hexToRgb(rule.nameBackground)}, ${opacity});`;
+            }
+            
+            return style;
+        }
+        function applyVnDialogBubbleStyle(characterName) {
+            const dialog = document.getElementById('vnDialog');
+            if (!dialog) return;
+
+            const rules = logData.characterRules || {};
+            const defaultRule = logData.defaultCharacterRule || {};
+            const rule = characterName ? (rules[characterName] || defaultRule) : null;
+
+            if (rule && rule.bubbleColor) {
+                dialog.style.setProperty(
+                    '--vn-dialog-bg-color',
+                    `rgba(${hexToRgb(rule.bubbleColor)}, 0.9)`
+                );
+            } else {
+                dialog.style.setProperty(
+                    '--vn-dialog-bg-color',
+                    'rgba(10, 10, 15, 0.9)'
+                );
+            }
+        }
+
+
+        // 获取角色气泡样式
+        function getCharacterBubbleStyle(character) {
+            const rules = logData.characterRules || {};
+            const defaultRule = logData.defaultCharacterRule || {};
+            const rule = rules[character] || defaultRule;
+            
+            let style = '';
+            
+            const fontSettings = logData.fontSettings || {};
+            if (fontSettings.dialogText) style += `font-family: ${fontSettings.dialogText};`;
+            if (fontSettings.dialogTextColor) style += `color: ${fontSettings.dialogTextColor};`;
+            if (fontSettings.dialogTextSize) style += `font-size: ${fontSettings.dialogTextSize}px;`;
+            
+            // 背景
+            if (rule.bubbleUseImage && rule.bubbleImage) {
+                const opacity = rule.bubbleImageOpacity !== undefined ? rule.bubbleImageOpacity : 1.0;
+                style += `background-image: url(${rule.bubbleImage});`;
+                style += `background-size: ${rule.bubbleImageSize || 'cover'};`;
+                style += `background-position: center;`;
+                style += `background-repeat: ${rule.bubbleImageSize === 'repeat' ? 'repeat' : 'no-repeat'};`;
+                style += `opacity: ${opacity};`;
+            } else if (rule.bubbleColor) {
+                const opacity = rule.bubbleOpacity !== undefined ? rule.bubbleOpacity : 0.85;
+                style += `background-color: rgba(${hexToRgb(rule.bubbleColor)}, ${opacity});`;
+            } else {
+                style += `background-color: rgba(255, 255, 255, 0.95);`;
+            }
+            
+            return style;
+        }
+        
+        // 获取系统消息样式
+        function getSystemMessageStyle() {
+            const settings = logData.systemSettings || {};
+            let style = '';
+            
+            if (settings.fontFamily) style += `font-family: ${settings.fontFamily};`;
+            if (settings.color) style += `color: ${settings.color};`;
+            if (settings.fontSize) style += `font-size: ${settings.fontSize}px;`;
+            if (settings.italic) style += `font-style: italic;`;
+            if (settings.bold) style += `font-weight: bold;`;
+            if (settings.underline) style += `text-decoration: underline;`;
+            
+            return style;
+        }
+        // 添加繁简转换函数
+        function traditionalToSimple(text) {
+            if (!text) return text;
+            
+            // 简繁转换表（仅处理需要的词汇）
+            const mapping = {
+                '極限': '极限',
+                '成功': '成功',
+                '失敗': '失败',
+                '大成功': '大成功',
+                '大失败': '大失败'
+            };
+            
+            let result = text;
+            // 替换词汇
+            for (const [traditional, simple] of Object.entries(mapping)) {
+                result = result.replace(new RegExp(traditional, 'g'), simple);
+            }
+            
+            return result;
+        }
+        // 处理骰点文本：简化「獎勵・懲罰骰」，并移除 [0] 部分（当数字为0时）
+        function formatDiceTextForDisplay(text) {
+            if (!text) return text;
+            
+            // 先繁转简
+            let result = traditionalToSimple(text);
+            
+            // 匹配「獎勵・懲罰骰[数字]」或「奖励惩罚骰[数字]」
+            // 注意：可能已经是简体，所以用 /獎勵・懲罰骰|奖励惩罚骰/ 匹配
+            const regex = /(獎勵・懲罰骰|奖励惩罚骰)\[(\d+)\]/g;
+            
+            result = result.replace(regex, (match, prefix, number) => {
+                if (number === '0') {
+                    return ''; // 数字为0，删除整段
+                } else {
+                    return `奖励惩罚骰[${number}]`; // 非0，替换为简体
+                }
+            });
+            
+            // 清理多余的空格（如果删除后出现双空格，可整理）
+            result = result.replace(/\s{2,}/g, ' ').trim();
+            
+            return result;
+        }
+        // 格式化扩展内容
+        // 重新实现formatExtendContent函数
+        function formatExtendContent(msg) {
+            // 优先使用extend字段
+            if (msg.extend) {
+                if (typeof msg.extend === 'string') {
+                    try {
+                        // 尝试解析JSON字符串
+                        const parsed = JSON.parse(msg.extend);
+                        if (parsed && parsed.roll && parsed.roll.result) {
+                            return parsed.roll.result;
+                        }
+                        return msg.extend;
+                    } catch (e) {
+                        // 如果不是JSON，直接返回字符串
+                        return msg.extend;
+                    }
+                } else if (typeof msg.extend === 'object') {
+                    // 如果是对象，提取roll.result
+                    if (msg.extend.roll && msg.extend.roll.result) {
+                        return msg.extend.roll.result;
+                    }
+                    // 尝试转换为字符串
+                    try {
+                        return JSON.stringify(msg.extend);
+                    } catch (e) {
+                        return String(msg.extend);
+                    }
+                }
+            }
+            // 如果没有extend，使用dice字段
+            return msg.dice || '';
+        }     
+
+        // 获取扩展结果类型
+        // 新增辅助函数：解析骰子文本
+        function parseDiceText(text) {
+            let simple = traditionalToSimple(text);
+            let match = simple.match(/(\d+)\s*[＞>]\s*(.+)/);
+            if (!match) return null;
+            let number = parseInt(match[1]);
+            let resultText = match[2].trim();
+            let isSuccess = resultText.includes('成功') && !resultText.includes('失败');
+            let isFailure = resultText.includes('失败');
+            return { number, resultText, isSuccess, isFailure };
+        }
+
+        // 核心判定函数
+        function determineResultTypeWithRule(msg, ruleSystem) {
+            const originalText = formatExtendContent(msg);
+            if (!originalText) return 'normal';
+            
+            let simpleText = traditionalToSimple(originalText);
+            // 如果原文已经明确是大成功或大失败
+            if (simpleText.includes('大失败')) return 'criticalFailure';
+            if (simpleText.includes('大成功')) return 'criticalSuccess';
+            
+            let parsed = parseDiceText(originalText);
+            if (!parsed) return 'normal';
+            
+            const { number, isSuccess, isFailure } = parsed;
+            
+            if (ruleSystem === 'coc') {
+                // COC 原样：不创造额外的大成功/大失败
+                return isSuccess ? 'success' : (isFailure ? 'failure' : 'normal');
+            }
+            else if (ruleSystem === 'coc_houserule') {
+                // COC房规
+                if (isFailure && number >= 96) return 'criticalFailure';
+                if (isSuccess && number <= 5) return 'criticalSuccess';
+                return isSuccess ? 'success' : (isFailure ? 'failure' : 'normal');
+            }
+            else if (ruleSystem === 'dg') {
+                // 辅助函数：判断是否为两位相同（11,22,...,99,100）
+                const isDoubleNumber = (n) => {
+                    if (n === 100) return true;      // 100 视为 00，两位相同
+                    if (n < 10) return false;        // 1-9 不是两位数，但1已经单独处理
+                    const tens = Math.floor(n / 10);
+                    const units = n % 10;
+                    return tens === units;
+                };
+                
+                if (isSuccess) {
+                    if (number === 1 || isDoubleNumber(number)) return 'criticalSuccess';
+                    else return 'success';
+                }
+                if (isFailure) {
+                    if (isDoubleNumber(number)) return 'criticalFailure';
+                    else return 'failure';
+                }
+                return 'normal';
+            }
+            return 'normal';
+        }
+
+        // 新的 getExtendResultType
+        function getExtendResultType(msg) {
+            return determineResultTypeWithRule(msg, extendSettings.ruleSystem);
+        }
+
+        // 新的 getFormattedExtendText
+        function getFormattedExtendText(msg) {
+            const extendText = formatExtendContent(msg);
+            if (!extendText) return '';
+            
+            const resultType = getExtendResultType(msg);
+            let text = traditionalToSimple(extendText);
+            
+            // 处理「獎勵・懲罰骰」和 [0] 隐藏
+            text = formatDiceTextForDisplay(text);
+            
+            // 根据规则调整成功/失败描述（大成功/大失败）
+            if (resultType === 'criticalSuccess') {
+                text = text.replace(/(\d+\s*[＞>]\s*)(.+)/, (match, prefix, suffix) => {
+                    if (suffix.includes('成功')) return prefix + '大成功';
+                    return match;
+                });
+            }
+            else if (resultType === 'criticalFailure') {
+                text = text.replace(/(\d+\s*[＞>]\s*)(.+)/, (match, prefix, suffix) => {
+                    if (suffix.includes('失败')) return prefix + '大失败';
+                    return match;
+                });
+            }
+            // DG规则下统一“成功”/“失败”
+            else if (extendSettings.ruleSystem === 'dg') {
+                if (resultType === 'success') {
+                    text = text.replace(/(\d+\s*[＞>]\s*).+成功/, '$1成功');
+                } else if (resultType === 'failure') {
+                    text = text.replace(/(\d+\s*[＞>]\s*).+失败/, '$1失败');
+                }
+            }
+            
+            return text;
+        }
+
+        // 获取扩展内容样式
+        function getExtendStyle(resultType) {
+            const format = (extendFormats && extendFormats[resultType]) ? extendFormats[resultType] : {};
+            let style = '';
+            
+            // 基础extend设置
+            const fontSettings = logData.fontSettings || {};
+            if (fontSettings.extendText) style += `font-family: ${fontSettings.extendText};`;
+            if (fontSettings.extendTextColor) style += `color: ${fontSettings.extendTextColor};`;
+            if (fontSettings.extendTextSize) style += `font-size: ${fontSettings.extendTextSize}px;`;
+            
+            // 特殊格式（使用编辑器设置的格式）
+            if (format.color) style += `color: ${format.color};`;
+            if (format.fontFamily) style += `font-family: ${format.fontFamily};`;
+            if (format.fontSize) style += `font-size: ${format.fontSize}px;`;
+            if (format.bold) style += `font-weight: bold;`;
+            
+            console.log(`extend样式 (${resultType}):`, style);
+            return style;
+        }
+        
+        // 获取扩展图片
+        function getExtendImage(resultType) {
+            const format = (extendFormats && extendFormats[resultType]) ? extendFormats[resultType] : {};
+            return format.image || null;
+        }
+        
+
+        // ========== 分页功能 ==========
+        function updatePaginationInfo() {
+            const pages = computePages();
+            const totalPages = Math.max(1, pages.length);
+
+            // 夹紧 currentPage
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('totalPages').textContent = totalPages;
+
+            document.getElementById('prevPageBtn').disabled = currentPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+            document.getElementById('jumpInput').value = currentPage;
+            document.getElementById('jumpInput').max = totalPages;
+        }
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderCurrentPage();
+            }
+        }
+        
+        function nextPage() {
+            const totalPages = parseInt(document.getElementById('totalPages').textContent);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderView(false);
+            }
+        }
+        
+        function jumpToPage() {
+            const input = document.getElementById('jumpInput');
+            let page = parseInt(input.value);
+            const totalPages = parseInt(document.getElementById('totalPages').textContent);
+            
+            if (isNaN(page) || page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            
+            currentPage = page;
+            input.value = page;
+            renderCurrentPage();
+        }
+        // 章节跳转
+        function jumpToChapter(chapterIndex) {
+            const chapter = chapters[chapterIndex];
+            if (!chapter) return;
+
+            clearFilters(false);   // 只清状态，不渲染第一章
+
+            setTimeout(() => {
+                if (viewMode === 'scroll') {
+                    const ranges = getChapterRanges();
+                    const rangeIndex = ranges.findIndex(
+                        r => r.chapterName === chapter.name
+                    );
+
+                    if (rangeIndex !== -1) {
+                        jumpToContinuousChapter(rangeIndex);
+                    }
+                } else {
+                    const chapterMsgIndex = filteredLogs.findIndex(msg => {
+                        if (!msg.isChapter) return false;
+                        const name = (msg.text || '')
+                            .replace('=== ', '')
+                            .replace(' ===', '')
+                            .trim();
+                        return name === chapter.name;
+                    });
+
+                    if (chapterMsgIndex !== -1) {
+                        currentPage = calculatePageForMessage(chapterMsgIndex);
+                        renderCurrentPage();
+                    }
+                }
+            }, 100);
+        }
+
+        // ========== UI控制函数 ==========
+        function toggleChapterSidebar() {
+            const sidebar = document.getElementById('chapterSidebar');
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // 手机端：直接切换 show 类
+                sidebar.classList.toggle('show');
+            } else {
+                // 桌面端：切换显示/隐藏状态
+                if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+                    // 显示侧边栏
+                    sidebar.style.display = 'block';
+                    // 确保有 show 类（用于移动端）
+                    sidebar.classList.add('show');
+                } else {
+                    // 隐藏侧边栏
+                    sidebar.style.display = 'none';
+                    sidebar.classList.remove('show');
+                }
+            }
+            
+            if (document.getElementById('filterPanel').classList.contains('show')) {
+                closeFilterPanel();
+            }
+        }
+                    
+        function toggleFilterPanel() {
+            document.getElementById('filterPanel').classList.toggle('show');
+        }
+        
+        function closeFilterPanel() {
+            document.getElementById('filterPanel').classList.remove('show');
+        }
+        
+        // 图片预览模态框
+        function showImageModal(imageUrl) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                cursor: pointer;
+            `;
+            
+            modal.innerHTML = `
+                <div style="position: relative; max-width: 90%; max-height: 90%;">
+                    <img src="${imageUrl}" style="max-width: 100%; max-height: 100%; border-radius: 8px;">
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 24px; cursor: pointer;">
+                        ✕
+                    </button>
+                </div>
+            `;
+            
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            };
+            
+            document.body.appendChild(modal);
+        }
+        // 搜索框输入时显示清除按钮
+document.getElementById('searchInput').addEventListener('input', function() {
+    const clearBtn = document.querySelector('.clear-search-btn');
+    clearBtn.style.display = this.value ? 'block' : 'none';
+});
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.querySelector('.clear-search-btn').style.display = 'none';
+    clearFilters(); // 使用已有的清除筛选函数
+}
+        // 搜索框回车事件
+        document.getElementById('searchInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        });
+        
+        // 点击外部关闭面板
+        document.addEventListener('click', function(event) {
+            const chapterSidebar = document.getElementById('chapterSidebar');
+            const filterPanel = document.getElementById('filterPanel');
+            const chapterBtn = document.querySelector('[onclick="toggleChapterSidebar()"]');
+            const filterBtn = document.querySelector('[onclick="toggleFilterPanel()"]');
+            
+            if (!filterPanel.contains(event.target) && !filterBtn.contains(event.target)) {
+                closeFilterPanel();
+            }
+        });
+        
+        // 初始化加载
+        window.addEventListener('DOMContentLoaded', loadLogData);
+    </script>
+</body>
+</html>
