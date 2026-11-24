@@ -671,7 +671,7 @@
 
             display: flex;
             flex-direction: column;
-
+            overflow: hidden; 
             background: rgba(10, 10, 15, 0.78);
             border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: 12px;
@@ -692,6 +692,14 @@
             text-align: center;
             font-style: italic;
             color: #e8e8e8;
+
+            justify-content: center;   /* ★ 垂直方向也居中 */
+        }
+
+        /* 旁白文本不再强行撑满，短文本整体居中 */
+        .vn-dialog.system .vn-text {
+            flex: 0 1 auto;
+            width: 100%;
         }
 
         .vn-dialog.system .vn-name {
@@ -1832,7 +1840,7 @@
 
 
             chapterCard.classList.remove('show');
-            dialog.style.display = 'block';
+            dialog.style.display = '';   // 清掉内联样式，回到 CSS 的 flex
 
             const msg = step.msg;
 
