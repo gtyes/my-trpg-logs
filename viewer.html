@@ -754,7 +754,6 @@
             display: flex;
             gap: 8px;
             z-index: 3;
-            opacity: 0.82;
         }
 
         .vn-btn {
@@ -765,6 +764,7 @@
             color: rgba(255, 255, 255, 0.85);
             font-size: 12px;
             cursor: pointer;
+            opacity: 0.82;                 /* 从 topbar 挪到这里 */
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
         }
@@ -772,6 +772,58 @@
         .vn-btn:hover {
             background: rgba(0, 0, 0, 0.55);
             opacity: 1;
+        }
+
+        .vn-chapter-menu {
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 8px);
+            width: 260px;
+            max-height: 45vh;
+            overflow-y: auto;
+            display: none;
+            padding: 6px;
+
+            background: rgba(15, 15, 20, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .vn-chapter-menu.show {
+            display: block;
+        }
+
+        .vn-chapter-item {
+            display: block;
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 5px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            text-align: left;
+            white-space: normal;
+            cursor: pointer;
+        }
+
+        .vn-chapter-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .vn-chapter-item.current {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+
+        .vn-chapter-empty {
+            padding: 10px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.55);
         }
 
         /* ========== 章节卡 ========== */
@@ -1254,9 +1306,13 @@
             <div class="vn-topbar">
                 <button class="vn-btn" onclick="event.stopPropagation(); prevVn()">上一句</button>
                 <button class="vn-btn" onclick="event.stopPropagation(); nextVn()">下一句</button>
+                <button class="vn-btn" id="vnChapterBtn"
+                        onclick="event.stopPropagation(); toggleVnChapterMenu()">章节</button>
                 <button class="vn-btn" id="vnAutoBtn"
                         onclick="event.stopPropagation(); toggleVnAuto()">自动：关</button>
                 <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
+
+                <div class="vn-chapter-menu" id="vnChapterMenu"></div>
             </div>
 
             <div class="vn-dialog" id="vnDialog">
@@ -1293,6 +1349,7 @@
         let vnTyping = false;
         let vnTypeTimer = null;
         let vnAutoTimer = null;
+        let vnPageTimer = null;
         let vnCurrentText = '';
         let vnTextIndex = 0;
         let vnPortraitMap = {};
@@ -1502,14 +1559,16 @@
         }
 
         function applySfxForPosition(position) {
-            // 每次切消息，先停掉上一条的音效
-            stopVnSfx();
-
             const pos = Number(position) || 0;
             if (!pos) return;
 
             const events = vnSfxEvents.filter(event => event.position === pos);
+
+            // 这一条没有音效：不打断上一条正在播放的音效
             if (!events.length) return;
+
+            // 这一条有新音效：先停掉旧的，再播新的
+            stopVnSfx();
 
             events.forEach(event => {
                 const src = resolveMediaUrl(event.url);
@@ -1517,7 +1576,7 @@
 
                 const audio = new Audio(src);
                 audio.loop = false;        // 只播一次
-                audio.volume = 0.8;        // 音效音量，可自行调整
+                audio.volume = 0.8;
                 audio.preload = 'auto';
 
                 audio.addEventListener('ended', () => {
@@ -1526,7 +1585,7 @@
 
                 const playPromise = audio.play();
                 if (playPromise && typeof playPromise.catch === 'function') {
-                    playPromise.catch(() => {});   // 自动播放被拦时静默失败
+                    playPromise.catch(() => {});
                 }
 
                 vnSfxAudios.push(audio);
@@ -1693,6 +1752,70 @@
             stopVnSfx();
         }
 
+        function toggleVnChapterMenu() {
+            const menu = document.getElementById('vnChapterMenu');
+            if (!menu) return;
+
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+                return;
+            }
+
+            renderVnChapterMenu();
+            menu.classList.add('show');
+        }
+
+        function renderVnChapterMenu() {
+            const menu = document.getElementById('vnChapterMenu');
+            if (!menu) return;
+
+            menu.innerHTML = '';
+
+            const chapterSteps = [];
+            vnSteps.forEach((step, index) => {
+                if (step.type === 'chapter') {
+                    chapterSteps.push({ step, index });
+                }
+            });
+
+            if (!chapterSteps.length) {
+                const empty = document.createElement('div');
+                empty.className = 'vn-chapter-empty';
+                empty.textContent = '没有章节';
+                menu.appendChild(empty);
+                return;
+            }
+
+            const currentStep = vnSteps[vnIndex];
+            const currentChapterName = currentStep ? currentStep.chapterName : '';
+
+            chapterSteps.forEach(({ step, index }) => {
+                const btn = document.createElement('button');
+                btn.className = 'vn-chapter-item';
+                btn.textContent = step.chapterName || '未命名章节';
+
+                if (step.chapterName === currentChapterName) {
+                    btn.classList.add('current');
+                }
+
+                btn.addEventListener('click', event => {
+                    event.stopPropagation();
+                    jumpVnChapter(index);
+                });
+
+                menu.appendChild(btn);
+            });
+        }
+
+        function jumpVnChapter(stepIndex) {
+            const menu = document.getElementById('vnChapterMenu');
+            if (menu) menu.classList.remove('show');
+
+            if (stepIndex < 0 || stepIndex >= vnSteps.length) return;
+
+            vnIndex = stepIndex;
+            renderVnStep();
+        }
 
         function clearVnTimers() {
             if (vnTypeTimer) {
@@ -1703,6 +1826,32 @@
                 clearTimeout(vnAutoTimer);
                 vnAutoTimer = null;
             }
+            if (vnPageTimer) {
+                clearTimeout(vnPageTimer);
+                vnPageTimer = null;
+            }
+        }
+        function scheduleVnNextPage(delay = 1500) {
+            if (vnPageTimer) {
+                clearTimeout(vnPageTimer);
+                vnPageTimer = null;
+            }
+
+            const expectedStep = vnIndex;
+            const expectedPageStart = vnPageStart;
+
+            vnPageTimer = setTimeout(() => {
+                vnPageTimer = null;
+
+                // 用户已经手动翻走，或者已经不是这一页了
+                if (!vnHasMoreText) return;
+                if (vnTyping) return;
+                if (vnIndex !== expectedStep) return;
+                if (vnPageStart !== expectedPageStart) return;
+
+                // 只继续文本，不重新 render step，所以立绘不会被清掉
+                startVnTyping(vnCurrentText, vnTextIndex);
+            }, delay);
         }
 
         function vnKeyHandler(event) {
@@ -1718,9 +1867,21 @@
         }
 
         function vnHandleClick(event) {
+            const menu = document.getElementById('vnChapterMenu');
+
+            // 章节菜单打开时，点外面先关菜单，不触发“下一句”
+            if (menu && menu.classList.contains('show') &&
+                !event.target.closest('.vn-topbar')) {
+                menu.classList.remove('show');
+                return;
+            }
+
             if (event.target.closest('.vn-topbar')) return;
+
             nextVn();
         }
+
+
 
         function nextVn() {
             // 还在打字：先把当前页打完
@@ -1796,6 +1957,8 @@
 
         function renderVnStep() {
             clearVnTimers();
+            const chapterMenu = document.getElementById('vnChapterMenu');
+            if (chapterMenu) chapterMenu.classList.remove('show');
 
 
             const step = vnSteps[vnIndex];
@@ -2011,13 +2174,13 @@
                 vnHasMoreText = vnTextIndex < vnCurrentText.length;
 
                 if (hintEl) {
-                    hintEl.textContent = '点击继续';
+                    hintEl.textContent = '即将继续…';
                 }
 
-                if (vnAuto) {
-                    scheduleVnAuto(1500);
-                }
+                // 长文本分页后自动翻页，不再等手动点击
+                scheduleVnNextPage(1500);
                 return;
+
             }
 
             vnTypeTimer = setTimeout(typeVnNextChar, 30);
