@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>血色毡帽 - TRPG跑团日志</title>
+    <title></title>
     <style>
         * {
             margin: 0;
@@ -12,22 +12,30 @@
         }
         
         /* ========== 网站背景 ========== */
+        html {
+            background: #111;
+        }
+
         body {
             margin: 0;
             padding: 0;
             font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
-            /* 网站背景设置 - 这里可以设置颜色或图片 */
-            /*background-color: #f0f2f5;
-             图片背景示例（取消注释使用）: */
-            
-            background-image: url('https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/67cba0a1bf15d396fdde0fb120e84110213a1b9a4800673311185029353e14d7?t=1760585674253');
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-            
-            /*color: #333;*/
             min-height: 100vh;
+            background: transparent;
         }
+
+        #pageBackground {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+
+            background-color: #111;
+            background-size: cover;        /* 自适应裁剪，不拉伸 */
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
         /* 固定在页面底部的分页条 */
         #paginationContainer {
             position: fixed;
@@ -1478,6 +1486,7 @@
     </style>
 </head>
 <body>
+    <div id="pageBackground"></div>
     <!-- 右侧悬浮图片 -->
 <!-- 修改右侧悬浮图片部分 -->
 <div class="floating-image-container" id="rightImageContainer">
@@ -1497,12 +1506,8 @@
     </div>
     
     <!-- 标题 -->
-    <div class="log-title" id="logTitle">
-        <span class="title-character" style="color: #8b0000;">血</span>
-        <span class="title-character">色</span>
-        <span class="title-character">毡</span>
-        <span class="title-character">帽</span>
-    </div>
+    <div class="log-title" id="logTitle"></div>
+
     
     <!-- 右侧控制按钮 -->
     <div class="top-controls right-controls">
@@ -1556,7 +1561,7 @@
     <div class="main-container">
         <!-- 日志消息容器 -->
         <div id="logContainer">
-            <div class="loading" id="loadingState">
+            <div class="loading" id="loadingState" style="display: none;">
                 <div>正在加载日志数据...</div>
             </div>
             <div class="log-container" id="logMessages" style="display: none;">
@@ -2695,25 +2700,25 @@
                 
                 // 更新网页背景
                 if (images.background) {
-                    // 检查是否是同一张背景图片
-                    const bodyStyle = window.getComputedStyle(document.body);
-                    const currentBg = bodyStyle.backgroundImage;
+                    const pageBg = document.getElementById('pageBackground');
+                    if (!pageBg) return;
+
                     const newBg = `url('${images.background}')`;
-                    
-                    console.log('当前背景:', currentBg);
-                    console.log('新背景:', newBg);
-                    
-                    // 如果不是同一张图片，才应用过渡效果
-                    if (currentBg !== newBg && currentBg !== `url("${images.background}")`) {
-                        // 添加过渡效果
-                        document.body.style.transition = 'background-image 0.8s ease';
-                        document.body.style.backgroundImage = `url('${images.background}')`;
-                        document.body.style.backgroundSize = 'cover';
-                        document.body.style.backgroundAttachment = 'fixed';
-                        document.body.style.backgroundPosition = 'center';
+                    const currentBg = pageBg.style.backgroundImage;
+
+                    if (currentBg !== newBg &&
+                        currentBg !== `url("${images.background}")`) {
+
+                        pageBg.style.transition = 'background-image 0.8s ease';
+                        pageBg.style.backgroundImage = newBg;
+                        pageBg.style.backgroundSize = 'cover';
+                        pageBg.style.backgroundPosition = 'center';
+                        pageBg.style.backgroundRepeat = 'no-repeat';
+
                         console.log('应用了新背景图片');
                     }
                 }
+
                 
                 // 更新右侧图片（只有在图片展开状态下才更新）
                 if (!isImageCollapsed && images.rightImage) {
@@ -2755,9 +2760,10 @@
             // 在CSS中添加过渡效果
             const style = document.createElement('style');
             style.textContent = `
-                body {
+                #pageBackground {
                     transition: background-image 0.8s ease !important;
                 }
+
                 .floating-image-right {
                     transition: background-image 0.5s ease, opacity 0.5s ease !important;
                 }
@@ -2903,10 +2909,10 @@
                 console.log('日志数据加载成功，消息数:', (logData.logs || []).length);
                 
                 // 设置标题
-                document.title = logData.title || '血色毡帽 - TRPG跑团日志';
+                document.title = logData.title || logData.websiteSettings?.title || '';
 
                 // 从网站设置中获取标题和颜色设置
-                const siteTitle = logData.websiteSettings?.title || '血色毡帽';
+                const siteTitle = logData.websiteSettings?.title || logData.title || '';
                 const titleColors = logData.websiteSettings?.titleColors || [];
 
                 console.log('标题:', siteTitle);
@@ -2952,12 +2958,12 @@
                     
                     console.log('生成的标题HTML:', titleHTML);
                 } else {
-                    // 回退到旧的逻辑（第一个字红色，其余白色）
-                    console.log('使用回退逻辑');
-                    titleHTML = `
-                        <span class="title-character" style="color: #8b0000;">${siteTitle[0] || '血'}</span>
-                        <span class="title-character" style="color: white;">${siteTitle.substring(1) || '色毡帽'}</span>
-                    `;
+                    titleHTML = siteTitle
+                        ? `
+                            <span class="title-character" style="color: #8b0000;">${siteTitle[0]}</span>
+                            <span class="title-character" style="color: white;">${siteTitle.substring(1)}</span>
+                        `
+                        : '';
                 }
 
                 document.getElementById('logTitle').innerHTML = titleHTML;
@@ -3019,13 +3025,12 @@
                 }, 500);
             } catch (error) {
                 console.error('加载日志数据失败:', error);
-                document.getElementById('loadingState').innerHTML = `
-                    <h3 style="color: #e74c3c;">加载失败</h3>
-                    <p>无法加载日志数据：${error.message}</p>
-                    <p style="margin-top: 10px;">请检查文件路径是否正确</p>
-                    <button class="control-btn" onclick="location.reload()" style="margin-top: 20px;">重新加载</button>
-                `;
+
+                const loadingState = document.getElementById('loadingState');
+                loadingState.style.display = 'block';
+                loadingState.innerHTML = `...原来的错误 HTML...`;
             }
+
             // 应用网站设置
             setTimeout(() => {
                 applyWebsiteSettings();
