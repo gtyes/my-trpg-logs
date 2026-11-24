@@ -2240,6 +2240,30 @@
 
             if (window.Vimeo && window.Vimeo.Player) {
                 vnVimeoPlayer = new Vimeo.Player(iframe);
+                let vnQualityTimer = null;
+                let vnQualityFixCount = 0;
+
+                vnVimeoPlayer.ready().then(() => {
+                    vnVimeoPlayer.setQuality('1080p').catch(() => {});
+                    vnVimeoPlayer.play().catch(() => {});
+
+                    // 看看这个视频到底支持哪些清晰度
+                    vnVimeoPlayer.getQualities()
+                        .then(list => console.log('[OP] 可用画质:', list))
+                        .catch(() => {});
+                });
+
+                vnVimeoPlayer.on('qualitychange', data => {
+                    if (!data || data.quality === '1080p') return;
+                    if (vnQualityFixCount >= 5) return;   // 防止无限重试
+
+                    if (vnQualityTimer) clearTimeout(vnQualityTimer);
+
+                    vnQualityTimer = setTimeout(() => {
+                        vnQualityFixCount++;
+                        vnVimeoPlayer.setQuality('1080p').catch(() => {});
+                    }, 1200);
+                });
 
                 vnVimeoPlayer.ready().then(() => {
                     // 尽量固定 1080p；没有 1080p 时自动降级
