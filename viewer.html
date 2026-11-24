@@ -1328,6 +1328,40 @@
                 width: 34px;
             }
         }
+        /* ===== VN 大成功/大失败图片：居中最高层 ===== */
+        .vn-extend-image-overlay {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;      /* 不挡点击 */
+            z-index: 9;                /* 高于立绘、对话框、抽屉 */
+        }
+
+        .vn-extend-image-overlay.show {
+            display: flex;
+        }
+
+        .vn-extend-image-overlay img {
+            max-width: min(560px, 50vw);
+            max-height: 50vh;
+            object-fit: contain;
+            border-radius: 10px;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.65));
+            animation: vnExtendPop 0.25s ease-out;
+        }
+
+        @keyframes vnExtendPop {
+            0%   { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 右侧抽屉打开时，图片在左侧 70% 区域居中 */
+        .vn-overlay.vn-log-open .vn-extend-image-overlay {
+            right: 30%;
+        }
+
     </style>
 </head>
 <body>
@@ -1440,6 +1474,10 @@
             <div class="vn-image-frame">
                 <img id="vnStageImage" alt="消息图片">
             </div>
+        </div>
+        <!-- 大成功/大失败图片：居中最高层 -->
+        <div class="vn-extend-image-overlay" id="vnExtendImageOverlay">
+            <img id="vnExtendImage" alt="判定结果图片">
         </div>
 
         <div class="vn-dialog-area">
@@ -2146,6 +2184,9 @@
             const chapterCard = document.getElementById('vnChapterCard');
             const imageStage = document.getElementById('vnImageStage');
             const stageImage = document.getElementById('vnStageImage');
+            const extendImageOverlay = document.getElementById('vnExtendImageOverlay');
+            const extendImageEl = document.getElementById('vnExtendImage');
+
             // 新增：渲染左右立绘
             renderVnPortraits(step);
             // 每次切换步骤先取消加暗
@@ -2153,6 +2194,8 @@
             // 每次切换步骤，先把图片层收起来
             imageStage.classList.remove('show');
             stageImage.removeAttribute('src');
+            extendImageOverlay.classList.remove('show');
+            extendImageEl.removeAttribute('src');
 
             // 应用背景切换事件
             applyVnBackgroundForStep(step);
@@ -2228,6 +2271,16 @@
             extendEl.textContent = extendText;
             extendEl.style.display = extendText ? 'block' : 'none';
             extendEl.style.visibility = 'hidden';
+            // 大成功/大失败的图片：居中最高层显示
+            if (msg.dice || msg.extend) {
+                const resultType = getExtendResultType(msg);
+                const resultImage = getExtendImage(resultType);
+
+                if (resultImage) {
+                    extendImageEl.src = resultImage;
+                    extendImageOverlay.classList.add('show');
+                }
+            }
 
             // 消息内图片：居中材料展示
             if (msg.messageImage) {
@@ -2927,27 +2980,6 @@
             if (overlay) overlay.classList.toggle('vn-log-open', open);
         }
 
-        function toggleVnLogMenu() {
-            // 和章节菜单互斥
-            const chapterMenu = document.getElementById('vnChapterMenu');
-            if (chapterMenu) chapterMenu.classList.remove('show');
-
-            const menu = document.getElementById('vnLogMenu');
-            if (!menu) return;
-
-            if (menu.classList.contains('show')) {
-                menu.classList.remove('show');
-                return;
-            }
-
-            renderVnLogMenu(true);
-            menu.classList.add('show');
-
-            if (!menu.dataset.scrollBound) {
-                menu.addEventListener('scroll', handleVnLogMenuScroll);
-                menu.dataset.scrollBound = '1';
-            }
-        }
 
         function createVnLogItem(step, index) {
             const el = document.createElement(step.type === 'chapter' ? 'div' : 'button');
