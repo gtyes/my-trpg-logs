@@ -3076,7 +3076,8 @@
                 filteredLogs.slice(startAbs, endAbs)
             );
 
-            appendRenderedChunk(html);appendRenderedChunk(html);
+            // 只插入一次
+            appendRenderedChunk(html);
 
             scrollLoadedCount = newCount;
 
@@ -3088,6 +3089,7 @@
             addMessageDoubleClickHandlers();
             updateChapterEndNav();
         }
+
 
         function jumpToContinuousChapter(index) {
             const ranges = getChapterRanges();
