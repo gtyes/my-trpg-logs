@@ -846,11 +846,12 @@
             display: none;
             flex-direction: column;
 
-            background: rgba(12, 12, 16, 0.85);
+            background: rgba(12, 12, 16, 0.80);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             border-left: 1px solid rgba(255, 255, 255, 0.14);
             box-shadow: -10px 0 30px rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             z-index: 5;
         }
 
@@ -1007,9 +1008,21 @@
         }
 
         .vn-overlay.vn-log-open .vn-dialog-area {
-            left: 40%;
-            width: min(1180px, 78vw);
+            left: 0;
+            right: 25%;
+            width: auto;
+            max-width: none;
+            transform: none;
+            padding: 0 2.5vw;
+            box-sizing: border-box;
         }
+
+        .vn-overlay.vn-log-open .vn-dialog {
+            max-width: 1180px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
 
         .vn-chapter-item {
             display: block;
@@ -2291,7 +2304,7 @@
 
             const step = vnSteps[vnIndex];
             if (!step) return;
-
+            updateVnLogDrawerBackground(); 
             const overlay = document.getElementById('vnOverlay');
             const bg = document.getElementById('vnBg');
             const bgNext = document.getElementById('vnBgNext');
@@ -3085,6 +3098,29 @@
                 </div>
             `).join('');
         }
+        function updateVnLogDrawerBackground() {
+            const drawer = document.getElementById('vnLogDrawer');
+            if (!drawer) return;
+
+            const settings = (logData && logData.chapterSettings) || {};
+
+            if (settings.useImage && settings.image) {
+                drawer.style.backgroundImage = `url('${settings.image}')`;
+                drawer.style.backgroundSize = 'cover';      // 强制自适应裁剪，不拉伸
+                drawer.style.backgroundPosition = 'center';
+                drawer.style.backgroundRepeat = 'no-repeat';
+                drawer.style.backgroundColor = 'transparent';
+            } else if (settings.backgroundColor) {
+                drawer.style.backgroundImage = 'none';
+                drawer.style.backgroundColor = hexToRgba(
+                    settings.backgroundColor,
+                    settings.backgroundOpacity !== undefined ? settings.backgroundOpacity : 0.9
+                );
+            } else {
+                drawer.style.backgroundImage = 'none';
+                drawer.style.backgroundColor = 'rgba(12, 12, 16, 0.92)';
+            }
+        }
 
         // 渲染章节导航
         function toggleVnLogMenu() {
@@ -3102,6 +3138,7 @@
 
             renderVnLogMenu(true);
             setVnLogDrawerOpen(true);
+            updateVnLogDrawerBackground(); 
 
             const menu = document.getElementById('vnLogMenu');
             if (menu && !menu.dataset.scrollBound) {
