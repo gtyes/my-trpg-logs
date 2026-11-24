@@ -616,6 +616,14 @@
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
         }
+        .vn-image-frame.no-frame {
+            padding: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
 
         .vn-image-frame img {
             max-width: 66vw;
@@ -695,6 +703,7 @@
             cursor: pointer;
             z-index: 1;
         }
+
         .vn-dialog::before {
             content: '';
             position: absolute;
@@ -703,9 +712,8 @@
             pointer-events: none;
             z-index: -1;
 
-            background-color: var(--vn-dialog-bg-color, rgba(10, 10, 15, 0.9));
+            background-color: rgba(0, 0, 0, 0.9);   /* 固定 90% 黑 */
         }
-
 
         /* system 旁白 */
         .vn-dialog.system {
@@ -2377,7 +2385,6 @@
             // 旁白
             if (step.type === 'system') {
                 dialog.className = 'vn-dialog system';
-                applyVnDialogBubbleStyle(null); 
                 const nameEl = document.getElementById('vnName');
                 nameEl.textContent = '';
                 nameEl.style.display = 'none';   // 不显示“旁白”这个词
@@ -2398,7 +2405,6 @@
 
             // 对话框不再加 chat 类
             dialog.className = 'vn-dialog';
-            applyVnDialogBubbleStyle(msg.name);
 
             const nameEl = document.getElementById('vnName');
             nameEl.style.display = '';          // ← 从旁白分支恢复角色名显示
@@ -2436,6 +2442,12 @@
             if (msg.messageImage) {
                 stageImage.src = msg.messageImage;
                 imageStage.classList.add('show');
+
+                const frame = imageStage.querySelector('.vn-image-frame');
+                if (frame) {
+                    // 闲聊频道不显示黑色底框
+                    frame.classList.toggle('no-frame', isChatChannelName(msg.channel));
+                }
             }
 
             startVnTyping(msg.text || '');
