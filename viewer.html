@@ -684,7 +684,8 @@
             display: flex;
             flex-direction: column;
             overflow: hidden; 
-            background: rgba(10, 10, 15, 0.78);
+            background: transparent;
+            isolation: isolate;
             border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: 12px;
             color: #fff;
@@ -696,10 +697,25 @@
             cursor: pointer;
             z-index: 1;
         }
+        .vn-dialog::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: -1;
+
+            background-color: var(--vn-dialog-bg-color, rgba(10, 10, 15, 0.78));
+            background-image: var(--vn-dialog-bg-image, none);
+            background-size: var(--vn-dialog-bg-size, cover);
+            background-position: center;
+            background-repeat: var(--vn-dialog-bg-repeat, no-repeat);
+            opacity: var(--vn-dialog-bg-opacity, 1);
+        }
 
         /* system 旁白 */
         .vn-dialog.system {
-            background: rgba(10, 10, 15, 0.78);
+            background: transparent;
             border-color: rgba(255, 255, 255, 0.18);
             text-align: center;
             font-style: italic;
@@ -2356,7 +2372,7 @@
             // 旁白
             if (step.type === 'system') {
                 dialog.className = 'vn-dialog system';
-
+                applyVnDialogBubbleStyle(null); 
                 const nameEl = document.getElementById('vnName');
                 nameEl.textContent = '';
                 nameEl.style.display = 'none';   // 不显示“旁白”这个词
@@ -2377,6 +2393,7 @@
 
             // 对话框不再加 chat 类
             dialog.className = 'vn-dialog';
+            applyVnDialogBubbleStyle(msg.name);
 
             const nameEl = document.getElementById('vnName');
             nameEl.style.display = '';          // ← 从旁白分支恢复角色名显示
@@ -4308,6 +4325,43 @@ function getChannelMaskStyle(channel) {
             
             return style;
         }
+        function applyVnDialogBubbleStyle(characterName) {
+            const dialog = document.getElementById('vnDialog');
+            if (!dialog) return;
+
+            const rules = logData.characterRules || {};
+            const defaultRule = logData.defaultCharacterRule || {};
+            const rule = characterName ? (rules[characterName] || defaultRule) : null;
+
+            if (rule && rule.bubbleUseImage && rule.bubbleImage) {
+                dialog.style.setProperty('--vn-dialog-bg-image', `url('${rule.bubbleImage}')`);
+                dialog.style.setProperty(
+                    '--vn-dialog-bg-size',
+                    rule.bubbleImageSize === 'repeat' ? 'auto' : (rule.bubbleImageSize || 'cover')
+                );
+                dialog.style.setProperty(
+                    '--vn-dialog-bg-repeat',
+                    rule.bubbleImageSize === 'repeat' ? 'repeat' : 'no-repeat'
+                );
+                dialog.style.setProperty('--vn-dialog-bg-color', 'transparent');
+                dialog.style.setProperty(
+                    '--vn-dialog-bg-opacity',
+                    rule.bubbleImageOpacity !== undefined ? rule.bubbleImageOpacity : 1
+                );
+            } else if (rule && rule.bubbleColor) {
+                dialog.style.setProperty('--vn-dialog-bg-image', 'none');
+                dialog.style.setProperty(
+                    '--vn-dialog-bg-color',
+                    `rgba(${hexToRgb(rule.bubbleColor)}, ${rule.bubbleOpacity !== undefined ? rule.bubbleOpacity : 0.85})`
+                );
+                dialog.style.setProperty('--vn-dialog-bg-opacity', '1');
+            } else {
+                dialog.style.setProperty('--vn-dialog-bg-image', 'none');
+                dialog.style.setProperty('--vn-dialog-bg-color', 'rgba(10, 10, 15, 0.78)');
+                dialog.style.setProperty('--vn-dialog-bg-opacity', '1');
+            }
+        }
+
         // 获取角色气泡样式
         function getCharacterBubbleStyle(character) {
             const rules = logData.characterRules || {};
