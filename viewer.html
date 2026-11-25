@@ -1273,9 +1273,6 @@
 
         @media (max-width: 768px) {
             /* 顶部标题栏：保持普通布局，随页面正常滚走 */
-            #vnModeBtn {
-                display: none !important;
-            }
             .top-header {
                 flex-direction: column;
                 gap: 12px;
@@ -1411,6 +1408,11 @@
                 width: 38px;
                 padding: 3px;
                 font-size: 11px;
+            }
+        }
+        @media (max-width: 1024px) and (orientation: portrait) {
+            #vnModeBtn {
+                display: none !important;
             }
         }
 
@@ -1605,6 +1607,82 @@
             color: rgba(255, 255, 255, 0.5);
             font-size: 13px;
         }
+        
+        /* ===== 横屏提示层 ===== */
+        .vn-rotate-hint {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 4000;
+
+            background: rgba(0, 0, 0, 0.92);
+            color: #fff;
+
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .vn-rotate-hint.show {
+            display: flex;
+        }
+
+        .vn-rotate-icon {
+            font-size: 42px;
+            opacity: 0.85;
+        }
+
+        /* ===== 手机竖屏隐藏“对话模式”按钮 ===== */
+        @media (max-width: 1024px) and (orientation: portrait) {
+            #vnModeBtn {
+                display: none !important;
+            }
+        }
+
+        /* ===== 手机横屏时的对话模式尺寸适配 ===== */
+        @media (max-width: 1024px) and (orientation: landscape) {
+            .vn-dialog-area {
+                bottom: 8px;
+                width: 96vw;
+            }
+
+            .vn-dialog {
+                height: 42vh;
+                padding: 10px 16px 22px;
+            }
+
+            .vn-name {
+                font-size: 16px;
+                margin-bottom: 4px;
+            }
+
+            .vn-text {
+                font-size: 15px;
+                line-height: 1.5;
+            }
+
+            .vn-portrait-slot {
+                height: 45vh;
+            }
+
+            .vn-topbar {
+                gap: 4px;
+                top: calc(100% + 4px);
+            }
+
+            .vn-btn {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            .vn-hint {
+                font-size: 10px;
+            }
+        }
 
     </style>
 </head>
@@ -1788,6 +1866,11 @@
             <div class="vn-log-menu" id="vnLogMenu"></div>
         </div>
     </div>
+    <!-- 横屏提示层 -->
+    <div class="vn-rotate-hint" id="vnRotateHint">
+        <div class="vn-rotate-icon">↻</div>
+        <div>请横屏使用对话模式</div>
+    </div>
     <script src="https://player.vimeo.com/api/player.js"></script>
 
     <script>
@@ -1840,6 +1923,41 @@
         const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
+
+        function showVnRotateHint() {
+            const hint = document.getElementById('vnRotateHint');
+            if (hint) hint.classList.add('show');
+        }
+
+        let vnOrientationBlocked = false;
+
+        function handleVnOrientationChange() {
+            const vnOpen = document.getElementById('vnOverlay').classList.contains('show');
+            const hint = document.getElementById('vnRotateHint');
+
+            if (!vnOpen) {
+                if (hint) hint.classList.remove('show');
+                vnOrientationBlocked = false;
+                return;
+            }
+
+            const blocked = !isVnLandscape();
+
+            if (blocked && !vnOrientationBlocked) {
+                vnOrientationBlocked = true;
+                if (hint) hint.classList.add('show');
+                clearVnTimers();            // 暂停打字/自动播放
+                stopVnBgm();
+                stopVnSfx();
+            } else if (!blocked && vnOrientationBlocked) {
+                vnOrientationBlocked = false;
+                if (hint) hint.classList.remove('show');
+                renderVnStep();             // 回到横屏后继续当前句
+            }
+        }
+
+        window.addEventListener('resize', handleVnOrientationChange);
+        window.addEventListener('orientationchange', handleVnOrientationChange);
 
         function onVnLogSearchInput(value) {
             if (vnLogSearchTimer) clearTimeout(vnLogSearchTimer);
@@ -2502,9 +2620,16 @@
             vnOpeningCallback = null;
         }
 
-        function openVnMode() {
-            if (window.innerWidth <= 768) return;
+        function isVnLandscape() {
+            // 手机/平板要求宽 > 高；桌面通常天然满足
+            return window.innerWidth > window.innerHeight;
+        }
 
+        function openVnMode() {
+            if (!isVnLandscape()) {
+                showVnRotateHint();
+                return;
+            }          
             const startIndex = getCurrentReadingIndex();
             vnSteps = buildVnSteps();
 
@@ -2546,6 +2671,10 @@
             document.body.classList.remove('vn-active');
 
             document.removeEventListener('keydown', vnKeyHandler);
+
+            vnOrientationBlocked = false;
+            const hint = document.getElementById('vnRotateHint');
+            if (hint) hint.classList.remove('show');
 
             // 退出对话模式时停止 BGM
             stopVnBgm();
