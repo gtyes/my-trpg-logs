@@ -2694,6 +2694,57 @@
 
             vnOpeningCallback = null;
         }
+        let vnOpSwipeTracking = false;
+        let vnOpSwipeStartX = 0;
+        let vnOpSwipeStartY = 0;
+
+        function onVnOpeningTouchStart(event) {
+            const overlay = document.getElementById('vnOpeningOverlay');
+            if (!overlay || !overlay.classList.contains('show')) return;
+            if (!event.touches || event.touches.length !== 1) return;
+
+            const touch = event.touches[0];
+
+            // 只有从右边缘开始才算：右侧 8% 或最少 40px
+            const edgeWidth = Math.max(40, window.innerWidth * 0.08);
+            if (touch.clientX < window.innerWidth - edgeWidth) return;
+
+            vnOpSwipeTracking = true;
+            vnOpSwipeStartX = touch.clientX;
+            vnOpSwipeStartY = touch.clientY;
+        }
+
+        function onVnOpeningTouchEnd(event) {
+            if (!vnOpSwipeTracking) return;
+            vnOpSwipeTracking = false;
+
+            const overlay = document.getElementById('vnOpeningOverlay');
+            if (!overlay || !overlay.classList.contains('show')) return;
+
+            const touch = event.changedTouches && event.changedTouches[0];
+            if (!touch) return;
+
+            const dx = vnOpSwipeStartX - touch.clientX; // 向左滑为正
+            const dy = Math.abs(touch.clientY - vnOpSwipeStartY);
+
+            // 向左滑超过 60px，且水平距离大于垂直距离
+            if (dx > 60 && dx > dy) {
+                console.log('[OP] 右边缘左滑，跳过 OP');
+                closeVnOpening();
+            }
+        }
+
+        function onVnOpeningTouchCancel() {
+            vnOpSwipeTracking = false;
+        }
+        (function bindVnOpeningSwipe() {
+            const overlay = document.getElementById('vnOpeningOverlay');
+            if (!overlay) return;
+
+            overlay.addEventListener('touchstart', onVnOpeningTouchStart, { passive: true });
+            overlay.addEventListener('touchend', onVnOpeningTouchEnd, { passive: true });
+            overlay.addEventListener('touchcancel', onVnOpeningTouchCancel, { passive: true });
+        })();
 
         function isVnLandscape() {
             // 手机/平板要求宽 > 高；桌面通常天然满足
