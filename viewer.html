@@ -599,7 +599,18 @@
         .vn-bg-next.chat-dim {
             filter: brightness(0.55);
         }
+        /* ========== 前景层 ========== */
+        .vn-fg {
+            position: absolute;
+            inset: 0;
 
+            background-size: cover;        /* 自适应裁剪 */
+            background-position: center;
+            background-repeat: no-repeat;
+
+            pointer-events: none;
+            z-index: 1;                    /* 背景之上、.vn-dialog-area(2) 之下 */
+        }
         /* ========== 消息内图片：居中材料展示 ========== */
         .vn-image-stage {
             display: none;
@@ -1865,7 +1876,7 @@
         <div class="vn-bg" id="vnBg"></div>
         <div class="vn-bg" id="vnBg"></div>
         <div class="vn-bg vn-bg-next" id="vnBgNext"></div>
-
+        <div class="vn-fg" id="vnFg"></div>
         <div class="vn-image-stage" id="vnImageStage">
             <div class="vn-image-frame">
                 <img id="vnStageImage" alt="消息图片">
@@ -1957,6 +1968,8 @@
         // 全局变量
         let vnBgmEvents = [];
         let vnBackgroundEvents = [];
+        let vnForegroundEvents = [];
+        let vnFgCurrentUrl = '';
         let vnBgmAudio = new Audio();
         let vnMuted = false;
         let vnCurrentBgmUrl = '';
@@ -2132,6 +2145,39 @@
                 .filter(event => event.position > 0)
                 .sort((a, b) => a.position - b.position);
         }
+        function normalizeVnForegroundEvents(list) {
+            return (list || [])
+                .map(event => {
+                    let start = parseInt(
+                        event.startMessageIndex !== undefined && event.startMessageIndex !== null
+                            ? event.startMessageIndex
+                            : event.startPosition,
+                        10
+                    ) || 0;
+
+                    let end = parseInt(
+                        event.endMessageIndex !== undefined && event.endMessageIndex !== null
+                            ? event.endMessageIndex
+                            : event.endPosition,
+                        10
+                    ) || 0;
+
+                    if (!start || !end) return null;
+                    if (end < start) {
+                        const t = start;
+                        start = end;
+                        end = t;
+                    }
+
+                    return {
+                        start,
+                        end,
+                        url: String(event.url || '').trim()
+                    };
+                })
+                .filter(event => event && event.url)
+                .sort((a, b) => a.start - b.start);
+        }
 
         function initVnMediaEvents() {
             const idToIndex = new Map();
@@ -2144,8 +2190,12 @@
             vnBgmEvents = normalizeVnMediaEvents(logData.bgmEvents, idToIndex);
             vnBackgroundEvents = normalizeVnMediaEvents(logData.backgroundEvents, idToIndex);
             vnSfxEvents = normalizeVnMediaEvents(logData.sfxEvents, idToIndex);
+            vnForegroundEvents = normalizeVnForegroundEvents(logData.foregroundEvents);
 
-            console.log(`[VN] 媒体事件：BGM ${vnBgmEvents.length} / 背景 ${vnBackgroundEvents.length} / 音效 ${vnSfxEvents.length}`);
+            console.log(
+                `[VN] 媒体事件：BGM ${vnBgmEvents.length} / 背景 ${vnBackgroundEvents.length} / 前景 ${vnForegroundEvents.length} / 音效 ${vnSfxEvents.length}`
+            );
+
         }
 
 
@@ -2326,6 +2376,36 @@
                 }
             }
 
+        }
+        function applyVnForegroundForStep(step) {
+            const fg = document.getElementById('vnFg');
+            if (!fg) return;
+
+            const pos = Number(step.position) || 0;
+            let url = '';
+
+            if (pos > 0) {
+                for (const event of vnForegroundEvents) {
+                    // 事件按 start 排序，后面的 start 已经超过当前位置就不用看了
+                    if (event.start > pos) break;
+
+                    if (pos >= event.start && pos <= event.end) {
+                        url = event.url;   // 后出现的事件优先
+                    }
+                }
+            }
+
+            if (url === '__stop__') url = '';
+
+            if (url === vnFgCurrentUrl) return;
+            vnFgCurrentUrl = url;
+
+            if (url) {
+                fg.style.backgroundImage = `url("${url.replace(/"/g, '\\"')}")`;
+                console.log('[VN] 前景切换 @', pos, '→', url);
+            } else {
+                fg.style.backgroundImage = 'none';
+            }
         }
 
         function stopVnSfx() {
@@ -2913,6 +2993,12 @@
             // 退出对话模式时停止 BGM
             stopVnBgm();
             stopVnSfx();
+
+            vnFgCurrentUrl = '';
+            const vnFg = document.getElementById('vnFg');
+            if (vnFg) {
+                vnFg.style.backgroundImage = 'none';
+            }
             cancelVnOpening();
         }
 
@@ -3296,7 +3382,7 @@
 
             // 应用背景切换事件
             applyVnBackgroundForStep(step);
-
+            applyVnForegroundForStep(step); 
             // 应用 BGM 切换事件
             applyBgmForPosition(step.position || 0);
 
