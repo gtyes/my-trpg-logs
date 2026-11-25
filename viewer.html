@@ -1630,6 +1630,27 @@
             font-size: 42px;
             opacity: 0.85;
         }
+        .vn-fullscreen-hint {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4100;
+
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 13px;
+
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .vn-fullscreen-hint.show {
+            opacity: 1;
+        }
 
         /* ===== 手机横屏时的对话模式尺寸适配 ===== */
         @media (max-width: 1024px) and (orientation: landscape) {
@@ -1816,6 +1837,8 @@
             <div class="vn-topbar">
                 <button class="vn-btn" onclick="event.stopPropagation(); prevVn()">上一句</button>
                 <button class="vn-btn" onclick="event.stopPropagation(); nextVn()">下一句</button>
+                <button class="vn-btn" id="vnFullscreenBtn"
+                        onclick="event.stopPropagation(); toggleVnFullscreen()">全屏</button>
                 <button class="vn-btn" id="vnChapterBtn"
                         onclick="event.stopPropagation(); toggleVnChapterMenu()">章节</button>
                 <button class="vn-btn" id="vnLogBtn"
@@ -1859,6 +1882,8 @@
         <div class="vn-rotate-icon">↻</div>
         <div>请横屏使用对话模式</div>
     </div>
+    <div class="vn-fullscreen-hint" id="vnFullscreenHint">按 Esc 退出全屏</div>
+
     <script src="https://player.vimeo.com/api/player.js"></script>
 
     <script>
@@ -2409,6 +2434,7 @@
         }
 
         function openVnOpening(callback) {
+            let vnFullscreenByOpening = false;
             const overlay = document.getElementById('vnOpeningOverlay');
             const poster = document.getElementById('vnOpeningPoster');
             const wrap = document.getElementById('vnOpeningIframeWrap');
@@ -2419,7 +2445,10 @@
                 if (typeof callback === 'function') callback();
                 return;
             }
-
+            if (!document.fullscreenElement) {
+                vnFullscreenByOpening = true;
+                requestVnFullscreen();
+            }
             vnOpeningCallback = callback || null;
 
             const ov = logData.openingVideo;
@@ -2460,6 +2489,7 @@
             }
 
             overlay.classList.add('show');
+
         }
 
         function playVnOpening() {
@@ -2579,6 +2609,14 @@
             const playBtn = document.getElementById('vnOpeningPlayBtn');
             if (playBtn) playBtn.style.display = 'block';
             if (typeof cb === 'function') cb();
+            if (vnFullscreenByOpening &&
+                !shouldAutoFullscreen() &&
+                document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+
+            vnFullscreenByOpening = false;
+
         }
 
         function cancelVnOpening() {
@@ -2613,14 +2651,47 @@
             return window.innerWidth > window.innerHeight;
         }
         function requestVnFullscreen() {
-            const el = document.getElementById('vnOverlay') || document.documentElement;
+            const el = document.documentElement;
+
+
+            const done = () => showVnFullscreenHint();
+            const failed = () => {};
 
             if (el.requestFullscreen) {
-                el.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
+                el.requestFullscreen({ navigationUI: 'hide' })
+                    .then(done)
+                    .catch(failed);
             } else if (el.webkitRequestFullscreen) {
                 el.webkitRequestFullscreen();
+                done();
             }
         }
+
+        function showVnFullscreenHint() {
+            const hint = document.getElementById('vnFullscreenHint');
+            if (!hint) return;
+
+            hint.classList.add('show');
+            clearTimeout(hint._timer);
+            hint._timer = setTimeout(() => {
+                hint.classList.remove('show');
+            }, 3000);
+        }
+
+        function toggleVnFullscreen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            } else {
+                requestVnFullscreen();
+            }
+        }
+
+        function shouldAutoFullscreen() {
+            // 触屏设备或小屏才自动全屏；桌面默认保留页头
+            return window.matchMedia('(pointer: coarse)').matches
+                || window.innerWidth <= 1024;
+        }
+
 
         function openVnMode() {
             if (!isVnLandscape()) {
@@ -2641,7 +2712,9 @@
             vnIndex = stepIndex;
 
             document.getElementById('vnOverlay').classList.add('show');
-            requestVnFullscreen();
+            if (shouldAutoFullscreen()) {
+                requestVnFullscreen();
+            }
 
             document.body.classList.add('vn-active');
 
@@ -2792,14 +2865,39 @@
 
         function vnKeyHandler(event) {
             const opOverlay = document.getElementById('vnOpeningOverlay');
+            const opOpen = opOverlay && opOverlay.classList.contains('show');
 
-            if (opOverlay && opOverlay.classList.contains('show')) {
-                if (event.key === 'Escape') {
-                    event.preventDefault();
-                    closeVnOpening();
+            // Esc：优先退出全屏，不关闭 OP / 对话模式
+            if (event.key === 'Escape') {
+                event.preventDefault();
+
+                const isFullscreen = !!(
+                    document.fullscreenElement ||
+                    document.webkitFullscreenElement
+                );
+
+                if (isFullscreen) {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                    return;
                 }
+
+                // 不在全屏时，Esc 才关闭 OP
+                if (opOpen) {
+                    closeVnOpening();
+                    return;
+                }
+
+                // 没有 OP，Esc 关闭对话模式
+                closeVnMode();
                 return;
             }
+
+            // OP 打开期间，方向键/空格不响应
+            if (opOpen) return;
 
             if (event.key === 'ArrowRight' || event.key === ' ' || event.key === 'Enter') {
                 event.preventDefault();
@@ -2807,10 +2905,9 @@
             } else if (event.key === 'ArrowLeft') {
                 event.preventDefault();
                 prevVn();
-            } else if (event.key === 'Escape') {
-                closeVnMode();
             }
         }
+
 
         function vnHandleClick(event) {
             if (event.target.closest('.vn-log-drawer')) return;
@@ -5429,7 +5526,23 @@ function clearSearch() {
                 closeFilterPanel();
             }
         });
-        
+
+        // ===== 全屏状态变化：更新“全屏 / 退出全屏”按钮文字 =====
+        function updateVnFullscreenButton() {
+            const btn = document.getElementById('vnFullscreenBtn');
+            if (!btn) return;
+
+            const isFullscreen = !!(
+                document.fullscreenElement ||
+                document.webkitFullscreenElement
+            );
+
+            btn.textContent = isFullscreen ? '退出全屏' : '全屏';
+        }
+
+        document.addEventListener('fullscreenchange', updateVnFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateVnFullscreenButton);
+
         // 初始化加载
         window.addEventListener('DOMContentLoaded', loadLogData);
     </script>
