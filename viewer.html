@@ -600,7 +600,14 @@
             filter: brightness(0.55);
         }
         /* ========== 前景层 ========== */
-        .vn-fg {
+        .vn-fg-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 1;              /* 背景之上，对话框/立绘(2)之下 */
+            pointer-events: none;
+        }
+
+        .vn-fg-layer .vn-fg {
             position: absolute;
             inset: 0;
 
@@ -609,8 +616,8 @@
             background-repeat: no-repeat;
 
             pointer-events: none;
-            z-index: 1;                    /* 背景之上、.vn-dialog-area(2) 之下 */
         }
+
         /* ========== 消息内图片：居中材料展示 ========== */
         .vn-image-stage {
             display: none;
@@ -1876,7 +1883,7 @@
         <div class="vn-bg" id="vnBg"></div>
         <div class="vn-bg" id="vnBg"></div>
         <div class="vn-bg vn-bg-next" id="vnBgNext"></div>
-        <div class="vn-fg" id="vnFg"></div>
+        <div class="vn-fg-layer" id="vnFgLayer"></div>
         <div class="vn-image-stage" id="vnImageStage">
             <div class="vn-image-frame">
                 <img id="vnStageImage" alt="消息图片">
@@ -1969,7 +1976,7 @@
         let vnBgmEvents = [];
         let vnBackgroundEvents = [];
         let vnForegroundEvents = [];
-        let vnFgCurrentUrl = '';
+        let vnFgLayers = new Map();
         let vnBgmAudio = new Audio();
         let vnMuted = false;
         let vnCurrentBgmUrl = '';
@@ -2151,7 +2158,7 @@
         }
         function normalizeVnForegroundEvents(list) {
             return (list || [])
-                .map(event => {
+                .map((event, index) => {
                     let start = parseInt(
                         event.startMessageIndex !== undefined && event.startMessageIndex !== null
                             ? event.startMessageIndex
@@ -2174,13 +2181,15 @@
                     }
 
                     return {
+                        key: String(event.id || `fg-${index}`),
                         start,
                         end,
                         url: String(event.url || '').trim()
                     };
                 })
-                .filter(event => event && event.url)
-                .sort((a, b) => a.start - b.start);
+                .filter(event => event && event.url);
+
+            // ★ 注意：不要 sort，数组顺序就是添加顺序
         }
 
         function initVnMediaEvents() {
@@ -2382,35 +2391,56 @@
             }
 
         }
+        function clearVnForegroundLayers() {
+            const container = document.getElementById('vnFgLayer');
+            if (container) container.innerHTML = '';
+            vnFgLayers.clear();
+        }
+
         function applyVnForegroundForStep(step) {
-            const fg = document.getElementById('vnFg');
-            if (!fg) return;
+            const container = document.getElementById('vnFgLayer');
+            if (!container) return;
 
             const pos = Number(step.position) || 0;
-            let url = '';
 
-            if (pos > 0) {
-                for (const event of vnForegroundEvents) {
-                    // 事件按 start 排序，后面的 start 已经超过当前位置就不用看了
-                    if (event.start > pos) break;
+            // 当前消息位置命中的所有前景
+            const active = pos > 0
+                ? vnForegroundEvents.filter(event =>
+                    pos >= event.start && pos <= event.end
+                )
+                : [];
 
-                    if (pos >= event.start && pos <= event.end) {
-                        url = event.url;   // 后出现的事件优先
-                    }
+            const activeKeys = new Set(active.map(event => event.key));
+
+            // 删除当前不再生效的层
+            vnFgLayers.forEach((layer, key) => {
+                if (!activeKeys.has(key)) {
+                    layer.remove();
+                    vnFgLayers.delete(key);
                 }
-            }
+            });
 
-            if (url === '__stop__') url = '';
+            // 按数组顺序依次 append
+            // appendChild 会把已存在的节点移到末尾，
+            // 所以先添加的在下面，后添加的在上面
+            active.forEach(event => {
+                let layer = vnFgLayers.get(event.key);
 
-            if (url === vnFgCurrentUrl) return;
-            vnFgCurrentUrl = url;
+                if (!layer) {
+                    layer = document.createElement('div');
+                    layer.className = 'vn-fg';
+                    layer.dataset.fgKey = event.key;
+                    vnFgLayers.set(event.key, layer);
+                }
 
-            if (url) {
-                fg.style.backgroundImage = `url("${url.replace(/"/g, '\\"')}")`;
-                console.log('[VN] 前景切换 @', pos, '→', url);
-            } else {
-                fg.style.backgroundImage = 'none';
-            }
+                const bg = `url("${event.url.replace(/"/g, '\\"')}")`;
+
+                if (layer.style.backgroundImage !== bg) {
+                    layer.style.backgroundImage = bg;
+                }
+
+                container.appendChild(layer);
+            });
         }
 
         function stopVnSfx() {
@@ -2958,6 +2988,7 @@
 
             document.addEventListener('keydown', vnKeyHandler);
             initVnMediaEvents();
+            clearVnForegroundLayers();
 
             const firstMessageStep = vnSteps.findIndex(step => step.type !== 'chapter');
 
@@ -3008,11 +3039,7 @@
             stopVnBgm();
             stopVnSfx();
 
-            vnFgCurrentUrl = '';
-            const vnFg = document.getElementById('vnFg');
-            if (vnFg) {
-                vnFg.style.backgroundImage = 'none';
-            }
+            clearVnForegroundLayers();
             cancelVnOpening();
         }
 
