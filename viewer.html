@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title></title>
     <style>
         * {
@@ -1655,7 +1656,7 @@
         /* ===== 手机横屏时的对话模式尺寸适配 ===== */
         @media (max-width: 1024px) and (orientation: landscape) {
             .vn-dialog-area {
-                bottom: 46px;        /* ★ 给下面按钮留位置 */
+                bottom: 34px;        /* ★ 给下面按钮留位置 */
                 width: 96vw;
             }
 
@@ -1692,7 +1693,18 @@
                 font-size: 10px;
             }
         }
+        input,
+        textarea,
+        select,
+        button {
+            touch-action: manipulation;
+        }
 
+        @media (max-width: 1024px) {
+            .vn-log-drawer-tools input {
+                font-size: 16px;   /* ★ 不要小于 16px，否则 iOS 会放大 */
+            }
+        }
 
     </style>
 </head>
@@ -2655,24 +2667,29 @@
             return window.innerWidth > window.innerHeight;
         }
         function requestVnFullscreen() {
-            // iOS 不支持普通网页全屏，部分浏览器还会进入伪全屏导致左右黑边
-            if (isIOSDevice()) return;
-
             const el = document.documentElement;
 
+            console.log('[Fullscreen] enabled =', document.fullscreenEnabled);
+
+            if (!document.fullscreenEnabled) {
+                console.warn('[Fullscreen] 浏览器/iframe 不允许全屏');
+                return;
+            }
 
             const done = () => showVnFullscreenHint();
-            const failed = () => {};
 
             if (el.requestFullscreen) {
-                el.requestFullscreen({ navigationUI: 'hide' })
+                el.requestFullscreen()
                     .then(done)
-                    .catch(failed);
+                    .catch(err => {
+                        console.warn('[Fullscreen] 请求失败:', err);
+                    });
             } else if (el.webkitRequestFullscreen) {
                 el.webkitRequestFullscreen();
                 done();
             }
         }
+
 
         function showVnFullscreenHint() {
             const hint = document.getElementById('vnFullscreenHint');
@@ -2686,11 +2703,18 @@
         }
 
         function toggleVnFullscreen() {
-            if (document.fullscreenElement) {
-                document.exitFullscreen().catch(() => {});
-            } else {
-                requestVnFullscreen();
+            const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+
+            if (fsEl) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+                return;
             }
+
+            requestVnFullscreen();
         }
 
         function shouldAutoFullscreen() {
