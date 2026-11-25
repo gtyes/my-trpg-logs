@@ -2612,6 +2612,15 @@
             // 手机/平板要求宽 > 高；桌面通常天然满足
             return window.innerWidth > window.innerHeight;
         }
+        function requestVnFullscreen() {
+            const el = document.getElementById('vnOverlay') || document.documentElement;
+
+            if (el.requestFullscreen) {
+                el.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
+            } else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen();
+            }
+        }
 
         function openVnMode() {
             if (!isVnLandscape()) {
@@ -2632,6 +2641,8 @@
             vnIndex = stepIndex;
 
             document.getElementById('vnOverlay').classList.add('show');
+            requestVnFullscreen();
+
             document.body.classList.add('vn-active');
 
             document.addEventListener('keydown', vnKeyHandler);
@@ -2654,6 +2665,9 @@
 
         function closeVnMode() {
             clearVnTimers();
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
 
             document.getElementById('vnOverlay').classList.remove('show');
             document.body.classList.remove('vn-active');
