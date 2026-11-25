@@ -807,7 +807,13 @@
             background: rgba(0, 0, 0, 0.55);
             opacity: 1;
         }
-
+        .vn-btn.active {
+            background: rgba(255, 255, 255, 0.85);
+            color: rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.85);
+            opacity: 1;
+        }
+        
         .vn-chapter-menu {
             position: absolute;
             right: 0;
@@ -1893,6 +1899,8 @@
                         onclick="event.stopPropagation(); toggleVnFullscreen()">全屏</button>
                 <button class="vn-btn" id="vnChapterBtn"
                         onclick="event.stopPropagation(); toggleVnChapterMenu()">章节</button>
+                <button class="vn-btn" id="vnHideChatBtn"
+                        onclick="event.stopPropagation(); toggleVnHideChat()">屏蔽闲聊：关</button>        
                 <button class="vn-btn" id="vnLogBtn"
                         onclick="event.stopPropagation(); toggleVnLogMenu()">对话</button>
                 <button class="vn-btn" id="vnAutoBtn"
@@ -1968,6 +1976,7 @@
         let vnSteps = [];
         let vnIndex = 0;
         let vnAuto = false;
+        let vnHideChat = false;   // 对话模式：屏蔽所有闲聊频道
         let vnTyping = false;
         let vnTypeTimer = null;
         let vnAutoTimer = null;
@@ -2423,10 +2432,9 @@
             filteredLogs.forEach((msg, index) => {
                 if (!msg) return;
 
-                if (hideChatChannels && msg.channel && isChatChannelName(msg.channel)) {
+                if ((hideChatChannels || vnHideChat) && msg.channel && isChatChannelName(msg.channel)) {
                     return;
                 }
-
                 // 绝对位置：在完整 logData.logs 中的序号（从 1 开始）
                 // 必须放在最前面，章节分支也要用它
                 const logPosition = (msg.id !== undefined && logIndexById.has(String(msg.id)))
@@ -2853,6 +2861,7 @@
             vnIndex = stepIndex;
 
             document.getElementById('vnOverlay').classList.add('show');
+            updateVnHideChatUI();
             if (shouldAutoFullscreen()) {
                 requestVnFullscreen();
             }
@@ -3169,6 +3178,67 @@
             } else if (vnAutoTimer) {
                 clearTimeout(vnAutoTimer);
                 vnAutoTimer = null;
+            }
+        }
+        function updateVnHideChatUI() {
+            const btn = document.getElementById('vnHideChatBtn');
+            if (!btn) return;
+            btn.textContent = vnHideChat ? '屏蔽闲聊：开' : '屏蔽闲聊：关';
+            btn.classList.toggle('active', vnHideChat);
+        }
+
+        function toggleVnHideChat() {
+            vnHideChat = !vnHideChat;
+            updateVnHideChatUI();
+
+            const overlay = document.getElementById('vnOverlay');
+            if (!overlay || !overlay.classList.contains('show')) return;
+
+            clearVnTimers();
+
+            // 记住当前所在位置，重建 steps 后尽量回到同一条消息
+            const oldStep = vnSteps[vnIndex];
+            const anchorId = oldStep && oldStep.msg && oldStep.msg.id !== undefined
+                ? String(oldStep.msg.id)
+                : null;
+            const anchorPosition = oldStep ? (oldStep.position || 0) : 0;
+            const wasChapter = !!(oldStep && oldStep.type === 'chapter');
+
+            vnSteps = buildVnSteps();
+
+            if (!vnSteps.length) {
+                closeVnMode();
+                return;
+            }
+
+            // 优先按消息 id 找回；当前消息被屏蔽时，落到它后面的第一条可见消息
+            let newIndex = -1;
+
+            if (anchorId !== null) {
+                newIndex = vnSteps.findIndex(s =>
+                    s.msg && s.msg.id !== undefined && String(s.msg.id) === anchorId
+                );
+            }
+
+            if (newIndex === -1 && wasChapter) {
+                newIndex = vnSteps.findIndex(s =>
+                    s.type === 'chapter' && (s.position || 0) === anchorPosition
+                );
+            }
+
+            if (newIndex === -1) {
+                newIndex = vnSteps.findIndex(s => (s.position || 0) >= anchorPosition);
+            }
+
+            if (newIndex === -1) newIndex = vnSteps.length - 1;
+
+            vnIndex = Math.max(0, newIndex);
+            renderVnStep();
+
+            // 对话列表如果正开着，重建窗口并回到当前句
+            const drawer = document.getElementById('vnLogDrawer');
+            if (drawer && drawer.classList.contains('show')) {
+                renderVnLogMenu(true);
             }
         }
 
