@@ -2036,6 +2036,10 @@
                 vnOrientationBlocked = false;
                 return;
             }
+            if (isVnOpeningVisible()) {
+                // OP 正在播放，不要提前渲染正片 / 启动 BGM
+                return;
+            }
 
             const blocked = !isVnLandscape();
 
@@ -2270,6 +2274,7 @@
         }
 
         function applyBgmForPosition(position) {
+            if (isVnOpeningVisible()) return; 
             const event = getLatestBgmEvent(Number(position) || 0);
             if (!event) return;
 
@@ -2419,6 +2424,7 @@
         }
 
         function applySfxForPosition(position) {
+            if (isVnOpeningVisible()) return;
             const pos = Number(position) || 0;
             if (!pos) return;
 
@@ -2577,6 +2583,10 @@
         let vnOpeningCallback = null;
         let vnFullscreenByOpening = false;
         let vnVimeoPlayer = null;
+        function isVnOpeningVisible() {
+            const overlay = document.getElementById('vnOpeningOverlay');
+            return !!(overlay && overlay.classList.contains('show'));
+        }
 
         function hasVnOpeningVideo() {
             return !!(
@@ -2599,6 +2609,10 @@
             }
             vnOpeningCallback = callback || null;
             const ov = logData.openingVideo;
+
+            // ★ 防止 OP 开始前已有 BGM / 音效残留
+            stopVnBgm();
+            stopVnSfx();
 
             // 封面
             const videoId = ov && ov.videoId ? String(ov.videoId) : '';
