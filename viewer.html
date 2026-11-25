@@ -600,11 +600,6 @@
             filter: brightness(0.55);
         }
 
-        /* 只有闲聊频道背景加暗 */
-        .vn-bg.chat-dim {
-            filter: brightness(0.55);
-        }
-
         /* ========== 消息内图片：居中材料展示 ========== */
         .vn-image-stage {
             display: none;
@@ -751,12 +746,6 @@
             display: none;
         }
 
-
-        .vn-dialog.system .vn-name {
-            font-size: 14px;
-            color: #aaa;
-        }
-
         .vn-name {
             font-size: 20px;
             font-weight: bold;
@@ -840,25 +829,6 @@
 
         .vn-chapter-menu.show {
             display: block;
-        }
-        .vn-log-menu {
-            position: absolute;
-            right: 0;
-            bottom: calc(100% + 8px);
-            width: 360px;
-            max-width: 80vw;
-            max-height: 50vh;
-            overflow-y: auto;
-            display: none;
-            padding: 6px;
-
-            background: rgba(15, 15, 20, 0.94);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 10;
         }
 
         .vn-log-menu.show {
@@ -1709,9 +1679,69 @@
             touch-action: manipulation;
         }
 
+        /* 桌面端：不显示放大镜，直接显示输入框 */
+        .vn-log-search-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .vn-log-search-toggle svg {
+            display: block;
+        }
         @media (max-width: 1024px) {
+            .vn-log-drawer-header {
+                height: 42px;
+                font-size: 13px;
+            }
+
+            /* 默认不显示输入框，只显示放大镜 */
             .vn-log-drawer-tools input {
-                font-size: 16px;   /* ★ 不要小于 16px，否则 iOS 会放大 */
+                display: none;
+                font-size: 16px;   /* 防止 iOS 自动放大 */
+            }
+
+            .vn-log-search-toggle {
+                display: flex;
+            }
+
+            /* 点开搜索后 */
+            .vn-log-drawer-header.searching .vn-log-drawer-title {
+                display: none;
+            }
+
+            .vn-log-drawer-header.searching .vn-log-search-toggle {
+                display: none;
+            }
+
+            .vn-log-drawer-header.searching .vn-log-drawer-tools input {
+                display: block;
+                width: 110px;
+            }
+
+            /* 手机端列表字号 */
+            .vn-log-speaker {
+                font-size: 12px;
+            }
+
+            .vn-log-text {
+                font-size: 12px;
+                line-height: 1.45;
+            }
+
+            .vn-log-extend {
+                font-size: 11px;
+            }
+
+            .vn-log-item {
+                padding: 7px 4px 7px 6px;
             }
         }
 
@@ -1889,11 +1919,22 @@
         </div>
         <!-- 右侧对话抽屉 -->
         <div class="vn-log-drawer" id="vnLogDrawer">
-            <div class="vn-log-drawer-header">
+            <div class="vn-log-drawer-header" id="vnLogDrawerHeader">
                 <span class="vn-log-drawer-title">对话</span>
+
                 <div class="vn-log-drawer-tools">
+                    <button class="vn-log-search-toggle" id="vnLogSearchToggle"
+                            onclick="event.stopPropagation(); openVnLogSearch()" aria-label="搜索">
+                        <svg width="16" height="16" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <line x1="16.5" y1="16.5" x2="22" y2="22"></line>
+                        </svg>
+                    </button>
+
                     <input type="search" id="vnLogSearchInput" placeholder="搜索…"
                         oninput="onVnLogSearchInput(this.value)">
+
                     <button class="vn-btn"
                             onclick="event.stopPropagation(); toggleVnLogMenu()">关闭</button>
                 </div>
@@ -3993,6 +4034,29 @@
                 drawer.style.backgroundColor = 'rgba(12, 12, 16, 0.92)';
             }
         }
+        function openVnLogSearch() {
+            const header = document.getElementById('vnLogDrawerHeader');
+            const input = document.getElementById('vnLogSearchInput');
+
+            if (header) header.classList.add('searching');
+
+            if (input) {
+                setTimeout(() => input.focus(), 30);
+            }
+        }
+
+        function closeVnLogSearch() {
+            const header = document.getElementById('vnLogDrawerHeader');
+            const input = document.getElementById('vnLogSearchInput');
+
+            if (header) header.classList.remove('searching');
+
+            if (input) {
+                input.value = '';
+                input.blur();
+                onVnLogSearchInput('');
+            }
+        }
 
         // 渲染章节导航
         function toggleVnLogMenu() {
@@ -5699,7 +5763,18 @@ function clearSearch() {
 
         document.addEventListener('fullscreenchange', updateVnFullscreenButton);
         document.addEventListener('webkitfullscreenchange', updateVnFullscreenButton);
-
+        // 对话列表搜索框：空的时候失焦自动收起
+        const vnLogSearchInput = document.getElementById('vnLogSearchInput');
+        if (vnLogSearchInput) {
+            vnLogSearchInput.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    const header = document.getElementById('vnLogDrawerHeader');
+                    if (header) {
+                        header.classList.remove('searching');
+                    }
+                }
+            });
+        }
         // 初始化加载
         window.addEventListener('DOMContentLoaded', loadLogData);
     </script>
