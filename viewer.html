@@ -2654,6 +2654,9 @@
             return window.innerWidth > window.innerHeight;
         }
         function requestVnFullscreen() {
+            // iOS 不支持普通网页全屏，部分浏览器还会进入伪全屏导致左右黑边
+            if (isIOSDevice()) return;
+
             const el = document.documentElement;
 
 
@@ -2729,6 +2732,13 @@
             const atFirstMessage =
                 vnIndex === 0 ||
                 vnIndex === firstMessageStep;
+            console.log('[OP]', {
+                ov: logData.openingVideo,
+                has: hasVnOpeningVideo(),
+                vnIndex,
+                firstMessageStep,
+                atFirstMessage
+            });
 
             if (hasVnOpeningVideo() && atFirstMessage) {
                 openVnOpening(() => renderVnStep());
