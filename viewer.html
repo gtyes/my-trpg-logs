@@ -1655,32 +1655,32 @@
         /* ===== 手机横屏时的对话模式尺寸适配 ===== */
         @media (max-width: 1024px) and (orientation: landscape) {
             .vn-dialog-area {
-                bottom: 8px;
+                bottom: 46px;        /* ★ 给下面按钮留位置 */
                 width: 96vw;
             }
 
             .vn-dialog {
-                height: 42vh;
-                padding: 10px 16px 22px;
+                height: 34vh;        /* ★ 对话框高度调低 */
+                padding: 8px 14px 16px;
             }
 
             .vn-name {
-                font-size: 16px;
-                margin-bottom: 4px;
+                font-size: 15px;
+                margin-bottom: 3px;
             }
 
             .vn-text {
-                font-size: 15px;
-                line-height: 1.5;
+                font-size: 14px;
+                line-height: 1.45;
             }
 
             .vn-portrait-slot {
-                height: 45vh;
+                height: 42vh;
             }
 
             .vn-topbar {
+                top: calc(100% + 4px);   /* 保持对话框下方，但现在有空间了 */
                 gap: 4px;
-                top: calc(100% + 4px);
             }
 
             .vn-btn {
@@ -1692,6 +1692,7 @@
                 font-size: 10px;
             }
         }
+
 
     </style>
 </head>
