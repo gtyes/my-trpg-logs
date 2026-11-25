@@ -27,14 +27,20 @@
 
         #pageBackground {
             position: fixed;
-            inset: 0;
-            z-index: -1;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;        /* ★ 关键：跟随动态视口高度 */
 
             background-color: #111;
-            background-size: cover;        /* 自适应裁剪，不拉伸 */
+            background-size: cover !important;
             background-position: center;
             background-repeat: no-repeat;
+
+            z-index: -1;
+            pointer-events: none;
         }
 
         /* 固定在页面底部的分页条 */
@@ -1949,6 +1955,22 @@
         const chatChannelKeywords = ['闲聊', '聊天', '杂谈', '闲谈', '扯淡', '水群'];
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
+        
+        function syncPageBackgroundSize() {
+            const bg = document.getElementById('pageBackground');
+            if (!bg) return;
+
+            bg.style.width = window.innerWidth + 'px';
+            bg.style.height = window.innerHeight + 'px';
+        }
+
+        window.addEventListener('resize', syncPageBackgroundSize);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(syncPageBackgroundSize, 300);
+        });
+
+        // 初始化
+        syncPageBackgroundSize();
 
         function showVnRotateHint() {
             const hint = document.getElementById('vnRotateHint');
@@ -2754,8 +2776,9 @@
 
             const firstMessageStep = vnSteps.findIndex(step => step.type !== 'chapter');
 
+            // 第一条有正文的消息，跳过空文本消息
             const firstReadableStep = vnSteps.findIndex(step =>
-                step.type !== 'chapter' &&
+                step.type === 'message' &&
                 step.msg &&
                 (step.msg.text || '').trim() !== ''
             );
@@ -2766,19 +2789,17 @@
 
             if (hasVnOpeningVideo() && atFirstMessage) {
                 openVnOpening(() => {
-                    // ★ OP 结束后强制回到第一条有文字的消息
                     vnIndex = firstReadableStep !== -1
                         ? firstReadableStep
                         : (firstMessageStep !== -1 ? firstMessageStep : 0);
 
-                    console.log('[OP] 结束，进入 step:', vnIndex, vnSteps[vnIndex]);
+                    console.log('[OP] 结束后进入 step:', vnIndex, vnSteps[vnIndex]);
 
                     renderVnStep();
                 });
             } else {
                 renderVnStep();
             }
-
 
         }
 
@@ -3055,9 +3076,18 @@
             const logMenu = document.getElementById('vnLogMenu');
             if (logMenu) logMenu.classList.remove('show');
 
+            let step = vnSteps[vnIndex];
 
-            const step = vnSteps[vnIndex];
-            if (!step) return;
+            if (!step) {
+                vnIndex = 0;
+                step = vnSteps[vnIndex];
+            }
+
+            if (!step) {
+                console.warn('[VN] 没有任何可显示的 step');
+                return;
+            }
+
             updateVnLogDrawerBackground(); 
             const overlay = document.getElementById('vnOverlay');
             const bg = document.getElementById('vnBg');
