@@ -24,7 +24,6 @@
             min-height: 100vh;
             background: transparent;
         }
-
         #pageBackground {
             position: fixed;
             top: 0;
@@ -32,16 +31,17 @@
 
             width: 100vw;
             height: 100vh;
-            height: 100dvh;        /* ★ 关键：跟随动态视口高度 */
+            height: 100lvh;       /* ★ 用最大视口高度 */
 
             background-color: #111;
-            background-size: cover !important;
+            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
 
             z-index: -1;
             pointer-events: none;
         }
+
 
         /* 固定在页面底部的分页条 */
         #paginationContainer {
@@ -1959,29 +1959,6 @@
         let currentRightImageUrl = ''; // 记录当前右侧图片URL
         let isImageCollapsed = false; // 记录图片是否收起
         
-        function syncPageBackgroundSize() {
-            const bg = document.getElementById('pageBackground');
-            if (!bg) return;
-
-            const vv = window.visualViewport;
-            const w = vv ? vv.width : window.innerWidth;
-            const h = vv ? vv.height : window.innerHeight;
-
-            bg.style.width = w + 'px';
-            bg.style.height = h + 'px';
-        }
-
-        window.addEventListener('resize', syncPageBackgroundSize);
-        window.addEventListener('orientationchange', () => {
-            setTimeout(syncPageBackgroundSize, 300);
-        });
-
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', syncPageBackgroundSize);
-            window.visualViewport.addEventListener('scroll', syncPageBackgroundSize);
-        }
-
-        syncPageBackgroundSize();
 
         function showVnRotateHint() {
             const hint = document.getElementById('vnRotateHint');
