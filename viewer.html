@@ -1867,6 +1867,8 @@
                         onclick="event.stopPropagation(); toggleVnLogMenu()">对话</button>
                 <button class="vn-btn" id="vnAutoBtn"
                         onclick="event.stopPropagation(); toggleVnAuto()">自动：关</button>
+                <button class="vn-btn" id="vnMuteBtn"
+                        onclick="event.stopPropagation(); toggleVnMute()">静音：关</button>
                 <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
 
                 <div class="vn-chapter-menu" id="vnChapterMenu"></div>
@@ -1913,6 +1915,7 @@
         let vnBgmEvents = [];
         let vnBackgroundEvents = [];
         let vnBgmAudio = new Audio();
+        let vnMuted = false;
         let vnCurrentBgmUrl = '';
         let vnSfxEvents = [];
         let vnSfxAudios = [];   // 当前步骤正在播放的音效
@@ -2135,6 +2138,7 @@
             vnBgmAudio.src = src;
             vnBgmAudio.loop = true;
             vnBgmAudio.volume = 0.6;
+            vnBgmAudio.muted = vnMuted;
             vnBgmAudio.preload = 'auto';
 
             // 只在真正换曲时打一条
@@ -2310,6 +2314,7 @@
                 audio.loop = false;        // 只播一次
                 audio.volume = 0.8;
                 audio.preload = 'auto';
+                audio.muted = vnMuted;
 
                 audio.addEventListener('ended', () => {
                     vnSfxAudios = vnSfxAudios.filter(item => item !== audio);
@@ -2323,6 +2328,7 @@
                 vnSfxAudios.push(audio);
                 console.log('[VN] 音效:', src);
             });
+            
         }
 
         // 获取当前阅读位置在 filteredLogs 中的索引
@@ -2543,6 +2549,7 @@
                 }
 
                 video.style.display = 'block';
+                video.muted = vnMuted;
 
                 if (!video.src) {
                     video.src = ov.mp4;
@@ -2599,6 +2606,7 @@
             if (window.Vimeo && window.Vimeo.Player) {
                 vnVimeoPlayer = new Vimeo.Player(iframe);
                 vnVimeoPlayer.ready().then(() => {
+                    vnVimeoPlayer.setVolume(vnMuted ? 0 : 1).catch(() => {});
                     vnVimeoPlayer.setQuality('1080p').catch(() => {});
                     vnVimeoPlayer.play().catch(() => {});
                 }).catch(() => {});
@@ -3072,6 +3080,39 @@
 
             vnIndex--;
             renderVnStep();
+        }
+
+        function toggleVnMute() {
+            vnMuted = !vnMuted;
+            updateVnMuteUI();
+        }
+
+        function updateVnMuteUI() {
+            const btn = document.getElementById('vnMuteBtn');
+            if (btn) {
+                btn.textContent = vnMuted ? '静音：开' : '静音：关';
+            }
+
+            // BGM
+            if (vnBgmAudio) {
+                vnBgmAudio.muted = vnMuted;
+            }
+
+            // 音效
+            vnSfxAudios.forEach(audio => {
+                audio.muted = vnMuted;
+            });
+
+            // OP 本地视频
+            const video = document.getElementById('vnOpeningVideo');
+            if (video) {
+                video.muted = vnMuted;
+            }
+
+            // OP Vimeo
+            if (vnVimeoPlayer && vnVimeoPlayer.setVolume) {
+                vnVimeoPlayer.setVolume(vnMuted ? 0 : 1).catch(() => {});
+            }
         }
 
         function toggleVnAuto() {
