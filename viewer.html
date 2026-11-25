@@ -807,13 +807,7 @@
             background: rgba(0, 0, 0, 0.55);
             opacity: 1;
         }
-        .vn-btn.active {
-            background: rgba(255, 255, 255, 0.85);
-            color: rgba(0, 0, 0, 0.8);
-            border-color: rgba(255, 255, 255, 0.85);
-            opacity: 1;
-        }
-        
+
         .vn-chapter-menu {
             position: absolute;
             right: 0;
@@ -3184,7 +3178,6 @@
             const btn = document.getElementById('vnHideChatBtn');
             if (!btn) return;
             btn.textContent = vnHideChat ? '屏蔽闲聊：开' : '屏蔽闲聊：关';
-            btn.classList.toggle('active', vnHideChat);
         }
 
         function toggleVnHideChat() {
