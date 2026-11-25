@@ -2754,22 +2754,31 @@
 
             const firstMessageStep = vnSteps.findIndex(step => step.type !== 'chapter');
 
+            const firstReadableStep = vnSteps.findIndex(step =>
+                step.type !== 'chapter' &&
+                step.msg &&
+                (step.msg.text || '').trim() !== ''
+            );
+
             const atFirstMessage =
                 vnIndex === 0 ||
                 vnIndex === firstMessageStep;
-            console.log('[OP]', {
-                ov: logData.openingVideo,
-                has: hasVnOpeningVideo(),
-                vnIndex,
-                firstMessageStep,
-                atFirstMessage
-            });
 
             if (hasVnOpeningVideo() && atFirstMessage) {
-                openVnOpening(() => renderVnStep());
+                openVnOpening(() => {
+                    // ★ OP 结束后强制回到第一条有文字的消息
+                    vnIndex = firstReadableStep !== -1
+                        ? firstReadableStep
+                        : (firstMessageStep !== -1 ? firstMessageStep : 0);
+
+                    console.log('[OP] 结束，进入 step:', vnIndex, vnSteps[vnIndex]);
+
+                    renderVnStep();
+                });
             } else {
                 renderVnStep();
             }
+
 
         }
 
