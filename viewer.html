@@ -605,7 +605,7 @@
             display: none;
             position: absolute;
             inset: 70px 0 240px 0;
-            z-index: 1;
+            z-index: 3;
             align-items: center;
             justify-content: center;
             pointer-events: none;
@@ -4469,7 +4469,7 @@
             }, 100);
         }      
         // 清除筛选
-        function clearFilters(shouldRender = true) {
+        function clearFilters(shouldRender = true, keepChatChannels = false) {
             currentFilters = {
                 channels: [],
                 searchText: ''
@@ -4481,16 +4481,19 @@
                 checkbox.checked = false;
             });
 
-            const collapseCheckbox = document.getElementById('collapseChatCheckbox');
-            if (collapseCheckbox) {
-                collapseCheckbox.checked = false;
+            if (!keepChatChannels) {
+                const collapseCheckbox = document.getElementById('collapseChatCheckbox');
+                if (collapseCheckbox) {
+                    collapseCheckbox.checked = false;
+                }
+                collapseChatChannels = false;
+
+                const hideCheckbox = document.getElementById('hideChatCheckbox');
+                if (hideCheckbox) {
+                    hideCheckbox.checked = false;
+                }
+                hideChatChannels = false;
             }
-            collapseChatChannels = false;
-            const hideCheckbox = document.getElementById('hideChatCheckbox');
-            if (hideCheckbox) {
-                hideCheckbox.checked = false;
-            }
-            hideChatChannels = false;
 
             filteredLogs = logData.logs || [];
             currentPage = 1;
@@ -4887,7 +4890,7 @@
             }
 
             // 先清筛选（只改状态，不渲染），让 filteredLogs 回到完整日志
-            clearFilters(false);
+            clearFilters(false, true);
 
             if (viewMode === 'scroll') {
                 // 用完整日志里的索引定位章节，并加载到目标消息
@@ -5682,7 +5685,7 @@ function getChannelMaskStyle(channel) {
             const chapter = chapters[chapterIndex];
             if (!chapter) return;
 
-            clearFilters(false);   // 只清状态，不渲染第一章
+            clearFilters(false, true); 
 
             setTimeout(() => {
                 if (viewMode === 'scroll') {
