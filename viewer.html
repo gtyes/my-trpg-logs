@@ -1663,7 +1663,10 @@
         @media (max-width: 1024px) and (orientation: landscape) {
             .vn-dialog-area {
                 bottom: 34px;        /* ★ 给下面按钮留位置 */
-                width: calc(100vw - 48px);
+                width: calc(100vw - 96px);
+                max-width: calc(100vw - 96px);
+                left: 50%;
+                transform: translateX(-50%);
             }
 
             .vn-dialog {
@@ -1960,8 +1963,12 @@
             const bg = document.getElementById('pageBackground');
             if (!bg) return;
 
-            bg.style.width = window.innerWidth + 'px';
-            bg.style.height = window.innerHeight + 'px';
+            const vv = window.visualViewport;
+            const w = vv ? vv.width : window.innerWidth;
+            const h = vv ? vv.height : window.innerHeight;
+
+            bg.style.width = w + 'px';
+            bg.style.height = h + 'px';
         }
 
         window.addEventListener('resize', syncPageBackgroundSize);
@@ -1969,7 +1976,11 @@
             setTimeout(syncPageBackgroundSize, 300);
         });
 
-        // 初始化
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', syncPageBackgroundSize);
+            window.visualViewport.addEventListener('scroll', syncPageBackgroundSize);
+        }
+
         syncPageBackgroundSize();
 
         function showVnRotateHint() {
@@ -2480,7 +2491,7 @@
                 if (typeof callback === 'function') callback();
                 return;
             }
-
+            vnOpeningCallback = callback || null;
             const ov = logData.openingVideo;
 
             // 封面
