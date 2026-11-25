@@ -2423,6 +2423,7 @@
             return steps;
         }
         let vnOpeningCallback = null;
+        let vnFullscreenByOpening = false;
         let vnVimeoPlayer = null;
 
         function hasVnOpeningVideo() {
@@ -2434,7 +2435,6 @@
         }
 
         function openVnOpening(callback) {
-            let vnFullscreenByOpening = false;
             const overlay = document.getElementById('vnOpeningOverlay');
             const poster = document.getElementById('vnOpeningPoster');
             const wrap = document.getElementById('vnOpeningIframeWrap');
@@ -2445,11 +2445,6 @@
                 if (typeof callback === 'function') callback();
                 return;
             }
-            if (!document.fullscreenElement) {
-                vnFullscreenByOpening = true;
-                requestVnFullscreen();
-            }
-            vnOpeningCallback = callback || null;
 
             const ov = logData.openingVideo;
 
@@ -2489,6 +2484,14 @@
             }
 
             overlay.classList.add('show');
+            if (!document.fullscreenElement) {
+                vnFullscreenByOpening = true;
+                try {
+                    requestVnFullscreen();
+                } catch (e) {
+                    console.warn('[OP] 全屏请求失败:', e);
+                }
+            }
 
         }
 
