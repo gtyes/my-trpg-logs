@@ -134,16 +134,6 @@
                 padding: 20px;
             }
 
-            /* 底部翻页条改为右栏内部，不再全屏 fixed */
-            .right-pane .bottom-controls {
-                position: static;
-                flex: 0 0 auto;
-                margin-top: 8px;
-                padding: 10px;
-                border-radius: 8px;
-                box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
-            }
-
             /* 窄屏时退回上下堆叠，避免两栏挤爆 */
             @media (max-width: 900px) {
                 body { overflow: auto; }
@@ -156,7 +146,6 @@
                 }
             .right-pane { min-height: 60vh; }
             .right-pane .log-container { overflow: visible; }
-            .right-pane .bottom-controls { position: sticky; bottom: 0; }
             }
             /* 控制面板 */
             .control-panel {
@@ -1401,21 +1390,6 @@
                 border-radius: 12px;
                 font-size: 12px;
                 margin-left: 10px;
-            }
-
-            /* 底部固定控制面板 */
-            .bottom-controls {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: white;
-                padding: 15px;
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-                display: flex;
-                justify-content: center;
-                gap: 15px;
-                z-index: 1000;
             }
 
             /* 拖拽提示 */
@@ -3306,11 +3280,16 @@
                                     <button type="button" class="secondary" @click="copyTtsRoleConfig">复制配置</button>
                                 </div>
 
+                                <button v-if="ttsCharacterList.length"
+                                    class="list-toggle-btn"
+                                    @click="ttsRoleListCollapsed = !ttsRoleListCollapsed">
+                                    {{ ttsRoleListCollapsed ? '▶' : '▼' }} 角色语音列表（{{ ttsCharacterList.length }}）
+                                </button>
                                 <div v-if="!ttsCharacterList.length" class="tts-small" style="margin-top:10px;">
                                     导入日志后会自动列出角色；历史角色配置会保留，可复制到改名后的角色。
                                 </div>
 
-                                <div v-else class="tts-role-list">
+                                <div v-else class="tts-role-list" v-show="!ttsRoleListCollapsed">
                                     <div v-for="character in ttsCharacterList" :key="'tts-role-' + character"
                                         class="tts-role-card">
                                         <div class="tts-role-title">
@@ -3405,42 +3384,6 @@
                                 </div>
                             </div>
 
-                            <!-- 填充缺失头像（不影响已有头像） -->
-                            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-                                <h5 style="margin: 0 0 10px 0;">🖼️ 填充缺失头像（仅补空）</h5>
-                                <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                                    只修改该角色下 <strong>头像为空</strong> 的消息，已有头像的保持不变。
-                                </div>
-                                <div class="batch-edit-form">
-                                    <select v-model="characterAvatarFill.characterName" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; min-width: 150px;">
-                                        <option value="">选择角色</option>
-                                        <option v-for="character in characterList" :value="character" :key="character">{{ character }}</option>
-                                    </select>
-                                    <input type="text" v-model="characterAvatarFill.newAvatarUrl" placeholder="新的头像图片URL" />
-                                    <button @click="batchFillMissingAvatar" class="warning">填充缺失头像</button>
-                                    <button @click="resetCharacterAvatarFill">重置</button>
-                                </div>
-                                <div v-if="characterAvatarFill.newAvatarUrl" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
-                                    <div style="font-size: 12px; color: #666; margin-bottom: 8px;">头像预览：</div>
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <div class="avatar-preview-wrap">
-                                            <div class="avatar-preview-small">
-                                                <img :src="characterAvatarFill.newAvatarUrl"
-                                                    @error="handleAvatarPreviewError"
-                                                    alt="头像预览">
-                                            </div>
-                                            <div class="avatar-preview-large">
-                                                <img :src="characterAvatarFill.newAvatarUrl"
-                                                    @error="handleAvatarPreviewError"
-                                                    alt="头像大图预览">
-                                            </div>
-                                        </div>
-                                        <div style="font-size: 12px; color: #666; word-break: break-all;">
-                                            {{ characterAvatarFill.newAvatarUrl.substring(0, 50) }}{{ characterAvatarFill.newAvatarUrl.length > 50 ? '...' : '' }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                     </aside>
@@ -3831,12 +3774,6 @@
                             </div>
                         </div>
 
-                        <!-- 底部固定控制面板 -->
-                        <div v-if="isEditing" class="bottom-controls">
-                            <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-                            <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
-                            <button @click="nextPage" :disabled="currentPage >= totalPages">下一页</button>
-                        </div>
                     </main>
                 </div>
 
@@ -3881,6 +3818,7 @@
                 },
                 // 管理列表折叠状态（默认折叠）
                 chapterListCollapsed: true,
+                ttsRoleListCollapsed: true,
                 sfxListCollapsed: true,
                 bgmListCollapsed: true,
                 backgroundListCollapsed: true,
@@ -4174,11 +4112,6 @@
                     messages: []
                 },
 
-                // 新增：填充缺失头像（仅补空）
-                characterAvatarFill: {
-                    characterName: '',
-                    newAvatarUrl: ''
-                },
                 ttsConfig: {
                     version: 1,
                     includeChat: false,
@@ -8818,56 +8751,6 @@ autoImportCharacterColors() {
                 event.target.style.backgroundColor = '#f8f9fa';
                 event.target.style.border = '1px solid #ddd';
             },
-            // 批量填充缺失头像（只补空，不影响已有头像）
-            batchFillMissingAvatar() {
-                if (!this.characterAvatarFill.characterName) {
-                    alert('请选择角色');
-                    return;
-                }
-                if (!this.characterAvatarFill.newAvatarUrl) {
-                    alert('请输入新的头像图片URL');
-                    return;
-                }
-                // 简单验证URL格式
-                if (!this.characterAvatarFill.newAvatarUrl.startsWith('http://') &&
-                    !this.characterAvatarFill.newAvatarUrl.startsWith('https://')) {
-                    if (!confirm('图片链接不是标准的http/https格式，是否继续使用？')) {
-                        return;
-                    }
-                }
-
-                const characterName = this.characterAvatarFill.characterName;
-                const newAvatarUrl = this.characterAvatarFill.newAvatarUrl;
-
-                // 统计有多少消息头像为空
-                const emptyCount = this.logs.filter(msg => msg.name === characterName && !msg.icon).length;
-                if (emptyCount === 0) {
-                    alert(`角色 "${characterName}" 的所有消息都已经有头像了，无需填充。`);
-                    return;
-                }
-
-                if (!confirm(`确定为角色 "${characterName}" 的 ${emptyCount} 条头像为空的消息设置新头像吗？已有头像的将保持不变。`)) {
-                    return;
-                }
-
-                let updatedCount = 0;
-                this.logs.forEach(msg => {
-                    if (msg.name === characterName && !msg.icon) {
-                        msg.icon = newAvatarUrl;
-                        updatedCount++;
-                    }
-                });
-
-                alert(`成功为 ${updatedCount} 条消息填充了头像（已有头像的未作改动）`);
-                this.resetCharacterAvatarFill();
-            },
-
-            // 重置填充头像表单
-            resetCharacterAvatarFill() {
-                this.characterAvatarFill.characterName = '';
-                this.characterAvatarFill.newAvatarUrl = '';
-            },
-
             // HEX转RGBA
             hexToRgba(hex, opacity) {
                 if (!hex) {

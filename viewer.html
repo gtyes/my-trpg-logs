@@ -1915,7 +1915,6 @@
     <!-- 对话阅读模式 -->
     <div id="vnOverlay" class="vn-overlay" onclick="vnHandleClick(event)">
         <div class="vn-bg" id="vnBg"></div>
-        <div class="vn-bg" id="vnBg"></div>
         <div class="vn-bg vn-bg-next" id="vnBgNext"></div>
         <div class="vn-fg-layer" id="vnFgLayer"></div>
         <div class="vn-image-stage" id="vnImageStage">
@@ -2344,6 +2343,74 @@
             return chatChannelKeywords.some(keyword => name.includes(keyword));
         }
         let vnBgCurrentUrl = '';
+        let vnBgPendingUrl = null;
+        let vnBgRequestId = 0;
+        const vnPreloadedImages = new Map();
+
+        function preloadVnImage(url) {
+            const imageUrl = String(url || '').trim();
+            if (!imageUrl || imageUrl === '__stop__') return Promise.resolve(true);
+
+            const existing = vnPreloadedImages.get(imageUrl);
+            if (existing) return existing.promise;
+
+            let resolveLoad;
+            const promise = new Promise(resolve => {
+                resolveLoad = resolve;
+            });
+            const image = new Image();
+            vnPreloadedImages.set(imageUrl, promise);
+
+            image.onload = () => {
+                image.onload = null;
+                image.onerror = null;
+                resolveLoad(true);
+            };
+            image.onerror = () => {
+                image.onload = null;
+                image.onerror = null;
+                if (vnPreloadedImages.get(imageUrl) === promise) {
+                    vnPreloadedImages.delete(imageUrl);
+                }
+                resolveLoad(false);
+            };
+            image.src = imageUrl;
+
+            if (vnPreloadedImages.size > 24) {
+                const oldestUrl = vnPreloadedImages.keys().next().value;
+                if (oldestUrl !== imageUrl) vnPreloadedImages.delete(oldestUrl);
+            }
+            return promise;
+        }
+
+        function preloadVnStepImages(step) {
+            if (!step) return;
+
+            const urls = [getVnBackgroundUrlForStep(step), step.portraitUrl];
+            const position = Number(step.position) || 0;
+            vnForegroundEvents.forEach(event => {
+                if (position >= event.start && position <= event.end) {
+                    urls.push(event.url);
+                }
+            });
+
+            const message = step.msg;
+            if (message) {
+                urls.push(message.messageImage);
+                if (message.dice || message.extend) {
+                    urls.push(getExtendImage(getExtendResultType(message)));
+                }
+            }
+
+            urls.forEach(preloadVnImage);
+        }
+
+        function preloadUpcomingVnImages() {
+            const end = Math.min(vnSteps.length, vnIndex + 2);
+            for (let index = vnIndex; index < end; index++) {
+                preloadVnStepImages(vnSteps[index]);
+            }
+        }
 
         function setVnBackground(url) {
             const base = document.getElementById('vnBg');
@@ -2351,50 +2418,74 @@
             if (!base || !next) return;
 
             const target = url || '';
-            if (target === vnBgCurrentUrl) return;
+            if (target === vnBgCurrentUrl) {
+                if (vnBgPendingUrl) {
+                    vnBgRequestId++;
+                    vnBgPendingUrl = null;
+                    next.style.transition = 'none';
+                    next.style.opacity = '0';
+                    next.style.backgroundImage = 'none';
+                }
+                return;
+            }
+            if (target === vnBgPendingUrl) return;
 
             const cssUrl = target ? `url('${target}')` : 'none';
+            const requestId = ++vnBgRequestId;
+            vnBgPendingUrl = target;
+            const applyBackground = () => {
+                if (requestId !== vnBgRequestId) return;
 
-            // 首次设置：直接显示，不做过渡
-            if (!vnBgCurrentUrl) {
-                base.style.backgroundImage = cssUrl;
-                vnBgCurrentUrl = target;
+                // 首次设置：直接显示，不做过渡
+                if (!vnBgCurrentUrl) {
+                    base.style.backgroundImage = cssUrl;
+                    vnBgCurrentUrl = target;
+                    vnBgPendingUrl = null;
+                    return;
+                }
+
+                // 交叉淡入：先把新图放到上层，再淡入
+                next.style.transition = 'none';
+                next.style.backgroundImage = cssUrl;
+                next.style.opacity = '0';
+
+                void next.offsetWidth; // 强制回流，让过渡生效
+
+                next.style.transition = 'opacity 0.8s ease';
+                next.style.opacity = '1';
+
+                let finished = false;
+
+                const finish = () => {
+                    if (finished || requestId !== vnBgRequestId) return;
+                    finished = true;
+
+                    // 把新图落到底层，再把上层清空
+                    base.style.backgroundImage = cssUrl;
+                    next.style.transition = 'none';
+                    next.style.opacity = '0';
+                    next.style.backgroundImage = 'none';
+
+                    vnBgCurrentUrl = target;
+                    vnBgPendingUrl = null;
+                };
+
+                next.addEventListener('transitionend', finish, { once: true });
+                setTimeout(finish, 900); // 兜底
+            };
+
+            if (!target) {
+                applyBackground();
                 return;
             }
 
-            // 交叉淡入：先把新图放到上层，再淡入
-            next.style.transition = 'none';
-            next.style.backgroundImage = cssUrl;
-            next.style.opacity = '0';
-
-            void next.offsetWidth; // 强制回流，让过渡生效
-
-            next.style.transition = 'opacity 0.8s ease';
-            next.style.opacity = '1';
-
-            let finished = false;
-
-            const finish = () => {
-                if (finished) return;
-                finished = true;
-
-                // 把新图落到底层，再把上层清空
-                base.style.backgroundImage = cssUrl;
-                next.style.transition = 'none';
-                next.style.opacity = '0';
-                next.style.backgroundImage = 'none';
-
-                vnBgCurrentUrl = target;
-            };
-
-            next.addEventListener('transitionend', finish, { once: true });
-            setTimeout(finish, 900); // 兜底
+            preloadVnImage(target).then(loaded => {
+                if (!loaded) console.warn('[VN] 背景图片加载失败:', target);
+                applyBackground();
+            });
         }
 
-        function applyVnBackgroundForStep(step) {
-            const bg = document.getElementById('vnBg');
-            if (!bg) return;
-
+        function getVnBackgroundUrlForStep(step) {
             const stepPosition = Number(step.position) || 0;
 
             // 找当前位置之前（含）的最后一条背景事件，不再限制在章节内
@@ -2421,7 +2512,15 @@
             }
 
             const finalUrl = backgroundUrl || '';
+            return finalUrl;
+        }
 
+        function applyVnBackgroundForStep(step) {
+            const bg = document.getElementById('vnBg');
+            if (!bg) return;
+
+            const finalUrl = getVnBackgroundUrlForStep(step);
+            const stepPosition = Number(step.position) || 0;
             if (finalUrl !== vnBgCurrentUrl) {
                 setVnBackground(finalUrl);
 
@@ -3450,6 +3549,8 @@
                 return;
             }
 
+            const stepIndex = vnIndex;
+            preloadUpcomingVnImages();
             setVnSpeechAudio(step.msg);
             updateVnLogDrawerBackground(); 
             const overlay = document.getElementById('vnOverlay');
@@ -3469,8 +3570,12 @@
             if (bgNext) bgNext.classList.remove('chat-dim');
             // 每次切换步骤，先把图片层收起来
             imageStage.classList.remove('show');
+            stageImage.onload = null;
+            stageImage.onerror = null;
             stageImage.removeAttribute('src');
             extendImageOverlay.classList.remove('show');
+            extendImageEl.onload = null;
+            extendImageEl.onerror = null;
             extendImageEl.removeAttribute('src');
 
             // 应用背景切换事件
@@ -3553,15 +3658,35 @@
                 const resultImage = getExtendImage(resultType);
 
                 if (resultImage) {
+                    extendImageEl.onload = () => {
+                        if (vnIndex === stepIndex) extendImageOverlay.classList.add('show');
+                    };
+                    extendImageEl.onerror = () => {
+                        if (vnIndex !== stepIndex) return;
+                        extendImageOverlay.classList.remove('show');
+                        console.warn('[VN] 判定图片加载失败:', resultImage);
+                    };
                     extendImageEl.src = resultImage;
-                    extendImageOverlay.classList.add('show');
+                    if (extendImageEl.complete && extendImageEl.naturalWidth > 0) {
+                        extendImageOverlay.classList.add('show');
+                    }
                 }
             }
 
             // 消息内图片：居中材料展示
             if (msg.messageImage) {
+                stageImage.onload = () => {
+                    if (vnIndex === stepIndex) imageStage.classList.add('show');
+                };
+                stageImage.onerror = () => {
+                    if (vnIndex !== stepIndex) return;
+                    imageStage.classList.remove('show');
+                    console.warn('[VN] 材料图片加载失败:', msg.messageImage);
+                };
                 stageImage.src = msg.messageImage;
-                imageStage.classList.add('show');
+                if (stageImage.complete && stageImage.naturalWidth > 0) {
+                    imageStage.classList.add('show');
+                }
 
                 const frame = imageStage.querySelector('.vn-image-frame');
                 if (frame) {
