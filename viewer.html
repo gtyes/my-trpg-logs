@@ -3570,7 +3570,7 @@
             audio.removeAttribute('src');
             audio.hidden = true;
 
-            const url = message && typeof message.ttsAudioUrl === 'string'
+            const url = message && message.ttsDisabled !== true && typeof message.ttsAudioUrl === 'string'
                 ? message.ttsAudioUrl.trim()
                 : '';
             if (!url) {
@@ -5310,7 +5310,7 @@
 
             // ---- 1️⃣ 对话文本 ----
             const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
-            const speechAudioHtml = msg.ttsAudioUrl
+            const speechAudioHtml = msg.ttsDisabled !== true && msg.ttsAudioUrl
                 ? `<audio class="message-tts-audio" controls preload="none" src="${escapeHtmlAttribute(msg.ttsAudioUrl)}" aria-label="播放消息语音"></audio>`
                 : '';
             let html = `<div class="message-text">${highlightedText}</div>${speechAudioHtml}`;

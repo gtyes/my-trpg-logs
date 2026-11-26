@@ -1317,6 +1317,32 @@
                 line-height: 1.5;
             }
 
+            .edit-form .message-edit-full-width {
+                width: 100%;
+                height: 36px;
+                box-sizing: border-box;
+            }
+
+            .edit-form textarea.message-edit-full-width {
+                min-height: 36px;
+                line-height: normal;
+            }
+
+            .edit-form .message-tts-disable {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: #666;
+                font-size: 13px;
+            }
+
+            .edit-form .message-tts-disable input {
+                width: auto;
+                margin: 0;
+                padding: 0;
+                border: 0;
+            }
+
             .form-actions {
                 display: flex;
                 gap: 10px;
@@ -3586,6 +3612,10 @@
                                                                     <textarea v-model="msg.text" placeholder="系统消息内容" rows="3"
                                                                         @input="invalidateMessageTts(msg)"
                                                                         style="width: 100%; text-align: center;"></textarea>
+                                                                    <label class="message-tts-disable">
+                                                                        <input type="checkbox" v-model="msg.ttsDisabled" @change="handleMessageTtsDisabledChange(msg)">
+                                                                        <span>不为这条消息生成或播放语音</span>
+                                                                    </label>
 
                                                                     <!-- 系统消息相关字段 -->
                                                                     <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -3687,18 +3717,22 @@
                                                                     <!-- 文本内容编辑 -->
                                                                     <textarea v-model="msg.text" placeholder="消息内容" rows="3"
                                                                         @input="invalidateMessageTts(msg)"></textarea>
+                                                                    <label class="message-tts-disable">
+                                                                        <input type="checkbox" v-model="msg.ttsDisabled" @change="handleMessageTtsDisabledChange(msg)">
+                                                                        <span>不为这条消息生成或播放语音</span>
+                                                                    </label>
 
                                                                     <!-- 头像图片URL输入 -->
                                                                     <div style="margin-top: 10px;">
                                                                         <label style="font-size: 12px; color: #666; display: block; margin-bottom: 5px;">头像图片URL（可选）</label>
-                                                                        <input type="text" v-model="msg.icon" placeholder="输入头像图片URL，支持png、jpg等">
+                                                                        <input type="text" class="message-edit-full-width" v-model="msg.icon" placeholder="输入头像图片URL，支持png、jpg等">
                                                                         <div style="font-size: 11px; color: #999; margin-top: 3px;">提示：修改该消息的角色头像链接</div>
                                                                     </div>
 
                                                                     <!-- 消息图片URL输入 -->
                                                                     <div style="margin-top: 10px;">
                                                                         <label style="font-size: 12px; color: #666; display: block; margin-bottom: 5px;">图片URL（可选）</label>
-                                                                        <input type="text" v-model="msg.messageImage" placeholder="输入图片URL，支持png、jpg等">
+                                                                        <input type="text" class="message-edit-full-width" v-model="msg.messageImage" placeholder="输入图片URL，支持png、jpg等">
                                                                         <div style="font-size: 11px; color: #999; margin-top: 3px;">
                                                                             提示：这里可以插入消息中的图片，会显示在消息内容下方
                                                                         </div>
@@ -3708,7 +3742,7 @@
                                                                     <!-- 在编辑表单中修改extend字段编辑 -->
                                                                     <div style="margin-top: 10px;">
                                                                         <label style="font-size: 12px; color: #666; display: block; margin-bottom: 5px;">骰子/扩展信息 (JSON格式或文本)</label>
-                                                                        <textarea v-model="msg.editExtend" placeholder='例如: {"roll": {"result": "2D6 = [3,4] = 7"}} 或直接输入骰子结果' rows="4"
+                                                                        <textarea class="message-edit-full-width" v-model="msg.editExtend" placeholder='例如: {"roll": {"result": "2D6 = [3,4] = 7"}} 或直接输入骰子结果' rows="4"
                                                                             style="font-family: 'Consolas, Monaco, monospace'; font-size: 13px;"></textarea>
                                                                         <div style="font-size: 11px; color: #999; margin-top: 3px;">
                                                                             提示：这里可以编辑骰子结果等扩展信息，支持JSON格式或纯文本
@@ -5939,6 +5973,16 @@
                 this.ttsScanSummary = null;
             },
 
+            handleMessageTtsDisabledChange(message) {
+                if (!message) return;
+                delete message.ttsHash;
+                delete message.ttsAudioUrl;
+                delete message.ttsVoiceName;
+                delete message.ttsCharCount;
+                this.ttsTasks = [];
+                this.ttsScanSummary = null;
+            },
+
             invalidateRoleTtsAudio(roleName) {
                 this.logs.forEach(message => {
                     if (message.name === roleName) {
@@ -6165,7 +6209,7 @@
                     const channelStats = new Map();
 
                     for (const message of this.logs) {
-                        if (!message || message.isChapter) continue;
+                        if (!message || message.isChapter || message.ttsDisabled === true) continue;
                         const text = this.getTtsEligibleText(message);
                         if (!text || this.isPureDiceMessage(message, text)) continue;
 
@@ -8116,7 +8160,8 @@ autoImportCharacterColors() {
                     bubbleOpacity: log.bubbleOpacity !== undefined ? log.bubbleOpacity : 0.85,
                     bubbleImage: log.bubbleImage || '',
                     bubbleImageSize: log.bubbleImageSize || 'cover',
-                    bubbleImageOpacity: log.bubbleImageOpacity !== undefined ? log.bubbleImageOpacity : 1.0
+                    bubbleImageOpacity: log.bubbleImageOpacity !== undefined ? log.bubbleImageOpacity : 1.0,
+                    ttsDisabled: log.ttsDisabled === true
                 }));
             },
 
@@ -9154,7 +9199,8 @@ autoImportCharacterColors() {
             // 记录进入编辑前的可编辑字段
             createEditBackup(msg) {
                 const fields = [
-                    'name', 'text', 'color', 'channel', 'icon', 'messageImage', 'to', 'editExtend',
+                    'name', 'text', 'color', 'channel', 'icon', 'messageImage', 'to', 'editExtend', 'ttsDisabled',
+                    'ttsHash', 'ttsAudioUrl', 'ttsVoiceName', 'ttsCharCount',
                     'nameUseImage', 'nameBackground', 'nameOpacity',
                     'nameImage', 'nameImageSize', 'nameImageOpacity',
                     'bubbleUseImage', 'bubbleColor', 'bubbleOpacity',
