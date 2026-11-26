@@ -213,6 +213,7 @@
 
             .pagination-controls {
                 display: flex;
+                flex-wrap: wrap;
                 align-items: center;
                 gap: 10px;
                 margin-left: auto;
@@ -231,6 +232,58 @@
                 border: 1px solid #ddd;
                 border-radius: 4px;
                 text-align: center;
+            }
+
+            .message-search {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-left: 10px;
+            }
+
+            .message-search input {
+                width: 180px;
+                padding: 5px 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+
+            .message-search-results {
+                position: absolute;
+                top: calc(100% + 6px);
+                right: 0;
+                z-index: 20;
+                width: min(600px, 80vw);
+                max-height: 320px;
+                overflow-y: auto;
+                padding: 6px;
+                background: #fff;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+            }
+
+            .message-search-result {
+                display: block;
+                width: 100%;
+                padding: 8px 10px;
+                border: 0;
+                border-radius: 4px;
+                background: #fff;
+                color: #333;
+                text-align: left;
+                cursor: pointer;
+            }
+
+            .message-search-result:hover {
+                background: #f0f4f8;
+            }
+
+            .message-search-status {
+                padding: 8px 10px;
+                color: #666;
+                font-size: 13px;
             }
 
             .batch-edit-panel {
@@ -1475,8 +1528,13 @@
                 <aside class="left-pane">
                     <div class="control-panel">
                         <div class="tool-buttons">
-                            <button v-if="isEditing" @click="regenerateMessageIds" class="warning" style="background: #e67e22;">
-                                重新生成消息ID
+                            <button @click="openEditorFilePicker" class="success">
+                                编辑本地日志
+                            </button>
+                            <input ref="editorFileInput" type="file" accept=".json,.html,.htm"
+                                @change="handleEditorFileSelect" style="display: none;">
+                            <button v-if="isEditing" @click="saveChanges" :disabled="!currentFileName" class="success">
+                                保存修改
                             </button>
                             <button v-if="isEditing" @click="downloadJson" class="success">
                                 导出修改后的 JSON
@@ -3028,10 +3086,10 @@
                     <main class="right-pane">
 
                         <!-- 从左侧搬过来的分页控件 -->
-                        <div class="pagination-controls">
+                        <div v-if="isEditing" class="pagination-controls">
                             <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
                             <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
-                            <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
+                            <button @click="nextPage" :disabled="currentPage >= totalPages">下一页</button>
 
                             <div class="pagination-jump">
                                 <input type="number" v-model.number="jumpPage" min="1" :max="totalPages" placeholder="页码">
@@ -3043,9 +3101,32 @@
                                     placeholder="消息条数" @keyup.enter="jumpToMessage">
                                 <button @click="jumpToMessage" :disabled="!jumpMessage">跳转</button>
                             </div>
+
+                            <div class="message-search">
+                                <input type="search" v-model="messageSearchQuery" placeholder="搜索消息关键词"
+                                    aria-label="搜索消息关键词" @keyup.enter="searchMessages">
+                                <button @click="searchMessages">搜索</button>
+                                <div v-if="messageSearchPerformed" class="message-search-results">
+                                    <div v-if="messageSearchStatus" class="message-search-status">
+                                        {{ messageSearchStatus }}
+                                    </div>
+                                    <template v-else>
+                                        <div class="message-search-status">
+                                            找到 {{ messageSearchResults.length }} 条结果，双击消息跳转
+                                        </div>
+                                        <button v-for="result in messageSearchResults" :key="result.index"
+                                            type="button" class="message-search-result"
+                                            @dblclick="jumpToSearchResult(result)">
+                                            <strong>第 {{ result.index + 1 }} 条 · {{ result.message.name || '未知角色' }}</strong>
+                                            <span>（{{ result.message.channel || '默认频道' }}）</span>
+                                            <span> {{ getMessageSearchPreview(result.message) }}</span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="pagination-info" ref="paginationInfo">
+                        <div v-if="isEditing" class="pagination-info" ref="paginationInfo">
                             显示第 {{ startIndex + 1 }} - {{ Math.min(endIndex, totalLogs) }} 条消息
                             <span class="page-indicator">共 {{ channelList.length }} 个频道，{{ characterList.length }} 个角色</span>
                         </div>
@@ -3061,9 +3142,7 @@
                             </div>
 
                             <!-- 空状态 -->
-                            <div v-else-if="!paginatedLogs.length" class="loading">
-                                <p>暂无消息记录</p>
-                            </div>
+                            <div v-else-if="!paginatedLogs.length"></div>
 
                             <!-- 消息列表 -->
                             <div v-else>
@@ -3373,10 +3452,10 @@
                         </div>
 
                         <!-- 底部固定控制面板 -->
-                        <div class="bottom-controls">
+                        <div v-if="isEditing" class="bottom-controls">
                             <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
                             <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
-                            <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
+                            <button @click="nextPage" :disabled="currentPage >= totalPages">下一页</button>
                         </div>
                     </main>
                 </div>
@@ -3391,7 +3470,7 @@
             return {
                 title: "TRPG 跑团日志编辑器",
                 date: "2023-10-27",
-                loading: true,
+                loading: false,
                 isEditing: true,
                 openingVideo: {
                     input: '',      // 用户粘贴的链接/路径
@@ -3429,10 +3508,16 @@
                 channelRuleListCollapsed: true,
                 characterRuleListCollapsed: true,
                 logs: [],
+                currentFileHandle: null,
+                currentFileName: '',
                 currentPage: 1,
                 pageSize: 50,
                 jumpPage: null,
                 jumpMessage: null,
+                messageSearchQuery: '',
+                messageSearchResults: [],
+                messageSearchPerformed: false,
+                messageSearchStatus: '',
                 mergeStep: 1, // 1=选择文件, 2=确认匹配点, 3=完成
                 mergeFirstFile: null,
                 mergeSecondFile: null,
@@ -3853,8 +3938,6 @@
             this.loadGlobalChannelSettings();
             // 加载网站设置
             this.loadWebsiteSettings();
-            // 从 data.json 加载日志
-            this.loadLogsFromJson();
         },
         beforeUnmount() {
             // 清理监听器
@@ -3865,6 +3948,95 @@
             this.stopAutoScroll();
         },
         methods: {
+            async openEditorFilePicker() {
+                if (typeof window.showOpenFilePicker !== 'function') {
+                    this.$refs.editorFileInput.click();
+                    return;
+                }
+
+                try {
+                    const [fileHandle] = await window.showOpenFilePicker({
+                        multiple: false,
+                        types: [
+                            {
+                                description: 'TRPG 日志 JSON',
+                                accept: { 'application/json': ['.json'] }
+                            },
+                            {
+                                description: '日志 HTML',
+                                accept: { 'text/html': ['.html', '.htm'] }
+                            }
+                        ]
+                    });
+                    const file = await fileHandle.getFile();
+                    const isJsonFile = file.name.toLowerCase().endsWith('.json');
+                    await this.loadEditorFile(file, isJsonFile ? fileHandle : null);
+                } catch (error) {
+                    if (error.name === 'AbortError') return;
+                    console.error('选择本地日志失败:', error);
+                    alert('选择本地日志失败: ' + error.message);
+                }
+            },
+
+            async handleEditorFileSelect(event) {
+                const file = event.target.files && event.target.files[0];
+                if (!file) return;
+
+                try {
+                    await this.loadEditorFile(file, null);
+                } finally {
+                    event.target.value = '';
+                }
+            },
+
+            async loadEditorFile(file, fileHandle) {
+                this.loading = true;
+                try {
+                    const content = await this.readFileAsText(file);
+                    const extension = file.name.split('.').pop().toLowerCase();
+                    let parsedData;
+
+                    if (extension === 'json') {
+                        parsedData = JSON.parse(content);
+                        if (!this.isValidLogData(parsedData)) {
+                            throw new Error('数据格式无效，请选择包含日志数组的 JSON 文件');
+                        }
+                    } else if (extension === 'html' || extension === 'htm') {
+                        parsedData = this.parseHtmlFile(content);
+                        if (parsedData.length === 0) {
+                            throw new Error('未能从 HTML 文件中解析出日志消息');
+                        }
+                    } else {
+                        throw new Error('不支持的文件格式，请选择 .json 或 .html 文件');
+                    }
+
+                    this.loadFromParsedData(parsedData);
+                    this.currentPage = 1;
+                    this.jumpPage = null;
+                    this.jumpMessage = null;
+                    this.messageSearchQuery = '';
+                    this.messageSearchResults = [];
+                    this.messageSearchPerformed = false;
+                    this.messageSearchStatus = '';
+                    this.currentFileHandle = fileHandle;
+                    this.currentFileName = file.name;
+                    this.isEditing = true;
+                    this.pruneCharacterRules();
+                    this.mergeStep = 1;
+                    this.mergeFirstFile = null;
+                    this.mergeSecondFile = null;
+                    this.tempFirstData = null;
+                    this.tempSecondData = null;
+                    this.manualMatchIndex = null;
+                    console.log(`成功导入 ${file.name}，共 ${this.logs.length} 条消息`);
+                } catch (error) {
+                    console.error('导入本地日志失败:', error);
+                    alert('导入本地日志失败: ' + error.message);
+                } finally {
+                    this.loading = false;
+                }
+            },
+
             moveForegroundEvent(index, delta) {
                 const target = index + delta;
                 if (target < 0 || target >= this.foregroundEvents.length) return;
@@ -5011,6 +5183,48 @@
                 this.jumpMessage = null;
             },
 
+            searchMessages() {
+                const query = this.messageSearchQuery.trim().toLocaleLowerCase();
+                this.messageSearchPerformed = true;
+                this.messageSearchStatus = '';
+
+                if (!query) {
+                    this.messageSearchResults = [];
+                    this.messageSearchStatus = '请输入要搜索的关键词';
+                    return;
+                }
+
+                this.messageSearchResults = this.logs.reduce((results, message, index) => {
+                    const searchableText = [message.name, message.channel, message.text, message.to, message.dice, message.extend]
+                        .map(value => {
+                            if (value === null || value === undefined) return '';
+                            return typeof value === 'string' ? value : JSON.stringify(value);
+                        })
+                        .join(' ')
+                        .toLocaleLowerCase();
+
+                    if (searchableText.includes(query)) {
+                        results.push({ index, message });
+                    }
+                    return results;
+                }, []);
+
+                if (this.messageSearchResults.length === 0) {
+                    this.messageSearchStatus = '没有找到匹配的消息';
+                }
+            },
+
+            getMessageSearchPreview(message) {
+                const value = message.text || message.dice || message.extend || '';
+                const preview = typeof value === 'string' ? value : JSON.stringify(value);
+                return preview.length > 160 ? `${preview.slice(0, 160)}…` : preview;
+            },
+
+            jumpToSearchResult(result) {
+                this.jumpMessage = result.index + 1;
+                this.jumpToMessage();
+            },
+
             // 获取system消息应该归属的频道
             getSystemMessageChannel(msg) {
                 // 如果是章节消息，返回"系统"
@@ -5044,65 +5258,6 @@
                 return otherChannels.some(otherChannel =>
                 channel.toLowerCase().includes(otherChannel.toLowerCase()));
             },
-            regenerateMessageIds() {
-                if (!confirm('此操作将重新生成所有消息的ID，并同步更新章节引用。\n\n确定继续吗？')) {
-                    return;
-                }
-
-                const chapterMap = {};
-                this.chapters.forEach(ch => {
-                    chapterMap[ch.name] = ch;
-                });
-
-                const idMap = {};                    // ★ 新增 1：旧 id → 新 id 的对照表
-
-                let counter = 1;
-                this.logs.forEach(msg => {
-                    const oldId = msg.id;            // ★ 新增 2：先记住旧 id
-                    const newId = `msg-${counter++}`;
-
-                    if (oldId !== undefined) {       // ★ 新增 3：记进对照表
-                        idMap[String(oldId)] = newId;
-                    }
-
-                    // 以下是原来的章节 id 更新逻辑，不动
-                    if (msg.isChapter) {
-                        const match = msg.text.match(/===\s*(.+?)\s*===/);
-                        if (match) {
-                            const chapterName = match[1];
-                            if (chapterMap[chapterName]) {
-                                chapterMap[chapterName].id = newId;
-                            } else {
-                                console.warn(`章节消息 "${msg.text}" 在章节列表中未找到匹配的章节。`);
-                            }
-                        }
-                    }
-
-                    msg.id = newId;
-
-                    // 原来的清理逻辑，不动
-                    msg.editing = false;
-                    msg.dragging = false;
-                    msg.dragOver = false;
-                    msg.checked = false;
-                });
-
-                // ★ 新增 4：把媒体事件的 messageId 从旧 id 换成新 id
-                [...this.bgmEvents, ...this.backgroundEvents, ...this.sfxEvents].forEach(event => {
-                    if (event.messageId && idMap[String(event.messageId)]) {
-                        event.messageId = idMap[String(event.messageId)];
-                    }
-                });
-
-                this.clearSelection();
-
-                this.syncChapterPositions();
-                this.syncMediaEventPositions();      // ★ 新增 5：顺便重算事件的显示序号
-
-                alert(`✅ 已成功重新生成 ${this.logs.length} 条消息的ID，并同步更新章节引用。`);
-            },
-
-
             // 获取extend文本（处理极限成功替换）
             formatExtendContent(msg) {
                 // 优先使用extend字段
@@ -6787,49 +6942,6 @@ autoImportCharacterColors() {
                 return String(value);
             },
 
-            // 从 data.json 加载日志
-            async loadLogsFromJson() {
-                try {
-                    console.log('正在尝试加载 data.json');
-                    const response = await fetch('data.json');
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP错误: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    console.log('data.json 加载成功，开始解析数据');
-
-                    if (this.isValidLogData(data)) {
-                        this.loadFromParsedData(data);
-
-                        // 文件加载完后，清理不存在的角色规则
-                        this.pruneCharacterRules();
-
-                        console.log(`成功加载 ${this.logs.length} 条消息`);
-
-                        // 确保网站设置已初始化
-                        if (!this.websiteSettings.titleColors) {
-                            console.log('初始化默认标题颜色设置');
-                            this.resetTitleColors();
-                        }
-
-                    } else {
-                        console.error('数据格式无效:', data);
-                        alert('数据格式无效，请检查data.json文件格式');
-                    }
-                } catch (error) {
-                    console.error('加载日志失败:', error);
-                    alert('加载日志失败，请确保 data.json 文件存在且格式正确\n\n错误信息: ' + error.message);
-
-                    // 创建一个空的日志数组，让应用可以继续运行
-                    this.logs = [];
-                    this.websiteSettings.titleColors = []; // 初始化空数组避免后续错误
-                } finally {
-                    this.loading = false;
-                }
-            },
-
             // 加载频道规则
             loadChannelRules() {
                 try {
@@ -8001,8 +8113,8 @@ autoImportCharacterColors() {
                 event.target.style.display = 'none';
             },
 
-            // 导出修改后的 JSON（包含所有编辑和设置）
-            downloadJson() {
+            // 生成完整的修改后日志数据
+            getExportData() {
                 const ov = this.openingVideo || {};
                 const parsedOpeningVideo = this.parseOpeningVideoSource(ov.input);
 
@@ -8111,13 +8223,72 @@ autoImportCharacterColors() {
                     }
                 };
 
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+                return exportData;
+            },
+
+            // 导出修改后的 JSON（包含所有编辑和设置）
+            downloadJson() {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.getExportData(), null, 2));
                 const downloadAnchorNode = document.createElement('a');
                 downloadAnchorNode.setAttribute("href", dataStr);
                 downloadAnchorNode.setAttribute("download", `trpg-log-${new Date().toISOString().slice(0,10)}.json`);
                 document.body.appendChild(downloadAnchorNode);
                 downloadAnchorNode.click();
                 downloadAnchorNode.remove();
+            },
+
+            async saveChanges() {
+                try {
+                    let fileHandle = this.currentFileHandle;
+                    if (!fileHandle) {
+                        if (typeof window.showSaveFilePicker !== 'function') {
+                            this.downloadJson();
+                            alert('当前浏览器不支持直接保存文件，已下载修改后的 JSON 副本');
+                            return;
+                        }
+
+                        const suggestedName = this.currentFileName
+                            ? this.currentFileName.replace(/\.html?$/i, '.json')
+                            : `trpg-log-${new Date().toISOString().slice(0, 10)}.json`;
+                        fileHandle = await window.showSaveFilePicker({
+                            suggestedName,
+                            types: [{
+                                description: 'JSON 文件',
+                                accept: { 'application/json': ['.json'] }
+                            }]
+                        });
+                    }
+
+                    let permission = await fileHandle.queryPermission({ mode: 'readwrite' });
+                    if (permission !== 'granted') {
+                        permission = await fileHandle.requestPermission({ mode: 'readwrite' });
+                    }
+                    if (permission !== 'granted') {
+                        throw new Error('未获得写入文件的权限');
+                    }
+
+                    const jsonData = JSON.stringify(this.getExportData(), null, 2);
+                    const writable = await fileHandle.createWritable();
+                    try {
+                        await writable.write(jsonData);
+                        await writable.close();
+                    } catch (error) {
+                        try {
+                            await writable.abort();
+                        } catch (abortError) {
+                            console.error('取消未完成的文件写入失败:', abortError);
+                        }
+                        throw error;
+                    }
+
+                    this.currentFileHandle = fileHandle;
+                    this.currentFileName = fileHandle.name;
+                    alert(`已保存修改到 ${fileHandle.name}`);
+                } catch (error) {
+                    if (error.name === 'AbortError') return;
+                    console.error('保存日志失败:', error);
+                    alert('保存日志失败: ' + error.message);
+                }
             },
 
             // 导出纯文字TXT（过滤闲聊频道，保留角色、system消息和骰子内容）
