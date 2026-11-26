@@ -15,7 +15,8 @@ upload audio and the manifest to Cloudflare R2.
    start disabled. Role settings, the chatter toggle, and the monthly character
    budget are stored in the log JSON under `ttsConfig`.
 4. Scan the log and review the deduplicated task count, character estimate,
-   role/channel summary, and budget projection. Export the generation task JSON.
+   role/channel summary, and budget projection. Export the generation task JSON
+   and save/move it to `.tts-output\tasks.json`.
 5. Run the local generator below. It writes `manifest.json` and uploads it to
    R2 together with hash-addressed MP3 files.
 6. Import the generated manifest into the editor, then save/export the log JSON.

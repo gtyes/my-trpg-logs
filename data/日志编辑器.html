@@ -3321,7 +3321,7 @@
                                             </select>
                                             <input type="text" v-model="ttsConfig.roles[character].languageCode"
                                                 @change="invalidateRoleTtsAudio(character)"
-                                                :aria-label="character + '语言代码'" placeholder="zh-CN">
+                                                :aria-label="character + '语言代码'" placeholder="cmn-CN">
                                         </div>
                                         <div class="tts-role-ranges">
                                             <label>
@@ -4299,13 +4299,15 @@
             },
 
             ttsCharacterList() {
-                const characters = new Set();
+                const messageCounts = new Map();
                 this.logs.forEach(message => {
                     if (!message || message.isChapter || !message.name) return;
                     if (message.name.toLowerCase() === 'system' || message.name === '系统') return;
-                    characters.add(message.name);
+                    messageCounts.set(message.name, (messageCounts.get(message.name) || 0) + 1);
                 });
-                return Array.from(characters).sort();
+                return Array.from(messageCounts.keys()).sort((a, b) =>
+                    messageCounts.get(b) - messageCounts.get(a) || a.localeCompare(b)
+                );
             },
 
             ttsRoleConfigNames() {
@@ -4338,7 +4340,6 @@
                 this.logs.forEach(message => {
                     if (!stats[message.name] || message.isChapter) return;
                     const text = this.getTtsEligibleText(message);
-                    if (!text || this.isPureDiceMessage(message, text)) return;
                     stats[message.name].messages++;
                     stats[message.name].characters += this.getTtsCharacterCount(text);
                 });
@@ -5725,7 +5726,7 @@
                 return {
                     enabled: false,
                     voiceName: '',
-                    languageCode: 'zh-CN',
+                    languageCode: 'cmn-CN',
                     speakingRate: 1,
                     pitch: 0,
                     volumeGainDb: 0,
@@ -5821,7 +5822,8 @@
 
                 try {
                     const cache = JSON.parse(localStorage.getItem('trpg-google-tts-voice-cache') || 'null');
-                    if (cache && Array.isArray(cache.voices) && Date.now() - cache.fetchedAt < 30 * 24 * 60 * 60 * 1000) {
+                    if (cache && cache.version === 2 && Array.isArray(cache.voices) && cache.voices.length > 0
+                        && Date.now() - cache.fetchedAt < 30 * 24 * 60 * 60 * 1000) {
                         this.ttsVoiceList = cache.voices;
                     }
                 } catch (error) {
@@ -5854,7 +5856,8 @@
 
                 try {
                     const cache = JSON.parse(localStorage.getItem('trpg-google-tts-voice-cache') || 'null');
-                    if (cache && Array.isArray(cache.voices) && Date.now() - cache.fetchedAt < 30 * 24 * 60 * 60 * 1000) {
+                    if (cache && cache.version === 2 && Array.isArray(cache.voices) && cache.voices.length > 0
+                        && Date.now() - cache.fetchedAt < 30 * 24 * 60 * 60 * 1000) {
                         this.ttsVoiceList = cache.voices;
                         this.ttsStatus = `已从本地缓存读取 ${cache.voices.length} 个中文音色。`;
                         return;
@@ -5867,7 +5870,6 @@
                 this.ttsStatus = '正在读取 Google 中文语音列表…';
                 try {
                     const url = new URL('https://texttospeech.googleapis.com/v1/voices');
-                    url.searchParams.set('languageCode', 'zh-CN');
                     url.searchParams.set('key', this.googleTtsApiKey);
                     const response = await fetch(url.toString());
                     const result = await response.json();
@@ -5879,9 +5881,21 @@
 
                     this.ttsVoiceList = (result.voices || []).filter(voice =>
                         Array.isArray(voice.languageCodes)
-                        && voice.languageCodes.some(language => /^zh(?:-|$)/i.test(language))
+                        && voice.languageCodes.some(language => /^(?:zh|cmn|yue)(?:-|$)/i.test(language))
                     );
+                    if (!this.ttsVoiceList.length) {
+                        const examples = (result.voices || [])
+                            .slice(0, 5)
+                            .map(voice => (voice.languageCodes || []).join('/'))
+                            .filter(Boolean)
+                            .join(', ');
+                        throw new Error(
+                            `接口返回 ${Array.isArray(result.voices) ? result.voices.length : 0} 个音色，`
+                            + `但未匹配到 zh/cmn/yue 语言代码${examples ? `；示例：${examples}` : ''}。`
+                        );
+                    }
                     localStorage.setItem('trpg-google-tts-voice-cache', JSON.stringify({
+                        version: 2,
                         fetchedAt: Date.now(),
                         voices: this.ttsVoiceList
                     }));
@@ -5898,10 +5912,10 @@
                 const role = this.ttsConfig.roles[roleName];
                 const voice = this.ttsVoiceList.find(item => item.name === role.voiceName);
                 if (!voice || !Array.isArray(voice.languageCodes)) return;
-                role.languageCode = voice.languageCodes.find(language => /^zh-CN(?:-|$)/i.test(language))
-                    || voice.languageCodes.find(language => /^zh(?:-|$)/i.test(language))
+                role.languageCode = voice.languageCodes.find(language => /^(?:cmn-CN|zh-CN)(?:-|$)/i.test(language))
+                    || voice.languageCodes.find(language => /^(?:zh|cmn|yue)(?:-|$)/i.test(language))
                     || voice.languageCodes[0]
-                    || 'zh-CN';
+                    || 'cmn-CN';
             },
 
             handleTtsVoiceChange(roleName) {
@@ -9390,14 +9404,15 @@ autoImportCharacterColors() {
                     meta: {
                         exportedAt: new Date().toISOString(),
                         totalMessages: this.logs.length,
-                        version: '7.0',
+                        version: '8.0',
                         features: [
                             'image-backgrounds', 'opacity-control', 'channel-rules', 'character-rules',
                             'extend-editing', 'font-settings', 'font-size-settings', 'channel-mask',
                             'chapter-navigation', 'message-images', 'extend-result-formats',
                             'system-message-handling', 'chapter-title-formats', 'batch-delete',
                             'channel-group-rename', 'chapter-image-support', 'message-index-in-edit',
-                            'website-settings', 'theme-colors', 'chapter-background-images'
+                            'website-settings', 'theme-colors', 'chapter-background-images',
+                            'tts-role-config', 'tts-task-export', 'tts-manifest-import'
                         ]
                     }
                 };
