@@ -93417,7 +93417,8 @@
       "bubbleImage": "",
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
-      "messageImage": null
+      "messageImage": null,
+      "isChapter": false
     },
     {
       "id": "k4TUM33KU7A0CG1O6ea3",
@@ -231462,7 +231463,7 @@
       "channel": "主频道",
       "icon": null,
       "dice": null,
-      "extend": "1D100 ＞ 92 ＞ 大失败",
+      "extend": "1D100 ＞ 92 ＞ 失败",
       "messageImage": null,
       "to": null,
       "isChapter": false,
@@ -276326,18 +276327,24 @@
       "id": "fg-event-1795649348248",
       "startMessageIndex": 9839,
       "endMessageIndex": 10322,
+      "startMessageId": 4081,
+      "endMessageId": 4591,
       "url": "https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/b66dd6b720bc69bc93fe2db36bd5243059bc077c012e2b990ba91ebcd88c8b0f?t=1760965443703"
     },
     {
       "id": "fg-event-1795650060668-2",
       "startMessageIndex": 10323,
       "endMessageIndex": 10337,
+      "startMessageId": 4592,
+      "endMessageId": 4606,
       "url": "https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/85fdfa1bf14b36f7ad8d4687f48097923dcffa2e62b81061cb2d6695876954c3?t=1761005607201"
     },
     {
       "id": "fg-event-1795649110031",
       "startMessageIndex": 10323,
       "endMessageIndex": 10337,
+      "startMessageId": 4592,
+      "endMessageId": 4606,
       "url": "https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/daceb77e3aa7f5b2ce3582031c163d0b7113d43219b32c849877a5e48e4a87fa?t=1777063851504"
     }
   ],
@@ -276834,7 +276841,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-11-26T00:06:36.517Z",
+    "exportedAt": "2026-11-26T13:18:48.417Z",
     "totalMessages": 10601,
     "version": "7.0",
     "features": [
