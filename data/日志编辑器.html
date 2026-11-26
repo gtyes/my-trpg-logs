@@ -6045,7 +6045,12 @@
 
             getTtsEligibleText(message) {
                 if (!message || typeof message.text !== 'string') return '';
-                return message.text.normalize('NFC').replace(/\s+/g, ' ').trim();
+                return message.text.normalize('NFC')
+                    .replace(/\r\n?/g, '\n')
+                    .split('\n')
+                    .map(line => line.replace(/[^\S\n]+/g, ' ').trim())
+                    .join('\n')
+                    .trim();
             },
 
             getTtsCharacterCount(text) {

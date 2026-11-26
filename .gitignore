@@ -1,0 +1,3 @@
+.tts-output/
+__pycache__/
+*.py[cod]
