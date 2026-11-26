@@ -837,19 +837,40 @@
                 cursor: default;
             }
 
-            /* 编辑界面序号 */
-            .edit-index {
+            .message-sequence-number {
                 position: absolute;
                 top: 10px;
                 right: 10px;
-                z-index: 25;              /* 新增：盖在编辑表单上方 */
-                pointer-events: none;     /* 新增：不挡住输入框点击 */
-                background: #3498db;
+                z-index: 25;
+                pointer-events: none;
+                background: rgba(52, 152, 219, 0.94);
                 color: white;
                 padding: 2px 8px;
                 border-radius: 12px;
-                font-size: 12px;
+                font-size: 11px;
                 font-weight: bold;
+            }
+
+            .chapter-message-group .message-sequence-number {
+                top: 4px;
+                right: 4px;
+            }
+
+            .media-event-thumbnail {
+                width: 40px;
+                height: 40px;
+                flex: 0 0 40px;
+                overflow: hidden;
+                border-radius: 4px;
+                background: #eee;
+                cursor: zoom-in;
+            }
+
+            .media-event-thumbnail img {
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
             }
             /* 差分使用消息弹窗 */
             .avatar-message-modal {
@@ -2292,9 +2313,15 @@
                                     style="margin-top: 10px;">
                                     <div v-for="(event, index) in backgroundEvents" :key="event.id" class="media-event-row">
                                         <span>第</span>
-                                        <input type="number" v-model.number="event.messageIndex" min="1"@change="updateMediaEventPosition('bgm', index)">
+                                        <input type="number" v-model.number="event.messageIndex" min="1"@change="updateMediaEventPosition('background', index)">
                                         <span>条 →</span>
                                         <input type="text" v-model="event.url" placeholder="背景图 URL">
+                                        <div v-if="event.url" class="media-event-thumbnail"
+                                            @mouseenter="showAvatarHoverPreview($event, getEditorImagePreviewUrl(event.url))"
+                                            @mouseleave="hideAvatarHoverPreview">
+                                            <img :src="getEditorImagePreviewUrl(event.url)" alt="背景图片预览"
+                                                @error="handleAvatarPreviewError">
+                                        </div>
                                         <button @click="removeBackgroundEvent(index)" class="danger"
                                             style="padding: 3px 8px; font-size: 11px;">删除</button>
                                     </div>
@@ -2345,11 +2372,19 @@
                                             title="上移一层">↑</button>
 
                                         <span>第</span>
-                                        <input type="number" v-model.number="event.startMessageIndex" min="1">
+                                        <input type="number" v-model.number="event.startMessageIndex" min="1"
+                                            @change="updateForegroundEventPosition(index)">
                                         <span>到第</span>
-                                        <input type="number" v-model.number="event.endMessageIndex" min="1">
+                                        <input type="number" v-model.number="event.endMessageIndex" min="1"
+                                            @change="updateForegroundEventPosition(index)">
                                         <span>条 →</span>
                                         <input type="text" v-model="event.url" placeholder="前景图 URL">
+                                        <div v-if="event.url" class="media-event-thumbnail"
+                                            @mouseenter="showAvatarHoverPreview($event, getEditorImagePreviewUrl(event.url))"
+                                            @mouseleave="hideAvatarHoverPreview">
+                                            <img :src="getEditorImagePreviewUrl(event.url)" alt="前景图片预览"
+                                                @error="handleAvatarPreviewError">
+                                        </div>
                                         <button @click="removeForegroundEvent(index)" class="danger"
                                             style="padding: 3px 8px; font-size: 11px;">删除</button>
                                     </div>
@@ -3150,9 +3185,12 @@
                                 <template v-for="(group, groupIndex) in channelGroups" :key="groupIndex">
                                     <!-- 章节标题 - 独立显示，不合并 -->
                                     <div v-if="group.channel === '系统' && group.messages[0] && group.messages[0].isChapter"
-                                        class="channel-group"
+                                        class="channel-group chapter-message-group"
                                         :data-msg-index="findMessageIndexById(group.messages[0].id)"
                                         :style="getChapterStyle(group.messages[0])">
+                                        <div class="message-sequence-number">
+                                            第 {{ findMessageIndexById(group.messages[0].id) + 1 }} 条
+                                        </div>
                                         <div class="chapter-title">
                                             {{ group.messages[0].text.replace('=== ', '').replace(' ===', '') }}
                                         </div>
@@ -3197,6 +3235,7 @@
                                                 <div v-for="(msg, msgIndex) in group.messages"
                                                     :key="msg.id"
                                                     class="msg-row"
+                                                    :data-msg-index="findMessageIndexById(msg.id)"
                                                     :class="{
                                                         editing: msg.editing,
                                                         draggable: isEditing && !isBatchDeleteMode,
@@ -3213,8 +3252,7 @@
                                                         <input type="checkbox" v-model="msg.checked" @change="toggleMessageSelection(msg)">
                                                     </div>
 
-                                                    <!-- 编辑界面序号 -->
-                                                    <div v-if="msg.editing" class="edit-index">
+                                                    <div class="message-sequence-number">
                                                         第 {{ findMessageIndexById(msg.id) + 1 }} 条
                                                     </div>
 
@@ -4475,6 +4513,7 @@
                 // 备份当前状态（用于撤销）
                 const backupLogs = [...this.logs];
                 const backupChapters = [...this.chapters];
+                let positionBaseline = [...this.logs];
 
                 try {
                     // 如果是使用当前数据作为第一个文件，直接追加
@@ -4492,6 +4531,7 @@
                         // 加载第一个文件的设置
                         if (firstData) {
                             this.loadFromParsedData(firstData);
+                            positionBaseline = [...this.logs];
                         }
 
                         // 处理新消息并追加
@@ -4500,6 +4540,7 @@
                     }
                     // 合并进来的消息也要按当前规则处理
                     this.applyRuleSystemToExtend();
+                    this.syncChapterPositionsSilent(positionBaseline);
                     // 合并完成后清理不存在的角色规则
                     this.pruneCharacterRules();
                     // 记录合并结果
@@ -4617,6 +4658,7 @@
                 // 备份当前状态（用于撤销）
                 const backupLogs = [...this.logs];
                 const backupChapters = [...this.chapters];
+                let positionBaseline = [...this.logs];
 
                 try {
                     // 如果是使用当前数据作为第一个文件，直接追加
@@ -4630,12 +4672,14 @@
                         const firstData = this.tempFirstData;
                         if (firstData) {
                             this.loadFromParsedData(firstData);
+                            positionBaseline = [...this.logs];
                         }
                         // 处理新消息并追加
                         const processedNewMessages = this.processLogArray(secondLogs);
                         this.logs = [...this.logs, ...processedNewMessages];
                     }
                     this.applyRuleSystemToExtend();
+                    this.syncChapterPositionsSilent(positionBaseline);
                     // 合并完成后清理不存在的角色规则
                     this.pruneCharacterRules();
                     // 记录合并结果
@@ -4696,8 +4740,10 @@
             },
 
             deleteChannelMessages(channelName) {
+                const previousLogs = [...this.logs];
                 const beforeCount = this.logs.length;
                 this.logs = this.logs.filter(msg => msg.channel !== channelName);
+                this.syncChapterPositionsSilent(previousLogs);
                 const deletedCount = beforeCount - this.logs.length;
 
                 // 同时删除频道规则
@@ -4720,8 +4766,26 @@
 
             // 同步章节位置：根据日志中实际存在的章节消息（通过文本匹配），更新 chapters 中的 position
             // 静默同步章节位置，返回实际更新的数量（不弹窗）
-            syncChapterPositionsSilent() {
+            syncChapterPositionsSilent(previousLogs = this.logs) {
                 this.syncMediaEventPositions();   // ★ 每次章节同步都顺带同步媒体事件
+                this.syncForegroundEventPositions(previousLogs);
+
+                const oldMessageIds = new Set((previousLogs || [])
+                    .filter(message => message && message.id !== undefined && message.id !== null)
+                    .map(message => String(message.id)));
+                const currentMessageIds = new Set(this.logs
+                    .filter(message => message && message.id !== undefined && message.id !== null)
+                    .map(message => String(message.id)));
+
+                this.chapters = this.chapters.filter(chapter => {
+                    const chapterId = String(chapter.id);
+                    if (oldMessageIds.has(chapterId) && !currentMessageIds.has(chapterId)) {
+                        console.warn(`章节 "${chapter.name}" 的标记消息已删除，移除对应章节设置`);
+                        return false;
+                    }
+                    return true;
+                });
+
                 if (this.chapters.length === 0) return 0;
 
                 let updatedCount = 0;
@@ -4746,8 +4810,9 @@
                 const syncList = (events) => {
                     if (!Array.isArray(events)) return;
 
-                    events.forEach(event => {
-                        if (!event.messageId) return;
+                    for (let i = events.length - 1; i >= 0; i--) {
+                        const event = events[i];
+                        if (!event.messageId) continue;
 
                         const index = this.logs.findIndex(
                             msg => String(msg.id) === String(event.messageId)
@@ -4755,13 +4820,14 @@
 
                         if (index === -1) {
                             console.warn('媒体事件的目标消息不存在:', event.messageId, event.url);
-                            return;
+                            events.splice(i, 1);
+                            continue;
                         }
 
                         const newPosition = index + 1;
                         event.messageIndex = newPosition;
                         event.position = newPosition;
-                    });
+                    }
 
                     events.sort((a, b) => {
                         const pa = a.messageIndex !== undefined ? a.messageIndex : a.position;
@@ -4773,6 +4839,84 @@
                 syncList(this.bgmEvents);
                 syncList(this.backgroundEvents);
                 syncList(this.sfxEvents);
+            },
+
+            syncForegroundEventPositions(previousLogs = this.logs) {
+                if (!Array.isArray(this.foregroundEvents)) return;
+
+                const currentIndexById = new Map();
+                this.logs.forEach((message, index) => {
+                    if (message && message.id !== undefined && message.id !== null) {
+                        const id = String(message.id);
+                        if (!currentIndexById.has(id)) currentIndexById.set(id, index);
+                    }
+                });
+
+                const oldLogs = Array.isArray(previousLogs) ? previousLogs : [];
+                const validEvents = [];
+
+                this.foregroundEvents.forEach(event => {
+                    let startPosition = parseInt(
+                        event.startMessageIndex !== undefined ? event.startMessageIndex : event.startPosition,
+                        10
+                    );
+                    let endPosition = parseInt(
+                        event.endMessageIndex !== undefined ? event.endMessageIndex : event.endPosition,
+                        10
+                    );
+                    let startMessageId = event.startMessageId || null;
+                    let endMessageId = event.endMessageId || null;
+
+                    if (!Number.isInteger(startPosition) || !Number.isInteger(endPosition) ||
+                        startPosition < 1 || endPosition < 1) {
+                        return;
+                    }
+
+                    if (startPosition > endPosition) {
+                        [startPosition, endPosition] = [endPosition, startPosition];
+                        [startMessageId, endMessageId] = [endMessageId, startMessageId];
+                    }
+
+                    if (!startMessageId && oldLogs[startPosition - 1]) {
+                        startMessageId = oldLogs[startPosition - 1].id;
+                    }
+                    if (!endMessageId && oldLogs[endPosition - 1]) {
+                        endMessageId = oldLogs[endPosition - 1].id;
+                    }
+
+                    let startIndex = currentIndexById.get(String(startMessageId));
+                    let endIndex = currentIndexById.get(String(endMessageId));
+
+                    if (startIndex === undefined || endIndex === undefined) {
+                        const survivingMessages = oldLogs
+                            .slice(startPosition - 1, endPosition)
+                            .filter(message => message && currentIndexById.has(String(message.id)));
+
+                        if (survivingMessages.length === 0) return;
+                        if (startIndex === undefined) {
+                            startMessageId = survivingMessages[0].id;
+                            startIndex = currentIndexById.get(String(startMessageId));
+                        }
+                        if (endIndex === undefined) {
+                            endMessageId = survivingMessages[survivingMessages.length - 1].id;
+                            endIndex = currentIndexById.get(String(endMessageId));
+                        }
+                    }
+
+                    if (startIndex === undefined || endIndex === undefined) return;
+                    if (startIndex > endIndex) {
+                        [startIndex, endIndex] = [endIndex, startIndex];
+                        [startMessageId, endMessageId] = [endMessageId, startMessageId];
+                    }
+
+                    event.startMessageIndex = startIndex + 1;
+                    event.endMessageIndex = endIndex + 1;
+                    event.startMessageId = startMessageId;
+                    event.endMessageId = endMessageId;
+                    validEvents.push(event);
+                });
+
+                this.foregroundEvents = validEvents;
             },
 
             // 旧数据没有 messageId 时，用当前 messageIndex/position 反填一次
@@ -5159,9 +5303,15 @@
                 const targetIndex = num - 1;
                 const targetMsg = this.logs[targetIndex];
 
-                // 如果目标消息在折叠的频道里，先展开该频道
-                if (targetMsg && targetMsg.channel && this.isChannelCollapsed(targetMsg.channel)) {
-                    this.toggleChannelCollapse(targetMsg.channel);
+                // 普通系统消息会显示在其所属频道中，而不是“系统”频道。
+                const targetChannel = targetMsg
+                    && targetMsg.name
+                    && targetMsg.name.toLowerCase() === 'system'
+                    && !targetMsg.isChapter
+                    ? this.getSystemMessageChannel(targetMsg)
+                    : targetMsg && targetMsg.channel;
+                if (targetChannel && this.isChannelCollapsed(targetChannel)) {
+                    this.toggleChannelCollapse(targetChannel);
                 }
 
                 this.$nextTick(() => {
@@ -5175,7 +5325,7 @@
                         target.classList.add('jump-highlight');
                         setTimeout(() => target.classList.remove('jump-highlight'), 1600);
                     } else {
-                        // 章节等没有对应 msg-row 的情况，退回页首
+                        // 未找到目标消息时退回页首
                         this.scrollToMessageList();
                     }
                 });
@@ -5929,6 +6079,8 @@
                     id: `fg-event-${Date.now()}-${this.foregroundEvents.length}-${Math.random().toString(36).slice(2, 8)}`,
                     startMessageIndex: start,
                     endMessageIndex: end,
+                    startMessageId: this.logs[start - 1].id,
+                    endMessageId: this.logs[end - 1].id,
                     url
                 });
 
@@ -5942,6 +6094,26 @@
                 this.newForegroundEvent.startMessageIndex = next;
                 this.newForegroundEvent.endMessageIndex = next;
                 this.newForegroundEvent.url = '';
+            },
+
+            updateForegroundEventPosition(index) {
+                const event = this.foregroundEvents[index];
+                if (!event) return;
+
+                let start = parseInt(event.startMessageIndex, 10);
+                let end = parseInt(event.endMessageIndex, 10);
+                if (!Number.isInteger(start) || !Number.isInteger(end) ||
+                    start < 1 || end < 1 || start > this.logs.length || end > this.logs.length) {
+                    this.syncForegroundEventPositions(this.logs);
+                    return;
+                }
+
+                if (start > end) [start, end] = [end, start];
+                event.startMessageIndex = start;
+                event.endMessageIndex = end;
+                event.startMessageId = this.logs[start - 1].id;
+                event.endMessageId = this.logs[end - 1].id;
+                this.syncForegroundEventPositions(this.logs);
             },
 
             removeForegroundEvent(index) {
@@ -6007,7 +6179,9 @@
                     isChapter: true
                 };
 
+                const previousLogs = [...this.logs];
                 this.logs.splice(position - 1, 0, chapterMessage);
+                this.syncChapterPositionsSilent(previousLogs);
 
                 // 清空表单
                 this.newChapter = {
@@ -6088,6 +6262,7 @@
                 // 找到章节消息
                 const chapterIndex = this.logs.findIndex(msg => msg.id === chapterId);
                 if (chapterIndex === -1) return;
+                const previousLogs = [...this.logs];
 
                 // 移除原位置的章节消息
                 const [chapterMessage] = this.logs.splice(chapterIndex, 1);
@@ -6097,6 +6272,7 @@
 
                 // 插入到新位置
                 this.logs.splice(insertIndex, 0, chapterMessage);
+                this.syncChapterPositionsSilent(previousLogs);
             },
 
             // 取消章节编辑
@@ -6113,6 +6289,7 @@
             removeChapter(index) {
                 const chapter = this.chapters[index];
                 if (confirm(`确定删除章节 "${chapter.name}" 吗？`)) {
+                    const previousLogs = [...this.logs];
                     // 同时删除对应的章节标记消息
                     const chapterIndex = this.logs.findIndex(msg => msg.id === chapter.id);
                     if (chapterIndex !== -1) {
@@ -6120,6 +6297,7 @@
                     }
 
                     this.chapters.splice(index, 1);
+                    this.syncChapterPositionsSilent(previousLogs);
                     alert('章节已删除');
                 }
             },
@@ -6787,6 +6965,8 @@ autoImportCharacterColors() {
                                 id: event.id || `fg-event-${Date.now()}-${index}`,
                                 startMessageIndex: start,
                                 endMessageIndex: end,
+                                startMessageId: event.startMessageId || '',
+                                endMessageId: event.endMessageId || '',
                                 url: event.url || ''
                             };
                         }).filter(event => event.startMessageIndex > 0 && event.endMessageIndex > 0)
@@ -6881,6 +7061,7 @@ autoImportCharacterColors() {
                 // 旧事件反填 messageId，再按 id 重算位置
                 this.bindMediaEventsToMessages();
                 this.syncMediaEventPositions();
+                this.syncForegroundEventPositions();
 
                 console.log('数据加载完成，共加载', this.logs.length, '条消息');
 
@@ -7523,6 +7704,13 @@ autoImportCharacterColors() {
                 this.characterAvatarOptions = [];
             },
             // 显示头像差分大图
+            getEditorImagePreviewUrl(url) {
+                const value = String(url || '').trim();
+                if (!value) return '';
+                if (/^(?:[a-z][a-z\d+.-]*:|\/|\.\.\/)/i.test(value)) return value;
+                return `../${value.replace(/^\.\//, '')}`;
+            },
+
             showAvatarHoverPreview(event, url) {
                 if (!url) return;
 
@@ -7753,6 +7941,8 @@ autoImportCharacterColors() {
                     return;
                 }
 
+                const previousLogs = [...this.logs];
+
                 // 获取选中的消息对象列表（按原索引升序排序）
                 const selectedMsgs = [];
                 for (let id of this.selectedMessages) {
@@ -7779,6 +7969,7 @@ autoImportCharacterColors() {
                 // 删除后，重新查找目标消息的新索引
                 const newTargetIndex = this.findMessageIndexById(targetMsgId);
                 if (newTargetIndex === -1) {
+                    this.syncChapterPositionsSilent(previousLogs);
                     alert('目标消息不存在，移动失败');
                     return;
                 }
@@ -7801,8 +7992,7 @@ autoImportCharacterColors() {
                 if (this.paginatedLogs.length === 0 && this.currentPage > 1) {
                     this.currentPage--;
                 }
-                this.syncChapterPositions();
-                this.syncMediaEventPositions();
+                this.syncChapterPositionsSilent(previousLogs);
 
                 alert(`✅ 成功移动 ${selectedMsgs.length} 条消息到序号 ${targetSeq} 后面`);
             },
@@ -7818,9 +8008,10 @@ autoImportCharacterColors() {
                     return;
                 }
 
+                const previousLogs = [...this.logs];
                 // 删除选中的消息
                 this.logs = this.logs.filter(msg => !this.selectedMessages.includes(msg.id));
-                this.syncChapterPositionsSilent();
+                this.syncChapterPositionsSilent(previousLogs);
 
                 // 清空选择
                 this.clearSelection();
@@ -7858,8 +8049,9 @@ autoImportCharacterColors() {
                 }
 
                 // 执行删除
+                const previousLogs = [...this.logs];
                 this.logs.splice(startIndex, messageCount);
-                this.syncChapterPositionsSilent();
+                this.syncChapterPositionsSilent(previousLogs);
 
                 // 计算删除后应该跳转到的页码
                 let newPage = this.currentPage;
@@ -7973,9 +8165,10 @@ autoImportCharacterColors() {
             moveMessageUp(id) {
                 const index = this.findMessageIndexById(id);
                 if (index > 0) {
+                    const previousLogs = [...this.logs];
                     [this.logs[index], this.logs[index - 1]] =
                     [this.logs[index - 1], this.logs[index]];
-                    this.syncChapterPositionsSilent();
+                    this.syncChapterPositionsSilent(previousLogs);
                 }
             },
 
@@ -7983,18 +8176,21 @@ autoImportCharacterColors() {
             moveMessageDown(id) {
                 const index = this.findMessageIndexById(id);
                 if (index < this.logs.length - 1) {
+                    const previousLogs = [...this.logs];
                     [this.logs[index], this.logs[index + 1]] =
                     [this.logs[index + 1], this.logs[index]];
-                    this.syncChapterPositionsSilent();
+                    this.syncChapterPositionsSilent(previousLogs);
                 }
             },
 
             // 删除消息
             removeMessage(id) {
                 const index = this.findMessageIndexById(id);
+                if (index === -1) return;
                 if (confirm('确定删除这条消息吗？')) {
+                    const previousLogs = [...this.logs];
                     this.logs.splice(index, 1);
-                    this.syncChapterPositionsSilent();
+                    this.syncChapterPositionsSilent(previousLogs);
 
                     if (this.paginatedLogs.length === 0 && this.currentPage > 1) {
                         this.currentPage--;
@@ -8005,6 +8201,7 @@ autoImportCharacterColors() {
             // 在消息后插入新消息
             insertAfterMessage(id) {
                 const index = this.findMessageIndexById(id);
+                if (index === -1) return;
                 const templateMsg = this.logs[index];
 
                 const newMsg = {
@@ -8038,7 +8235,9 @@ autoImportCharacterColors() {
                     messageImage: null
                 };
 
+                const previousLogs = [...this.logs];
                 this.logs.splice(index + 1, 0, newMsg);
+                this.syncChapterPositionsSilent(previousLogs);
             },
 
             // 批量替换频道名
@@ -8166,6 +8365,8 @@ autoImportCharacterColors() {
                         id: event.id,
                         startMessageIndex: event.startMessageIndex,
                         endMessageIndex: event.endMessageIndex,
+                        startMessageId: event.startMessageId || '',
+                        endMessageId: event.endMessageId || '',
                         url: event.url || ''
                     })),
 
@@ -8418,6 +8619,7 @@ autoImportCharacterColors() {
                     const dropIndex = this.findMessageIndexById(dropId);
 
                     if (dragIndex !== -1 && dropIndex !== -1) {
+                        const previousLogs = [...this.logs];
                         const [itemToMove] = this.logs.splice(dragIndex, 1);
 
                         let newIndex = dropIndex;
@@ -8429,7 +8631,7 @@ autoImportCharacterColors() {
 
                         this.logs.splice(newIndex, 0, itemToMove);
 
-                        this.syncChapterPositionsSilent();
+                        this.syncChapterPositionsSilent(previousLogs);
                     }
                 }
 
