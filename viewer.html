@@ -2034,6 +2034,7 @@
         let vnTypeTimer = null;
         let vnAutoTimer = null;
         let vnPageTimer = null;
+        let vnSpeechAutoplayFailed = false;
         let vnLogSearchKeyword = '';
         let vnLogSearchTimer = null;
         let vnLogSearchResults = [];
@@ -3314,6 +3315,11 @@
                 audio.muted = vnMuted;
             });
 
+            const speechAudio = document.getElementById('vnSpeechAudio');
+            if (speechAudio) {
+                speechAudio.muted = vnMuted;
+            }
+
             // OP 本地视频
             const video = document.getElementById('vnOpeningVideo');
             if (video) {
@@ -3409,9 +3415,14 @@
                 clearTimeout(vnAutoTimer);
             }
 
-            const wait = delay !== undefined
-                ? delay
-                : 1200 + vnCurrentText.length * 45;
+            const audio = document.getElementById('vnSpeechAudio');
+            const hasSpeechAudio = audio && audio.getAttribute('src');
+            if (delay === undefined && hasSpeechAudio && !vnSpeechAutoplayFailed) {
+                if (!audio.ended) return;
+                delay = 800;
+            }
+
+            const wait = delay !== undefined ? delay : 1200 + vnCurrentText.length * 45;
 
             vnAutoTimer = setTimeout(() => {
                 if (vnAuto) nextVn();
@@ -3566,6 +3577,11 @@
             const audio = document.getElementById('vnSpeechAudio');
             if (!audio) return;
 
+            const stepIndex = vnIndex;
+            vnSpeechAutoplayFailed = false;
+            audio.onended = null;
+            audio.onerror = null;
+            audio.onplay = null;
             audio.pause();
             audio.removeAttribute('src');
             audio.hidden = true;
@@ -3580,7 +3596,47 @@
 
             audio.src = url;
             audio.hidden = false;
+            audio.muted = vnMuted;
             audio.load();
+
+            audio.onended = () => {
+                if (vnIndex === stepIndex && vnAuto && !vnTyping && !vnHasMoreText) {
+                    scheduleVnAuto(800);
+                }
+            };
+            audio.onplay = () => {
+                vnSpeechAutoplayFailed = false;
+                if (vnAutoTimer && !vnTyping && !vnHasMoreText) {
+                    clearTimeout(vnAutoTimer);
+                    vnAutoTimer = null;
+                }
+            };
+            audio.onerror = () => {
+                handleVnSpeechPlaybackFailure(audio, stepIndex, new Error('音频加载失败'));
+            };
+
+            const playPromise = audio.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(error => {
+                    handleVnSpeechPlaybackFailure(audio, stepIndex, error);
+                });
+            }
+        }
+
+        function handleVnSpeechPlaybackFailure(audio, stepIndex, error) {
+            if (error && error.name === 'AbortError') return;
+            if (audio !== document.getElementById('vnSpeechAudio') || vnIndex !== stepIndex) return;
+            if (vnSpeechAutoplayFailed) return;
+
+            vnSpeechAutoplayFailed = true;
+            console.warn('[VN] 语音自动播放失败:', error);
+            const hint = document.getElementById('vnHint');
+            if (hint) {
+                hint.textContent = '语音自动播放失败，自动推进将按文本节奏继续';
+            }
+            if (vnAuto && !vnTyping && !vnHasMoreText) {
+                scheduleVnAuto();
+            }
         }
 
         function setVnPortraitSlot(slotId, url, dimmed) {

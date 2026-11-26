@@ -72,7 +72,7 @@ python tools\tts\generate.py .tts-output\tasks.json --no-upload
 1. 回到日志编辑器，点击“导入语音清单”，选择 `.tts-output\manifest.json`。
 2. 编辑器会按哈希将音频地址回填到匹配的消息，并保存 `ttsHash`、`ttsAudioUrl`、`ttsVoiceName` 和 `ttsCharCount`。
 3. 点击“保存修改”写回导入的 JSON，或点击“导出修改后的 JSON”下载副本。
-4. 将更新后的 JSON 发布到网站。`viewer.html` 会在有音频地址的消息上显示播放器；音频采用 `preload="none"`，不会打开页面就批量下载。
+4. 将更新后的 JSON 发布到网站。`viewer.html` 会在有音频地址的消息上显示播放器；音频采用 `preload="none"`，不会打开页面就批量下载。对话模式进入有语音的消息时会自动播放；开启自动推进后，会等语音播放完成再进入下一句。没有语音的消息仍按文本长度自动推进。
 
 ## 五、额度和长文本
 
