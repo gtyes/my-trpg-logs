@@ -84,7 +84,7 @@ $env:TTS_MONTHLY_CHAR_LIMIT = "50000"
 
 免费额度、音色计费方式和价格会因 Google Cloud 账户及音色系列而不同，请以 Google Cloud 当前定价与配额页面为准。
 
-超过单次请求字节上限的长文本会优先按句子和换行切分，再按 Unicode 字符切分。每段分别生成，多个 MP3 片段由 FFmpeg 合并；如需要处理长文本，请安装 FFmpeg 并确保 `ffmpeg` 命令可在 PowerShell 中运行。
+长文本会优先按句末标点、换行和逗号等分句；单句超过 80 个字符时会继续拆分，以兼容部分音色对长句的限制。每段分别生成，多个 MP3 片段由 FFmpeg 合并；如需要处理被拆分的文本，请安装 FFmpeg 并确保 `ffmpeg` 命令可在 PowerShell 中运行。
 
 ## 六、哈希与文件约定
 

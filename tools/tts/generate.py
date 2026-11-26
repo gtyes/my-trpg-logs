@@ -25,6 +25,7 @@ from typing import Any
 ENGINE_VERSION = "google-cloud-tts-v1"
 AUDIO_ENCODING = "MP3"
 MAX_TEXT_BYTES = 4500
+MAX_SENTENCE_CHARS = 80
 MANIFEST_OBJECT_KEY = "manifest.json"
 
 
@@ -124,13 +125,17 @@ def ensure_within_budget(
         )
 
 
-def _split_oversized_piece(text: str, max_bytes: int) -> list[str]:
+def _split_oversized_piece(
+    text: str,
+    max_bytes: int,
+    max_chars: int = MAX_SENTENCE_CHARS,
+) -> list[str]:
     pieces: list[str] = []
     current: list[str] = []
     current_bytes = 0
     for character in text:
         char_bytes = len(character.encode("utf-8"))
-        if current and current_bytes + char_bytes > max_bytes:
+        if current and (current_bytes + char_bytes > max_bytes or len(current) >= max_chars):
             pieces.append("".join(current))
             current = []
             current_bytes = 0
@@ -144,35 +149,61 @@ def _split_oversized_piece(text: str, max_bytes: int) -> list[str]:
 
 
 def split_text(text: str, max_bytes: int = MAX_TEXT_BYTES) -> list[str]:
-    """Split at sentence/newline boundaries, then at Unicode character boundaries."""
+    """Split at sentence boundaries, then clause boundaries for long sentences."""
     normalized = normalize_text(text)
     if not normalized:
         return []
-    if len(normalized.encode("utf-8")) <= max_bytes:
+    if (len(normalized.encode("utf-8")) <= max_bytes
+            and len(normalized) <= MAX_SENTENCE_CHARS):
         return [normalized]
 
-    sentences = re.split(r"(?<=[。！？!?；;\n])", normalized)
+    sentences = re.split(r"(?<=[。！？!?；;])|(?<=\n)", normalized)
     chunks: list[str] = []
     current = ""
     for sentence in sentences:
         if not sentence:
             continue
         candidate = current + sentence
-        if len(candidate.encode("utf-8")) <= max_bytes:
+        if (len(sentence) <= MAX_SENTENCE_CHARS
+                and len(sentence.encode("utf-8")) <= max_bytes
+                and len(candidate.encode("utf-8")) <= max_bytes):
             current = candidate
             continue
         if current:
             chunks.append(current)
             current = ""
-        if len(sentence.encode("utf-8")) <= max_bytes:
-            current = sentence
-        else:
-            chunks.extend(_split_oversized_piece(sentence, max_bytes))
+        clauses = re.split(r"(?<=[，,、：:])", sentence)
+        clause_chunk = ""
+        for clause in clauses:
+            if not clause:
+                continue
+            combined = clause_chunk + clause
+            if (len(combined) <= MAX_SENTENCE_CHARS
+                    and len(combined.encode("utf-8")) <= max_bytes):
+                clause_chunk = combined
+                continue
+            if clause_chunk:
+                chunks.append(clause_chunk)
+                clause_chunk = ""
+            if (len(clause) <= MAX_SENTENCE_CHARS
+                    and len(clause.encode("utf-8")) <= max_bytes):
+                clause_chunk = clause
+            else:
+                chunks.extend(_split_oversized_piece(clause, max_bytes))
+        if clause_chunk:
+            chunks.append(clause_chunk)
     if current:
         chunks.append(current)
 
-    if any(len(chunk.encode("utf-8")) > max_bytes for chunk in chunks):
-        raise TtsError("长文本切分失败，仍有片段超过字节上限。")
+    if any(
+        len(chunk.encode("utf-8")) > max_bytes
+        or any(
+            len(sentence) > MAX_SENTENCE_CHARS
+            for sentence in re.split(r"(?<=[。！？!?；;])|(?<=\n)", chunk)
+        )
+        for chunk in chunks
+    ):
+        raise TtsError("长文本切分失败，仍有句子超过单次请求上限。")
     return chunks
 
 
