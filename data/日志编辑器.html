@@ -3280,19 +3280,19 @@
                                     <span class="tts-small">到</span>
                                     <select v-model="ttsCopyTargetRole" aria-label="复制配置目标角色">
                                         <option value="">选择目标角色</option>
-                                        <option v-for="name in characterList" :key="'tts-target-' + name" :value="name">
+                                        <option v-for="name in ttsCharacterList" :key="'tts-target-' + name" :value="name">
                                             {{ name }}
                                         </option>
                                     </select>
                                     <button type="button" class="secondary" @click="copyTtsRoleConfig">复制配置</button>
                                 </div>
 
-                                <div v-if="!characterList.length" class="tts-small" style="margin-top:10px;">
+                                <div v-if="!ttsCharacterList.length" class="tts-small" style="margin-top:10px;">
                                     导入日志后会自动列出角色；历史角色配置会保留，可复制到改名后的角色。
                                 </div>
 
                                 <div v-else class="tts-role-list">
-                                    <div v-for="character in characterList" :key="'tts-role-' + character"
+                                    <div v-for="character in ttsCharacterList" :key="'tts-role-' + character"
                                         class="tts-role-card">
                                         <div class="tts-role-title">
                                             <label>
@@ -4298,12 +4298,22 @@
                 return Array.from(characters).sort();
             },
 
+            ttsCharacterList() {
+                const characters = new Set();
+                this.logs.forEach(message => {
+                    if (!message || message.isChapter || !message.name) return;
+                    if (message.name.toLowerCase() === 'system' || message.name === '系统') return;
+                    characters.add(message.name);
+                });
+                return Array.from(characters).sort();
+            },
+
             ttsRoleConfigNames() {
                 return Object.keys(this.ttsConfig.roles || {}).sort();
             },
 
             ttsOrphanRoleNames() {
-                return this.ttsRoleConfigNames.filter(name => !this.characterList.includes(name));
+                return this.ttsRoleConfigNames.filter(name => !this.ttsCharacterList.includes(name));
             },
 
             ttsMonthlyUsedCharacters() {
@@ -4321,7 +4331,7 @@
 
             ttsRoleStats() {
                 const stats = {};
-                this.characterList.forEach(name => {
+                this.ttsCharacterList.forEach(name => {
                     stats[name] = { messages: 0, characters: 0 };
                 });
 
@@ -5772,7 +5782,7 @@
                 }
 
                 const roles = { ...this.ttsConfig.roles };
-                this.characterList.forEach(name => {
+                this.ttsCharacterList.forEach(name => {
                     if (!roles[name]) roles[name] = this.createDefaultTtsRoleConfig();
                 });
                 this.ttsConfig.roles = roles;
@@ -5780,7 +5790,7 @@
 
             setAllTtsRolesEnabled(enabled) {
                 this.syncTtsRoleConfigurations();
-                this.characterList.forEach(name => {
+                this.ttsCharacterList.forEach(name => {
                     this.ttsConfig.roles[name].enabled = enabled;
                 });
             },
@@ -5984,7 +5994,7 @@
                     this.ttsStatus = '请选择不同的来源角色和目标角色。';
                     return;
                 }
-                if (!this.ttsConfig.roles[sourceName] || !this.characterList.includes(targetName)) {
+                if (!this.ttsConfig.roles[sourceName] || !this.ttsCharacterList.includes(targetName)) {
                     this.ttsStatus = '来源或目标角色已不存在，请先同步角色配置。';
                     return;
                 }
