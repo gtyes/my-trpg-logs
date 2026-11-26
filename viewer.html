@@ -541,6 +541,13 @@
             overflow-wrap: break-word;    /* 现代浏览器标准 */
             word-break: break-word;       /* 更激进地断行，防止溢出 */
         }
+
+        .message-tts-audio {
+            display: block;
+            width: min(320px, 100%);
+            height: 34px;
+            margin-top: 6px;
+        }
         
         .message-image {
             margin-top: 6px; /* 减小间距 */
@@ -799,6 +806,13 @@
             line-height: 1.7;
             white-space: pre-wrap;
             word-break: break-word;
+        }
+
+        .vn-speech-audio {
+            flex: 0 0 auto;
+            width: min(320px, 100%);
+            height: 34px;
+            margin-top: 6px;
         }
 
         .vn-extend {
@@ -1947,6 +1961,11 @@
             <div class="vn-dialog" id="vnDialog">
                 <div class="vn-name" id="vnName"></div>
                 <div class="vn-text" id="vnText"></div>
+                <audio class="vn-speech-audio" id="vnSpeechAudio" controls preload="none"
+                    aria-label="播放消息语音" hidden
+                    onclick="event.stopPropagation()"
+                    onpointerdown="event.stopPropagation()"
+                    onkeydown="event.stopPropagation()"></audio>
                 <div class="vn-extend" id="vnExtend"></div>
                 <div class="vn-hint" id="vnHint">点击继续 / 空格</div>
             </div>
@@ -3058,6 +3077,7 @@
             // 退出对话模式时停止 BGM
             stopVnBgm();
             stopVnSfx();
+            setVnSpeechAudio(null);
 
             clearVnForegroundLayers();
             cancelVnOpening();
@@ -3419,6 +3439,7 @@
                 return;
             }
 
+            setVnSpeechAudio(step.msg);
             updateVnLogDrawerBackground(); 
             const overlay = document.getElementById('vnOverlay');
             const bg = document.getElementById('vnBg');
@@ -3539,6 +3560,27 @@
             }
 
             startVnTyping(msg.text || '');
+        }
+
+        function setVnSpeechAudio(message) {
+            const audio = document.getElementById('vnSpeechAudio');
+            if (!audio) return;
+
+            audio.pause();
+            audio.removeAttribute('src');
+            audio.hidden = true;
+
+            const url = message && typeof message.ttsAudioUrl === 'string'
+                ? message.ttsAudioUrl.trim()
+                : '';
+            if (!url) {
+                audio.load();
+                return;
+            }
+
+            audio.src = url;
+            audio.hidden = false;
+            audio.load();
         }
 
         function setVnPortraitSlot(slotId, url, dimmed) {
@@ -5268,7 +5310,10 @@
 
             // ---- 1️⃣ 对话文本 ----
             const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
-            let html = `<div class="message-text">${highlightedText}</div>`;
+            const speechAudioHtml = msg.ttsAudioUrl
+                ? `<audio class="message-tts-audio" controls preload="none" src="${escapeHtmlAttribute(msg.ttsAudioUrl)}" aria-label="播放消息语音"></audio>`
+                : '';
+            let html = `<div class="message-text">${highlightedText}</div>${speechAudioHtml}`;
 
             // ---- 2️⃣ 消息内嵌图片（如果有） ----
             if (msg.messageImage) {
@@ -5310,6 +5355,15 @@
                     </div>
                 </div>
             `;
+        }
+
+        function escapeHtmlAttribute(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/'/g, '&#39;');
         }
 
         // 添加高亮函数
@@ -5933,15 +5987,15 @@ function getChannelMaskStyle(channel) {
             document.body.appendChild(modal);
         }
         // 搜索框输入时显示清除按钮
-document.getElementById('searchInput').addEventListener('input', function() {
-    const clearBtn = document.querySelector('.clear-search-btn');
-    clearBtn.style.display = this.value ? 'block' : 'none';
-});
-function clearSearch() {
-    document.getElementById('searchInput').value = '';
-    document.querySelector('.clear-search-btn').style.display = 'none';
-    clearFilters(); // 使用已有的清除筛选函数
-}
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const clearBtn = document.querySelector('.clear-search-btn');
+            clearBtn.style.display = this.value ? 'block' : 'none';
+        });
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.querySelector('.clear-search-btn').style.display = 'none';
+            clearFilters(); // 使用已有的清除筛选函数
+        }
         // 搜索框回车事件
         document.getElementById('searchInput').addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
