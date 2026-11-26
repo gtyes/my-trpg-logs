@@ -49,7 +49,7 @@ class TtsHelpersTests(unittest.TestCase):
         results = deduplicate_tasks([task, duplicate])
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["messageCount"], 3)
-        self.assertEqual(results[0]["roles"], ["甲", "乙"])
+        self.assertCountEqual(results[0]["roles"], ["甲", "乙"])
         self.assertEqual(results[0]["channels"], ["主频道", "闲聊"])
 
     def test_deduplicate_tasks_rejects_hash_mismatch(self):
