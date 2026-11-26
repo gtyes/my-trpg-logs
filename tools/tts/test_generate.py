@@ -94,6 +94,13 @@ class TtsHelpersTests(unittest.TestCase):
         self.assertEqual("".join(chunks), normalize_text(text))
         self.assertTrue(all(len(chunk.encode("utf-8")) <= 4500 for chunk in chunks))
 
+    def test_splits_short_but_overlong_sentence_at_chinese_commas(self):
+        text = "甲" * 45 + "，" + "乙" * 45 + "，" + "丙" * 20
+        chunks = split_text(text)
+        self.assertGreater(len(chunks), 1)
+        self.assertEqual("".join(chunks), text)
+        self.assertTrue(all(len(chunk) <= 80 for chunk in chunks))
+
     def test_split_long_sentence_at_unicode_boundaries(self):
         text = "界" * 3000
         chunks = split_text(text, max_bytes=64)
