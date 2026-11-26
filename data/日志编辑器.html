@@ -362,13 +362,6 @@
                 width: 78px;
             }
 
-            .tts-role-card textarea {
-                width: 100%;
-                min-height: 42px;
-                margin-top: 8px;
-                resize: vertical;
-            }
-
             .tts-summary {
                 margin-top: 12px;
                 padding: 10px;
@@ -3300,8 +3293,10 @@
                                             </label>
                                             <strong>{{ character }}</strong>
                                             <span class="tts-small">
-                                                {{ (ttsRoleStats[character] || {messages: 0}).messages }} 条 /
-                                                {{ (ttsRoleStats[character] || {characters: 0}).characters.toLocaleString() }} 字符
+                                                全部 {{ (ttsRoleStats[character] || {allMessages: 0}).allMessages }} 条 /
+                                                {{ (ttsRoleStats[character] || {allCharacters: 0}).allCharacters.toLocaleString() }} 字符；
+                                                排除闲聊 {{ (ttsRoleStats[character] || {nonChatMessages: 0}).nonChatMessages }} 条 /
+                                                {{ (ttsRoleStats[character] || {nonChatCharacters: 0}).nonChatCharacters.toLocaleString() }} 字符
                                             </span>
                                             <button type="button" class="secondary" style="margin-left:auto;"
                                                 @click="previewTtsVoice(character)"
@@ -3346,8 +3341,6 @@
                                                 {{ ttsConfig.roles[character].volumeGainDb.toFixed(1) }} dB
                                             </label>
                                         </div>
-                                        <textarea v-model="ttsConfig.roles[character].notes"
-                                            :aria-label="character + '语音备注'" placeholder="备注（可选）"></textarea>
                                     </div>
                                 </div>
 
@@ -4334,14 +4327,26 @@
             ttsRoleStats() {
                 const stats = {};
                 this.ttsCharacterList.forEach(name => {
-                    stats[name] = { messages: 0, characters: 0 };
+                    stats[name] = {
+                        allMessages: 0,
+                        allCharacters: 0,
+                        nonChatMessages: 0,
+                        nonChatCharacters: 0
+                    };
                 });
 
                 this.logs.forEach(message => {
                     if (!stats[message.name] || message.isChapter) return;
                     const text = this.getTtsEligibleText(message);
-                    stats[message.name].messages++;
-                    stats[message.name].characters += this.getTtsCharacterCount(text);
+                    const roleStats = stats[message.name];
+                    const characterCount = this.getTtsCharacterCount(text);
+                    roleStats.allMessages++;
+                    roleStats.allCharacters += characterCount;
+
+                    if (!this.isNonMainChannel(this.getTtsMessageChannel(message))) {
+                        roleStats.nonChatMessages++;
+                        roleStats.nonChatCharacters += characterCount;
+                    }
                 });
                 return stats;
             }
@@ -5729,8 +5734,7 @@
                     languageCode: 'cmn-CN',
                     speakingRate: 1,
                     pitch: 0,
-                    volumeGainDb: 0,
-                    notes: ''
+                    volumeGainDb: 0
                 };
             },
 
@@ -5754,8 +5758,7 @@
                         languageCode: typeof role.languageCode === 'string' ? role.languageCode : defaults.languageCode,
                         speakingRate: Math.min(2, Math.max(0.5, numberOrDefault(role.speakingRate, defaults.speakingRate))),
                         pitch: Math.min(20, Math.max(-20, numberOrDefault(role.pitch, defaults.pitch))),
-                        volumeGainDb: Math.min(10, Math.max(-10, numberOrDefault(role.volumeGainDb, defaults.volumeGainDb))),
-                        notes: typeof role.notes === 'string' ? role.notes : ''
+                        volumeGainDb: Math.min(10, Math.max(-10, numberOrDefault(role.volumeGainDb, defaults.volumeGainDb)))
                     };
                 });
 
