@@ -265,6 +265,40 @@ def synthesize_piece(text: str, voice: dict[str, Any], api_key: str) -> bytes:
     return audio
 
 
+def _split_sentence_too_long(text: str) -> tuple[str, str]:
+    midpoint = len(text) // 2
+    boundary_positions = [
+        index + 1
+        for index, character in enumerate(text[:-1])
+        if character in "，,、：:；;。！？!?\n"
+    ]
+    if boundary_positions:
+        split_at = min(boundary_positions, key=lambda position: abs(position - midpoint))
+    else:
+        split_at = midpoint
+    return text[:split_at], text[split_at:]
+
+
+def synthesize_piece_with_fallback(
+    text: str,
+    voice: dict[str, Any],
+    api_key: str,
+) -> list[bytes]:
+    try:
+        return [synthesize_piece(text, voice, api_key)]
+    except TtsError as error:
+        if "sentences that are too long" not in str(error).lower() or len(text) < 2:
+            raise
+
+    left, right = _split_sentence_too_long(text)
+    if not left or not right:
+        raise TtsError("无法进一步拆分 Google TTS 拒绝的长句。") from None
+    return (
+        synthesize_piece_with_fallback(left, voice, api_key)
+        + synthesize_piece_with_fallback(right, voice, api_key)
+    )
+
+
 def _ffmpeg_quote(path: Path) -> str:
     return str(path.resolve()).replace("\\", "/").replace("'", r"'\''")
 
@@ -306,11 +340,12 @@ def synthesize_task(task: dict[str, Any], api_key: str, output_path: Path) -> No
     with tempfile.TemporaryDirectory(prefix="trpg-tts-") as temporary_directory:
         temporary_path = Path(temporary_directory)
         segment_paths: list[Path] = []
-        for index, chunk in enumerate(chunks):
-            audio = synthesize_piece(chunk, task["voice"], api_key)
-            segment_path = temporary_path / f"part-{index:04d}.mp3"
-            segment_path.write_bytes(audio)
-            segment_paths.append(segment_path)
+        for chunk in chunks:
+            audio_pieces = synthesize_piece_with_fallback(chunk, task["voice"], api_key)
+            for audio in audio_pieces:
+                segment_path = temporary_path / f"part-{len(segment_paths):04d}.mp3"
+                segment_path.write_bytes(audio)
+                segment_paths.append(segment_path)
 
         if len(segment_paths) == 1:
             temporary_output = temporary_path / "complete.mp3"

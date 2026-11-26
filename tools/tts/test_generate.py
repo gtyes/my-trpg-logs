@@ -10,6 +10,7 @@ from generate import (
     normalize_text,
     split_text,
     synthesize_piece,
+    synthesize_piece_with_fallback,
 )
 
 
@@ -100,6 +101,32 @@ class TtsHelpersTests(unittest.TestCase):
         self.assertGreater(len(chunks), 1)
         self.assertEqual("".join(chunks), text)
         self.assertTrue(all(len(chunk) <= 80 for chunk in chunks))
+
+    def test_retries_google_long_sentence_errors_with_smaller_pieces(self):
+        text = "我在厨房里" * 14
+        requests = []
+
+        def fake_synthesize(piece, _voice, _api_key):
+            requests.append(piece)
+            if len(piece) > 20:
+                raise TtsError(
+                    "Google TTS 返回 HTTP 400：This request contains sentences that are too long."
+                )
+            return piece.encode("utf-8")
+
+        with patch("generate.synthesize_piece", side_effect=fake_synthesize):
+            audio_pieces = synthesize_piece_with_fallback(text, VOICE, "not-a-real-key")
+
+        self.assertGreater(len(audio_pieces), 1)
+        self.assertEqual(b"".join(audio_pieces), text.encode("utf-8"))
+        self.assertGreater(len(requests), len(audio_pieces))
+
+    def test_does_not_retry_other_google_errors(self):
+        error = TtsError("Google TTS 返回 HTTP 400：invalid voice")
+        with patch("generate.synthesize_piece", side_effect=error) as synthesize:
+            with self.assertRaisesRegex(TtsError, "invalid voice"):
+                synthesize_piece_with_fallback("你好", VOICE, "not-a-real-key")
+        synthesize.assert_called_once()
 
     def test_split_long_sentence_at_unicode_boundaries(self):
         text = "界" * 3000
