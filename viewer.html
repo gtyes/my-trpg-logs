@@ -10,6 +10,26 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(150, 150, 150, 0.55) transparent;
+        }
+
+        *::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: rgba(150, 150, 150, 0.5);
+            border-radius: 4px;
+        }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background: rgba(175, 175, 175, 0.7);
         }
         
         /* ========== 网站背景 ========== */
@@ -1193,7 +1213,7 @@
         }
 
         #channelFilters::-webkit-scrollbar-track {
-            background: rgba(139, 0, 0, 0.1);
+            background: transparent;
             border-radius: 3px;
         }
 
