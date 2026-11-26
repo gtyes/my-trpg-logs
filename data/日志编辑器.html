@@ -249,6 +249,12 @@
                 border-radius: 4px;
             }
 
+            .message-word-count {
+                color: #666;
+                font-size: 12px;
+                white-space: nowrap;
+            }
+
             .message-search-results {
                 position: absolute;
                 top: calc(100% + 6px);
@@ -3142,6 +3148,10 @@
                                     aria-label="搜索消息关键词" @input="clearMessageSearchIfEmpty"
                                     @keyup.enter="searchMessages">
                                 <button @click="searchMessages">搜索</button>
+                                <span class="message-word-count"
+                                    title="中日韩字符逐字计数，其他文字按词统计，不计空白和标点">
+                                    字数：{{ messageWordCount.toLocaleString() }}
+                                </span>
                                 <div v-if="messageSearchPerformed" class="message-search-results">
                                     <div v-if="messageSearchStatus" class="message-search-status">
                                         {{ messageSearchStatus }}
@@ -3855,6 +3865,17 @@
             // 总日志数
             totalLogs() {
                 return this.logs.length;
+            },
+
+            // 中日韩字符逐字计数，其他文字按连续词语计数
+            messageWordCount() {
+                return this.logs.reduce((count, message) => {
+                    if (typeof message.text !== 'string') return count;
+                    const words = message.text.match(
+                        /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]|[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu
+                    );
+                    return count + (words ? words.length : 0);
+                }, 0);
             },
 
             // 总页数
