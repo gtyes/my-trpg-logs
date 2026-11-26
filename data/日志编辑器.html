@@ -3139,7 +3139,8 @@
 
                             <div class="message-search">
                                 <input type="search" v-model="messageSearchQuery" placeholder="搜索消息关键词"
-                                    aria-label="搜索消息关键词" @keyup.enter="searchMessages">
+                                    aria-label="搜索消息关键词" @input="clearMessageSearchIfEmpty"
+                                    @keyup.enter="searchMessages">
                                 <button @click="searchMessages">搜索</button>
                                 <div v-if="messageSearchPerformed" class="message-search-results">
                                     <div v-if="messageSearchStatus" class="message-search-status">
@@ -5362,6 +5363,13 @@
                 if (this.messageSearchResults.length === 0) {
                     this.messageSearchStatus = '没有找到匹配的消息';
                 }
+            },
+
+            clearMessageSearchIfEmpty() {
+                if (this.messageSearchQuery.trim()) return;
+                this.messageSearchResults = [];
+                this.messageSearchPerformed = false;
+                this.messageSearchStatus = '';
             },
 
             getMessageSearchPreview(message) {
