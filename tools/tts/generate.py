@@ -52,6 +52,7 @@ def normalize_voice(voice: dict[str, Any]) -> dict[str, Any]:
             "speakingRate": js_number(voice["speakingRate"]),
             "pitch": js_number(voice["pitch"]),
             "volumeGainDb": js_number(voice["volumeGainDb"]),
+            "pitchSupported": voice.get("pitchSupported") is not False,
         }
     except (KeyError, TypeError, ValueError) as error:
         raise TtsError(f"任务缺少有效的语音配置：{error}") from None
@@ -67,11 +68,14 @@ def content_hash(text: str, voice: dict[str, Any]) -> str:
         "voiceName": voice["voiceName"],
         "languageCode": voice["languageCode"],
         "speakingRate": voice["speakingRate"],
-        "pitch": voice["pitch"],
-        "volumeGainDb": voice["volumeGainDb"],
-        "audioEncoding": AUDIO_ENCODING,
-        "engineVersion": ENGINE_VERSION,
     }
+    if voice["pitchSupported"]:
+        payload["pitch"] = voice["pitch"]
+    else:
+        payload["pitchSupported"] = False
+    payload["volumeGainDb"] = voice["volumeGainDb"]
+    payload["audioEncoding"] = AUDIO_ENCODING
+    payload["engineVersion"] = ENGINE_VERSION
     canonical = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
@@ -197,19 +201,30 @@ def _google_request(api_key: str, payload: dict[str, Any], timeout: int = 60) ->
 
 
 def synthesize_piece(text: str, voice: dict[str, Any], api_key: str) -> bytes:
-    result = _google_request(api_key, {
-        "input": {"text": text},
-        "voice": {
-            "name": voice["voiceName"],
-            "languageCode": voice["languageCode"],
-        },
-        "audioConfig": {
-            "audioEncoding": AUDIO_ENCODING,
-            "speakingRate": voice["speakingRate"],
-            "pitch": voice["pitch"],
-            "volumeGainDb": voice["volumeGainDb"],
-        },
-    })
+    audio_config = {
+        "audioEncoding": AUDIO_ENCODING,
+        "speakingRate": voice["speakingRate"],
+        "volumeGainDb": voice["volumeGainDb"],
+    }
+    if voice["pitchSupported"]:
+        audio_config["pitch"] = voice["pitch"]
+
+    try:
+        result = _google_request(api_key, {
+            "input": {"text": text},
+            "voice": {
+                "name": voice["voiceName"],
+                "languageCode": voice["languageCode"],
+            },
+            "audioConfig": audio_config,
+        })
+    except TtsError as error:
+        if voice["pitchSupported"] and "does not support pitch parameters" in str(error).lower():
+            raise TtsError(
+                f"{error} 请先在日志编辑器中试听该音色，让编辑器识别不支持音调，"
+                "再重新扫描并导出任务。"
+            ) from None
+        raise
     try:
         audio = base64.b64decode(result["audioContent"], validate=True)
     except (KeyError, ValueError) as error:
@@ -538,6 +553,7 @@ def run(args: argparse.Namespace) -> int:
             "languageCode": task["voice"]["languageCode"],
             "speakingRate": task["voice"]["speakingRate"],
             "pitch": task["voice"]["pitch"],
+            "pitchSupported": task["voice"]["pitchSupported"],
             "volumeGainDb": task["voice"]["volumeGainDb"],
             "audioEncoding": AUDIO_ENCODING,
             "engineVersion": ENGINE_VERSION,

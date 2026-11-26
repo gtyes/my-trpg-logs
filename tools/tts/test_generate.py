@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 from generate import (
     TtsError,
@@ -8,6 +9,7 @@ from generate import (
     merge_manifests,
     normalize_text,
     split_text,
+    synthesize_piece,
 )
 
 
@@ -29,6 +31,31 @@ class TtsHelpersTests(unittest.TestCase):
         self.assertEqual(text_hash, content_hash("  你好  ", VOICE))
         changed_voice = {**VOICE, "speakingRate": 1.1}
         self.assertNotEqual(text_hash, content_hash("你好", changed_voice))
+
+    def test_unsupported_pitch_does_not_affect_hash(self):
+        first = {**VOICE, "pitchSupported": False, "pitch": -10}
+        second = {**VOICE, "pitchSupported": False, "pitch": 10}
+        self.assertEqual(content_hash("你好", first), content_hash("你好", second))
+        self.assertNotEqual(content_hash("你好", first), content_hash("你好", VOICE))
+
+    def test_unsupported_pitch_is_omitted_from_google_request(self):
+        import base64
+
+        payload = {}
+
+        def fake_request(_api_key, request_payload):
+            payload.update(request_payload)
+            return {"audioContent": base64.b64encode(b"mp3").decode("ascii")}
+
+        with patch("generate._google_request", side_effect=fake_request):
+            audio = synthesize_piece(
+                "你好",
+                {**VOICE, "pitchSupported": False},
+                "not-a-real-key",
+            )
+
+        self.assertEqual(audio, b"mp3")
+        self.assertNotIn("pitch", payload["audioConfig"])
 
     def test_deduplicate_tasks_merges_roles_and_message_counts(self):
         digest = content_hash("你好", VOICE)
