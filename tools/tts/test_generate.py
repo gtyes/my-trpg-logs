@@ -1,8 +1,11 @@
+import http.client
+import json
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from generate import (
     TtsError,
+    _google_request,
     content_hash,
     deduplicate_tasks,
     ensure_within_budget,
@@ -127,6 +130,28 @@ class TtsHelpersTests(unittest.TestCase):
             with self.assertRaisesRegex(TtsError, "invalid voice"):
                 synthesize_piece_with_fallback("你好", VOICE, "not-a-real-key")
         synthesize.assert_called_once()
+
+    def test_google_request_retries_incomplete_response_body(self):
+        incomplete_response = MagicMock()
+        incomplete_response.__enter__.return_value = incomplete_response
+        incomplete_response.__exit__.return_value = None
+        incomplete_response.read.side_effect = http.client.IncompleteRead(b"partial", 5)
+
+        complete_response = MagicMock()
+        complete_response.__enter__.return_value = complete_response
+        complete_response.__exit__.return_value = None
+        complete_response.read.return_value = json.dumps({"audioContent": "ok"}).encode()
+
+        with patch(
+            "generate.urllib.request.urlopen",
+            side_effect=[incomplete_response, complete_response],
+        ) as urlopen:
+            with patch("generate.time.sleep") as sleep:
+                result = _google_request("not-a-real-key", {"input": {"text": "你好"}})
+
+        self.assertEqual(result, {"audioContent": "ok"})
+        self.assertEqual(urlopen.call_count, 2)
+        sleep.assert_called_once_with(1)
 
     def test_split_long_sentence_at_unicode_boundaries(self):
         text = "界" * 3000

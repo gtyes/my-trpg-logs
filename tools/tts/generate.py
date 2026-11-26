@@ -7,6 +7,7 @@ import argparse
 import base64
 import datetime as dt
 import hashlib
+import http.client
 import json
 import os
 import re
@@ -14,6 +15,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unicodedata
 import urllib.error
 import urllib.parse
@@ -26,6 +28,7 @@ ENGINE_VERSION = "google-cloud-tts-v1"
 AUDIO_ENCODING = "MP3"
 MAX_TEXT_BYTES = 4500
 MAX_SENTENCE_CHARS = 80
+GOOGLE_REQUEST_ATTEMPTS = 3
 MANIFEST_OBJECT_KEY = "manifest.json"
 
 
@@ -216,19 +219,30 @@ def _google_request(api_key: str, payload: dict[str, Any], timeout: int = 60) ->
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as error:
-        body = error.read().decode("utf-8", errors="replace")
+    for attempt in range(GOOGLE_REQUEST_ATTEMPTS):
         try:
-            detail = json.loads(body).get("error", {}).get("message", "Google API 请求失败")
-        except json.JSONDecodeError:
-            detail = "Google API 请求失败"
-        detail = str(detail).replace(api_key, "[已隐藏]")
-        raise TtsError(f"Google TTS 返回 HTTP {error.code}：{detail}") from None
-    except urllib.error.URLError as error:
-        raise TtsError(f"无法连接 Google TTS：{error.reason}") from None
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                body = response.read()
+            return json.loads(body.decode("utf-8"))
+        except urllib.error.HTTPError as error:
+            body = error.read().decode("utf-8", errors="replace")
+            try:
+                detail = json.loads(body).get("error", {}).get("message", "Google API 请求失败")
+            except json.JSONDecodeError:
+                detail = "Google API 请求失败"
+            detail = str(detail).replace(api_key, "[已隐藏]")
+            raise TtsError(f"Google TTS 返回 HTTP {error.code}：{detail}") from None
+        except (http.client.HTTPException, OSError) as error:
+            if attempt + 1 < GOOGLE_REQUEST_ATTEMPTS:
+                time.sleep(2 ** attempt)
+                continue
+            if isinstance(error, urllib.error.URLError):
+                detail = str(error.reason)
+            else:
+                detail = str(error)
+            raise TtsError(
+                f"Google TTS 响应传输中断，已自动重试 {GOOGLE_REQUEST_ATTEMPTS - 1} 次仍失败：{detail}"
+            ) from None
 
 
 def synthesize_piece(text: str, voice: dict[str, Any], api_key: str) -> bytes:
