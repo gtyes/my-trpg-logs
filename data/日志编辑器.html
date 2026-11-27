@@ -9620,13 +9620,10 @@ autoImportCharacterColors() {
 
             // 导出修改后的 JSON（包含所有编辑和设置）
             downloadJson() {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.getExportData(), null, 2));
-                const downloadAnchorNode = document.createElement('a');
-                downloadAnchorNode.setAttribute("href", dataStr);
-                downloadAnchorNode.setAttribute("download", `trpg-log-${new Date().toISOString().slice(0,10)}.json`);
-                document.body.appendChild(downloadAnchorNode);
-                downloadAnchorNode.click();
-                downloadAnchorNode.remove();
+                this.downloadTtsJson(
+                    this.getExportData(),
+                    `trpg-log-${new Date().toISOString().slice(0, 10)}.json`
+                );
             },
 
             async saveChanges(options = {}) {
