@@ -6887,9 +6887,19 @@
                 await this.scanTtsMessages();
                 if (!this.ttsScanSummary) return;
 
-                const saveSummary = beforeScanSave.status === 'downloaded'
-                    ? '日志修改副本已在扫描前下载。'
-                    : '日志已在扫描前自动保存。';
+                // 扫描会更新消息的 ttsHash / ttsAudioUrl，回写一次以免刷新后丢失。
+                const afterScanSave = await this.saveChanges({ silent: true });
+                if (afterScanSave.status !== 'saved' && afterScanSave.status !== 'downloaded') {
+                    console.error('扫描后保存日志失败:', afterScanSave.error);
+                }
+
+                const saveSummary = afterScanSave.status === 'saved'
+                    ? '日志已在扫描后自动保存。'
+                    : afterScanSave.status === 'downloaded'
+                        ? '日志修改副本已在扫描后下载。'
+                        : beforeScanSave.status === 'downloaded'
+                            ? '日志修改副本已在扫描前下载。'
+                            : '日志已在扫描前自动保存。';
                 if (!this.ttsTasks.length) {
                     this.ttsStatus = `没有待生成的语音任务，因此未生成任务文件。${saveSummary}`;
                     return;
@@ -7214,6 +7224,17 @@
                 await this.scanTtsMessages();
                 if (this.ttsStatus.startsWith('扫描失败：')) return;
 
+                // 扫描会把清单里的音频地址回填到消息的 ttsHash / ttsAudioUrl，
+                // 必须落盘保存，否则刷新页面后这些回填会丢失。
+                const saveResult = await this.saveChanges({ silent: true });
+                const saveNote = saveResult.status === 'saved'
+                    ? '已保存到日志文件。'
+                    : saveResult.status === 'downloaded'
+                        ? '已下载更新后的日志副本。'
+                        : saveResult.status === 'cancelled'
+                            ? '保存日志时已取消，刷新后可能丢失本次回填。'
+                            : `保存日志失败（${saveResult.error}），刷新后可能丢失本次回填。`;
+
                 const updatedMessageCount = this.logs.reduce((count, message) => {
                     const previous = previousTtsSettings.get(message);
                     const hasAudioUrl = typeof message.ttsAudioUrl === 'string'
@@ -7226,7 +7247,7 @@
                         || previous.charCount !== message.ttsCharCount;
                     return count + Number(settingsChanged);
                 }, 0);
-                this.ttsStatus = `已导入 ${Object.keys(entries).length} 条语音清单；本次更新了 ${updatedMessageCount} 条消息的语音设置。`;
+                this.ttsStatus = `已导入 ${Object.keys(entries).length} 条语音清单；本次更新了 ${updatedMessageCount} 条消息的语音设置。${saveNote}`;
             },
 
             searchMessages() {
