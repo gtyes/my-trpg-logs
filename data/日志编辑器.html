@@ -6452,20 +6452,11 @@
                 await this.scanTtsMessages();
                 if (!this.ttsScanSummary) return;
 
-                const afterScanSave = await this.saveChanges({ silent: true });
-                if (afterScanSave.status !== 'saved' && afterScanSave.status !== 'downloaded') {
-                    this.ttsStatus = afterScanSave.status === 'cancelled'
-                        ? '已取消任务导出：扫描后保存日志时已取消。'
-                        : `扫描后保存日志失败，已停止任务导出：${afterScanSave.error}`;
-                    return;
-                }
-
                 const saveSummary = beforeScanSave.status === 'downloaded'
-                    || afterScanSave.status === 'downloaded'
-                    ? '日志副本已在扫描前后分别下载，请保留扫描后的版本。'
-                    : '日志已自动保存。';
+                    ? '日志修改副本已在扫描前下载。'
+                    : '日志已在扫描前自动保存。';
                 if (!this.ttsTasks.length) {
-                    this.ttsStatus = `没有待生成的语音任务。${saveSummary}`;
+                    this.ttsStatus = `没有待生成的语音任务，因此未生成任务文件。${saveSummary}`;
                     return;
                 }
                 if (this.ttsScanSummary.limitExceeded) {
