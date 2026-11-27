@@ -3566,6 +3566,20 @@
                                                                         :disabled="msg.ttsDisabled">
                                                                         {{ msg.ttsRegenerationId ? '再次重新生成语音' : '重新生成这条语音' }}
                                                                     </button>
+                                                                    <select :value="msg.ttsVoiceOverride || ''"
+                                                                        @change="handleMessageTtsVoiceChange(msg, $event.target.value)"
+                                                                        :disabled="!ttsVoiceList.length"
+                                                                        :aria-label="msg.name + '这条消息的语音音色'"
+                                                                        style="width: 100%; margin-top: 6px;">
+                                                                        <option value="">本条消息：跟随角色默认音色</option>
+                                                                        <option v-if="msg.ttsVoiceOverride && !ttsVoiceList.some(voice => voice.name === msg.ttsVoiceOverride)"
+                                                                            :value="msg.ttsVoiceOverride">
+                                                                            {{ msg.ttsVoiceOverride }}（当前音色不在列表中）
+                                                                        </option>
+                                                                        <option v-for="voice in ttsVoiceList" :key="'message-voice-' + voice.name" :value="voice.name">
+                                                                            {{ voice.name }} · {{ voice.languageCodes[0] }}{{ ttsVoiceRoleUsage[voice.name] ? ' · 已选：' + ttsVoiceRoleUsage[voice.name].join('、') : '' }}
+                                                                        </option>
+                                                                    </select>
 
                                                                     <!-- 系统消息相关字段 -->
                                                                     <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -3676,6 +3690,20 @@
                                                                         :disabled="msg.ttsDisabled">
                                                                         {{ msg.ttsRegenerationId ? '再次重新生成语音' : '重新生成这条语音' }}
                                                                     </button>
+                                                                    <select :value="msg.ttsVoiceOverride || ''"
+                                                                        @change="handleMessageTtsVoiceChange(msg, $event.target.value)"
+                                                                        :disabled="!ttsVoiceList.length"
+                                                                        :aria-label="msg.name + '这条消息的语音音色'"
+                                                                        style="width: 100%; margin-top: 6px;">
+                                                                        <option value="">本条消息：跟随角色默认音色</option>
+                                                                        <option v-if="msg.ttsVoiceOverride && !ttsVoiceList.some(voice => voice.name === msg.ttsVoiceOverride)"
+                                                                            :value="msg.ttsVoiceOverride">
+                                                                            {{ msg.ttsVoiceOverride }}（当前音色不在列表中）
+                                                                        </option>
+                                                                        <option v-for="voice in ttsVoiceList" :key="'message-voice-' + voice.name" :value="voice.name">
+                                                                            {{ voice.name }} · {{ voice.languageCodes[0] }}{{ ttsVoiceRoleUsage[voice.name] ? ' · 已选：' + ttsVoiceRoleUsage[voice.name].join('、') : '' }}
+                                                                        </option>
+                                                                    </select>
 
                                                                     <!-- 头像图片URL输入 -->
                                                                     <div style="margin-top: 10px;">
@@ -4297,6 +4325,12 @@
                     if (!roleNamesByVoice[role.voiceName]) roleNamesByVoice[role.voiceName] = [];
                     roleNamesByVoice[role.voiceName].push(roleName);
                 });
+                this.logs.forEach(message => {
+                    if (!message || !message.name || !message.ttsVoiceOverride) return;
+                    const roleNames = roleNamesByVoice[message.ttsVoiceOverride] || (roleNamesByVoice[message.ttsVoiceOverride] = []);
+                    if (!roleNames.includes(message.name)) roleNames.push(message.name);
+                });
+                Object.values(roleNamesByVoice).forEach(roleNames => roleNames.sort((a, b) => a.localeCompare(b)));
                 return roleNamesByVoice;
             },
 
@@ -5727,7 +5761,7 @@
                     languageCode: 'cmn-CN',
                     speakingRate: 1,
                     pitch: 0,
-                    volumeGainDb: 0,
+                    volumeGainDb: 1.0,
                     pitchSupported: true
                 };
             },
@@ -5911,14 +5945,18 @@
                 }
             },
 
-            updateTtsVoiceLanguage(roleName) {
-                const role = this.ttsConfig.roles[roleName];
-                const voice = this.ttsVoiceList.find(item => item.name === role.voiceName);
+            getTtsVoiceLanguageCode(voiceName) {
+                const voice = this.ttsVoiceList.find(item => item.name === voiceName);
                 if (!voice || !Array.isArray(voice.languageCodes)) return;
-                role.languageCode = voice.languageCodes.find(language => /^(?:cmn-CN|zh-CN)(?:-|$)/i.test(language))
+                return voice.languageCodes.find(language => /^(?:cmn-CN|zh-CN)(?:-|$)/i.test(language))
                     || voice.languageCodes.find(language => /^(?:zh|cmn|yue)(?:-|$)/i.test(language))
                     || voice.languageCodes[0]
                     || 'cmn-CN';
+            },
+
+            updateTtsVoiceLanguage(roleName) {
+                const role = this.ttsConfig.roles[roleName];
+                role.languageCode = this.getTtsVoiceLanguageCode(role.voiceName) || role.languageCode;
             },
 
             handleTtsVoiceChange(roleName) {
@@ -5927,6 +5965,21 @@
                 role.pitchSupported = this.isTtsPitchSupported(role.voiceName);
                 if (!role.pitchSupported) role.pitch = 0;
                 this.invalidateRoleTtsAudio(roleName);
+            },
+
+            handleMessageTtsVoiceChange(message, voiceName) {
+                if (!message) return;
+                const selectedVoiceName = String(voiceName || '').trim();
+                if (selectedVoiceName) {
+                    message.ttsVoiceOverride = selectedVoiceName;
+                    message.ttsVoiceOverrideLanguageCode = this.getTtsVoiceLanguageCode(selectedVoiceName) || '';
+                } else {
+                    delete message.ttsVoiceOverride;
+                    delete message.ttsVoiceOverrideLanguageCode;
+                }
+                this.invalidateMessageTts(message);
+                this.ttsTasks = [];
+                this.ttsScanSummary = null;
             },
 
             invalidateMessageTts(message) {
@@ -5957,7 +6010,16 @@
             requestMessageTtsRegeneration(message) {
                 if (!message || message.isChapter || message.ttsDisabled === true) return;
                 const role = this.ttsConfig.roles[message.name || ''];
-                if (!role || !role.enabled || !role.voiceName || !role.languageCode) {
+                const messageVoiceName = typeof message.ttsVoiceOverride === 'string'
+                    ? message.ttsVoiceOverride.trim()
+                    : '';
+                const voiceName = messageVoiceName || (role && role.voiceName);
+                const languageCode = messageVoiceName
+                    ? message.ttsVoiceOverrideLanguageCode
+                        || this.getTtsVoiceLanguageCode(messageVoiceName)
+                        || (role && role.languageCode)
+                    : role && role.languageCode;
+                if (!role || !role.enabled || !voiceName || !languageCode) {
                     this.ttsStatus = `请先为“${message.name || '未知角色'}”启用语音并选择音色。`;
                     return;
                 }
@@ -6215,7 +6277,20 @@
                         const roleName = message.name || '';
                         const role = this.ttsConfig.roles[roleName];
                         if (!role || !role.enabled) continue;
-                        if (!role.voiceName || !role.languageCode) {
+
+                        const messageVoiceName = typeof message.ttsVoiceOverride === 'string'
+                            ? message.ttsVoiceOverride.trim()
+                            : '';
+                        const voiceName = messageVoiceName || role.voiceName;
+                        const voiceLanguageOverride = typeof message.ttsVoiceOverrideLanguageCode === 'string'
+                            ? message.ttsVoiceOverrideLanguageCode.trim()
+                            : '';
+                        const languageCode = messageVoiceName
+                            ? voiceLanguageOverride
+                                || this.getTtsVoiceLanguageCode(messageVoiceName)
+                                || role.languageCode
+                            : role.languageCode;
+                        if (!voiceName || !languageCode) {
                             missingVoiceRoles.add(roleName);
                             continue;
                         }
@@ -6224,12 +6299,12 @@
                         if (!this.ttsConfig.includeChat && this.isNonMainChannel(channel)) continue;
 
                         const voice = {
-                            voiceName: role.voiceName,
-                            languageCode: role.languageCode,
+                            voiceName,
+                            languageCode,
                             speakingRate: Number(role.speakingRate),
                             pitch: Number(role.pitch),
-                            pitchSupported: role.pitchSupported !== false
-                                && this.isTtsPitchSupported(role.voiceName),
+                            pitchSupported: this.isTtsPitchSupported(voiceName)
+                                && (Boolean(messageVoiceName) || role.pitchSupported !== false),
                             volumeGainDb: Number(role.volumeGainDb)
                         };
                         const regenerationId = typeof message.ttsRegenerationId === 'string'
@@ -9208,7 +9283,7 @@ autoImportCharacterColors() {
             createEditBackup(msg) {
                 const fields = [
                     'name', 'text', 'color', 'channel', 'icon', 'messageImage', 'to', 'editExtend', 'ttsDisabled',
-                    'ttsRegenerationId',
+                    'ttsRegenerationId', 'ttsVoiceOverride', 'ttsVoiceOverrideLanguageCode',
                     'ttsHash', 'ttsAudioUrl', 'ttsVoiceName', 'ttsCharCount',
                     'nameUseImage', 'nameBackground', 'nameOpacity',
                     'nameImage', 'nameImageSize', 'nameImageOpacity',
