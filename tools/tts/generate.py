@@ -24,6 +24,21 @@ from pathlib import Path
 from typing import Any
 
 
+def _configure_stdio_encoding() -> None:
+    """输出到管道/重定向时强制 UTF-8，避免本地服务读取进度时乱码；控制台保持默认。"""
+    for stream in (sys.stdout, sys.stderr):
+        if not hasattr(stream, "reconfigure"):
+            continue
+        try:
+            if not stream.isatty():
+                stream.reconfigure(encoding="utf-8", errors="replace")
+        except (ValueError, OSError):
+            pass
+
+
+_configure_stdio_encoding()
+
+
 ENGINE_VERSION = "google-cloud-tts-v1"
 AUDIO_ENCODING = "MP3"
 MAX_TEXT_BYTES = 4500
