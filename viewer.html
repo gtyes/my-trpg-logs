@@ -2352,7 +2352,7 @@
             if (!imageUrl || imageUrl === '__stop__') return Promise.resolve(true);
 
             const existing = vnPreloadedImages.get(imageUrl);
-            if (existing) return existing.promise;
+            if (existing) return existing;
 
             let resolveLoad;
             const promise = new Promise(resolve => {
@@ -2522,12 +2522,11 @@
             const finalUrl = getVnBackgroundUrlForStep(step);
             const stepPosition = Number(step.position) || 0;
             if (finalUrl !== vnBgCurrentUrl) {
-                setVnBackground(finalUrl);
-
                 if (finalUrl) {
                     console.log('[VN] 背景切换 @', stepPosition, '→', finalUrl);
                 }
             }
+            setVnBackground(finalUrl);
 
         }
         function clearVnForegroundLayers() {
