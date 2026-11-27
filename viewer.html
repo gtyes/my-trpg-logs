@@ -2002,6 +2002,7 @@
         let vnForegroundEvents = [];
         let vnFgLayers = new Map();
         let vnBgmAudio = new Audio();
+        let vnBgmRetryHandler = null;
         let vnMuted = false;
         let vnCurrentBgmUrl = '';
         let vnSfxEvents = [];
@@ -2262,10 +2263,18 @@
             return url.replace(/ /g, '%20');
         }
 
+        function clearVnBgmRetry() {
+            if (!vnBgmRetryHandler) return;
+            document.removeEventListener('click', vnBgmRetryHandler, true);
+            document.removeEventListener('keydown', vnBgmRetryHandler, true);
+            vnBgmRetryHandler = null;
+        }
+
         function playVnBgm(url) {
             const src = resolveMediaUrl(url);
             if (!src || vnCurrentBgmUrl === src) return;
 
+            clearVnBgmRetry();
             vnBgmAudio.pause();
             vnBgmAudio.src = src;
             vnBgmAudio.loop = true;
@@ -2284,15 +2293,21 @@
 
             if (playPromise && typeof playPromise.catch === 'function') {
                 playPromise.catch(err => {
-                    console.warn('[VN] BGM 被浏览器拦截，点击页面后重试:', err && err.name);
+                    console.warn('[VN] BGM 播放失败，等待用户操作后重试:', err);
 
                     const retry = () => {
-                        vnBgmAudio.play()
-                            .then(() => console.log('[VN] BGM 重试播放成功'))
-                            .catch(e => console.warn('[VN] BGM 重试仍失败:', e && e.name));
-                        document.removeEventListener('click', retry);
+                        clearVnBgmRetry();
+                        const retryPromise = vnBgmAudio.play();
+                        if (retryPromise && typeof retryPromise.then === 'function') {
+                            retryPromise
+                                .then(() => console.log('[VN] BGM 重试播放成功'))
+                                .catch(e => console.warn('[VN] BGM 重试仍失败:', e));
+                        }
                     };
-                    document.addEventListener('click', retry, { once: true });
+                    clearVnBgmRetry();
+                    vnBgmRetryHandler = retry;
+                    document.addEventListener('click', retry, { once: true, capture: true });
+                    document.addEventListener('keydown', retry, { once: true, capture: true });
                 });
             }
 
@@ -2300,6 +2315,7 @@
         }
 
         function stopVnBgm() {
+            clearVnBgmRetry();
             vnBgmAudio.pause();
             try {
                 vnBgmAudio.currentTime = 0;
