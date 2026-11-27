@@ -2007,6 +2007,7 @@
         let vnCurrentBgmUrl = '';
         let vnSfxEvents = [];
         let vnSfxAudios = [];   // 当前步骤正在播放的音效
+        let vnSfxRetryHandlers = new Map();
         let chapterImageMap = {}; // 章节名 -> 右侧图片URL
         let extendFormats = {};
         let extendSettings = { ruleSystem: 'coc_houserule' };
@@ -2583,7 +2584,24 @@
             });
         }
 
+        function clearVnSfxRetry(audio) {
+            const retry = vnSfxRetryHandlers.get(audio);
+            if (!retry) return;
+            document.removeEventListener('click', retry, true);
+            document.removeEventListener('keydown', retry, true);
+            vnSfxRetryHandlers.delete(audio);
+        }
+
+        function clearVnSfxRetries() {
+            Array.from(vnSfxRetryHandlers.keys()).forEach(audio => {
+                clearVnSfxRetry(audio);
+                audio.pause();
+                vnSfxAudios = vnSfxAudios.filter(item => item !== audio);
+            });
+        }
+
         function stopVnSfx() {
+            clearVnSfxRetries();
             vnSfxAudios.forEach(audio => {
                 try {
                     audio.pause();
@@ -2595,6 +2613,7 @@
 
         function applySfxForPosition(position) {
             if (isVnOpeningVisible()) return;
+            clearVnSfxRetries();
             const pos = Number(position) || 0;
             if (!pos) return;
 
@@ -2617,12 +2636,36 @@
                 audio.muted = vnMuted;
 
                 audio.addEventListener('ended', () => {
+                    clearVnSfxRetry(audio);
                     vnSfxAudios = vnSfxAudios.filter(item => item !== audio);
+                }, { once: true });
+                audio.addEventListener('error', () => {
+                    console.error('[VN] 音效加载失败:', src, audio.error);
                 }, { once: true });
 
                 const playPromise = audio.play();
                 if (playPromise && typeof playPromise.catch === 'function') {
-                    playPromise.catch(() => {});
+                    playPromise.catch(error => {
+                        console.warn('[VN] 音效播放失败:', src, error);
+                        if (!error || error.name !== 'NotAllowedError') return;
+
+                        const stepIndex = vnIndex;
+                        const retry = () => {
+                            clearVnSfxRetry(audio);
+                            if (vnIndex !== stepIndex || !vnSfxAudios.includes(audio)) return;
+
+                            const retryPromise = audio.play();
+                            if (retryPromise && typeof retryPromise.catch === 'function') {
+                                retryPromise.catch(retryError => {
+                                    console.warn('[VN] 音效重试仍失败:', src, retryError);
+                                });
+                            }
+                        };
+                        clearVnSfxRetry(audio);
+                        vnSfxRetryHandlers.set(audio, retry);
+                        document.addEventListener('click', retry, { once: true, capture: true });
+                        document.addEventListener('keydown', retry, { once: true, capture: true });
+                    });
                 }
 
                 vnSfxAudios.push(audio);
