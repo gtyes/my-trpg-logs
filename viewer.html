@@ -3265,8 +3265,6 @@
         }
 
         function scheduleVnNextPage(delay) {
-            if (!vnAuto) return;
-
             if (vnPageTimer) {
                 clearTimeout(vnPageTimer);
                 vnPageTimer = null;
@@ -3447,10 +3445,6 @@
                 if (vnAutoTimer) {
                     clearTimeout(vnAutoTimer);
                     vnAutoTimer = null;
-                }
-                if (vnPageTimer) {
-                    clearTimeout(vnPageTimer);
-                    vnPageTimer = null;
                 }
             }
         }
@@ -3886,8 +3880,8 @@
                 vnTyping = false;
                 vnHasMoreText = vnTextIndex < vnCurrentText.length;
 
-                if (hintEl) hintEl.textContent = vnAuto ? '即将继续…' : '点击继续';
-                if (vnAuto) scheduleVnNextPage();
+                if (hintEl) hintEl.textContent = '即将继续…';
+                scheduleVnNextPage();
                 return;
 
             }
@@ -3917,8 +3911,8 @@
                     vnTyping = false;
                     vnHasMoreText = vnTextIndex < vnCurrentText.length;
 
-                    if (hintEl) hintEl.textContent = vnAuto ? '即将继续…' : '点击继续';
-                    if (vnAuto) scheduleVnNextPage();
+                    if (hintEl) hintEl.textContent = '即将继续…';
+                    scheduleVnNextPage();
                     return;
                 }
             }
