@@ -65,7 +65,11 @@ def normalize_voice(voice: dict[str, Any]) -> dict[str, Any]:
     return normalized
 
 
-def content_hash(text: str, voice: dict[str, Any]) -> str:
+def content_hash(
+    text: str,
+    voice: dict[str, Any],
+    regeneration_id: str | None = None,
+) -> str:
     voice = normalize_voice(voice)
     payload = {
         "text": normalize_text(text),
@@ -80,6 +84,10 @@ def content_hash(text: str, voice: dict[str, Any]) -> str:
     payload["volumeGainDb"] = voice["volumeGainDb"]
     payload["audioEncoding"] = AUDIO_ENCODING
     payload["engineVersion"] = ENGINE_VERSION
+    if regeneration_id is not None:
+        if not isinstance(regeneration_id, str) or not regeneration_id.strip():
+            raise TtsError("任务的 regenerationId 必须是非空字符串。")
+        payload["regenerationId"] = regeneration_id.strip()
     canonical = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
@@ -93,7 +101,12 @@ def deduplicate_tasks(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if not isinstance(text, str) or not normalize_text(text):
             raise TtsError("生成任务的 text 不能为空。")
         voice = normalize_voice(task.get("voice") or {})
-        expected_hash = content_hash(text, voice)
+        regeneration_id = task.get("regenerationId")
+        if regeneration_id is not None:
+            if not isinstance(regeneration_id, str) or not regeneration_id.strip():
+                raise TtsError("任务的 regenerationId 必须是非空字符串。")
+            regeneration_id = regeneration_id.strip()
+        expected_hash = content_hash(text, voice, regeneration_id)
         if task.get("hash") != expected_hash:
             raise TtsError(f"任务哈希校验失败：{task.get('hash', '(缺失)')}")
 
@@ -101,9 +114,15 @@ def deduplicate_tasks(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
         normalized["text"] = normalize_text(text)
         normalized["voice"] = voice
         normalized["characterCount"] = len(normalized["text"])
+        if regeneration_id is not None:
+            normalized["regenerationId"] = regeneration_id
         prior = unique.get(expected_hash)
         if prior:
-            if prior["text"] != normalized["text"] or prior["voice"] != voice:
+            if (
+                prior["text"] != normalized["text"]
+                or prior["voice"] != voice
+                or prior.get("regenerationId") != regeneration_id
+            ):
                 raise TtsError(f"发现哈希冲突：{expected_hash}")
             prior["messageCount"] = int(prior.get("messageCount", 1)) + int(task.get("messageCount", 1))
             prior["roles"] = sorted(set(prior.get("roles", [])) | set(task.get("roles", [])))

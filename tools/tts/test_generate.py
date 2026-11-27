@@ -36,6 +36,12 @@ class TtsHelpersTests(unittest.TestCase):
         changed_voice = {**VOICE, "speakingRate": 1.1}
         self.assertNotEqual(text_hash, content_hash("你好", changed_voice))
 
+    def test_regeneration_id_creates_a_distinct_hash(self):
+        first_hash = content_hash("你好", VOICE, "regen-one")
+        self.assertEqual(first_hash, content_hash("你好", VOICE, " regen-one "))
+        self.assertNotEqual(first_hash, content_hash("你好", VOICE, "regen-two"))
+        self.assertNotEqual(first_hash, content_hash("你好", VOICE))
+
     def test_unsupported_pitch_does_not_affect_hash(self):
         first = {**VOICE, "pitchSupported": False, "pitch": -10}
         second = {**VOICE, "pitchSupported": False, "pitch": 10}
@@ -82,6 +88,31 @@ class TtsHelpersTests(unittest.TestCase):
         self.assertEqual(results[0]["messageCount"], 3)
         self.assertCountEqual(results[0]["roles"], ["甲", "乙"])
         self.assertEqual(results[0]["channels"], ["主频道", "闲聊"])
+
+    def test_deduplicate_tasks_keeps_regenerations_separate(self):
+        first_id = "regen-one"
+        second_id = "regen-two"
+        tasks = [
+            {
+                "hash": content_hash("你好", VOICE, first_id),
+                "text": "你好",
+                "voice": VOICE,
+                "regenerationId": first_id,
+            },
+            {
+                "hash": content_hash("你好", VOICE, second_id),
+                "text": "你好",
+                "voice": VOICE,
+                "regenerationId": second_id,
+            },
+        ]
+
+        results = deduplicate_tasks(tasks)
+        self.assertEqual(len(results), 2)
+        self.assertEqual(
+            {task["regenerationId"] for task in results},
+            {first_id, second_id},
+        )
 
     def test_deduplicate_tasks_rejects_hash_mismatch(self):
         with self.assertRaises(TtsError):

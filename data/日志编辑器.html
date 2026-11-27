@@ -3561,6 +3561,11 @@
                                                                         <input type="checkbox" v-model="msg.ttsDisabled" @change="handleMessageTtsDisabledChange(msg)">
                                                                         <span>不为这条消息生成或播放语音</span>
                                                                     </label>
+                                                                    <button type="button" class="secondary" style="margin-top: 6px;"
+                                                                        @click="requestMessageTtsRegeneration(msg)"
+                                                                        :disabled="msg.ttsDisabled">
+                                                                        {{ msg.ttsRegenerationId ? '再次重新生成语音' : '重新生成这条语音' }}
+                                                                    </button>
 
                                                                     <!-- 系统消息相关字段 -->
                                                                     <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -3666,6 +3671,11 @@
                                                                         <input type="checkbox" v-model="msg.ttsDisabled" @change="handleMessageTtsDisabledChange(msg)">
                                                                         <span>不为这条消息生成或播放语音</span>
                                                                     </label>
+                                                                    <button type="button" class="secondary" style="margin-top: 6px;"
+                                                                        @click="requestMessageTtsRegeneration(msg)"
+                                                                        :disabled="msg.ttsDisabled">
+                                                                        {{ msg.ttsRegenerationId ? '再次重新生成语音' : '重新生成这条语音' }}
+                                                                    </button>
 
                                                                     <!-- 头像图片URL输入 -->
                                                                     <div style="margin-top: 10px;">
@@ -5921,8 +5931,43 @@
                 delete message.ttsAudioUrl;
                 delete message.ttsVoiceName;
                 delete message.ttsCharCount;
+                delete message.ttsRegenerationId;
                 this.ttsTasks = [];
                 this.ttsScanSummary = null;
+            },
+
+            createTtsRegenerationId() {
+                if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+                    return window.crypto.randomUUID();
+                }
+                return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+            },
+
+            requestMessageTtsRegeneration(message) {
+                if (!message || message.isChapter || message.ttsDisabled === true) return;
+                const role = this.ttsConfig.roles[message.name || ''];
+                if (!role || !role.enabled || !role.voiceName || !role.languageCode) {
+                    this.ttsStatus = `请先为“${message.name || '未知角色'}”启用语音并选择音色。`;
+                    return;
+                }
+
+                const text = this.getTtsEligibleText(message);
+                if (!text || this.isPureDiceMessage(message, text)) {
+                    this.ttsStatus = '这条消息没有可生成的语音文本。';
+                    return;
+                }
+                if (!this.ttsConfig.includeChat && this.isNonMainChannel(this.getTtsMessageChannel(message))) {
+                    this.ttsStatus = '这条消息属于闲聊频道，请先开启“闲聊也生成”。';
+                    return;
+                }
+                if (!confirm('重新生成会产生新的 Google TTS 用量，并保留旧音频文件。确定继续吗？')) {
+                    return;
+                }
+
+                message.ttsRegenerationId = this.createTtsRegenerationId();
+                this.ttsTasks = [];
+                this.ttsScanSummary = null;
+                this.ttsStatus = '已标记这条消息重新生成；请扫描并导出任务。新语音导入前仍保留旧音频。';
             },
 
             invalidateRoleTtsAudio(roleName) {
@@ -6109,7 +6154,7 @@
                 return message.channel || '默认频道';
             },
 
-            async calculateTtsHash(text, voice) {
+            async calculateTtsHash(text, voice, regenerationId = '') {
                 if (!window.crypto || !window.crypto.subtle) {
                     throw new Error('当前浏览器不支持安全的 SHA-256 计算，请使用 Edge 等现代浏览器。');
                 }
@@ -6128,6 +6173,7 @@
                 payload.volumeGainDb = voice.volumeGainDb;
                 payload.audioEncoding = 'MP3';
                 payload.engineVersion = 'google-cloud-tts-v1';
+                if (regenerationId) payload.regenerationId = regenerationId;
                 const bytes = new TextEncoder().encode(JSON.stringify(payload));
                 const digest = await window.crypto.subtle.digest('SHA-256', bytes);
                 return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
@@ -6175,10 +6221,13 @@
                                 && this.isTtsPitchSupported(role.voiceName),
                             volumeGainDb: Number(role.volumeGainDb)
                         };
-                        const hash = await this.calculateTtsHash(text, voice);
+                        const regenerationId = typeof message.ttsRegenerationId === 'string'
+                            ? message.ttsRegenerationId.trim()
+                            : '';
+                        const hash = await this.calculateTtsHash(text, voice, regenerationId);
                         const legacyHash = voice.pitchSupported
                             ? ''
-                            : await this.calculateTtsHash(text, { ...voice, pitchSupported: true });
+                            : await this.calculateTtsHash(text, { ...voice, pitchSupported: true }, regenerationId);
                         const characterCount = this.getTtsCharacterCount(text);
                         const manifestEntry = entries[hash];
                         const manifestUrl = manifestEntry && (manifestEntry.url || manifestEntry.audioUrl);
@@ -6190,7 +6239,16 @@
                             : '';
                         const knownUrl = manifestUrl || legacyManifestUrl || existingUrl;
 
-                        candidates.push({ message, roleName, channel, text, voice, hash, characterCount });
+                        candidates.push({
+                            message,
+                            roleName,
+                            channel,
+                            text,
+                            voice,
+                            hash,
+                            characterCount,
+                            regenerationId
+                        });
                         if (knownUrl && !knownAudioUrls.has(hash)) knownAudioUrls.set(hash, knownUrl);
 
                         participants.add(roleName);
@@ -6207,12 +6265,23 @@
 
                     const taskMap = new Map();
                     candidates.forEach(candidate => {
-                        const { message, roleName, channel, text, voice, hash, characterCount } = candidate;
+                        const {
+                            message,
+                            roleName,
+                            channel,
+                            text,
+                            voice,
+                            hash,
+                            characterCount,
+                            regenerationId
+                        } = candidate;
                         const audioUrl = knownAudioUrls.get(hash) || '';
-                        message.ttsHash = hash;
-                        message.ttsAudioUrl = audioUrl;
-                        message.ttsVoiceName = voice.voiceName;
-                        message.ttsCharCount = characterCount;
+                        if (!regenerationId || audioUrl) {
+                            message.ttsHash = hash;
+                            message.ttsAudioUrl = audioUrl;
+                            message.ttsVoiceName = voice.voiceName;
+                            message.ttsCharCount = characterCount;
+                        }
                         if (audioUrl) return;
 
                         let task = taskMap.get(hash);
@@ -6226,6 +6295,7 @@
                                 roles: [],
                                 channels: []
                             };
+                            if (regenerationId) task.regenerationId = regenerationId;
                             taskMap.set(hash, task);
                         }
                         task.messageCount++;
@@ -9101,6 +9171,7 @@ autoImportCharacterColors() {
             createEditBackup(msg) {
                 const fields = [
                     'name', 'text', 'color', 'channel', 'icon', 'messageImage', 'to', 'editExtend', 'ttsDisabled',
+                    'ttsRegenerationId',
                     'ttsHash', 'ttsAudioUrl', 'ttsVoiceName', 'ttsCharCount',
                     'nameUseImage', 'nameBackground', 'nameOpacity',
                     'nameImage', 'nameImageSize', 'nameImageOpacity',
