@@ -1598,7 +1598,7 @@
       "id": "msg-53",
       "time": "2026-06-05T14:53:09.931207Z",
       "name": "掌局者",
-      "text": "太阳低下来的时候，窗外华盛顿的天际线被镀上一层橘红色，很暖和的样子，但你知道外面已经开始凉了。\n你作为CIA情报官员的今日部分结束了。",
+      "text": "太阳落下来的时候，窗外华盛顿的天际线已镀上一层橘红色，很暖和的样子，但你知道外面已经开始凉了。\n你作为CIA情报官员的今日部分结束了。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -1620,7 +1620,7 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "8285b8b07eaca3b07e9bed570306b7cc32c607af0a9ec37e8185231ca6994604",
+      "ttsHash": "",
       "ttsAudioUrl": "",
       "ttsVoiceName": "cmn-CN-Standard-A",
       "ttsCharCount": 67
@@ -4259,7 +4259,7 @@
       "id": "msg-140",
       "time": "2026-06-06T14:55:05.249142Z",
       "name": "掌局者",
-      "text": "你推开门，便看到两侧尽是装满图书的倾斜书架，头顶则是发出亮光的裸露灯泡。前方左侧就是柜台，后面坐着一个黑人，脸庞粗犷，牙齿之间有一条缝，戴着一副银边的折叠小眼镜，笑眯眯地看着你。",
+      "text": "你推开门，便看到两侧尽是装满图书的倾斜书架，头顶则是发出亮光的裸露灯泡。前方左侧就是柜台，后面坐着一个黑人，脸庞粗犷，戴着一副银边的折叠小眼镜，笑眯眯地看着你。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -4281,7 +4281,7 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "bbd1a706da740dfc0a98f65e86b5329aac47dd3cdf4701b24f70b5882bb15485",
+      "ttsHash": "",
       "ttsAudioUrl": "",
       "ttsVoiceName": "cmn-CN-Standard-A",
       "ttsCharCount": 89
@@ -4538,7 +4538,7 @@
       "id": "msg-149",
       "time": "2026-06-06T15:02:40.179887Z",
       "name": "？？？",
-      "text": "他听得很认真，头微微偏着，然后做出回答，“没有，这阵子就您从这扇门进来了。”",
+      "text": "他听得很认真，跟着微微点头，然后做出回答，“没有，这阵子就您从这扇门进来了。”",
       "color": "#888888",
       "channel": "主频道",
       "icon": null,
@@ -4560,7 +4560,7 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "66a4f73310a8c96a6584b8f01b9d88e4c9a76b53d6bb9a6ba2d072419a4bada7",
+      "ttsHash": "",
       "ttsAudioUrl": "",
       "ttsVoiceName": "cmn-CN-Chirp3-HD-Zephyr",
       "ttsCharCount": 38
@@ -458835,7 +458835,85 @@
   "openingVideo": null,
   "bgmEvents": [],
   "sfxEvents": [],
-  "backgroundEvents": [],
+  "backgroundEvents": [
+    {
+      "id": "bg-event-1795804400842",
+      "messageId": "msg-1",
+      "position": 1,
+      "messageIndex": 1,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/2e41b653496be32323c1ebe3090a231546200c809e5d94b8701e2074b3f1bd54?t=1780661950765"
+    },
+    {
+      "id": "bg-event-1795804485390",
+      "messageId": "msg-23",
+      "position": 23,
+      "messageIndex": 23,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/8b26586d8ceb42e9940e5dc5d76c7b446e85f6d5eca170d427460c5ba8595316?t=1780660546518"
+    },
+    {
+      "id": "bg-event-1795804697118",
+      "messageId": "msg-42",
+      "position": 42,
+      "messageIndex": 42,
+      "url": "https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/a34781c6129c26fcb1de1360fe3607800ef1b13825de376b0b3163f4c44f4bf6"
+    },
+    {
+      "id": "bg-event-1795804776693",
+      "messageId": "msg-58",
+      "position": 58,
+      "messageIndex": 58,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/2476fb0a8ef1aaf6f08981d0d5e19e73f17e8cf6dae30acbf3f4825ab0565f4e?t=1780105735010"
+    },
+    {
+      "id": "bg-event-1795804819313",
+      "messageId": "msg-92",
+      "position": 92,
+      "messageIndex": 92,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bdf9662688723ae76b47617a5eb0f89a8bfef49cf255b5aa6ab4d54ebf098012?t=1780752673475"
+    },
+    {
+      "id": "bg-event-1795805025750",
+      "messageId": "msg-140",
+      "position": 140,
+      "messageIndex": 140,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/1bee50c9da8f1ff21929c5f23d894eee4368f55ae92cbd1a15b45cedc04e5257?t=1795804898640"
+    },
+    {
+      "id": "bg-event-1795805069741",
+      "messageId": "msg-155",
+      "position": 155,
+      "messageIndex": 155,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bdf9662688723ae76b47617a5eb0f89a8bfef49cf255b5aa6ab4d54ebf098012?t=1780752673475"
+    },
+    {
+      "id": "bg-event-1795805297238",
+      "messageId": "msg-175",
+      "position": 175,
+      "messageIndex": 175,
+      "url": "https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/63900b973bd8c8b6f83c7028851e2a42df4d0ab25dedc3dcd89a25aa03730eec?t=1774897744132"
+    },
+    {
+      "id": "bg-event-1795805324211",
+      "messageId": "msg-218",
+      "position": 218,
+      "messageIndex": 218,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/2476fb0a8ef1aaf6f08981d0d5e19e73f17e8cf6dae30acbf3f4825ab0565f4e?t=1780105735010"
+    },
+    {
+      "id": "bg-event-1795805371045",
+      "messageId": "msg-224",
+      "position": 224,
+      "messageIndex": 224,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/74269ba48ec8b59943ba71bf51391fcfa623f06de278a6808c2ea119503cbf74?t=1781012077235"
+    },
+    {
+      "id": "bg-event-1795805418565",
+      "messageId": "msg-332",
+      "position": 332,
+      "messageIndex": 332,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/2476fb0a8ef1aaf6f08981d0d5e19e73f17e8cf6dae30acbf3f4825ab0565f4e?t=1780105735010"
+    }
+  ],
   "foregroundEvents": [],
   "websiteSettings": {
     "title": "夜间楼层",
@@ -459736,7 +459814,7 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-11-27T18:29:39.456Z",
+    "exportedAt": "2026-11-27T18:50:48.602Z",
     "totalMessages": 14809,
     "version": "8.0",
     "features": [
