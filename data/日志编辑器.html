@@ -6377,6 +6377,9 @@
                 const file = event.target.files && event.target.files[0];
                 if (!file) return;
                 try {
+                    if (this.ttsScanning) {
+                        throw new Error('正在扫描 TTS 任务，请等待扫描完成后再导入语音清单。');
+                    }
                     const parsed = JSON.parse(await file.text());
                     if (!parsed || typeof parsed !== 'object' || !parsed.entries) {
                         throw new Error('清单格式无效：缺少 entries。');
@@ -6387,12 +6390,35 @@
                     if (typeof entries !== 'object' || Array.isArray(entries)) {
                         throw new Error('清单中的 entries 必须是哈希映射或条目数组。');
                     }
+                    const previousTtsSettings = new Map(this.logs.map(message => [
+                        message,
+                        {
+                            hash: message.ttsHash,
+                            audioUrl: message.ttsAudioUrl,
+                            voiceName: message.ttsVoiceName,
+                            charCount: message.ttsCharCount
+                        }
+                    ]));
                     this.ttsManifest = {
                         entries,
                         usage: parsed.usage && typeof parsed.usage === 'object' ? parsed.usage : {}
                     };
                     await this.scanTtsMessages();
-                    this.ttsStatus = `已导入 ${Object.keys(entries).length} 条语音清单，并更新匹配消息。`;
+                    if (this.ttsStatus.startsWith('扫描失败：')) return;
+
+                    const updatedMessageCount = this.logs.reduce((count, message) => {
+                        const previous = previousTtsSettings.get(message);
+                        const hasAudioUrl = typeof message.ttsAudioUrl === 'string'
+                            && message.ttsAudioUrl.trim().length > 0;
+                        if (!previous || !hasAudioUrl) return count;
+
+                        const settingsChanged = previous.hash !== message.ttsHash
+                            || previous.audioUrl !== message.ttsAudioUrl
+                            || previous.voiceName !== message.ttsVoiceName
+                            || previous.charCount !== message.ttsCharCount;
+                        return count + Number(settingsChanged);
+                    }, 0);
+                    this.ttsStatus = `已导入 ${Object.keys(entries).length} 条语音清单；本次更新了 ${updatedMessageCount} 条消息的语音设置。`;
                 } catch (error) {
                     console.error('导入 TTS 语音清单失败:', error);
                     this.ttsStatus = `导入语音清单失败：${error.message}`;
