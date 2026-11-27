@@ -42,7 +42,9 @@ python -m pip install -r tools\tts\requirements.txt
 python tools\tts\local_server.py
 ```
 
-保持该 PowerShell 窗口运行，并用浏览器打开服务打印的完整地址（默认是 `http://127.0.0.1:8765/data/日志编辑器.html`）。不要使用 VS Code Live Server、其他静态服务器或旧服务的地址；它们不提供 `/api/health` 和语音生成 API。然后在左栏最下方的“本地语音生成与清单”面板填写并保存 Google TTS Key 和 R2 设置，再点击“生成语音并上传 R2”。页面会显示生成日志，完成后可在同一面板点击“导入语音清单”。关闭 PowerShell 窗口会停止前台本地服务；建议先在该窗口按 `Ctrl+C` 正常停止，并在生成任务完成前保持窗口打开。
+保持该 PowerShell 窗口运行，并用浏览器打开服务打印的完整地址（默认是 `http://127.0.0.1:8765/data/日志编辑器.html`）。不要使用 VS Code Live Server、其他静态服务器或旧服务的地址；它们不提供 `/api/health` 和语音生成 API。然后在左栏最下方的“本地语音生成与清单”面板填写并保存 Google TTS Key 和 R2 设置，再点击“生成语音并上传 R2”。页面会先显示连接 R2/读取清单状态，再显示已完成任务数（例如 `1/100`）和生成日志；完成后可在同一面板点击“导入语音清单”。关闭 PowerShell 窗口会停止前台本地服务；建议先在该窗口按 `Ctrl+C` 正常停止，并在生成任务完成前保持窗口打开。
+
+若生成日志提示 R2 `Unauthorized` 或 `AccessDenied`，脚本在读取远端 `manifest.json` 时就被拒绝，尚未开始生成任务。请确认 Account ID、S3 API Endpoint、Bucket 名称与 Access Key/Secret Key 属于同一个 R2 账户，并确认该 R2 API Token 对目标 Bucket 有对象读取和写入权限。不要把密钥贴到日志或聊天中。
 
 本地服务只监听 `127.0.0.1`，使用仓库 `.tts-output\tasks.json`，并调用现有 `generate.py`。设置保存在当前浏览器的本地存储，生成时发送给本机服务；不要在共享或不受信任的浏览器中保存密钥。通过 `file://` 打开与通过 `localhost` 打开的页面使用不同的浏览器存储，因此首次切换后需重新填写 API Key。
 

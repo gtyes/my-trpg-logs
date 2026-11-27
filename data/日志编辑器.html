@@ -10,19 +10,23 @@
                 --left-pane-width: 40%;
                 --app-gap: 16px;
             }
+
             html, body {
                 height: 100%;
             }
+
             body {
                 padding-bottom: 0;   /* 原来给固定底栏留的 80px 不再需要 */
                 overflow: hidden;    /* 页面本身不滚动，交给左右栏 */
             }
+
             #app {
                 height: 100vh;
                 display: flex;
                 flex-direction: column;
                 overflow: hidden;
             }
+
             /* BGM / 背景切换面板 */
             .media-event-panel {
                 width: 100%;
@@ -57,7 +61,6 @@
                 min-width: 180px;
                 padding: 5px 8px;
             }
-
 
             /* 头部样式 */
             .header {
@@ -312,6 +315,19 @@
                 line-height: 1.45;
                 white-space: pre-wrap;
                 overflow-wrap: anywhere;
+            }
+
+            .tts-generation-progress {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 8px;
+                font-size: 13px;
+            }
+
+            .tts-generation-progress progress {
+                width: min(260px, 100%);
+                height: 12px;
             }
 
             @media (max-width: 600px) {
@@ -3507,6 +3523,14 @@
                         <div v-if="ttsGenerationStatus" class="tts-status" role="status">
                             {{ ttsGenerationStatus }}
                         </div>
+                        <div v-if="ttsGenerationProgress.total > 0" class="tts-generation-progress" role="status">
+                            <span>进度 {{ ttsGenerationProgress.completed }}/{{ ttsGenerationProgress.total }}</span>
+                            <progress :value="ttsGenerationProgress.completed" :max="ttsGenerationProgress.total"
+                                :aria-label="`语音生成进度 ${ttsGenerationProgress.completed}/${ttsGenerationProgress.total}`">
+                                {{ ttsGenerationProgress.completed }}/{{ ttsGenerationProgress.total }}
+                            </progress>
+                            <span>{{ Math.floor(ttsGenerationProgress.completed * 100 / ttsGenerationProgress.total) }}%</span>
+                        </div>
                         <pre v-if="ttsGenerationOutput" class="tts-generation-output">{{ ttsGenerationOutput }}</pre>
                     </section>
 
@@ -4297,6 +4321,7 @@
                 ttsGenerationJobId: '',
                 ttsGenerationStatus: '',
                 ttsGenerationOutput: '',
+                ttsGenerationProgress: { completed: 0, total: 0 },
                 ttsManifest: { entries: {}, usage: {} },
                 ttsManifestDirectoryHandle: null,
                 ttsManifestDirectoryReady: false,
@@ -6088,6 +6113,7 @@
                 this.ttsGenerationRunning = true;
                 this.ttsGenerationStatus = '正在连接本机生成服务…';
                 this.ttsGenerationOutput = '';
+                this.ttsGenerationProgress = { completed: 0, total: 0 };
                 try {
                     const healthResponse = await fetch('/api/health', { cache: 'no-store' });
                     if (healthResponse.status === 404) {
@@ -6161,6 +6187,16 @@
                     this.ttsGenerationOutput = Array.isArray(result.output)
                         ? result.output.join('\n')
                         : '';
+                    if (result.progress
+                        && Number.isInteger(result.progress.completed)
+                        && Number.isInteger(result.progress.total)
+                        && result.progress.completed >= 0
+                        && result.progress.total >= result.progress.completed) {
+                        this.ttsGenerationProgress = {
+                            completed: result.progress.completed,
+                            total: result.progress.total
+                        };
+                    }
                     if (result.status !== 'running') {
                         if (result.status === 'succeeded') {
                             this.ttsGenerationStatus = '语音生成并上传完成；点击“导入语音清单”回填消息。';
@@ -6169,7 +6205,9 @@
                         }
                         return;
                     }
-                    this.ttsGenerationStatus = '正在生成并上传语音，请保持本地服务运行…';
+                    this.ttsGenerationStatus = this.ttsGenerationProgress.total > 0
+                        ? `正在生成并上传语音：已完成 ${this.ttsGenerationProgress.completed}/${this.ttsGenerationProgress.total} 条…`
+                        : '正在连接 R2 并读取远端语音清单…';
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             },

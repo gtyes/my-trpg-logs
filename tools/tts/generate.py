@@ -517,6 +517,11 @@ def read_remote_manifest(client: Any, bucket: str) -> dict[str, Any]:
         code = str(error.response.get("Error", {}).get("Code", ""))
         if code in {"NoSuchKey", "404", "NotFound"}:
             return new_manifest()
+        if code in {"Unauthorized", "AccessDenied", "403"}:
+            raise TtsError(
+                "R2 拒绝读取远端语音清单。请检查 Account ID、S3 API Endpoint、"
+                "Bucket 名称与密钥配对，并确认该 R2 API Token 对此存储桶具有对象读取和写入权限。"
+            ) from None
         raise TtsError(f"无法从 R2 读取语音清单：{code or type(error).__name__}") from None
     try:
         manifest = json.loads(response["Body"].read().decode("utf-8"))
@@ -587,6 +592,7 @@ def run(args: argparse.Namespace) -> int:
 
     local_manifest = read_manifest(manifest_path)
     if upload_enabled:
+        print("准备从 R2 读取已有语音清单…", flush=True)
         remote_manifest = read_remote_manifest(s3_client, bucket)
         manifest = merge_manifests(local_manifest, remote_manifest)
     else:
@@ -622,11 +628,13 @@ def run(args: argparse.Namespace) -> int:
         )
         return 0
 
+    print(f"待处理任务：{len(missing)} 个。", flush=True)
     api_key = os.environ.get("GOOGLE_TTS_API_KEY", "").strip()
     if missing and not api_key:
         raise TtsError("请通过环境变量 GOOGLE_TTS_API_KEY 设置 Google TTS API Key。")
 
     current_usage = month_usage(manifest, month, preview_characters)
+    print(f"TTS_PROGRESS 0/{len(missing)}", flush=True)
     for index, task in enumerate(missing, start=1):
         object_key = f"audio/{task['hash'][:2]}/{task['hash']}.mp3"
         audio_path = output_directory / object_key
@@ -672,6 +680,7 @@ def run(args: argparse.Namespace) -> int:
         manifest["usage"][month] = current_usage
         manifest["updatedAt"] = generated_at
         save_manifest(manifest_path, manifest)
+        print(f"TTS_PROGRESS {index}/{len(missing)}", flush=True)
 
     if month not in manifest["usage"]:
         manifest["usage"][month] = current_usage

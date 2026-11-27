@@ -35,6 +35,8 @@ class GenerationJob:
     job_id: str
     status: str = "running"
     output: deque[str] = field(default_factory=lambda: deque(maxlen=300))
+    progress_completed: int = 0
+    progress_total: int = 0
     exit_code: int | None = None
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -51,6 +53,10 @@ def job_to_payload(job: GenerationJob) -> dict[str, Any]:
         "exitCode": job.exit_code,
         "createdAt": job.created_at,
         "output": list(job.output),
+        "progress": {
+            "completed": job.progress_completed,
+            "total": job.progress_total,
+        },
     }
 
 
@@ -58,10 +64,18 @@ def monitor_process(job_id: str, process: subprocess.Popen[str]) -> None:
     global ACTIVE_JOB_ID
     if process.stdout is not None:
         for line in process.stdout:
+            clean_line = line.rstrip()
             with JOBS_LOCK:
                 job = JOBS.get(job_id)
                 if job:
-                    job.output.append(line.rstrip())
+                    job.output.append(clean_line)
+                    if clean_line.startswith("TTS_PROGRESS "):
+                        try:
+                            completed, total = clean_line[len("TTS_PROGRESS "):].split("/", 1)
+                            job.progress_completed = int(completed)
+                            job.progress_total = int(total)
+                        except ValueError:
+                            pass
     exit_code = process.wait()
     with JOBS_LOCK:
         job = JOBS.get(job_id)
@@ -217,6 +231,7 @@ class LocalTtsHandler(SimpleHTTPRequestHandler):
             try:
                 environment = os.environ.copy()
                 environment.update(credentials)
+                environment["PYTHONIOENCODING"] = "utf-8"
                 process = subprocess.Popen(
                     [
                         sys.executable,
