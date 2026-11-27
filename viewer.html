@@ -2273,28 +2273,38 @@
 
         function playVnBgm(url) {
             const src = resolveMediaUrl(url);
-            if (!src || vnCurrentBgmUrl === src) return;
+            if (!src) return;
+
+            const isNewSource = vnCurrentBgmUrl !== src;
+            if (isNewSource) {
+                clearVnBgmRetry();
+                vnBgmAudio.pause();
+                vnBgmAudio.src = src;
+                vnBgmAudio.loop = true;
+                vnBgmAudio.volume = 0.6;
+                vnBgmAudio.muted = vnMuted;
+                vnBgmAudio.preload = 'auto';
+
+                // 只在真正换曲时打一条
+                console.log('[VN] BGM 切换 →', src);
+
+                vnBgmAudio.addEventListener('error', () => {
+                    const mediaError = vnBgmAudio.error;
+                    console.error('[VN] BGM 加载失败:', {
+                        src,
+                        mediaError,
+                        mediaErrorCode: mediaError && mediaError.code,
+                        mediaErrorMessage: mediaError && mediaError.message,
+                        networkState: vnBgmAudio.networkState,
+                        readyState: vnBgmAudio.readyState
+                    });
+                }, { once: true });
+                vnCurrentBgmUrl = src;
+            } else if (!vnBgmAudio.paused) {
+                return;
+            }
 
             clearVnBgmRetry();
-            vnBgmAudio.pause();
-            vnBgmAudio.src = src;
-            vnBgmAudio.loop = true;
-            vnBgmAudio.volume = 0.6;
-            vnBgmAudio.muted = vnMuted;
-            vnBgmAudio.preload = 'auto';
-
-            // 只在真正换曲时打一条
-            console.log('[VN] BGM 切换 →', src);
-
-            vnBgmAudio.addEventListener('error', () => {
-                console.error('[VN] BGM 加载失败:', {
-                    src,
-                    mediaError: vnBgmAudio.error,
-                    networkState: vnBgmAudio.networkState,
-                    readyState: vnBgmAudio.readyState
-                });
-            }, { once: true });
-
             const playPromise = vnBgmAudio.play();
 
             if (playPromise && typeof playPromise.catch === 'function') {
@@ -2317,7 +2327,6 @@
                 });
             }
 
-            vnCurrentBgmUrl = src;
         }
 
         function stopVnBgm() {
@@ -3840,6 +3849,8 @@
                 error,
                 src: audio.currentSrc || audio.src,
                 mediaError,
+                mediaErrorCode: mediaError && mediaError.code,
+                mediaErrorMessage: mediaError && mediaError.message,
                 networkState: audio.networkState,
                 readyState: audio.readyState
             });
