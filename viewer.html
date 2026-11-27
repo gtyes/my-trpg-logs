@@ -2008,6 +2008,8 @@
         let vnSfxEvents = [];
         let vnSfxAudios = [];   // 当前步骤正在播放的音效
         let vnSfxRetryHandlers = new Map();
+        let vnBrowserSpeechUtterance = null;
+        let vnBrowserSpeechStepIndex = -1;
         let chapterImageMap = {}; // 章节名 -> 右侧图片URL
         let extendFormats = {};
         let extendSettings = { ruleSystem: 'coc_houserule' };
@@ -3274,7 +3276,7 @@
             // 退出对话模式时停止 BGM
             stopVnBgm();
             stopVnSfx();
-            setVnSpeechAudio(null);
+            setVnSpeechForStep(null);
 
             clearVnForegroundLayers();
             cancelVnOpening();
@@ -3523,6 +3525,9 @@
             vnSfxAudios.forEach(audio => {
                 audio.muted = vnMuted;
             });
+            if (vnBrowserSpeechUtterance) {
+                vnBrowserSpeechUtterance.volume = vnMuted ? 0 : 1;
+            }
 
             const speechAudio = document.getElementById('vnSpeechAudio');
             if (speechAudio) {
@@ -3626,20 +3631,29 @@
 
             if (vnAutoTimer) {
                 clearTimeout(vnAutoTimer);
+                vnAutoTimer = null;
             }
+
+            if (vnTyping || hasActiveVnSfx()) return;
+            if (vnBrowserSpeechUtterance && vnBrowserSpeechStepIndex === vnIndex) return;
 
             const audio = document.getElementById('vnSpeechAudio');
             const hasSpeechAudio = audio && audio.getAttribute('src');
+            if (hasSpeechAudio && !vnSpeechAutoplayFailed && !audio.ended) return;
             if (delay === undefined && hasSpeechAudio && !vnSpeechAutoplayFailed) {
-                if (!audio.ended) return;
                 delay = 800;
             }
 
             const wait = delay !== undefined ? delay : 1200 + vnCurrentText.length * 45;
 
             vnAutoTimer = setTimeout(() => {
+                vnAutoTimer = null;
                 if (vnAuto) nextVn();
             }, wait);
+        }
+
+        function hasActiveVnSfx() {
+            return vnSfxAudios.some(audio => !audio.ended && !audio.paused && !audio.error);
         }
 
         function renderVnStep() {
@@ -3665,7 +3679,7 @@
 
             const stepIndex = vnIndex;
             preloadUpcomingVnImages();
-            setVnSpeechAudio(step.msg);
+            setVnSpeechForStep(step);
             updateVnLogDrawerBackground(); 
             const overlay = document.getElementById('vnOverlay');
             const bg = document.getElementById('vnBg');
