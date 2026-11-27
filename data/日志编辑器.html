@@ -6427,13 +6427,41 @@
             },
 
             async exportTtsTasks() {
+                if (this.ttsScanning) {
+                    this.ttsStatus = '正在扫描 TTS 任务，请等待扫描完成后再导出。';
+                    return;
+                }
+
+                this.syncTtsRoleConfigurations();
+                const beforeScanSave = await this.saveChanges({ silent: true });
+                if (beforeScanSave.status !== 'saved' && beforeScanSave.status !== 'downloaded') {
+                    this.ttsStatus = beforeScanSave.status === 'cancelled'
+                        ? '已取消任务导出：保存日志时已取消。'
+                        : `保存日志失败，已停止任务导出：${beforeScanSave.error}`;
+                    return;
+                }
+
                 await this.scanTtsMessages();
-                if (!this.ttsTasks.length || !this.ttsScanSummary) {
-                    this.ttsStatus = '没有待生成的语音任务。';
+                if (!this.ttsScanSummary) return;
+
+                const afterScanSave = await this.saveChanges({ silent: true });
+                if (afterScanSave.status !== 'saved' && afterScanSave.status !== 'downloaded') {
+                    this.ttsStatus = afterScanSave.status === 'cancelled'
+                        ? '已取消任务导出：扫描后保存日志时已取消。'
+                        : `扫描后保存日志失败，已停止任务导出：${afterScanSave.error}`;
+                    return;
+                }
+
+                const saveSummary = beforeScanSave.status === 'downloaded'
+                    || afterScanSave.status === 'downloaded'
+                    ? '日志副本已在扫描前后分别下载，请保留扫描后的版本。'
+                    : '日志已自动保存。';
+                if (!this.ttsTasks.length) {
+                    this.ttsStatus = `没有待生成的语音任务。${saveSummary}`;
                     return;
                 }
                 if (this.ttsScanSummary.limitExceeded) {
-                    this.ttsStatus = '待生成任务会超过月度字符预算，已阻止导出。';
+                    this.ttsStatus = `待生成任务会超过月度字符预算，已阻止导出。${saveSummary}`;
                     return;
                 }
 
@@ -6456,7 +6484,7 @@
                     payload,
                     `trpg-tts-tasks-${new Date().toISOString().slice(0, 10)}.json`
                 );
-                this.ttsStatus = `已导出 ${this.ttsTasks.length} 个去重生成任务；文件不包含 API Key。`;
+                this.ttsStatus = `已导出 ${this.ttsTasks.length} 个去重生成任务；${saveSummary}任务文件不包含 API Key。`;
             },
 
             async importTtsManifestFile(event) {
@@ -9593,14 +9621,15 @@ autoImportCharacterColors() {
                 downloadAnchorNode.remove();
             },
 
-            async saveChanges() {
+            async saveChanges(options = {}) {
+                const silent = Boolean(options && typeof options === 'object' && options.silent === true);
                 try {
                     let fileHandle = this.currentFileHandle;
                     if (!fileHandle) {
                         if (typeof window.showSaveFilePicker !== 'function') {
                             this.downloadJson();
-                            alert('当前浏览器不支持直接保存文件，已下载修改后的 JSON 副本');
-                            return;
+                            if (!silent) alert('当前浏览器不支持直接保存文件，已下载修改后的 JSON 副本');
+                            return { status: 'downloaded' };
                         }
 
                         const suggestedName = this.currentFileName
@@ -9639,11 +9668,14 @@ autoImportCharacterColors() {
 
                     this.currentFileHandle = fileHandle;
                     this.currentFileName = fileHandle.name;
-                    alert(`已保存修改到 ${fileHandle.name}`);
+                    if (!silent) alert(`已保存修改到 ${fileHandle.name}`);
+                    return { status: 'saved' };
                 } catch (error) {
-                    if (error.name === 'AbortError') return;
+                    if (error && error.name === 'AbortError') return { status: 'cancelled' };
                     console.error('保存日志失败:', error);
-                    alert('保存日志失败: ' + error.message);
+                    const message = error && error.message ? error.message : String(error);
+                    if (!silent) alert('保存日志失败: ' + message);
+                    return { status: 'failed', error: message };
                 }
             },
 
