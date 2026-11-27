@@ -1,12 +1,12 @@
 # TRPG 日志语音生成说明
 
-语音生成分为两部分：日志编辑器整理并导出待生成任务；本地 Python 脚本调用 Google Cloud Text-to-Speech 生成 MP3，再按需上传到 Cloudflare R2。API Key 和 R2 密钥只由本机浏览器或本地环境变量读取，不会写入日志 JSON 或生成任务文件。
+语音生成分为两部分：日志编辑器整理待生成任务；本地 Python 脚本调用 Google Cloud Text-to-Speech 生成 MP3，再按需上传到 Cloudflare R2。API Key 和 R2 密钥不会写入日志 JSON 或生成任务文件。
 
 ## 一、准备 Google TTS
 
 1. 在 Google Cloud 项目中启用 Cloud Text-to-Speech API，并创建 API Key。请先确认项目的结算、配额和当前音色价格；编辑器中的月度预算只是本地上限，不代表 Google 免费额度。
-2. 用 Edge 打开仓库中的 `data\日志编辑器.html`，点击“编辑本地日志”并选择要处理的 JSON。
-3. 找到“角色语音生成”面板，输入 API Key，点击“保存 Key”。Key 只保存在当前浏览器的本地存储中；不要在公用电脑或共享浏览器配置中使用。
+2. 普通编辑可直接打开仓库中的 `data\日志编辑器.html`。要使用一键生成，请按第三节启动本地服务，并通过它提供的 `127.0.0.1` 地址打开编辑器；然后点击“编辑本地日志”并选择要处理的 JSON。
+3. 在左栏最下方的“本地语音生成与清单”面板输入 Google API Key，点击“保存 Google Key”。Key 只保存在当前浏览器的本地存储中；不要在公用电脑或共享浏览器配置中使用。
 4. 点击“获取语音列表”，从列表中为角色选择中文音色。新角色默认关闭语音，只有选择音色并勾选启用的角色会参与扫描。
 5. 点击“试听”检查声音。若音色不支持音调参数，试听会自动去掉该参数重试，并关闭该角色的音调滑块；之后扫描导出的任务会保留这个设置。
 
@@ -34,7 +34,21 @@
 python -m pip install -r tools\tts\requirements.txt
 ```
 
+### 编辑器一键生成
+
+在仓库根目录启动本地服务：
+
+```powershell
+python tools\tts\local_server.py
+```
+
+保持该 PowerShell 窗口运行，并用浏览器打开服务打印的地址（默认是 `http://127.0.0.1:8765/data/日志编辑器.html`）。编辑器首次需要重新授权本机 `.tts-output` 文件夹；在左栏最下方的“本地语音生成与清单”面板填写并保存 Google TTS Key 和 R2 设置，然后点击“生成语音并上传 R2”。页面会显示生成日志，完成后可在同一面板点击“导入语音清单”。
+
+本地服务只监听 `127.0.0.1`，使用仓库 `.tts-output\tasks.json`，并调用现有 `generate.py`。设置保存在当前浏览器的本地存储，生成时发送给本机服务；不要在共享或不受信任的浏览器中保存密钥。通过 `file://` 打开与通过 `localhost` 打开的页面使用不同的浏览器存储，因此首次切换后需重新填写 API Key。
+
 配置 Google API Key。将引号中的示例文字替换成自己的密钥，不要提交到 Git：
+
+下面的环境变量设置供命令行生成使用；若通过编辑器一键生成，则在左栏面板中填写并保存即可。
 
 ```powershell
 $env:GOOGLE_TTS_API_KEY = "你的 Google API Key"

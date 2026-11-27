@@ -27,7 +27,7 @@ OUTPUT_DIRECTORY = REPOSITORY_ROOT / ".tts-output"
 TASK_FILE = OUTPUT_DIRECTORY / "tasks.json"
 GENERATOR_SCRIPT = Path(__file__).with_name("generate.py")
 MAX_REQUEST_BYTES = 64 * 1024
-BLOCKED_STATIC_PATHS = {".git", ".tts-output", "tools", ".azure", "node_modules"}
+ALLOWED_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif"}
 
 
 @dataclass
@@ -75,6 +75,11 @@ def monitor_process(job_id: str, process: subprocess.Popen[str]) -> None:
 class LocalTtsHandler(SimpleHTTPRequestHandler):
     server_version = "TRPGLocalTTS/1"
 
+    def end_headers(self) -> None:
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "no-referrer")
+        super().end_headers()
+
     @property
     def local_origin(self) -> str:
         return f"http://127.0.0.1:{self.server.server_port}"
@@ -117,10 +122,15 @@ class LocalTtsHandler(SimpleHTTPRequestHandler):
             self.send_json(404, {"error": "未知的本地 API 路径。"})
             return
 
-        decoded_segments = [unquote(segment) for segment in path.split("/")]
-        if any(segment in BLOCKED_STATIC_PATHS for segment in decoded_segments):
-            self.send_error(404)
-            return
+        decoded_path = unquote(path)
+        if decoded_path != "/data/日志编辑器.html":
+            static_path = Path(self.translate_path(decoded_path))
+            if (
+                Path(decoded_path).suffix.lower() not in ALLOWED_IMAGE_SUFFIXES
+                or not static_path.is_file()
+            ):
+                self.send_error(404)
+                return
         super().do_GET()
 
     def do_POST(self) -> None:
@@ -210,6 +220,7 @@ class LocalTtsHandler(SimpleHTTPRequestHandler):
                 process = subprocess.Popen(
                     [
                         sys.executable,
+                        "-u",
                         str(GENERATOR_SCRIPT),
                         str(TASK_FILE),
                         "--output-dir",
@@ -243,10 +254,6 @@ class LocalTtsHandler(SimpleHTTPRequestHandler):
             daemon=True,
         ).start()
         self.send_json(202, job_to_payload(job))
-
-    def list_directory(self, path: str) -> None:
-        self.send_error(404)
-
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)

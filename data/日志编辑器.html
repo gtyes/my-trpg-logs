@@ -256,6 +256,69 @@
                 margin: 0 0 8px;
             }
 
+            .tts-runner-panel {
+                margin: 0 16px 16px;
+                padding: 14px;
+                border: 1px solid #dce3e8;
+                border-radius: 8px;
+                background: #f8fafb;
+            }
+
+            .tts-runner-panel h4 {
+                margin: 0 0 8px;
+            }
+
+            .tts-field {
+                display: flex;
+                min-width: 0;
+                flex-direction: column;
+                gap: 4px;
+                color: #48535b;
+                font-size: 12px;
+            }
+
+            .tts-field input {
+                box-sizing: border-box;
+                width: 100%;
+                min-width: 0;
+                padding: 7px 8px;
+                border: 1px solid #cbd3d9;
+                border-radius: 4px;
+            }
+
+            .tts-connection-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 9px;
+                margin-top: 10px;
+            }
+
+            .tts-runner-actions {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                margin-top: 10px;
+            }
+
+            .tts-generation-output {
+                max-height: 220px;
+                overflow: auto;
+                padding: 10px;
+                border-radius: 5px;
+                background: #20252b;
+                color: #e4e9ed;
+                font-size: 11px;
+                line-height: 1.45;
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+            }
+
+            @media (max-width: 600px) {
+                .tts-connection-grid { grid-template-columns: 1fr; }
+                .tts-runner-panel { margin: 0 0 16px; }
+            }
+
             .tts-help,
             .tts-status,
             .tts-small {
@@ -3207,20 +3270,8 @@
                             <div class="tts-panel">
                                 <h4>角色语音生成</h4>
                                 <div class="tts-help">
-                                    API Key 仅保存在本机浏览器；导出的日志 JSON 与生成任务不会包含 Key。
                                     月度预算是本地拦截上限，需按 Google 当前音色额度自行确认。
-                                </div>
-
-                                <div class="tts-key-row">
-                                    <input type="password" v-model="googleTtsApiKey"
-                                        autocomplete="off" placeholder="Google Cloud Text-to-Speech API Key"
-                                        @change="saveGoogleTtsApiKey">
-                                    <button type="button" class="secondary" @click="saveGoogleTtsApiKey">保存 Key</button>
-                                    <button type="button" class="secondary" @click="fetchTtsVoiceList"
-                                        :disabled="ttsVoiceLoading">
-                                        {{ ttsVoiceLoading ? '获取中…' : '获取语音列表' }}
-                                    </button>
-                                    <span class="tts-small">中文音色 {{ ttsVoiceList.length }} 个</span>
+                                    API Key 与 R2 连接设置位于左栏底部的本地生成面板。
                                 </div>
 
                                 <div class="tts-global-settings">
@@ -3244,10 +3295,6 @@
                                     <button type="button" class="secondary" @click="setAllTtsRolesEnabled(false)">全部禁用</button>
                                     <button type="button" class="secondary" @click="exportTtsRoleConfig">导出语音配置</button>
                                     <button type="button" class="secondary" @click="openTtsRoleConfigImport">导入语音配置</button>
-                                    <button type="button" class="secondary" @click="openTtsManifestImport"
-                                        title="首次选择 .tts-output 文件夹，之后直接导入其中的 manifest.json">
-                                        导入语音清单
-                                    </button>
                                     <button type="button" class="warning" @click="scanTtsMessages"
                                         :disabled="ttsScanning">
                                         {{ ttsScanning ? '扫描中…' : '扫描待生成内容' }}
@@ -3265,10 +3312,6 @@
 
                                 <input ref="ttsRoleConfigFileInput" type="file" accept=".json,application/json"
                                     @change="importTtsRoleConfigFile" style="display:none;">
-                                <input ref="ttsManifestFileInput" type="file" accept=".json,application/json"
-                                    @change="importTtsManifestFile" style="display:none;">
-
-                                <div v-if="ttsStatus" class="tts-status" role="status">{{ ttsStatus }}</div>
 
                                 <div v-if="ttsRoleConfigNames.length" class="tts-copy-row">
                                     <span class="tts-small">复制角色配置：</span>
@@ -3395,6 +3438,74 @@
                             </div>
 
                         </div>
+
+                    <section class="tts-runner-panel">
+                        <h4>本地语音生成与清单</h4>
+                        <div class="tts-help">
+                            这些设置保存在本机浏览器，并由本地服务使用；页面还会加载第三方 CDN 脚本，请勿在共享或不受信任的浏览器中保存密钥。
+                            请用 <code>http://127.0.0.1</code> 打开本页，并先启动 <code>tools\tts\local_server.py</code>。
+                            生成器读取仓库中的 <code>.tts-output\tasks.json</code>。
+                        </div>
+                        <label class="tts-field">
+                            Google Cloud Text-to-Speech API Key
+                            <input type="password" v-model="googleTtsApiKey" autocomplete="off"
+                                placeholder="Google TTS API Key" @change="saveGoogleTtsApiKey">
+                        </label>
+                        <div class="tts-runner-actions">
+                            <button type="button" class="secondary" @click="saveGoogleTtsApiKey">保存 Google Key</button>
+                            <button type="button" class="secondary" @click="fetchTtsVoiceList"
+                                :disabled="ttsVoiceLoading">
+                                {{ ttsVoiceLoading ? '获取中…' : '获取语音列表' }}
+                            </button>
+                            <span class="tts-small">中文音色 {{ ttsVoiceList.length }} 个</span>
+                        </div>
+                        <div class="tts-connection-grid">
+                            <label class="tts-field">
+                                R2 Account ID
+                                <input type="text" v-model="ttsR2Config.accountId" autocomplete="off">
+                            </label>
+                            <label class="tts-field">
+                                R2 Access Key ID
+                                <input type="password" v-model="ttsR2Config.accessKeyId" autocomplete="off">
+                            </label>
+                            <label class="tts-field">
+                                R2 Secret Access Key
+                                <input type="password" v-model="ttsR2Config.secretAccessKey" autocomplete="off">
+                            </label>
+                            <label class="tts-field">
+                                Bucket 名称
+                                <input type="text" v-model="ttsR2Config.bucketName" autocomplete="off">
+                            </label>
+                            <label class="tts-field">
+                                R2 Endpoint URL（可留空使用默认值）
+                                <input type="url" v-model="ttsR2Config.endpointUrl" autocomplete="off"
+                                    placeholder="https://<AccountID>.r2.cloudflarestorage.com">
+                            </label>
+                            <label class="tts-field">
+                                公共音频 URL
+                                <input type="url" v-model="ttsR2Config.publicBaseUrl" autocomplete="off"
+                                    placeholder="https://你的音频域名">
+                            </label>
+                        </div>
+                        <div class="tts-runner-actions">
+                            <button type="button" class="secondary" @click="saveTtsR2Config">保存 R2 设置</button>
+                            <button type="button" class="secondary" @click="openTtsManifestImport"
+                                title="首次选择 .tts-output 文件夹，之后直接导入其中的 manifest.json">
+                                导入语音清单
+                            </button>
+                            <button type="button" class="success" @click="startTtsGeneration"
+                                :disabled="ttsGenerationRunning">
+                                {{ ttsGenerationRunning ? '正在生成…' : '生成语音并上传 R2' }}
+                            </button>
+                        </div>
+                        <input ref="ttsManifestFileInput" type="file" accept=".json,application/json"
+                            @change="importTtsManifestFile" style="display:none;">
+                        <div v-if="ttsStatus" class="tts-status" role="status">{{ ttsStatus }}</div>
+                        <div v-if="ttsGenerationStatus" class="tts-status" role="status">
+                            {{ ttsGenerationStatus }}
+                        </div>
+                        <pre v-if="ttsGenerationOutput" class="tts-generation-output">{{ ttsGenerationOutput }}</pre>
+                    </section>
 
                     </aside>
 
@@ -4167,10 +4278,22 @@
                     roles: {}
                 },
                 googleTtsApiKey: '',
+                ttsR2Config: {
+                    accountId: '',
+                    accessKeyId: '',
+                    secretAccessKey: '',
+                    bucketName: '',
+                    endpointUrl: '',
+                    publicBaseUrl: ''
+                },
                 ttsVoiceList: [],
                 ttsStatus: '',
                 ttsVoiceLoading: false,
                 ttsScanning: false,
+                ttsGenerationRunning: false,
+                ttsGenerationJobId: '',
+                ttsGenerationStatus: '',
+                ttsGenerationOutput: '',
                 ttsManifest: { entries: {}, usage: {} },
                 ttsManifestDirectoryHandle: null,
                 ttsManifestDirectoryReady: false,
@@ -5863,12 +5986,52 @@
                 }
             },
 
+            saveTtsR2Config() {
+                try {
+                    const config = Object.fromEntries(
+                        Object.keys(this.ttsR2Config).map(key => [
+                            key,
+                            typeof this.ttsR2Config[key] === 'string'
+                                ? this.ttsR2Config[key].trim()
+                                : ''
+                        ])
+                    );
+                    if (Object.values(config).some(value => value)) {
+                        localStorage.setItem('trpg-tts-r2-config', JSON.stringify(config));
+                        this.ttsR2Config = config;
+                        this.ttsStatus = 'R2 连接设置已保存在本机浏览器，不会写入日志或任务 JSON。';
+                    } else {
+                        localStorage.removeItem('trpg-tts-r2-config');
+                        this.ttsStatus = '本机保存的 R2 连接设置已清除。';
+                    }
+                    return true;
+                } catch (error) {
+                    console.error('保存本地 R2 连接设置失败:', error);
+                    this.ttsStatus = `无法保存 R2 设置到本地浏览器：${error.message}`;
+                    return false;
+                }
+            },
+
             loadTtsLocalSettings() {
                 try {
                     this.googleTtsApiKey = localStorage.getItem('trpg-google-tts-api-key') || '';
                 } catch (error) {
                     console.error('读取本地 Google TTS API Key 失败:', error);
                     this.ttsStatus = `无法读取本地 API Key：${error.message}`;
+                }
+
+                try {
+                    const config = JSON.parse(localStorage.getItem('trpg-tts-r2-config') || 'null');
+                    if (config && typeof config === 'object' && !Array.isArray(config)) {
+                        Object.keys(this.ttsR2Config).forEach(key => {
+                            if (typeof config[key] === 'string') {
+                                this.ttsR2Config[key] = config[key];
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('读取本地 R2 连接设置失败:', error);
+                    this.ttsStatus = `无法读取本地 R2 设置：${error.message}`;
                 }
 
                 try {
@@ -5894,6 +6057,87 @@
                 } catch (error) {
                     console.error('读取 Google TTS 试听用量失败:', error);
                     this.ttsStatus = `无法读取试听用量：${error.message}`;
+                }
+            },
+
+            async startTtsGeneration() {
+                if (this.ttsGenerationRunning) return;
+                if (window.location.protocol !== 'http:' || window.location.hostname !== '127.0.0.1') {
+                    this.ttsGenerationStatus = '请先运行 tools\\tts\\local_server.py，并通过它提供的 127.0.0.1 地址打开日志编辑器。';
+                    return;
+                }
+
+                this.saveGoogleTtsApiKey();
+                if (!this.saveTtsR2Config()) return;
+                const requiredValues = [
+                    this.googleTtsApiKey,
+                    this.ttsR2Config.accountId,
+                    this.ttsR2Config.accessKeyId,
+                    this.ttsR2Config.secretAccessKey,
+                    this.ttsR2Config.bucketName,
+                    this.ttsR2Config.publicBaseUrl
+                ];
+                if (requiredValues.some(value => !value || !value.trim())) {
+                    this.ttsGenerationStatus = '请填写 Google TTS Key、R2 账户/密钥、桶名称和公共音频 URL。';
+                    return;
+                }
+
+                this.ttsGenerationRunning = true;
+                this.ttsGenerationStatus = '正在连接本机生成服务…';
+                this.ttsGenerationOutput = '';
+                try {
+                    const response = await fetch('/api/tts/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            googleTtsApiKey: this.googleTtsApiKey.trim(),
+                            r2AccountId: this.ttsR2Config.accountId,
+                            r2AccessKeyId: this.ttsR2Config.accessKeyId,
+                            r2SecretAccessKey: this.ttsR2Config.secretAccessKey,
+                            r2BucketName: this.ttsR2Config.bucketName,
+                            r2EndpointUrl: this.ttsR2Config.endpointUrl,
+                            r2PublicBaseUrl: this.ttsR2Config.publicBaseUrl
+                        })
+                    });
+                    const result = await response.json();
+                    if (!response.ok && !(response.status === 409 && result.jobId)) {
+                        throw new Error(result.error || `本机服务返回 HTTP ${response.status}`);
+                    }
+                    this.ttsGenerationJobId = result.jobId;
+                    this.ttsGenerationStatus = response.status === 409
+                        ? '已有生成任务正在运行，已连接其进度…'
+                        : '生成任务已启动…';
+                    await this.pollTtsGeneration(result.jobId);
+                } catch (error) {
+                    console.error('启动 TTS 生成失败:', error);
+                    this.ttsGenerationStatus = `生成失败：${error.message}。确认本地服务仍在运行，并检查连接设置。`;
+                } finally {
+                    this.ttsGenerationRunning = false;
+                }
+            },
+
+            async pollTtsGeneration(jobId) {
+                while (true) {
+                    const response = await fetch(`/api/tts/jobs/${encodeURIComponent(jobId)}`, {
+                        cache: 'no-store'
+                    });
+                    const result = await response.json();
+                    if (!response.ok) {
+                        throw new Error(result.error || `读取生成状态失败（HTTP ${response.status}）。`);
+                    }
+                    this.ttsGenerationOutput = Array.isArray(result.output)
+                        ? result.output.join('\n')
+                        : '';
+                    if (result.status !== 'running') {
+                        if (result.status === 'succeeded') {
+                            this.ttsGenerationStatus = '语音生成并上传完成；点击“导入语音清单”回填消息。';
+                        } else {
+                            this.ttsGenerationStatus = `生成失败（退出代码 ${result.exitCode}）。请检查下方日志和连接设置。`;
+                        }
+                        return;
+                    }
+                    this.ttsGenerationStatus = '正在生成并上传语音，请保持本地服务运行…';
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             },
 
