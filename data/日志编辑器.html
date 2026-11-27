@@ -3253,6 +3253,10 @@
                                         :disabled="ttsScanning || !ttsTasks.length || (ttsScanSummary && ttsScanSummary.limitExceeded)">
                                         导出生成任务
                                     </button>
+                                    <button v-if="ttsExportPayload" type="button" class="secondary"
+                                        @click="downloadPreparedTtsTasks">
+                                        下载任务清单
+                                    </button>
                                 </div>
 
                                 <input ref="ttsRoleConfigFileInput" type="file" accept=".json,application/json"
@@ -4166,6 +4170,8 @@
                 ttsManifest: { entries: {}, usage: {} },
                 ttsPreviewUsage: { month: '', characters: 0 },
                 ttsTasks: [],
+                ttsExportPayload: null,
+                ttsExportFileName: '',
                 ttsScanSummary: null,
                 ttsCopySourceRole: '',
                 ttsCopyTargetRole: '',
@@ -6257,6 +6263,8 @@
                 this.ttsScanning = true;
                 this.ttsScanSummary = null;
                 this.ttsTasks = [];
+                this.ttsExportPayload = null;
+                this.ttsExportFileName = '';
                 this.ttsStatus = '正在扫描日志消息并计算内容哈希…';
 
                 try {
@@ -6480,11 +6488,20 @@
                     summary: this.ttsScanSummary,
                     tasks: this.ttsTasks
                 };
-                this.downloadTtsJson(
-                    payload,
-                    `trpg-tts-tasks-${new Date().toISOString().slice(0, 10)}.json`
-                );
-                this.ttsStatus = `已导出 ${this.ttsTasks.length} 个去重生成任务；${saveSummary}任务文件不包含 API Key。`;
+                this.ttsExportPayload = payload;
+                this.ttsExportFileName = `trpg-tts-tasks-${new Date().toISOString().slice(0, 10)}.json`;
+                this.downloadTtsJson(this.ttsExportPayload, this.ttsExportFileName);
+                this.ttsStatus = `已准备 ${this.ttsTasks.length} 个去重生成任务；${saveSummary}若浏览器没有自动下载，请点击“下载任务清单”。任务文件不包含 API Key。`;
+            },
+
+            downloadPreparedTtsTasks() {
+                if (!this.ttsExportPayload || !this.ttsExportFileName) {
+                    this.ttsStatus = '没有可下载的任务清单，请重新扫描并导出。';
+                    return;
+                }
+
+                this.downloadTtsJson(this.ttsExportPayload, this.ttsExportFileName);
+                this.ttsStatus = '已再次触发任务清单下载。';
             },
 
             async importTtsManifestFile(event) {
