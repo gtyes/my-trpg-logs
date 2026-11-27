@@ -2287,7 +2287,12 @@
             console.log('[VN] BGM 切换 →', src);
 
             vnBgmAudio.addEventListener('error', () => {
-                console.error('[VN] BGM 加载失败（检查路径/文件是否存在）:', src);
+                console.error('[VN] BGM 加载失败:', {
+                    src,
+                    mediaError: vnBgmAudio.error,
+                    networkState: vnBgmAudio.networkState,
+                    readyState: vnBgmAudio.readyState
+                });
             }, { once: true });
 
             const playPromise = vnBgmAudio.play();
@@ -2640,7 +2645,12 @@
                     vnSfxAudios = vnSfxAudios.filter(item => item !== audio);
                 }, { once: true });
                 audio.addEventListener('error', () => {
-                    console.error('[VN] 音效加载失败:', src, audio.error);
+                    console.error('[VN] 音效加载失败:', {
+                        src,
+                        mediaError: audio.error,
+                        networkState: audio.networkState,
+                        readyState: audio.readyState
+                    });
                 }, { once: true });
 
                 const playPromise = audio.play();
@@ -3814,10 +3824,28 @@
             if (vnSpeechAutoplayFailed) return;
 
             vnSpeechAutoplayFailed = true;
-            console.warn('[VN] 语音自动播放失败:', error);
+            const mediaError = audio.error;
+            const mediaErrorLabels = {
+                1: '加载中止',
+                2: '网络错误',
+                3: '解码失败',
+                4: '格式或媒体源不支持'
+            };
+            const failureReason = mediaError
+                ? `语音加载失败（${mediaErrorLabels[mediaError.code] || '未知媒体错误'}，代码 ${mediaError.code}）`
+                : error && error.name === 'NotAllowedError'
+                    ? '浏览器阻止了语音自动播放'
+                    : `语音播放失败（${error && error.name ? error.name : '未知错误'}）`;
+            console.warn('[VN] 语音自动播放失败:', {
+                error,
+                src: audio.currentSrc || audio.src,
+                mediaError,
+                networkState: audio.networkState,
+                readyState: audio.readyState
+            });
             const hint = document.getElementById('vnHint');
             if (hint) {
-                hint.textContent = '语音自动播放失败，自动推进将按文本节奏继续';
+                hint.textContent = `${failureReason}，自动推进将按文本节奏继续`;
             }
             if (vnAuto && !vnTyping) {
                 if (vnHasMoreText) scheduleVnNextPage();
