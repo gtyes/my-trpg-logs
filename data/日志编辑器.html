@@ -3335,10 +3335,12 @@
                                                 音调
                                                 <input type="range" v-model.number="ttsConfig.roles[character].pitch"
                                                     min="-20" max="20" step="1"
-                                                    :disabled="ttsConfig.roles[character].pitchSupported === false"
+                                                    :disabled="ttsConfig.roles[character].pitchSupported === false
+                                                        || !isTtsPitchSupported(ttsConfig.roles[character].voiceName)"
                                                     @change="invalidateRoleTtsAudio(character)">
                                                 {{ ttsConfig.roles[character].pitch.toFixed(0) }}
-                                                <span v-if="ttsConfig.roles[character].pitchSupported === false"
+                                                <span v-if="ttsConfig.roles[character].pitchSupported === false
+                                                    || !isTtsPitchSupported(ttsConfig.roles[character].voiceName)"
                                                     class="tts-small">（音色不支持音调）</span>
                                             </label>
                                             <label>
@@ -5709,6 +5711,10 @@
                 };
             },
 
+            isTtsPitchSupported(voiceName) {
+                return !/-Chirp3-HD-/i.test(String(voiceName || ''));
+            },
+
             normalizeTtsConfig(config) {
                 const source = config && typeof config === 'object' ? config : {};
                 const sourceRoles = source.roles && typeof source.roles === 'object' && !Array.isArray(source.roles)
@@ -5719,18 +5725,19 @@
                 Object.entries(sourceRoles).forEach(([name, value]) => {
                     const role = value && typeof value === 'object' ? value : {};
                     const defaults = this.createDefaultTtsRoleConfig();
+                    const voiceName = typeof role.voiceName === 'string' ? role.voiceName : '';
                     const numberOrDefault = (input, fallback) => {
                         const number = Number(input);
                         return Number.isFinite(number) ? number : fallback;
                     };
                     roles[name] = {
                         enabled: role.enabled === true,
-                        voiceName: typeof role.voiceName === 'string' ? role.voiceName : '',
+                        voiceName,
                         languageCode: typeof role.languageCode === 'string' ? role.languageCode : defaults.languageCode,
                         speakingRate: Math.min(2, Math.max(0.5, numberOrDefault(role.speakingRate, defaults.speakingRate))),
                         pitch: Math.min(20, Math.max(-20, numberOrDefault(role.pitch, defaults.pitch))),
                         volumeGainDb: Math.min(10, Math.max(-10, numberOrDefault(role.volumeGainDb, defaults.volumeGainDb))),
-                        pitchSupported: role.pitchSupported !== false
+                        pitchSupported: role.pitchSupported !== false && this.isTtsPitchSupported(voiceName)
                     };
                 });
 
@@ -5895,7 +5902,9 @@
 
             handleTtsVoiceChange(roleName) {
                 this.updateTtsVoiceLanguage(roleName);
-                this.ttsConfig.roles[roleName].pitchSupported = true;
+                const role = this.ttsConfig.roles[roleName];
+                role.pitchSupported = this.isTtsPitchSupported(role.voiceName);
+                if (!role.pitchSupported) role.pitch = 0;
                 this.invalidateRoleTtsAudio(roleName);
             },
 
@@ -6162,15 +6171,24 @@
                             languageCode: role.languageCode,
                             speakingRate: Number(role.speakingRate),
                             pitch: Number(role.pitch),
-                            pitchSupported: role.pitchSupported !== false,
+                            pitchSupported: role.pitchSupported !== false
+                                && this.isTtsPitchSupported(role.voiceName),
                             volumeGainDb: Number(role.volumeGainDb)
                         };
                         const hash = await this.calculateTtsHash(text, voice);
+                        const legacyHash = voice.pitchSupported
+                            ? ''
+                            : await this.calculateTtsHash(text, { ...voice, pitchSupported: true });
                         const characterCount = this.getTtsCharacterCount(text);
                         const manifestEntry = entries[hash];
                         const manifestUrl = manifestEntry && (manifestEntry.url || manifestEntry.audioUrl);
-                        const existingUrl = message.ttsHash === hash ? message.ttsAudioUrl : '';
-                        const knownUrl = manifestUrl || existingUrl;
+                        const legacyEntry = legacyHash && entries[legacyHash];
+                        const legacyManifestUrl = legacyEntry && (legacyEntry.url || legacyEntry.audioUrl);
+                        const existingUrl = message.ttsHash === hash
+                            || (legacyHash && message.ttsHash === legacyHash)
+                            ? message.ttsAudioUrl
+                            : '';
+                        const knownUrl = manifestUrl || legacyManifestUrl || existingUrl;
 
                         candidates.push({ message, roleName, channel, text, voice, hash, characterCount });
                         if (knownUrl && !knownAudioUrls.has(hash)) knownAudioUrls.set(hash, knownUrl);

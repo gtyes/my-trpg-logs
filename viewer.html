@@ -542,13 +542,6 @@
             word-break: break-word;       /* 更激进地断行，防止溢出 */
         }
 
-        .message-tts-audio {
-            display: block;
-            width: min(320px, 100%);
-            height: 34px;
-            margin-top: 6px;
-        }
-        
         .message-image {
             margin-top: 6px; /* 减小间距 */
             text-align: center;
@@ -3258,7 +3251,22 @@
                 vnPageTimer = null;
             }
         }
-        function scheduleVnNextPage(delay = 1500) {
+        function getVnNextPageDelay() {
+            const audio = document.getElementById('vnSpeechAudio');
+            if (!audio || !audio.getAttribute('src') || vnSpeechAutoplayFailed
+                || audio.ended || !Number.isFinite(audio.duration) || audio.duration <= 0) {
+                return 1500;
+            }
+
+            const textProgress = Math.min(1, vnTextIndex / Math.max(1, vnCurrentText.length));
+            const targetAudioTime = audio.duration * textProgress;
+            const currentAudioTime = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+            return Math.max(1000, (targetAudioTime - currentAudioTime) * 1000);
+        }
+
+        function scheduleVnNextPage(delay) {
+            if (!vnAuto) return;
+
             if (vnPageTimer) {
                 clearTimeout(vnPageTimer);
                 vnPageTimer = null;
@@ -3278,7 +3286,7 @@
 
                 // 只继续文本，不重新 render step，所以立绘不会被清掉
                 startVnTyping(vnCurrentText, vnTextIndex);
-            }, delay);
+            }, delay === undefined ? getVnNextPageDelay() : delay);
         }
 
         function vnKeyHandler(event) {
@@ -3430,12 +3438,20 @@
             btn.textContent = vnAuto ? '自动：开' : '自动：关';
 
             if (vnAuto) {
-                if (!vnTyping) {
+                if (vnHasMoreText && !vnTyping) {
+                    scheduleVnNextPage();
+                } else if (!vnTyping) {
                     scheduleVnAuto();
                 }
-            } else if (vnAutoTimer) {
-                clearTimeout(vnAutoTimer);
-                vnAutoTimer = null;
+            } else {
+                if (vnAutoTimer) {
+                    clearTimeout(vnAutoTimer);
+                    vnAutoTimer = null;
+                }
+                if (vnPageTimer) {
+                    clearTimeout(vnPageTimer);
+                    vnPageTimer = null;
+                }
             }
         }
         function updateVnHideChatUI() {
@@ -3716,9 +3732,9 @@
             audio.load();
 
             audio.onended = () => {
-                if (vnIndex === stepIndex && vnAuto && !vnTyping && !vnHasMoreText) {
-                    scheduleVnAuto(800);
-                }
+                if (vnIndex !== stepIndex || !vnAuto || vnTyping) return;
+                if (vnHasMoreText) scheduleVnNextPage();
+                else scheduleVnAuto(800);
             };
             audio.onplay = () => {
                 vnSpeechAutoplayFailed = false;
@@ -3750,8 +3766,9 @@
             if (hint) {
                 hint.textContent = '语音自动播放失败，自动推进将按文本节奏继续';
             }
-            if (vnAuto && !vnTyping && !vnHasMoreText) {
-                scheduleVnAuto();
+            if (vnAuto && !vnTyping) {
+                if (vnHasMoreText) scheduleVnNextPage();
+                else scheduleVnAuto();
             }
         }
 
@@ -3869,12 +3886,8 @@
                 vnTyping = false;
                 vnHasMoreText = vnTextIndex < vnCurrentText.length;
 
-                if (hintEl) {
-                    hintEl.textContent = '即将继续…';
-                }
-
-                // 长文本分页后自动翻页，不再等手动点击
-                scheduleVnNextPage(1500);
+                if (hintEl) hintEl.textContent = vnAuto ? '即将继续…' : '点击继续';
+                if (vnAuto) scheduleVnNextPage();
                 return;
 
             }
@@ -3904,8 +3917,8 @@
                     vnTyping = false;
                     vnHasMoreText = vnTextIndex < vnCurrentText.length;
 
-                    if (hintEl) hintEl.textContent = '点击继续';
-                    if (vnAuto) scheduleVnAuto(1500);
+                    if (hintEl) hintEl.textContent = vnAuto ? '即将继续…' : '点击继续';
+                    if (vnAuto) scheduleVnNextPage();
                     return;
                 }
             }
@@ -5482,10 +5495,7 @@
 
             // ---- 1️⃣ 对话文本 ----
             const highlightedText = highlightSearchText(msg.text, currentFilters.searchText);
-            const speechAudioHtml = msg.ttsDisabled !== true && msg.ttsAudioUrl
-                ? `<audio class="message-tts-audio" controls preload="none" src="${escapeHtmlAttribute(msg.ttsAudioUrl)}" aria-label="播放消息语音"></audio>`
-                : '';
-            let html = `<div class="message-text">${highlightedText}</div>${speechAudioHtml}`;
+            let html = `<div class="message-text">${highlightedText}</div>`;
 
             // ---- 2️⃣ 消息内嵌图片（如果有） ----
             if (msg.messageImage) {
