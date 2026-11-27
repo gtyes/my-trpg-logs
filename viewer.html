@@ -2650,12 +2650,24 @@
             audio.volume = 0.8;
             audio.preload = 'auto';
             audio.muted = vnMuted;
+            audio._vnPlaybackStarted = false;
 
-            audio.addEventListener('ended', () => {
+            let finished = false;
+            const finish = () => {
+                if (finished) return;
+                finished = true;
                 clearVnSfxRetry(audio);
                 vnSfxAudios = vnSfxAudios.filter(item => item !== audio);
-                if (vnIndex === stepIndex && typeof onEnded === 'function') onEnded();
-            }, { once: true });
+                if (vnIndex !== stepIndex) return;
+                if (typeof onEnded === 'function') onEnded();
+                scheduleVnAuto(800);
+            };
+
+            audio.addEventListener('play', () => {
+                audio._vnPlaybackStarted = true;
+                if (vnIndex === stepIndex) scheduleVnAuto();
+            });
+            audio.addEventListener('ended', finish, { once: true });
             audio.addEventListener('error', () => {
                 console.error('[VN] 音效加载失败:', {
                     src,
@@ -2665,6 +2677,7 @@
                     networkState: audio.networkState,
                     readyState: audio.readyState
                 });
+                finish();
             }, { once: true });
 
             const playPromise = audio.play();
@@ -3653,7 +3666,9 @@
         }
 
         function hasActiveVnSfx() {
-            return vnSfxAudios.some(audio => !audio.ended && !audio.paused && !audio.error);
+            return vnSfxAudios.some(audio =>
+                audio._vnPlaybackStarted === true && !audio.ended && !audio.error
+            );
         }
 
         function renderVnStep() {
@@ -3826,6 +3841,77 @@
             startVnTyping(msg.text || '');
         }
 
+        function stopVnBrowserSpeech() {
+            const synthesis = window.speechSynthesis;
+            vnBrowserSpeechUtterance = null;
+            vnBrowserSpeechStepIndex = -1;
+            if (synthesis && typeof synthesis.cancel === 'function') {
+                synthesis.cancel();
+            }
+        }
+
+        function getVnBrowserSpeechText(step) {
+            if (!step || !step.msg) return '';
+            const message = step.msg;
+            if (step.type === 'system') {
+                return typeof message.text === 'string' ? message.text.trim() : '';
+            }
+            if (!message.dice && !message.extend) return '';
+
+            return [message.text, getFormattedExtendText(message)]
+                .filter(value => typeof value === 'string' && value.trim())
+                .join('。');
+        }
+
+        function setVnSpeechForStep(step) {
+            stopVnBrowserSpeech();
+            const message = step && step.msg ? step.msg : null;
+            const speechText = getVnBrowserSpeechText(step);
+            const synthesis = window.speechSynthesis;
+            const SpeechUtterance = window.SpeechSynthesisUtterance;
+
+            if (!speechText || !synthesis || typeof SpeechUtterance !== 'function') {
+                setVnSpeechAudio(message);
+                return;
+            }
+
+            setVnSpeechAudio(null);
+            const stepIndex = vnIndex;
+            const utterance = new SpeechUtterance(speechText);
+            utterance.lang = document.documentElement.lang || 'zh-CN';
+            utterance.volume = vnMuted ? 0 : 1;
+            vnBrowserSpeechUtterance = utterance;
+            vnBrowserSpeechStepIndex = stepIndex;
+
+            utterance.onstart = () => {
+                if (vnBrowserSpeechUtterance === utterance) scheduleVnAuto();
+            };
+            utterance.onend = () => {
+                if (vnBrowserSpeechUtterance !== utterance) return;
+                vnBrowserSpeechUtterance = null;
+                vnBrowserSpeechStepIndex = -1;
+                scheduleVnAuto(800);
+            };
+            utterance.onerror = event => {
+                if (vnBrowserSpeechUtterance !== utterance) return;
+                vnBrowserSpeechUtterance = null;
+                vnBrowserSpeechStepIndex = -1;
+                if (event.error !== 'canceled') {
+                    console.warn('[VN] 浏览器语音朗读失败:', event.error);
+                }
+                scheduleVnAuto(800);
+            };
+
+            try {
+                synthesis.speak(utterance);
+            } catch (error) {
+                vnBrowserSpeechUtterance = null;
+                vnBrowserSpeechStepIndex = -1;
+                console.error('[VN] 无法启动浏览器语音朗读:', error);
+                setVnSpeechAudio(message);
+            }
+        }
+
         function setVnSpeechAudio(message) {
             const audio = document.getElementById('vnSpeechAudio');
             if (!audio) return;
@@ -3853,8 +3939,7 @@
 
             audio.onended = () => {
                 if (vnIndex !== stepIndex || !vnAuto || vnTyping) return;
-                if (vnHasMoreText) scheduleVnNextPage();
-                else scheduleVnAuto(800);
+                scheduleVnAuto(800);
             };
             audio.onplay = () => {
                 vnSpeechAutoplayFailed = false;
