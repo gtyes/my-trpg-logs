@@ -3316,7 +3316,7 @@
                                                 :aria-label="character + '语音音色'">
                                                 <option value="">选择中文音色</option>
                                                 <option v-for="voice in ttsVoiceList" :key="voice.name" :value="voice.name">
-                                                    {{ voice.name }} · {{ voice.languageCodes[0] }}
+                                                    {{ voice.name }} · {{ voice.languageCodes[0] }}{{ ttsVoiceRoleUsage[voice.name] ? ' · 已选：' + ttsVoiceRoleUsage[voice.name].join('、') : '' }}
                                                 </option>
                                             </select>
                                             <input type="text" v-model="ttsConfig.roles[character].languageCode"
@@ -4287,6 +4287,17 @@
 
             ttsRoleConfigNames() {
                 return Object.keys(this.ttsConfig.roles || {}).sort();
+            },
+
+            ttsVoiceRoleUsage() {
+                const roleNamesByVoice = {};
+                this.ttsRoleConfigNames.forEach(roleName => {
+                    const role = this.ttsConfig.roles[roleName];
+                    if (!role || !role.voiceName) return;
+                    if (!roleNamesByVoice[role.voiceName]) roleNamesByVoice[role.voiceName] = [];
+                    roleNamesByVoice[role.voiceName].push(roleName);
+                });
+                return roleNamesByVoice;
             },
 
             ttsOrphanRoleNames() {
