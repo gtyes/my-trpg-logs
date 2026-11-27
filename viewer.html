@@ -2625,72 +2625,106 @@
             vnSfxAudios = [];
         }
 
-        function applySfxForPosition(position) {
+        function isVnSkillRoll(message) {
+            if (!message) return false;
+
+            const rollText = [
+                typeof message.dice === 'string' ? message.dice : '',
+                formatExtendContent(message)
+            ].join(' ');
+            if (/(?:^|[^a-z0-9])(?:1\s*d\s*100|d\s*100|ccb?)(?=$|[^a-z0-9])/i.test(rollText)) {
+                return true;
+            }
+
+            return /\bccb?\s*[<≤]\s*\d+/i.test(message.text || '');
+        }
+
+        function playVnSfxAudio(rawUrl, stepIndex, onEnded) {
+            const src = resolveMediaUrl(rawUrl);
+            if (!src || src === '__stop__') return;
+
+            const audio = new Audio(src);
+            audio.loop = false;
+            audio.volume = 0.8;
+            audio.preload = 'auto';
+            audio.muted = vnMuted;
+
+            audio.addEventListener('ended', () => {
+                clearVnSfxRetry(audio);
+                vnSfxAudios = vnSfxAudios.filter(item => item !== audio);
+                if (vnIndex === stepIndex && typeof onEnded === 'function') onEnded();
+            }, { once: true });
+            audio.addEventListener('error', () => {
+                console.error('[VN] 音效加载失败:', {
+                    src,
+                    mediaError: audio.error,
+                    mediaErrorCode: audio.error && audio.error.code,
+                    mediaErrorMessage: audio.error && audio.error.message,
+                    networkState: audio.networkState,
+                    readyState: audio.readyState
+                });
+            }, { once: true });
+
+            const playPromise = audio.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(error => {
+                    console.warn('[VN] 音效播放失败:', src, error);
+                    if (!error || error.name !== 'NotAllowedError') return;
+
+                    const retry = () => {
+                        clearVnSfxRetry(audio);
+                        if (vnIndex !== stepIndex || !vnSfxAudios.includes(audio)) return;
+
+                        const retryPromise = audio.play();
+                        if (retryPromise && typeof retryPromise.catch === 'function') {
+                            retryPromise.catch(retryError => {
+                                console.warn('[VN] 音效重试仍失败:', src, retryError);
+                            });
+                        }
+                    };
+                    clearVnSfxRetry(audio);
+                    vnSfxRetryHandlers.set(audio, retry);
+                    document.addEventListener('click', retry, { once: true, capture: true });
+                    document.addEventListener('keydown', retry, { once: true, capture: true });
+                });
+            }
+
+            vnSfxAudios.push(audio);
+            console.log('[VN] 音效:', src);
+        }
+
+        function applySfxForPosition(position, step) {
             if (isVnOpeningVisible()) return;
             clearVnSfxRetries();
             const pos = Number(position) || 0;
             if (!pos) return;
 
             const events = vnSfxEvents.filter(event => event.position === pos);
+            const message = step && step.type !== 'chapter' ? step.msg : null;
+            const isSkillRoll = isVnSkillRoll(message);
+            const resultType = isSkillRoll ? getExtendResultType(message) : 'normal';
+            const resultSound = resultType === 'criticalSuccess'
+                ? 'audio/成功.MP3'
+                : resultType === 'criticalFailure'
+                    ? 'audio/失败.MP3'
+                    : '';
 
-            // 这一条没有音效：不打断上一条正在播放的音效
-            if (!events.length) return;
+            // 这一条没有音效或技能骰点：不打断上一条正在播放的音效
+            if (!events.length && !isSkillRoll) return;
 
-            // 这一条有新音效：先停掉旧的，再播新的
+            // 新步骤有音效时，先停掉旧的，再播放新音效
             stopVnSfx();
 
             events.forEach(event => {
-                const src = resolveMediaUrl(event.url);
-                if (!src || src === '__stop__') return;
-
-                const audio = new Audio(src);
-                audio.loop = false;        // 只播一次
-                audio.volume = 0.8;
-                audio.preload = 'auto';
-                audio.muted = vnMuted;
-
-                audio.addEventListener('ended', () => {
-                    clearVnSfxRetry(audio);
-                    vnSfxAudios = vnSfxAudios.filter(item => item !== audio);
-                }, { once: true });
-                audio.addEventListener('error', () => {
-                    console.error('[VN] 音效加载失败:', {
-                        src,
-                        mediaError: audio.error,
-                        networkState: audio.networkState,
-                        readyState: audio.readyState
-                    });
-                }, { once: true });
-
-                const playPromise = audio.play();
-                if (playPromise && typeof playPromise.catch === 'function') {
-                    playPromise.catch(error => {
-                        console.warn('[VN] 音效播放失败:', src, error);
-                        if (!error || error.name !== 'NotAllowedError') return;
-
-                        const stepIndex = vnIndex;
-                        const retry = () => {
-                            clearVnSfxRetry(audio);
-                            if (vnIndex !== stepIndex || !vnSfxAudios.includes(audio)) return;
-
-                            const retryPromise = audio.play();
-                            if (retryPromise && typeof retryPromise.catch === 'function') {
-                                retryPromise.catch(retryError => {
-                                    console.warn('[VN] 音效重试仍失败:', src, retryError);
-                                });
-                            }
-                        };
-                        clearVnSfxRetry(audio);
-                        vnSfxRetryHandlers.set(audio, retry);
-                        document.addEventListener('click', retry, { once: true, capture: true });
-                        document.addEventListener('keydown', retry, { once: true, capture: true });
-                    });
-                }
-
-                vnSfxAudios.push(audio);
-                console.log('[VN] 音效:', src);
+                playVnSfxAudio(event.url, vnIndex);
             });
-            
+
+            if (isSkillRoll) {
+                const stepIndex = vnIndex;
+                playVnSfxAudio('audio/骰子.MP3', stepIndex, () => {
+                    if (resultSound) playVnSfxAudio(resultSound, stepIndex);
+                });
+            }
         }
 
         // 获取当前阅读位置在 filteredLogs 中的索引
@@ -3664,7 +3698,7 @@
             // 应用 BGM 切换事件
             applyBgmForPosition(step.position || 0);
 
-            applySfxForPosition(step.position || 0);
+            applySfxForPosition(step.position || 0, step);
 
             // 章节卡
             if (step.type === 'chapter') {
