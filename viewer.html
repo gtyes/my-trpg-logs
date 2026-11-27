@@ -2627,14 +2627,12 @@
             vnSfxAudios = [];
         }
 
-        function isVnSkillRoll(message) {
+        function isVnDiceRoll(message) {
             if (!message) return false;
 
-            const rollText = [
-                typeof message.dice === 'string' ? message.dice : '',
-                formatExtendContent(message)
-            ].join(' ');
-            if (/(?:^|[^a-z0-9])(?:1\s*d\s*100|d\s*100|ccb?)(?=$|[^a-z0-9])/i.test(rollText)) {
+            const hasDiceResult = (typeof message.dice === 'string' && message.dice.trim())
+                || Boolean(message.extend);
+            if (hasDiceResult) {
                 return true;
             }
 
@@ -2716,16 +2714,16 @@
 
             const events = vnSfxEvents.filter(event => event.position === pos);
             const message = step && step.type !== 'chapter' ? step.msg : null;
-            const isSkillRoll = isVnSkillRoll(message);
-            const resultType = isSkillRoll ? getExtendResultType(message) : 'normal';
+            const isDiceRoll = isVnDiceRoll(message);
+            const resultType = isDiceRoll ? getExtendResultType(message) : 'normal';
             const resultSound = resultType === 'criticalSuccess'
                 ? 'audio/成功.MP3'
                 : resultType === 'criticalFailure'
                     ? 'audio/失败.MP3'
                     : '';
 
-            // 这一条没有音效或技能骰点：不打断上一条正在播放的音效
-            if (!events.length && !isSkillRoll) return;
+            // 这一条没有音效或骰点：不打断上一条正在播放的音效
+            if (!events.length && !isDiceRoll) return;
 
             // 新步骤有音效时，先停掉旧的，再播放新音效
             stopVnSfx();
@@ -2734,7 +2732,7 @@
                 playVnSfxAudio(event.url, vnIndex);
             });
 
-            if (isSkillRoll) {
+            if (isDiceRoll) {
                 const stepIndex = vnIndex;
                 playVnSfxAudio('audio/骰子.MP3', stepIndex, () => {
                     if (resultSound) playVnSfxAudio(resultSound, stepIndex);
