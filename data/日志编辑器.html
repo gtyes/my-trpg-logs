@@ -3244,14 +3244,18 @@
                                     <button type="button" class="secondary" @click="setAllTtsRolesEnabled(false)">全部禁用</button>
                                     <button type="button" class="secondary" @click="exportTtsRoleConfig">导出语音配置</button>
                                     <button type="button" class="secondary" @click="openTtsRoleConfigImport">导入语音配置</button>
-                                    <button type="button" class="secondary" @click="openTtsManifestImport">导入语音清单</button>
+                                    <button type="button" class="secondary" @click="openTtsManifestImport"
+                                        title="首次选择 .tts-output 文件夹，之后直接导入其中的 manifest.json">
+                                        导入语音清单
+                                    </button>
                                     <button type="button" class="warning" @click="scanTtsMessages"
                                         :disabled="ttsScanning">
                                         {{ ttsScanning ? '扫描中…' : '扫描待生成内容' }}
                                     </button>
                                     <button type="button" class="success" @click="exportTtsTasks"
+                                        title="首次选择仓库的 .tts-output 文件夹；之后直接合并未完成任务到 tasks.json"
                                         :disabled="ttsScanning || !ttsTasks.length || (ttsScanSummary && ttsScanSummary.limitExceeded)">
-                                        导出生成任务
+                                        导出并更新任务清单
                                     </button>
                                     <button v-if="ttsExportPayload" type="button" class="secondary"
                                         @click="downloadPreparedTtsTasks">
@@ -4168,6 +4172,9 @@
                 ttsVoiceLoading: false,
                 ttsScanning: false,
                 ttsManifest: { entries: {}, usage: {} },
+                ttsManifestDirectoryHandle: null,
+                ttsManifestDirectoryReady: false,
+                ttsManifestDirectoryPersistenceWarning: '',
                 ttsPreviewUsage: { month: '', characters: 0 },
                 ttsTasks: [],
                 ttsExportPayload: null,
@@ -4400,6 +4407,7 @@
             this.loadCharacterRules();
             this.loadGlobalChannelSettings();
             this.loadTtsLocalSettings();
+            this.loadTtsManifestDirectoryHandle();
             this.syncTtsRoleConfigurations();
             // 加载网站设置
             this.loadWebsiteSettings();
@@ -6162,7 +6170,117 @@
             },
 
             openTtsManifestImport() {
-                this.$refs.ttsManifestFileInput.click();
+                if (typeof window.showDirectoryPicker !== 'function' || !window.indexedDB) {
+                    this.$refs.ttsManifestFileInput.click();
+                    return;
+                }
+                if (!this.ttsManifestDirectoryReady) {
+                    this.ttsStatus = '正在读取已保存的语音清单目录，请稍后再试。';
+                    return;
+                }
+                if (this.ttsManifestDirectoryHandle) {
+                    this.importTtsManifestFromSavedDirectory();
+                    return;
+                }
+                this.chooseTtsManifestDirectory();
+            },
+
+            async openTtsManifestHandleDatabase() {
+                return new Promise((resolve, reject) => {
+                    const request = window.indexedDB.open('trpg-log-editor-tts-handles', 1);
+                    request.onupgradeneeded = () => {
+                        if (!request.result.objectStoreNames.contains('handles')) {
+                            request.result.createObjectStore('handles');
+                        }
+                    };
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error || new Error('无法打开浏览器本地存储。'));
+                });
+            },
+
+            async loadTtsManifestDirectoryHandle() {
+                if (!window.indexedDB) {
+                    this.ttsManifestDirectoryReady = true;
+                    return;
+                }
+                let database;
+                try {
+                    database = await this.openTtsManifestHandleDatabase();
+                    this.ttsManifestDirectoryHandle = await new Promise((resolve, reject) => {
+                        const transaction = database.transaction('handles', 'readonly');
+                        const request = transaction.objectStore('handles').get('tts-output-directory');
+                        request.onsuccess = () => resolve(request.result || null);
+                        request.onerror = () => reject(request.error || new Error('无法读取已保存的目录授权。'));
+                    });
+                } catch (error) {
+                    console.error('读取语音清单目录授权失败:', error);
+                } finally {
+                    if (database) database.close();
+                    this.ttsManifestDirectoryReady = true;
+                }
+            },
+
+            async saveTtsManifestDirectoryHandle(handle) {
+                const database = await this.openTtsManifestHandleDatabase();
+                try {
+                    await new Promise((resolve, reject) => {
+                        const transaction = database.transaction('handles', 'readwrite');
+                        transaction.objectStore('handles').put(handle, 'tts-output-directory');
+                        transaction.oncomplete = resolve;
+                        transaction.onerror = () => reject(transaction.error || new Error('无法保存目录授权。'));
+                        transaction.onabort = () => reject(transaction.error || new Error('保存目录授权时事务已中止。'));
+                    });
+                } finally {
+                    database.close();
+                }
+            },
+
+            async chooseTtsManifestDirectory() {
+                try {
+                    if (this.ttsScanning) {
+                        throw new Error('正在扫描 TTS 任务，请等待扫描完成后再导入语音清单。');
+                    }
+                    const directoryHandle = await window.showDirectoryPicker({
+                        id: 'trpg-tts-output',
+                        mode: 'read'
+                    });
+                    this.ttsManifestDirectoryHandle = directoryHandle;
+                    let persistenceWarning = '';
+                    try {
+                        await this.saveTtsManifestDirectoryHandle(directoryHandle);
+                    } catch (error) {
+                        console.error('保存语音清单目录授权失败:', error);
+                        persistenceWarning = '（浏览器未能保存目录授权，下次需要重新选择文件夹）';
+                    }
+                    await this.processTtsManifestFile(
+                        await (await directoryHandle.getFileHandle('manifest.json')).getFile()
+                    );
+                    if (persistenceWarning && !this.ttsStatus.startsWith('扫描失败：')) {
+                        this.ttsStatus += persistenceWarning;
+                    }
+                } catch (error) {
+                    if (error.name === 'AbortError') return;
+                    console.error('读取语音清单目录失败:', error);
+                    this.ttsStatus = `导入语音清单失败：${error.message}`;
+                }
+            },
+
+            async importTtsManifestFromSavedDirectory() {
+                try {
+                    if (this.ttsScanning) {
+                        throw new Error('正在扫描 TTS 任务，请等待扫描完成后再导入语音清单。');
+                    }
+                    const permission = await this.ttsManifestDirectoryHandle.requestPermission({ mode: 'read' });
+                    if (permission !== 'granted') {
+                        throw new Error('读取 .tts-output 的权限未获批准，请在浏览器设置中恢复目录权限。');
+                    }
+                    const manifestHandle = await this.ttsManifestDirectoryHandle.getFileHandle('manifest.json');
+                    await this.processTtsManifestFile(await manifestHandle.getFile());
+                } catch (error) {
+                    if (error.name === 'AbortError') return;
+                    console.error('读取已保存的语音清单失败:', error);
+                    this.ttsStatus = `导入语音清单失败：${error.message}`;
+                }
             },
 
             async importTtsRoleConfigFile(event) {
@@ -6440,6 +6558,18 @@
                     return;
                 }
 
+                let directoryAccessPromise = null;
+                let directoryAccessUnavailable = false;
+                if (typeof window.showDirectoryPicker === 'function') {
+                    if (this.ttsManifestDirectoryReady) {
+                        directoryAccessPromise = this.prepareTtsOutputDirectoryForWrite()
+                            .then(directoryHandle => ({ directoryHandle, error: null }))
+                            .catch(error => ({ directoryHandle: null, error }));
+                    } else {
+                        directoryAccessUnavailable = true;
+                    }
+                }
+
                 this.syncTtsRoleConfigurations();
                 const beforeScanSave = await this.saveChanges({ silent: true });
                 if (beforeScanSave.status !== 'saved' && beforeScanSave.status !== 'downloaded') {
@@ -6481,8 +6611,232 @@
                 };
                 this.ttsExportPayload = payload;
                 this.ttsExportFileName = `trpg-tts-tasks-${new Date().toISOString().slice(0, 10)}.json`;
+
+                if (directoryAccessPromise) {
+                    const { directoryHandle, error } = await directoryAccessPromise;
+                    if (directoryHandle) {
+                        try {
+                            const result = await this.writeTtsTasksToDirectory(directoryHandle, payload);
+                            const persistenceWarning = this.ttsManifestDirectoryPersistenceWarning
+                                ? ` ${this.ttsManifestDirectoryPersistenceWarning}`
+                                : '';
+                            this.ttsStatus = `已将 ${result.addedCount} 个新任务合并到 tasks.json；当前保留 ${result.taskCount} 个未完成任务。${saveSummary}可用“下载任务清单”另存本次扫描结果。${persistenceWarning}`;
+                            return;
+                        } catch (writeError) {
+                            console.error('自动更新 TTS 任务清单失败:', writeError);
+                            this.downloadTtsJson(payload, this.ttsExportFileName);
+                            this.ttsStatus = `自动更新 tasks.json 失败：${writeError.message}。已下载本次任务清单，原文件未被主动覆盖。${saveSummary}`;
+                            return;
+                        }
+                    }
+                    if (error) {
+                        console.error('获取 TTS 输出目录写入权限失败:', error);
+                    }
+                }
+
                 this.downloadTtsJson(this.ttsExportPayload, this.ttsExportFileName);
-                this.ttsStatus = `已准备 ${this.ttsTasks.length} 个去重生成任务；${saveSummary}若浏览器没有自动下载，请点击“下载任务清单”。任务文件不包含 API Key。`;
+                const fallbackReason = directoryAccessUnavailable
+                    ? '目录授权尚未准备好，'
+                    : directoryAccessPromise
+                        ? '无法写入已授权目录，'
+                        : typeof window.showDirectoryPicker === 'function'
+                            ? '未能取得目录授权，'
+                            : '当前浏览器不支持直接写入本地文件，';
+                const fallbackNextStep = typeof window.showDirectoryPicker === 'function'
+                    ? '可再次点击“导出并更新任务清单”重试自动写入。'
+                    : '请使用下载文件和任务导入脚本更新 tasks.json。';
+                this.ttsStatus = `${fallbackReason}已下载本次 ${this.ttsTasks.length} 个任务；${fallbackNextStep}任务文件不包含 API Key。${saveSummary}`;
+            },
+
+            async prepareTtsOutputDirectoryForWrite() {
+                if (!this.ttsManifestDirectoryReady) {
+                    throw new Error('正在读取已保存的输出目录授权，请稍后再试。');
+                }
+
+                let directoryHandle = this.ttsManifestDirectoryHandle;
+                if (!directoryHandle) {
+                    directoryHandle = await window.showDirectoryPicker({
+                        id: 'trpg-tts-output',
+                        mode: 'readwrite'
+                    });
+                    this.ttsManifestDirectoryHandle = directoryHandle;
+                    try {
+                        await this.saveTtsManifestDirectoryHandle(directoryHandle);
+                        this.ttsManifestDirectoryPersistenceWarning = '';
+                    } catch (error) {
+                        console.error('保存 TTS 输出目录授权失败:', error);
+                        this.ttsManifestDirectoryPersistenceWarning = '浏览器未能记住输出目录，下次需要重新选择文件夹。';
+                    }
+                } else {
+                    const permission = await directoryHandle.requestPermission({ mode: 'readwrite' });
+                    if (permission !== 'granted') {
+                        throw new Error('没有获得 .tts-output 文件夹的读写权限。');
+                    }
+                }
+                return directoryHandle;
+            },
+
+            validateTtsTaskPayload(payload) {
+                if (!payload || typeof payload !== 'object'
+                    || payload.schemaVersion !== 1
+                    || payload.engineVersion !== 'google-cloud-tts-v1'
+                    || payload.audioEncoding !== 'MP3'
+                    || !Array.isArray(payload.tasks)) {
+                    throw new Error('任务文件格式或 TTS 引擎版本不匹配。');
+                }
+                payload.tasks.forEach(task => {
+                    if (!task || typeof task !== 'object'
+                        || typeof task.hash !== 'string'
+                        || !/^[0-9a-f]{64}$/i.test(task.hash)
+                        || typeof task.text !== 'string') {
+                        throw new Error('任务列表中包含无效任务，已取消写入。');
+                    }
+                    this.getTtsTaskVoiceKey(task.voice);
+                });
+                return payload;
+            },
+
+            getTtsTaskVoiceKey(voice) {
+                if (!voice || typeof voice !== 'object' || Array.isArray(voice)) {
+                    throw new Error('任务中包含无效的语音配置。');
+                }
+                return JSON.stringify(Object.keys(voice).sort().map(key => [key, voice[key]]));
+            },
+
+            mergeTtsTaskLists(tasks) {
+                const merged = new Map();
+                tasks.forEach(task => {
+                    if (!task || typeof task !== 'object'
+                        || typeof task.hash !== 'string'
+                        || !/^[0-9a-f]{64}$/i.test(task.hash)
+                        || typeof task.text !== 'string') {
+                        throw new Error('任务列表中包含无效任务，已取消写入。');
+                    }
+                    const voiceKey = this.getTtsTaskVoiceKey(task.voice);
+                    const previous = merged.get(task.hash);
+                    if (!previous) {
+                        merged.set(task.hash, {
+                            ...task,
+                            messageCount: Number.isSafeInteger(task.messageCount) && task.messageCount > 0
+                                ? task.messageCount
+                                : 1,
+                            roles: Array.isArray(task.roles) ? [...new Set(task.roles)] : [],
+                            channels: Array.isArray(task.channels) ? [...new Set(task.channels)] : [],
+                            _voiceKey: voiceKey
+                        });
+                        return;
+                    }
+                    if (previous.text !== task.text
+                        || previous._voiceKey !== voiceKey
+                        || previous.regenerationId !== task.regenerationId) {
+                        throw new Error(`任务哈希冲突：${task.hash}`);
+                    }
+                    previous.messageCount = Math.max(
+                        previous.messageCount,
+                        Number.isSafeInteger(task.messageCount) && task.messageCount > 0
+                            ? task.messageCount
+                            : 1
+                    );
+                    previous.roles = [...new Set(previous.roles.concat(
+                        Array.isArray(task.roles) ? task.roles : []
+                    ))].sort();
+                    previous.channels = [...new Set(previous.channels.concat(
+                        Array.isArray(task.channels) ? task.channels : []
+                    ))].sort();
+                });
+                return [...merged.values()].map(task => {
+                    const normalized = { ...task };
+                    delete normalized._voiceKey;
+                    return normalized;
+                });
+            },
+
+            async readOptionalTtsJson(directoryHandle, fileName) {
+                try {
+                    const fileHandle = await directoryHandle.getFileHandle(fileName);
+                    return JSON.parse(await (await fileHandle.getFile()).text());
+                } catch (error) {
+                    if (error.name === 'NotFoundError') return null;
+                    throw error;
+                }
+            },
+
+            isTtsTaskInManifest(task, manifest) {
+                const entries = manifest && manifest.entries;
+                const entry = Array.isArray(entries)
+                    ? entries.find(item => item && item.hash === task.hash)
+                    : entries && typeof entries === 'object'
+                        ? entries[task.hash]
+                        : null;
+                return Boolean(entry && (entry.url || entry.audioUrl));
+            },
+
+            async writeTtsTasksToDirectory(directoryHandle, incomingPayload) {
+                this.validateTtsTaskPayload(incomingPayload);
+                const [existingPayload, manifestPayload] = await Promise.all([
+                    this.readOptionalTtsJson(directoryHandle, 'tasks.json'),
+                    this.readOptionalTtsJson(directoryHandle, 'manifest.json')
+                ]);
+                const existingTasks = existingPayload
+                    ? this.validateTtsTaskPayload(existingPayload).tasks
+                    : [];
+                if (manifestPayload
+                    && (!manifestPayload.entries
+                        || typeof manifestPayload.entries !== 'object')) {
+                    throw new Error('manifest.json 中的 entries 格式无效，未修改 tasks.json。');
+                }
+                const manifest = manifestPayload || { entries: {} };
+                const pendingExisting = existingTasks.filter(task => !this.isTtsTaskInManifest(task, manifest));
+                const pendingIncoming = incomingPayload.tasks.filter(task => !this.isTtsTaskInManifest(task, manifest));
+                const mergedTasks = this.mergeTtsTaskLists(pendingExisting.concat(pendingIncoming));
+                const existingHashes = new Set(pendingExisting.map(task => task.hash));
+                const addedCount = pendingIncoming.reduce(
+                    (count, task) => count + Number(!existingHashes.has(task.hash)),
+                    0
+                );
+                const payload = {
+                    ...incomingPayload,
+                    tasks: mergedTasks,
+                    updatedAt: new Date().toISOString()
+                };
+                const summary = { ...(incomingPayload.summary || {}) };
+                const pendingCharacters = mergedTasks.reduce(
+                    (total, task) => total + (Number(task.characterCount) || 0),
+                    0
+                );
+                const messageCount = mergedTasks.reduce(
+                    (total, task) => total + (Number(task.messageCount) || 1),
+                    0
+                );
+                const roles = new Set(mergedTasks.flatMap(task =>
+                    Array.isArray(task.roles) ? task.roles : []
+                ));
+                const monthlyBudget = Number(payload.monthlyBudgetChars) || 0;
+                const projected = (Number(payload.monthlyUsedCharacters) || 0) + pendingCharacters;
+                const estimatedSeconds = pendingCharacters / 4;
+                Object.assign(summary, {
+                    taskCount: mergedTasks.length,
+                    pendingCharacters,
+                    messageCount,
+                    roleCount: roles.size,
+                    projectedMonthlyCharacters: projected,
+                    limitExceeded: Boolean(monthlyBudget && projected > monthlyBudget),
+                    budgetPercent: monthlyBudget ? (projected / monthlyBudget * 100).toFixed(1) : '0.0',
+                    estimatedMinutes: Number((estimatedSeconds / 60).toFixed(1)),
+                    estimatedSizeMb: Number((estimatedSeconds * 64000 / 8 / 1024 / 1024).toFixed(2))
+                });
+                delete summary.byRole;
+                delete summary.byChannel;
+                payload.summary = summary;
+
+                const fileHandle = await directoryHandle.getFileHandle('tasks.json', { create: true });
+                const writable = await fileHandle.createWritable();
+                await writable.write(`${JSON.stringify(payload, null, 2)}\n`);
+                await writable.close();
+                return {
+                    addedCount,
+                    taskCount: mergedTasks.length
+                };
             },
 
             downloadPreparedTtsTasks() {
@@ -6499,54 +6853,58 @@
                 const file = event.target.files && event.target.files[0];
                 if (!file) return;
                 try {
-                    if (this.ttsScanning) {
-                        throw new Error('正在扫描 TTS 任务，请等待扫描完成后再导入语音清单。');
-                    }
-                    const parsed = JSON.parse(await file.text());
-                    if (!parsed || typeof parsed !== 'object' || !parsed.entries) {
-                        throw new Error('清单格式无效：缺少 entries。');
-                    }
-                    const entries = Array.isArray(parsed.entries)
-                        ? Object.fromEntries(parsed.entries.filter(entry => entry && entry.hash).map(entry => [entry.hash, entry]))
-                        : parsed.entries;
-                    if (typeof entries !== 'object' || Array.isArray(entries)) {
-                        throw new Error('清单中的 entries 必须是哈希映射或条目数组。');
-                    }
-                    const previousTtsSettings = new Map(this.logs.map(message => [
-                        message,
-                        {
-                            hash: message.ttsHash,
-                            audioUrl: message.ttsAudioUrl,
-                            voiceName: message.ttsVoiceName,
-                            charCount: message.ttsCharCount
-                        }
-                    ]));
-                    this.ttsManifest = {
-                        entries,
-                        usage: parsed.usage && typeof parsed.usage === 'object' ? parsed.usage : {}
-                    };
-                    await this.scanTtsMessages();
-                    if (this.ttsStatus.startsWith('扫描失败：')) return;
-
-                    const updatedMessageCount = this.logs.reduce((count, message) => {
-                        const previous = previousTtsSettings.get(message);
-                        const hasAudioUrl = typeof message.ttsAudioUrl === 'string'
-                            && message.ttsAudioUrl.trim().length > 0;
-                        if (!previous || !hasAudioUrl) return count;
-
-                        const settingsChanged = previous.hash !== message.ttsHash
-                            || previous.audioUrl !== message.ttsAudioUrl
-                            || previous.voiceName !== message.ttsVoiceName
-                            || previous.charCount !== message.ttsCharCount;
-                        return count + Number(settingsChanged);
-                    }, 0);
-                    this.ttsStatus = `已导入 ${Object.keys(entries).length} 条语音清单；本次更新了 ${updatedMessageCount} 条消息的语音设置。`;
+                    await this.processTtsManifestFile(file);
                 } catch (error) {
                     console.error('导入 TTS 语音清单失败:', error);
                     this.ttsStatus = `导入语音清单失败：${error.message}`;
                 } finally {
                     event.target.value = '';
                 }
+            },
+
+            async processTtsManifestFile(file) {
+                if (this.ttsScanning) {
+                    throw new Error('正在扫描 TTS 任务，请等待扫描完成后再导入语音清单。');
+                }
+                const parsed = JSON.parse(await file.text());
+                if (!parsed || typeof parsed !== 'object' || !parsed.entries) {
+                    throw new Error('清单格式无效：缺少 entries。');
+                }
+                const entries = Array.isArray(parsed.entries)
+                    ? Object.fromEntries(parsed.entries.filter(entry => entry && entry.hash).map(entry => [entry.hash, entry]))
+                    : parsed.entries;
+                if (typeof entries !== 'object' || Array.isArray(entries)) {
+                    throw new Error('清单中的 entries 必须是哈希映射或条目数组。');
+                }
+                const previousTtsSettings = new Map(this.logs.map(message => [
+                    message,
+                    {
+                        hash: message.ttsHash,
+                        audioUrl: message.ttsAudioUrl,
+                        voiceName: message.ttsVoiceName,
+                        charCount: message.ttsCharCount
+                    }
+                ]));
+                this.ttsManifest = {
+                    entries,
+                    usage: parsed.usage && typeof parsed.usage === 'object' ? parsed.usage : {}
+                };
+                await this.scanTtsMessages();
+                if (this.ttsStatus.startsWith('扫描失败：')) return;
+
+                const updatedMessageCount = this.logs.reduce((count, message) => {
+                    const previous = previousTtsSettings.get(message);
+                    const hasAudioUrl = typeof message.ttsAudioUrl === 'string'
+                        && message.ttsAudioUrl.trim().length > 0;
+                    if (!previous || !hasAudioUrl) return count;
+
+                    const settingsChanged = previous.hash !== message.ttsHash
+                        || previous.audioUrl !== message.ttsAudioUrl
+                        || previous.voiceName !== message.ttsVoiceName
+                        || previous.charCount !== message.ttsCharCount;
+                    return count + Number(settingsChanged);
+                }, 0);
+                this.ttsStatus = `已导入 ${Object.keys(entries).length} 条语音清单；本次更新了 ${updatedMessageCount} 条消息的语音设置。`;
             },
 
             searchMessages() {
