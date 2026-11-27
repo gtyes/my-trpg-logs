@@ -3489,6 +3489,9 @@
                         </div>
                         <div class="tts-runner-actions">
                             <button type="button" class="secondary" @click="saveTtsR2Config">保存 R2 设置</button>
+                            <button type="button" class="secondary" @click="authorizeTtsOutputDirectory">
+                                选择/授权任务文件夹
+                            </button>
                             <button type="button" class="secondary" @click="openTtsManifestImport"
                                 title="首次选择 .tts-output 文件夹，之后直接导入其中的 manifest.json">
                                 导入语音清单
@@ -6086,6 +6089,15 @@
                 this.ttsGenerationStatus = '正在连接本机生成服务…';
                 this.ttsGenerationOutput = '';
                 try {
+                    const healthResponse = await fetch('/api/health', { cache: 'no-store' });
+                    if (healthResponse.status === 404) {
+                        throw new Error('当前网页地址没有本机 TTS 服务接口（/api/health 返回 404）。请在仓库根目录运行 python tools\\tts\\local_server.py，并打开 PowerShell 打印的完整地址；不要用 VS Code Live Server 或其他静态服务器地址。');
+                    }
+                    const health = await this.readTtsServiceResponse(healthResponse);
+                    if (!healthResponse.ok || health.ok !== true) {
+                        throw new Error(health.error || `本机服务健康检查失败（HTTP ${healthResponse.status}）。`);
+                    }
+
                     const response = await fetch('/api/tts/generate', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -6099,7 +6111,7 @@
                             r2PublicBaseUrl: this.ttsR2Config.publicBaseUrl
                         })
                     });
-                    const result = await response.json();
+                    const result = await this.readTtsServiceResponse(response);
                     if (!response.ok && !(response.status === 409 && result.jobId)) {
                         throw new Error(result.error || `本机服务返回 HTTP ${response.status}`);
                     }
@@ -6110,10 +6122,31 @@
                     await this.pollTtsGeneration(result.jobId);
                 } catch (error) {
                     console.error('启动 TTS 生成失败:', error);
-                    this.ttsGenerationStatus = `生成失败：${error.message}。确认本地服务仍在运行，并检查连接设置。`;
+                    const message = error instanceof TypeError
+                        ? '无法连接本机服务。请在仓库根目录运行 python tools\\tts\\local_server.py，并保持 PowerShell 窗口打开。'
+                        : error.message;
+                    this.ttsGenerationStatus = `生成失败：${message} 请检查连接设置。`;
                 } finally {
                     this.ttsGenerationRunning = false;
                 }
+            },
+
+            async readTtsServiceResponse(response) {
+                const body = await response.text();
+                if (!body.trim()) {
+                    throw new Error(`本机服务返回空响应（HTTP ${response.status}）。请确认服务仍在运行。`);
+                }
+
+                let result;
+                try {
+                    result = JSON.parse(body);
+                } catch {
+                    throw new Error(`本机服务返回的内容不是有效 JSON（HTTP ${response.status}）。`);
+                }
+                if (!result || typeof result !== 'object' || Array.isArray(result)) {
+                    throw new Error(`本机服务返回了无效响应（HTTP ${response.status}）。`);
+                }
+                return result;
             },
 
             async pollTtsGeneration(jobId) {
@@ -6121,7 +6154,7 @@
                     const response = await fetch(`/api/tts/jobs/${encodeURIComponent(jobId)}`, {
                         cache: 'no-store'
                     });
-                    const result = await response.json();
+                    const result = await this.readTtsServiceResponse(response);
                     if (!response.ok) {
                         throw new Error(result.error || `读取生成状态失败（HTTP ${response.status}）。`);
                     }
@@ -6802,19 +6835,8 @@
                     return;
                 }
 
-                let directoryAccessPromise = null;
-                let directoryAccessUnavailable = false;
-                if (typeof window.showDirectoryPicker === 'function') {
-                    if (this.ttsManifestDirectoryReady) {
-                        directoryAccessPromise = this.prepareTtsOutputDirectoryForWrite()
-                            .then(directoryHandle => ({ directoryHandle, error: null }))
-                            .catch(error => ({ directoryHandle: null, error }));
-                    } else {
-                        directoryAccessUnavailable = true;
-                    }
-                }
-
                 this.syncTtsRoleConfigurations();
+                this.ttsStatus = '正在保存日志修改…';
                 const beforeScanSave = await this.saveChanges({ silent: true });
                 if (beforeScanSave.status !== 'saved' && beforeScanSave.status !== 'downloaded') {
                     this.ttsStatus = beforeScanSave.status === 'cancelled'
@@ -6823,6 +6845,7 @@
                     return;
                 }
 
+                this.ttsStatus = '日志已保存，正在扫描语音任务…';
                 await this.scanTtsMessages();
                 if (!this.ttsScanSummary) return;
 
@@ -6856,68 +6879,85 @@
                 this.ttsExportPayload = payload;
                 this.ttsExportFileName = `trpg-tts-tasks-${new Date().toISOString().slice(0, 10)}.json`;
 
-                if (directoryAccessPromise) {
-                    const { directoryHandle, error } = await directoryAccessPromise;
-                    if (directoryHandle) {
-                        try {
-                            const result = await this.writeTtsTasksToDirectory(directoryHandle, payload);
-                            const persistenceWarning = this.ttsManifestDirectoryPersistenceWarning
-                                ? ` ${this.ttsManifestDirectoryPersistenceWarning}`
-                                : '';
-                            this.ttsStatus = `已将 ${result.addedCount} 个新任务合并到 tasks.json；当前保留 ${result.taskCount} 个未完成任务。${saveSummary}可用“下载任务清单”另存本次扫描结果。${persistenceWarning}`;
-                            return;
-                        } catch (writeError) {
-                            console.error('自动更新 TTS 任务清单失败:', writeError);
-                            this.downloadTtsJson(payload, this.ttsExportFileName);
-                            this.ttsStatus = `自动更新 tasks.json 失败：${writeError.message}。已下载本次任务清单，原文件未被主动覆盖。${saveSummary}`;
-                            return;
+                let directoryHandle = null;
+                let directoryPermissionError = '';
+                if (this.ttsManifestDirectoryHandle && this.ttsManifestDirectoryReady) {
+                    try {
+                        const permission = await this.ttsManifestDirectoryHandle.queryPermission({ mode: 'readwrite' });
+                        if (permission === 'granted') {
+                            directoryHandle = this.ttsManifestDirectoryHandle;
+                        } else {
+                            directoryPermissionError = '任务文件夹尚未获得读写授权。';
                         }
+                    } catch (error) {
+                        directoryPermissionError = error.message;
+                        console.error('检查 TTS 输出目录权限失败:', error);
                     }
-                    if (error) {
-                        console.error('获取 TTS 输出目录写入权限失败:', error);
+                }
+
+                if (directoryHandle) {
+                    try {
+                        const result = await this.writeTtsTasksToDirectory(directoryHandle, payload);
+                        const persistenceWarning = this.ttsManifestDirectoryPersistenceWarning
+                            ? ` ${this.ttsManifestDirectoryPersistenceWarning}`
+                            : '';
+                        this.ttsStatus = `任务清单更新成功：新增 ${result.addedCount} 个任务，当前共 ${result.taskCount} 个未完成任务。${saveSummary}可用“下载任务清单”另存本次扫描结果。${persistenceWarning}`;
+                        return;
+                    } catch (writeError) {
+                        console.error('自动更新 TTS 任务清单失败:', writeError);
+                        this.downloadTtsJson(payload, this.ttsExportFileName);
+                        this.ttsStatus = `更新 tasks.json 失败：${writeError.message}。已下载本次任务清单，请确认文件夹权限或文件格式。${saveSummary}`;
+                        return;
                     }
                 }
 
                 this.downloadTtsJson(this.ttsExportPayload, this.ttsExportFileName);
-                const fallbackReason = directoryAccessUnavailable
-                    ? '目录授权尚未准备好，'
-                    : directoryAccessPromise
-                        ? '无法写入已授权目录，'
-                        : typeof window.showDirectoryPicker === 'function'
-                            ? '未能取得目录授权，'
-                            : '当前浏览器不支持直接写入本地文件，';
-                const fallbackNextStep = typeof window.showDirectoryPicker === 'function'
-                    ? '可再次点击“导出并更新任务清单”重试自动写入。'
-                    : '请使用下载文件和任务导入脚本更新 tasks.json。';
-                this.ttsStatus = `${fallbackReason}已下载本次 ${this.ttsTasks.length} 个任务；${fallbackNextStep}任务文件不包含 API Key。${saveSummary}`;
+                const fallbackReason = typeof window.showDirectoryPicker !== 'function'
+                    ? '当前浏览器不支持直接写入本地文件。'
+                    : directoryPermissionError || '尚未选择并授权任务文件夹。';
+                this.ttsStatus = `${fallbackReason}本次 ${this.ttsTasks.length} 个任务已下载，但没有写入 tasks.json。请在左栏底部选择/授权任务文件夹后重试。${saveSummary}`;
             },
 
-            async prepareTtsOutputDirectoryForWrite() {
+            async authorizeTtsOutputDirectory() {
+                if (typeof window.showDirectoryPicker !== 'function') {
+                    this.ttsStatus = '当前浏览器不支持直接写入文件夹，请使用下载任务清单和导入脚本。';
+                    return;
+                }
                 if (!this.ttsManifestDirectoryReady) {
-                    throw new Error('正在读取已保存的输出目录授权，请稍后再试。');
+                    this.ttsStatus = '正在读取已保存的文件夹授权，请稍后再试。';
+                    return;
                 }
 
-                let directoryHandle = this.ttsManifestDirectoryHandle;
-                if (!directoryHandle) {
-                    directoryHandle = await window.showDirectoryPicker({
-                        id: 'trpg-tts-output',
-                        mode: 'readwrite'
-                    });
-                    this.ttsManifestDirectoryHandle = directoryHandle;
-                    try {
-                        await this.saveTtsManifestDirectoryHandle(directoryHandle);
-                        this.ttsManifestDirectoryPersistenceWarning = '';
-                    } catch (error) {
-                        console.error('保存 TTS 输出目录授权失败:', error);
-                        this.ttsManifestDirectoryPersistenceWarning = '浏览器未能记住输出目录，下次需要重新选择文件夹。';
+                try {
+                    let directoryHandle = this.ttsManifestDirectoryHandle;
+                    if (directoryHandle) {
+                        const permission = await directoryHandle.requestPermission({ mode: 'readwrite' });
+                        if (permission !== 'granted') {
+                            throw new Error('未获得文件夹读写权限。');
+                        }
+                    } else {
+                        directoryHandle = await window.showDirectoryPicker({
+                            id: 'trpg-tts-output',
+                            mode: 'readwrite'
+                        });
+                        this.ttsManifestDirectoryHandle = directoryHandle;
+                        try {
+                            await this.saveTtsManifestDirectoryHandle(directoryHandle);
+                            this.ttsManifestDirectoryPersistenceWarning = '';
+                        } catch (error) {
+                            console.error('保存 TTS 输出目录授权失败:', error);
+                            this.ttsManifestDirectoryPersistenceWarning = '浏览器无法记住该目录，下次需要重新授权。';
+                        }
                     }
-                } else {
-                    const permission = await directoryHandle.requestPermission({ mode: 'readwrite' });
-                    if (permission !== 'granted') {
-                        throw new Error('没有获得 .tts-output 文件夹的读写权限。');
+                    this.ttsStatus = `已授权“${directoryHandle.name}”读写。请确认这是仓库的 .tts-output 文件夹；之后导出会显示写入结果。${this.ttsManifestDirectoryPersistenceWarning}`;
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        this.ttsStatus = '已取消选择任务文件夹。';
+                        return;
                     }
+                    console.error('授权 TTS 输出目录失败:', error);
+                    this.ttsStatus = `授权任务文件夹失败：${error.message}`;
                 }
-                return directoryHandle;
             },
 
             validateTtsTaskPayload(payload) {
