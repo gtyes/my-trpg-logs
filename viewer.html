@@ -818,6 +818,80 @@
             color: rgba(255, 255, 255, 0.45);
         }
 
+        /* ========== 对话主题皮肤 ========== */
+        .vn-theme-select {
+            padding: 5px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.35);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .vn-theme-select option {
+            background: #1a1a20;
+            color: #e8e8e8;
+        }
+
+        /* 主题 C · 黄衣剧院（黄衣之王） */
+        .vn-overlay.vn-theme-theater .vn-dialog {
+            border-color: rgba(201, 162, 39, 0.55);
+            border-radius: 8px;
+            box-shadow:
+                0 12px 44px rgba(0, 0, 0, 0.6),
+                inset 0 0 0 1px rgba(201, 162, 39, 0.10);
+        }
+
+        .vn-overlay.vn-theme-theater .vn-dialog::before {
+            background-color: rgba(18, 15, 22, 0.90);
+        }
+
+        .vn-overlay.vn-theme-theater .vn-dialog::after {
+            content: '';
+            position: absolute;
+            left: 24px;
+            right: 24px;
+            bottom: 3px;
+            height: 5px;
+            background-image: radial-gradient(circle, rgba(201, 162, 39, 0.75) 1.5px, transparent 2.2px);
+            background-size: 15px 5px;
+            background-repeat: repeat-x;
+            background-position: center bottom;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .vn-overlay.vn-theme-theater .vn-name {
+            color: #c9a227 !important;
+            font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .vn-overlay.vn-theme-theater .vn-text {
+            color: #e8e0d0;
+            font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+            letter-spacing: 0.02em;
+        }
+
+        .vn-overlay.vn-theme-theater .vn-extend {
+            color: #c9a227;
+        }
+
+        .vn-overlay.vn-theme-theater .vn-dialog.system {
+            color: #d8cfc0;
+            border-color: rgba(201, 162, 39, 0.35);
+        }
+
+        .vn-overlay.vn-theme-theater .vn-hint {
+            color: rgba(201, 162, 39, 0.45);
+        }
+
         /* ========== 控制条：对话框右下方、半透明 ========== */
         .vn-topbar {
             position: absolute;
@@ -1938,6 +2012,17 @@
                         onclick="event.stopPropagation(); toggleVnAuto()">自动：关</button>
                 <button class="vn-btn" id="vnMuteBtn"
                         onclick="event.stopPropagation(); toggleVnMute()">静音：关</button>
+                <select class="vn-theme-select" id="vnThemeSelect"
+                        title="对话主题"
+                        onclick="event.stopPropagation()"
+                        onchange="event.stopPropagation(); changeVnTheme(this.value)">
+                    <option value="default">默认</option>
+                    <option value="archive">A·档案终端</option>
+                    <option value="manuscript">B·古卷手稿</option>
+                    <option value="theater">C·黄衣剧院</option>
+                    <option value="glitch">D·异化故障</option>
+                    <option value="newspaper">E·剪报电报</option>
+                </select>
                 <button class="vn-btn" onclick="event.stopPropagation(); closeVnMode()">退出</button>
 
                 <div class="vn-chapter-menu" id="vnChapterMenu"></div>
@@ -2019,6 +2104,7 @@
         let vnIndex = 0;
         let vnAuto = false;
         let vnHideChat = false;   // 对话模式：屏蔽所有闲聊频道
+        let vnTheme = 'default';  // 对话主题（每个 log 各自记住）
         let vnTyping = false;
         let vnTypeTimer = null;
         let vnAutoTimer = null;
@@ -4426,7 +4512,44 @@
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('log') || 'data/log1.json';
         }
-        
+
+        // ===== 对话主题（每个 log 各自记住，默认沿用当前样式） =====
+        const VN_THEME_STORAGE_KEY = 'vnDialogTheme:';
+
+        function getVnThemeStorageKey() {
+            return VN_THEME_STORAGE_KEY + getLogFileFromUrl();
+        }
+
+        function applyVnTheme(theme) {
+            vnTheme = theme || 'default';
+            const overlay = document.getElementById('vnOverlay');
+            if (overlay) {
+                const themes = ['default', 'archive', 'manuscript', 'theater', 'glitch', 'newspaper'];
+                themes.forEach(name => overlay.classList.toggle('vn-theme-' + name, name === vnTheme));
+            }
+            const select = document.getElementById('vnThemeSelect');
+            if (select) select.value = vnTheme;
+        }
+
+        function changeVnTheme(theme) {
+            applyVnTheme(theme);
+            try {
+                localStorage.setItem(getVnThemeStorageKey(), theme || 'default');
+            } catch (error) {
+                console.warn('保存对话主题失败:', error);
+            }
+        }
+
+        function initVnTheme() {
+            let saved = 'default';
+            try {
+                saved = localStorage.getItem(getVnThemeStorageKey()) || 'default';
+            } catch (error) {
+                // 忽略，使用默认
+            }
+            applyVnTheme(saved);
+        }
+
         // 加载日志数据
         async function loadLogData() {
             try {
@@ -4440,7 +4563,8 @@
                 
                 logData = await response.json();
                 console.log('日志数据加载成功，消息数:', (logData.logs || []).length);
-                
+                initVnTheme();
+
                 // 设置标题
                 document.title = logData.title || logData.websiteSettings?.title || '';
 
