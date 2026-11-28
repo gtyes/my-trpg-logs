@@ -2727,6 +2727,23 @@
                                     </div>
                                 </div>
 
+                                <!-- 对话模式对话框风格 -->
+                                <div class="format-setting-group">
+                                    <div class="format-setting-title">对话模式对话框风格</div>
+                                    <div class="default-setting-group">
+                                        <span class="default-setting-label">风格</span>
+                                        <select v-model="websiteSettings.vnDialogTheme" style="min-width: 160px;">
+                                            <option value="default">默认</option>
+                                            <option value="archive">A · 档案终端</option>
+                                            <option value="manuscript">B · 古卷手稿</option>
+                                            <option value="theater">C · 黄衣剧院</option>
+                                            <option value="glitch">D · 异化故障</option>
+                                            <option value="newspaper">E · 剪报电报</option>
+                                        </select>
+                                        <span style="font-size: 12px;">(会随 JSON 导出，查看器据此渲染对话框)</span>
+                                    </div>
+                                </div>
+
                                 <button @click="saveWebsiteSettings" class="success">保存网站设置</button>
                             </div>
                             <!-- 全局右侧悬浮图片 -->
@@ -4208,7 +4225,8 @@
                         lightColor: '#8b0000',
                         darkColor: '#660000'
                     },
-                    rightFloatingImage: ''
+                    rightFloatingImage: '',
+                    vnDialogTheme: 'default'
                 },
 
 
@@ -8789,7 +8807,8 @@ autoImportCharacterColors() {
                             ],
                             leftSidebar: { useImage: false, image: '', color: '#000000', opacity: 0.6 },
                             theme: { lightColor: '#8b0000', darkColor: '#660000' },
-                            rightFloatingImage: ''
+                            rightFloatingImage: '',
+                            vnDialogTheme: 'default'
                         };
 
                         // 合并设置，确保所有字段都存在
@@ -8806,7 +8825,8 @@ autoImportCharacterColors() {
                                 lightColor: parsedData.websiteSettings.theme?.lightColor || defaultWebsiteSettings.theme.lightColor,
                                 darkColor: parsedData.websiteSettings.theme?.darkColor || defaultWebsiteSettings.theme.darkColor
                             },
-                            rightFloatingImage: parsedData.websiteSettings.rightFloatingImage || defaultWebsiteSettings.rightFloatingImage
+                            rightFloatingImage: parsedData.websiteSettings.rightFloatingImage || defaultWebsiteSettings.rightFloatingImage,
+                            vnDialogTheme: parsedData.websiteSettings.vnDialogTheme || defaultWebsiteSettings.vnDialogTheme
                         };
 
                         // 确保 titleColors 与标题长度匹配
@@ -10281,7 +10301,8 @@ autoImportCharacterColors() {
                             lightColor: this.websiteSettings.theme.lightColor,
                             darkColor: this.websiteSettings.theme.darkColor
                         },
-                        rightFloatingImage: this.websiteSettings.rightFloatingImage
+                        rightFloatingImage: this.websiteSettings.rightFloatingImage,
+                        vnDialogTheme: this.websiteSettings.vnDialogTheme || 'default'
                     },
 
                     // 导出章节数据（包含图片URL）
