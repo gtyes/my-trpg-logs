@@ -874,6 +874,184 @@
             color: rgba(201, 162, 39, 0.45);
         }
 
+        /* 主题 A · 档案终端（数据档案 / SCP） */
+        .vn-overlay.vn-theme-archive .vn-dialog {
+            border-color: rgba(150, 180, 170, 0.25);
+            border-radius: 2px;
+            box-shadow:
+                0 10px 34px rgba(0, 0, 0, 0.5),
+                inset 3px 0 0 rgba(63, 224, 197, 0.55);
+        }
+
+        .vn-overlay.vn-theme-archive .vn-dialog::before {
+            background-color: rgba(10, 14, 13, 0.88);
+        }
+
+        .vn-overlay.vn-theme-archive .vn-name {
+            color: #9fd8c9 !important;
+            font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-shadow: none;
+        }
+
+        .vn-overlay.vn-theme-archive .vn-name::before {
+            content: '> ';
+            color: rgba(63, 224, 197, 0.65);
+        }
+
+        .vn-overlay.vn-theme-archive .vn-text {
+            color: #c4d4cd;
+            font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+            letter-spacing: 0.01em;
+        }
+
+        .vn-overlay.vn-theme-archive .vn-extend {
+            color: #f1c40f;
+        }
+
+        .vn-overlay.vn-theme-archive .vn-dialog.system {
+            color: #b8c4b0;
+            border-color: rgba(150, 180, 170, 0.2);
+        }
+
+        .vn-overlay.vn-theme-archive .vn-hint {
+            color: rgba(159, 216, 201, 0.5);
+        }
+
+        /* 主题 B · 古卷手稿（克苏鲁 / 密教） */
+        .vn-overlay.vn-theme-manuscript .vn-dialog {
+            border-color: rgba(107, 58, 42, 0.4);
+            border-radius: 3px 12px 3px 14px;
+            box-shadow:
+                0 8px 26px rgba(0, 0, 0, 0.45),
+                inset 0 0 0 1px rgba(59, 42, 26, 0.12);
+        }
+
+        .vn-overlay.vn-theme-manuscript .vn-dialog::before {
+            background-color: rgba(230, 211, 163, 0.92);
+            background-image: radial-gradient(rgba(120, 90, 50, 0.10) 1px, transparent 1px);
+            background-size: 5px 5px;
+        }
+
+        .vn-overlay.vn-theme-manuscript .vn-name {
+            color: #6b3a2a !important;
+            font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-shadow: none;
+        }
+
+        .vn-overlay.vn-theme-manuscript .vn-text {
+            color: #3b2a1a;
+            font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+            letter-spacing: 0.02em;
+        }
+
+        .vn-overlay.vn-theme-manuscript .vn-extend {
+            color: #6b3a2a;
+        }
+
+        .vn-overlay.vn-theme-manuscript .vn-dialog.system {
+            color: #4a3a28;
+            border-color: rgba(107, 58, 42, 0.3);
+        }
+
+        .vn-overlay.vn-theme-manuscript .vn-hint {
+            color: rgba(107, 58, 42, 0.55);
+        }
+
+        /* 主题 D · 异化故障（怪诞 / 诡异） */
+        .vn-overlay.vn-theme-glitch .vn-dialog {
+            border-color: rgba(255, 45, 117, 0.25);
+            border-radius: 2px;
+            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
+        }
+
+        .vn-overlay.vn-theme-glitch .vn-dialog::before {
+            background-color: rgba(12, 15, 13, 0.88);
+        }
+
+        .vn-overlay.vn-theme-glitch .vn-dialog::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.035) 0px,
+                rgba(255, 255, 255, 0.035) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+        }
+
+        .vn-overlay.vn-theme-glitch .vn-name {
+            color: #b8c4b0 !important;
+            font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+            letter-spacing: 0.05em;
+            text-shadow: 1px 0 0 rgba(255, 45, 117, 0.7), -1px 0 0 rgba(63, 224, 197, 0.7);
+        }
+
+        .vn-overlay.vn-theme-glitch .vn-text {
+            color: #b8c4b0;
+            font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+            text-shadow: 1px 0 0 rgba(255, 45, 117, 0.25), -1px 0 0 rgba(63, 224, 197, 0.2);
+        }
+
+        .vn-overlay.vn-theme-glitch .vn-extend {
+            color: #ff2d75;
+        }
+
+        .vn-overlay.vn-theme-glitch .vn-dialog.system {
+            color: #9aa89a;
+            border-color: rgba(255, 45, 117, 0.2);
+        }
+
+        .vn-overlay.vn-theme-glitch .vn-hint {
+            color: rgba(255, 45, 117, 0.5);
+        }
+
+        /* 主题 E · 剪报电报（记者 / 都市怪谈） */
+        .vn-overlay.vn-theme-newspaper .vn-dialog {
+            border-color: rgba(20, 20, 20, 0.55);
+            border-radius: 3px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .vn-overlay.vn-theme-newspaper .vn-dialog::before {
+            background-color: rgba(236, 231, 220, 0.95);
+        }
+
+        .vn-overlay.vn-theme-newspaper .vn-name {
+            color: #1a1a1a !important;
+            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-shadow: none;
+            border-bottom: 1px solid rgba(20, 20, 20, 0.3);
+            padding-bottom: 2px;
+        }
+
+        .vn-overlay.vn-theme-newspaper .vn-text {
+            color: #1a1a1a;
+            font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+        }
+
+        .vn-overlay.vn-theme-newspaper .vn-extend {
+            color: #8c6d46;
+        }
+
+        .vn-overlay.vn-theme-newspaper .vn-dialog.system {
+            color: #333333;
+            border-color: rgba(20, 20, 20, 0.35);
+        }
+
+        .vn-overlay.vn-theme-newspaper .vn-hint {
+            color: rgba(20, 20, 20, 0.4);
+        }
+
         /* ========== 控制条：对话框右下方、半透明 ========== */
         .vn-topbar {
             position: absolute;

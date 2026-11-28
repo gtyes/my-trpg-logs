@@ -1685,6 +1685,118 @@
             }
 
             .website-settings-panel.show { display: block; }
+
+            /* 对话模式对话框风格选择器（带预览图） */
+            .vn-dialog-theme-picker {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+                gap: 12px;
+                margin-top: 6px;
+            }
+
+            .vn-dialog-theme-card {
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 6px;
+                cursor: pointer;
+                background: #fafafa;
+                transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+            }
+
+            .vn-dialog-theme-card:hover {
+                border-color: #b0b0b0;
+                transform: translateY(-1px);
+            }
+
+            .vn-dialog-theme-card.active {
+                border-color: #8b0000;
+                background: rgba(139, 0, 0, 0.05);
+            }
+
+            .vn-dialog-theme-preview {
+                position: relative;
+                height: 76px;
+                padding: 8px 10px;
+                border-radius: 6px;
+                overflow: hidden;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+            }
+
+            .vn-preview-name {
+                font-size: 11px;
+                font-weight: bold;
+                margin-bottom: 3px;
+                line-height: 1.3;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .vn-preview-text {
+                font-size: 10px;
+                line-height: 1.45;
+                flex: 1;
+                overflow: hidden;
+                word-break: break-all;
+            }
+
+            .vn-dialog-theme-label {
+                font-size: 12px;
+                margin-top: 5px;
+                text-align: center;
+                color: #333;
+                font-weight: 600;
+            }
+
+            .vn-preview-default {
+                background: rgba(0, 0, 0, 0.8);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+            }
+            .vn-preview-default .vn-preview-name { color: #fff; }
+            .vn-preview-default .vn-preview-text { color: #fff; }
+
+            .vn-preview-archive {
+                background: rgba(10, 14, 13, 0.9);
+                border: 1px solid rgba(150, 180, 170, 0.25);
+                border-radius: 2px;
+                box-shadow: inset 3px 0 0 rgba(63, 224, 197, 0.55);
+            }
+            .vn-preview-archive .vn-preview-name { color: #9fd8c9; font-family: 'Consolas', monospace; }
+            .vn-preview-archive .vn-preview-text { color: #c4d4cd; font-family: 'Consolas', monospace; }
+
+            .vn-preview-manuscript {
+                background: #e6d3a3;
+                border: 1px solid rgba(107, 58, 42, 0.4);
+                border-radius: 3px 12px 3px 14px;
+            }
+            .vn-preview-manuscript .vn-preview-name { color: #6b3a2a; font-family: 'Noto Serif SC', 'SimSun', serif; }
+            .vn-preview-manuscript .vn-preview-text { color: #3b2a1a; font-family: 'Noto Serif SC', 'SimSun', serif; }
+
+            .vn-preview-theater {
+                background: rgba(18, 15, 22, 0.9);
+                border: 1px solid rgba(201, 162, 39, 0.55);
+            }
+            .vn-preview-theater .vn-preview-name { color: #c9a227; font-family: 'Noto Serif SC', 'SimSun', serif; letter-spacing: 0.08em; }
+            .vn-preview-theater .vn-preview-text { color: #e8e0d0; font-family: 'Noto Serif SC', 'SimSun', serif; }
+
+            .vn-preview-glitch {
+                background: rgba(12, 15, 13, 0.9);
+                border: 1px solid rgba(255, 45, 117, 0.25);
+                border-radius: 2px;
+            }
+            .vn-preview-glitch .vn-preview-name { color: #b8c4b0; font-family: 'Consolas', monospace; text-shadow: 1px 0 0 rgba(255, 45, 117, 0.7), -1px 0 0 rgba(63, 224, 197, 0.7); }
+            .vn-preview-glitch .vn-preview-text { color: #b8c4b0; font-family: 'Consolas', monospace; }
+
+            .vn-preview-newspaper {
+                background: #ece7dc;
+                border: 1px solid rgba(20, 20, 20, 0.55);
+                border-radius: 3px;
+            }
+            .vn-preview-newspaper .vn-preview-name { color: #1a1a1a; font-family: 'Microsoft YaHei', sans-serif; border-bottom: 1px solid rgba(20, 20, 20, 0.3); padding-bottom: 2px; }
+            .vn-preview-newspaper .vn-preview-text { color: #1a1a1a; font-family: 'Noto Serif SC', 'SimSun', serif; }
             .jump-highlight {
                 outline: 2px solid #f1c40f;
                 outline-offset: 2px;
@@ -2730,17 +2842,20 @@
                                 <!-- 对话模式对话框风格 -->
                                 <div class="format-setting-group">
                                     <div class="format-setting-title">对话模式对话框风格</div>
-                                    <div class="default-setting-group">
-                                        <span class="default-setting-label">风格</span>
-                                        <select v-model="websiteSettings.vnDialogTheme" style="min-width: 160px;">
-                                            <option value="default">默认</option>
-                                            <option value="archive">A · 档案终端</option>
-                                            <option value="manuscript">B · 古卷手稿</option>
-                                            <option value="theater">C · 黄衣剧院</option>
-                                            <option value="glitch">D · 异化故障</option>
-                                            <option value="newspaper">E · 剪报电报</option>
-                                        </select>
-                                        <span style="font-size: 12px;">(会随 JSON 导出，查看器据此渲染对话框)</span>
+                                    <div style="font-size: 12px; color: #666; margin-bottom: 10px;">
+                                        选择后随 JSON 导出，查看器据此渲染对话模式的对话框。
+                                    </div>
+                                    <div class="vn-dialog-theme-picker">
+                                        <div v-for="option in vnDialogThemeOptions" :key="option.value"
+                                            class="vn-dialog-theme-card"
+                                            :class="{ active: websiteSettings.vnDialogTheme === option.value }"
+                                            @click="websiteSettings.vnDialogTheme = option.value">
+                                            <div class="vn-dialog-theme-preview" :class="'vn-preview-' + option.value">
+                                                <div class="vn-preview-name">角色名</div>
+                                                <div class="vn-preview-text">这是一段示例对话文本，用于预览对话框风格…</div>
+                                            </div>
+                                            <div class="vn-dialog-theme-label">{{ option.label }}</div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -4229,6 +4344,15 @@
                     vnDialogTheme: 'default'
                 },
 
+                // 对话模式对话框风格选项（带预览）
+                vnDialogThemeOptions: [
+                    { value: 'default', label: '默认' },
+                    { value: 'archive', label: 'A · 档案终端' },
+                    { value: 'manuscript', label: 'B · 古卷手稿' },
+                    { value: 'theater', label: 'C · 黄衣剧院' },
+                    { value: 'glitch', label: 'D · 异化故障' },
+                    { value: 'newspaper', label: 'E · 剪报电报' }
+                ],
 
                 // 默认设置 - 支持图片和透明度
                 defaultChannelRule: {
