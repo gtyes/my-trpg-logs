@@ -592,6 +592,7 @@
             z-index: 2000;
             overflow: hidden;
             background: #111;
+            --vn-dialog-height: 235px;   /* 对话框高度基准，装饰图按其比例定位 */
         }
 
         .vn-overlay.show {
@@ -734,7 +735,7 @@
         .vn-dialog {
             position: relative;
             width: 100%;
-            height: 235px;             /* 原来 160px 的 min-height，改成固定高度 */
+            height: var(--vn-dialog-height);             /* 原来 160px 的 min-height，改成固定高度 */
             padding: 18px 24px 30px;
 
             display: flex;
@@ -821,12 +822,11 @@
         /* 对话框右上角装饰图（透明 PNG，下缘压进对话框上缘一部分） */
         .vn-dialog-ornament {
             position: absolute;
-            bottom: 100%;
+            top: calc(var(--vn-dialog-height) * -0.2);   /* 上缘高出对话框 20% */
+            height: calc(var(--vn-dialog-height) * 0.4);  /* 总高度 = 对话框高度 40% */
+            width: auto;                                   /* 宽度按原比例 */
             right: 12px;
-            transform: translateY(48px);
             z-index: 3;
-            max-width: min(560px, 70vw);
-            max-height: 260px;
             object-fit: contain;
             pointer-events: none;
             display: none;
@@ -1926,8 +1926,11 @@
                 transform: translateX(-50%);
             }
 
+            .vn-overlay {
+                --vn-dialog-height: 34vh;   /* ★ 对话框高度调低 */
+            }
+
             .vn-dialog {
-                height: 34vh;        /* ★ 对话框高度调低 */
                 padding: 8px 14px 16px;
             }
 
