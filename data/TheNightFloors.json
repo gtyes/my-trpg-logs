@@ -6711,7 +6711,7 @@
       "id": "msg-218",
       "time": "2026-06-06T16:23:33.953561Z",
       "name": "掌局者",
-      "text": "你的车在华盛顿广场的停车场停下时，太阳已经快落到楼后面去了。天还亮着，掺了些橘色的暖黄，刚推开车门，那股夏天的热浪立刻涌上来，裹着汽油味和热沥青的味道。",
+      "text": "你的车在华盛顿广场的停车场停下时，太阳已经快落到楼后面去了。天还亮着，掺了些橘色的暖黄，刚推开车门，那股夏天的热浪立刻涌上来，带着些许汽油和热沥青的味道。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -6733,10 +6733,10 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "1786dd48a3a928bd949107a14caffc71fb0c8dbaedc239b50377cb87310a6db6",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/17/1786dd48a3a928bd949107a14caffc71fb0c8dbaedc239b50377cb87310a6db6.mp3",
+      "ttsHash": "00b47e27e04413da7eb73d8b83f24f4f55987595cacf51cf78251c1c0be2c6c1",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/00/00b47e27e04413da7eb73d8b83f24f4f55987595cacf51cf78251c1c0be2c6c1.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 76
+      "ttsCharCount": 77
     },
     {
       "id": "msg-219",
@@ -6773,7 +6773,7 @@
       "id": "msg-220",
       "time": "2026-06-06T16:26:30.719339Z",
       "name": "掌局者",
-      "text": "广场的拱门亮着灯，这里充斥着音乐声、说话声、滑板轮子碾过石板的咔嚓声……全都搅在一起，人太多了，华盛顿广场的傍晚总是如此热闹。不少人在遛狗，情侣们坐在草地上，肩膀挨着肩膀。一个穿轮滑鞋的少年从你面前滑过去。",
+      "text": "你的车在华盛顿广场的停车场停下时，太阳已经快落到楼后面去了。天还亮着，是掺了些橘色的暖黄，刚推开车门，那股夏天的热浪立刻涌上来，带着些许汽油和热沥青的味道。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -6795,10 +6795,10 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "712543a1a608cef2856b23a250e0b36d5e5f10c2c9051cfc22260f6861f1fedc",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/71/712543a1a608cef2856b23a250e0b36d5e5f10c2c9051cfc22260f6861f1fedc.mp3",
+      "ttsHash": "ecf1c146714dd23b1f5cd331ef2dd45b5506c34c5c29d570366c65ba825f9dae",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/ec/ecf1c146714dd23b1f5cd331ef2dd45b5506c34c5c29d570366c65ba825f9dae.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 103
+      "ttsCharCount": 78
     },
     {
       "id": "msg-221",
@@ -10272,7 +10272,7 @@
       "id": "msg-333",
       "time": "2026-06-07T08:03:14.080172Z",
       "name": "掌局者",
-      "text": "天际线上一片浓烈的橙红和紫灰交织在一起，你走进广场的那一刻，声音像潮水一样涌过来，空气里有热狗摊的油烟味，一些人在弹吉他，一些人在笑，这里堪称人山人海——到处是音乐家、小丑、杂技演员和数以百计的游客，还有各式各样的街头表演，噢，傍晚的华盛顿广场。",
+      "text": "天际线上，一片浓烈的橙红和紫灰交织在一起，你走进广场，加入了那些吵嚷着的人群，热狗摊旁，一些人在弹吉他，一些人在跳街舞，这里堪称人山人海——到处是音乐家、小丑、杂技演员和数以百计的游客，还有各式各样的街头表演，噢，傍晚的华盛顿广场。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -10294,10 +10294,10 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "f83b20163873a9f7062830423240c050053e7ff265133936d1d7aefbc81ce796",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/f8/f83b20163873a9f7062830423240c050053e7ff265133936d1d7aefbc81ce796.mp3",
+      "ttsHash": "8fb32e0060da78e764ed57fba9e490a5e9a9f8c29a220c87d5280b9b3649cb19",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/8f/8fb32e0060da78e764ed57fba9e490a5e9a9f8c29a220c87d5280b9b3649cb19.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 123
+      "ttsCharCount": 116
     },
     {
       "id": "msg-334",
@@ -16398,7 +16398,7 @@
       "id": "msg-531",
       "time": "2026-06-07T09:04:01.572901Z",
       "name": "掌局者",
-      "text": "约书亚踩下油门的瞬间车子往前窜了一下，但换挡时机偏早，转速还没拉到最好的位置就切了下一档，车身在换挡间隙顿了一下，像打了个嗝。没关系，万一下一脚更好呢。",
+      "text": "约书亚踩下油门的瞬间车子往前蹭了蹭，但换挡时机偏早，转速还没拉到最好的位置你就着急着切下一档，车身在换挡间隙卡了一下，没关系，万一下一脚更好呢。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -16420,16 +16420,16 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "aa4b36cf3f8fdd98030d0a6038fe5ca60eda62b2cc7bd1664ec5d671799eaeee",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/aa/aa4b36cf3f8fdd98030d0a6038fe5ca60eda62b2cc7bd1664ec5d671799eaeee.mp3",
+      "ttsHash": "f6ccba6de2b6327e2f9bfac1d230e8fad652be9cbd0018cc8a02f0ed389f4bb9",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/f6/f6ccba6de2b6327e2f9bfac1d230e8fad652be9cbd0018cc8a02f0ed389f4bb9.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 76
+      "ttsCharCount": 72
     },
     {
       "id": "msg-532",
       "time": "2026-06-07T09:04:49.337050Z",
       "name": "掌局者",
-      "text": "但当你这么想的时候，赫里斯的车已经从另一条车道滑出去了，切进了约书亚前方的车道。",
+      "text": "但当你这么想的时候，赫里斯的车已经从另一条车道滑出去了，切进了约书亚前方的车道。在约书亚的视角里，他的车像知道自己该往哪走一样，是每次变道都刚好卡在前后两辆车的空隙里，开得飞快，你连换挡的机会都没有。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -16451,47 +16451,16 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "6e2597424c5e65393dec9a2847a7fc8ba5773ca28becf504446d7749e5d8efad",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/6e/6e2597424c5e65393dec9a2847a7fc8ba5773ca28becf504446d7749e5d8efad.mp3",
+      "ttsHash": "3962caaa5adb2d532b4d35eecd089fab0a30a871a717fd145df8eba872ca1e05",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/39/3962caaa5adb2d532b4d35eecd089fab0a30a871a717fd145df8eba872ca1e05.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 40
-    },
-    {
-      "id": "msg-533",
-      "time": "2026-06-07T09:06:37.825431Z",
-      "name": "掌局者",
-      "text": "在约书亚的视角里，他的车像知道自己该往哪走一样，是每次变道都刚好卡在前后两辆车的空隙里，开得飞快，你连换挡的机会都没有。",
-      "color": "#e0e0e0",
-      "channel": "主频道",
-      "icon": null,
-      "to": null,
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "ttsDisabled": false,
-      "ttsHash": "4411ca2332807b92df8e8d7a78f60f5269f9ecf55d7bfa7087d094bab3b750e5",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/44/4411ca2332807b92df8e8d7a78f60f5269f9ecf55d7bfa7087d094bab3b750e5.mp3",
-      "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 60
+      "ttsCharCount": 100
     },
     {
       "id": "msg-534",
       "time": "2026-06-07T09:07:49.114494Z",
       "name": "掌局者",
-      "text": "而在赫里斯的后视镜里，约书亚的车被红灯截在了路口，越来越小，最后缩成一个模糊的点。你全程没超速，也没有急刹，十分钟就到达了纽约市警署旁的停车场，停好车，熄了火，解安全带。而过了十分钟，约书亚的车才从街角拐进来。",
+      "text": "而在赫里斯的后视镜里，约书亚的车被红灯截在了路口，越来越小，最后缩成一个模糊的点。你既没超速也没急刹，十分钟就到达了纽约市警署旁的停车场，停好车，熄了火，解安全带。而过了十分钟，约书亚的车才从街角拐进来。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -16513,10 +16482,10 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "41b756bd7626cf48a8bb968caf8ed689d303a36d8a725e7a135c9aa20c1cce8d",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/41/41b756bd7626cf48a8bb968caf8ed689d303a36d8a725e7a135c9aa20c1cce8d.mp3",
+      "ttsHash": "6e7386bae2a4823d4423549be9a88d7aa265f1c9bee6f40b973c890125bfa4c6",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/6e/6e7386bae2a4823d4423549be9a88d7aa265f1c9bee6f40b973c890125bfa4c6.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 105
+      "ttsCharCount": 102
     },
     {
       "id": "msg-535",
@@ -23710,7 +23679,7 @@
       "id": "msg-767",
       "time": "2026-06-07T10:42:00.082256Z",
       "name": "掌局者",
-      "text": "你们的车在街角停下来，这家露天开放式酒吧占的地皮不大，但塞得挺满。店里的人大多是下班后来喝一杯的那种——西装外套都搭在椅背上。吧台沿着左边那面墙延伸，深色的木头台面倒映着头顶那些倒挂着的酒杯的轮廓，调酒师在吧台后面来回走动。",
+      "text": "你们的车在街角停下来，这家露天开放式酒吧只占了一小块地皮，但塞得挺满。店里的人大多是下班后来喝一杯的那种——西装外套都搭在椅背上。吧台沿着左边那面墙延伸，深色的木头台面倒映着头顶那些倒挂着的酒杯的轮廓，调酒师在吧台后面来回走动。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -23732,10 +23701,10 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "f6b8e183ff3e47d7a6b3b6de434332f8a0da66a93ff33d7fd2da053c0fe44e51",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/f6/f6b8e183ff3e47d7a6b3b6de434332f8a0da66a93ff33d7fd2da053c0fe44e51.mp3",
+      "ttsHash": "a91fe5b2a376b55e83aed6ee1389601dc713de3f9940480b923645f6b027712d",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/a9/a91fe5b2a376b55e83aed6ee1389601dc713de3f9940480b923645f6b027712d.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 112
+      "ttsCharCount": 114
     },
     {
       "id": "msg-768",
@@ -30131,37 +30100,6 @@
       "ttsCharCount": 67
     },
     {
-      "id": "msg-975",
-      "time": "2026-06-10T12:35:26.817592Z",
-      "name": "约书亚·扎卡里，特工约拿",
-      "text": "我不行了真改成GM is typing……",
-      "color": "#7e5bfa",
-      "channel": "闲聊",
-      "icon": "https://storage.ccfolia-cdn.net/users/A9JKBn4GnqSp18gfayhx1yoHQZi2/files/6aad29ce593e1aa37815490583f89dfc5d18d4732e2ecd92d94a3d0abfb8a58a?t=1780401624734",
-      "to": null,
-      "dice": null,
-      "extend": null,
-      "messageImage": null,
-      "isChapter": false,
-      "nameUseImage": false,
-      "nameBackground": null,
-      "nameOpacity": 0.85,
-      "nameImage": "",
-      "nameImageSize": "cover",
-      "nameImageOpacity": 1,
-      "bubbleUseImage": false,
-      "bubbleColor": null,
-      "bubbleOpacity": 0.85,
-      "bubbleImage": "",
-      "bubbleImageSize": "cover",
-      "bubbleImageOpacity": 1,
-      "ttsDisabled": false,
-      "ttsHash": "250ad76ceadcab6015b2aac4d2821fda3f14f4a0f97588940c46304443dd1de8",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/25/250ad76ceadcab6015b2aac4d2821fda3f14f4a0f97588940c46304443dd1de8.mp3",
-      "ttsVoiceName": "cmn-CN-Chirp3-HD-Puck",
-      "ttsCharCount": 21
-    },
-    {
       "id": "msg-976",
       "time": "2026-06-10T12:36:41.151279Z",
       "name": "掌局者",
@@ -33276,7 +33214,7 @@
       "id": "msg-1077",
       "time": "2026-06-10T13:16:03.872394Z",
       "name": "掌局者",
-      "text": "门锁着，没有被撬过的痕迹。门把手上有些黑色的粉末，均匀地覆盖在表面，埃马尔认出这些应该是指纹粉末，说明鉴定科的人来过——理所当然的事。",
+      "text": "门锁着，没有被撬过的痕迹。门把手上洒了些黑色的粉末，埃马尔认出这些应该是指纹粉末，说明鉴定科的人来过——理所当然的事。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -33298,10 +33236,10 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "9454ed2c7f386019bd8b41499316d837c783edf066096436b4e7918556b1f1c6",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/94/9454ed2c7f386019bd8b41499316d837c783edf066096436b4e7918556b1f1c6.mp3",
+      "ttsHash": "b8a9b480803efb7f472c79676e71f768c5164824c63de3f66946e37870026530",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/b8/b8a9b480803efb7f472c79676e71f768c5164824c63de3f66946e37870026530.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 67
+      "ttsCharCount": 59
     },
     {
       "id": "msg-1078",
@@ -33710,7 +33648,7 @@
       "id": "msg-1091",
       "time": "2026-06-10T13:21:52.339647Z",
       "name": "掌局者",
-      "text": "地板是光秃秃的，原本铺在上面的地毯被整块撕走了，只留下边缘处残留的几根毛绒纤维，露出来的油毡表面破破烂烂的，这里没有沙发、桌子、电视……没有任何一个人住了好几年的公寓里应该看到的大件家具，只勉强残留着墙上的一些木架，姑且当作桌子，到处堆满了各种杂物。",
+      "text": "地板光秃秃的，原本铺在上面的地毯应该是被整块撕走了，只留下边缘处残留的一些毛绒纤维，露出来的油毡表面破破烂烂的，这里没有沙发、桌子、电视……没有任何一个人住了好几年的公寓里应该看到的大件家具，只剩些着墙上的一些木架，姑且当作桌子，到处堆满了各种杂物。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -33732,8 +33670,8 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "b522c78ea95cc220484f2a779b6102cda5cb9157e514f368866ba4d9a76fee77",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/b5/b522c78ea95cc220484f2a779b6102cda5cb9157e514f368866ba4d9a76fee77.mp3",
+      "ttsHash": "178d67b367683c12a9a5bbfbe752cba7e66e6c5bfc2901ec0ccff93a1e93373c",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/17/178d67b367683c12a9a5bbfbe752cba7e66e6c5bfc2901ec0ccff93a1e93373c.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
       "ttsCharCount": 125
     },
@@ -40877,7 +40815,7 @@
       "id": "msg-1324",
       "time": "2026-06-11T10:44:42.518415Z",
       "name": "掌局者",
-      "text": "这家塔克小店店内满是煎牛肉和油炸玉米片的味道，你们点了餐，在靠窗的位置坐下，不久后，桌面上便摆上了三个墨西哥卷饼，里面的馅料塞得满满的，鸡肉、生菜丝、番茄丁、酸奶油，还有那种绿色的辣酱。",
+      "text": "走进塔克小店，厨师正在煎牛肉和油炸玉米片，你们点了餐，在靠窗的位置坐下，不久后，桌面上便摆上了三个墨西哥卷饼，里面的馅料塞得满满的，鸡肉、生菜丝、番茄丁、酸奶油，还有绿色的辣酱。",
       "color": "#e0e0e0",
       "channel": "主频道",
       "icon": null,
@@ -40899,10 +40837,10 @@
       "bubbleImageSize": "cover",
       "bubbleImageOpacity": 1,
       "ttsDisabled": false,
-      "ttsHash": "5bc362b1a5070cde4de2b944c5615206ddaf6512d893a8c9e812b2c89562452d",
-      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/5b/5bc362b1a5070cde4de2b944c5615206ddaf6512d893a8c9e812b2c89562452d.mp3",
+      "ttsHash": "53c709cfb9f58612a1a0f3e9fc3a8e435c9c58b19bf612ac263e34d704316d31",
+      "ttsAudioUrl": "https://pub-f6af11ad7b604bbf9450247911014ab7.r2.dev/audio/53/53c709cfb9f58612a1a0f3e9fc3a8e435c9c58b19bf612ac263e34d704316d31.mp3",
       "ttsVoiceName": "cmn-CN-Standard-A",
-      "ttsCharCount": 93
+      "ttsCharCount": 89
     },
     {
       "id": "msg-1325",
@@ -459981,6 +459919,62 @@
       "position": 332,
       "messageIndex": 332,
       "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/2476fb0a8ef1aaf6f08981d0d5e19e73f17e8cf6dae30acbf3f4825ab0565f4e?t=1780105735010"
+    },
+    {
+      "id": "bg-event-1795877602223",
+      "messageId": "msg-534",
+      "position": 533,
+      "messageIndex": 533,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/8b6413381998f6808d8b0fe5f5a1f5a89625f69e35223f73ee2a70d19f3df0bd?t=1780807908383"
+    },
+    {
+      "id": "bg-event-1795877751624",
+      "messageId": "msg-766",
+      "position": 765,
+      "messageIndex": 765,
+      "url": "https://storage.ccfolia-cdn.net/users/lWJ5sP1WgvUG5imUb88oC49iJP13/files/d117b98dfad37cd31d2f478bcbe12dc2e06e2ff09b429539682a59e21f3d8dbe?t=1758826626869"
+    },
+    {
+      "id": "bg-event-1795878048855",
+      "messageId": "msg-909",
+      "position": 908,
+      "messageIndex": 908,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/772d73f88b72aba13d33db89ed9f81b47a03ebd5a791bd6d9f0eddabde4ffafb?t=1795878036549"
+    },
+    {
+      "id": "bg-event-1795878145227",
+      "messageId": "msg-974",
+      "position": 973,
+      "messageIndex": 973,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/60c99e6762a5b21fb3ff7fc39940e8899dfae0a31a06efd4232f8b977d937b52?t=1780809507420"
+    },
+    {
+      "id": "bg-event-1795878310959",
+      "messageId": "msg-981",
+      "position": 979,
+      "messageIndex": 979,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/d7083be804554309b1ec288bccbda5199ed7f5010a726475cb0a49fd88fad477?t=1781090607318"
+    },
+    {
+      "id": "bg-event-1795878342813",
+      "messageId": "msg-1089",
+      "position": 1087,
+      "messageIndex": 1087,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/ca3bdfaabca01d8664b4be3735086d0592baae1a49072164c2ac48c045857a0e?t=1784727224082"
+    },
+    {
+      "id": "bg-event-1795878568794",
+      "messageId": "msg-1323",
+      "position": 1321,
+      "messageIndex": 1321,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bdf9662688723ae76b47617a5eb0f89a8bfef49cf255b5aa6ab4d54ebf098012?t=1780752673475"
+    },
+    {
+      "id": "bg-event-1795878685653",
+      "messageId": "msg-1435",
+      "position": 1433,
+      "messageIndex": 1433,
+      "url": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/ca3bdfaabca01d8664b4be3735086d0592baae1a49072164c2ac48c045857a0e?t=1784727224082"
     }
   ],
   "foregroundEvents": [],
@@ -460051,245 +460045,245 @@
     },
     {
       "name": "阿比盖尔·莱特与神坛",
-      "position": 925,
+      "position": 924,
       "id": "msg-925",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/ca3bdfaabca01d8664b4be3735086d0592baae1a49072164c2ac48c045857a0e?t=1780809378372",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "麦卡利斯塔大楼的记录",
-      "position": 1322,
+      "position": 1320,
       "id": "msg-1322",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/0212cc28aa206e8ae1836d82979f479e759c0360216c989ca8bd63f2e90554a7?t=1781177320428",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "Daimonion",
-      "position": 1815,
+      "position": 1813,
       "id": "msg-1815",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/ca3bdfaabca01d8664b4be3735086d0592baae1a49072164c2ac48c045857a0e?t=1780809378372",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "夜",
-      "position": 2186,
+      "position": 2184,
       "id": "msg-2186",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/619993131be02c72ae43ac782e7adfee855b00ce9058597025b2ea62167d5822?t=1781260702188",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "波特城堡",
-      "position": 2607,
+      "position": 2605,
       "id": "msg-2607",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/1c93cf1e00b13365f4a0af228542c0a09bacf7dce4d575b3cc63bc4543bf4aeb?t=1781578726566",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "艺术人生",
-      "position": 2853,
+      "position": 2851,
       "id": "msg-2853",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/16ed02e1a26fd7368c38b3aeff142c1b1c75d6e19dd3a6df53ed6a9e0a2587fe?t=1781700288314",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "画作",
-      "position": 3015,
+      "position": 3013,
       "id": "msg-3015",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/19888d6a17d2ae3b46c3e547cef61afcd8cd0b61b9fbfeb6be3504543dfa1779?t=1781869309817",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "住户们",
-      "position": 3349,
+      "position": 3347,
       "id": "msg-3349",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/d104dfb115fb56e0b41ae55396d934666e1c29a54bac3b97eea07710f5d18ad9?t=1781869136551",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "答录机的留言",
-      "position": 3854,
+      "position": 3852,
       "id": "msg-3854",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/8a9276ed1ef2b173480dd1ad4537b9d6ff13342a1f63acc205717e98193a70f0?t=1782063192327",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "剧本书页",
-      "position": 4239,
+      "position": 4237,
       "id": "msg-4239",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/7c325f3aa1c539cd66811686e3e0ca5cc716e66a8d9458d5a82209401fa62bf1?t=1781260278629",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "楼上",
-      "position": 4725,
+      "position": 4723,
       "id": "msg-4741",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/619993131be02c72ae43ac782e7adfee855b00ce9058597025b2ea62167d5822?t=1781260702188",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "肖恩·莱特",
-      "position": 5079,
+      "position": 5077,
       "id": "msg-5095",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/cd6e99ad0aa530eb4a069420ba3dc8f395e46193032ef01b5856db002cdf2139?t=1782128652746",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "塔罗牌",
-      "position": 5644,
+      "position": 5642,
       "id": "msg-5660",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/3774d763da6c733426f6a03bc31e986dd8a45221745189cf19bea00a99afeef6?t=1781012016921",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "我曾见过黄印",
-      "position": 6137,
+      "position": 6135,
       "id": "msg-6153",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/ca3bdfaabca01d8664b4be3735086d0592baae1a49072164c2ac48c045857a0e?t=1780809378372",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "无门之界",
-      "position": 6463,
+      "position": 6461,
       "id": "msg-6479",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/452ec9b5412b259bceb86c611dc19af37b8c22995d50df0603583e0bcdcb39b4?t=1783104476701",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "吸烟室",
-      "position": 6789,
+      "position": 6787,
       "id": "msg-6805",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46f0b9663fc67f4e72cd1cf62fc7d3ff112ede95a7f76c2fb5db6bb77d3a9084?t=1780310279956"
     },
     {
       "name": "夜班经理",
-      "position": 7209,
+      "position": 7207,
       "id": "msg-7225",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/08faa88e137fb8bba55f3b221c88e8da968bd06b4aecb60d3ec66f735c07cc68?t=1782933175535",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "夜间楼层",
-      "position": 7452,
+      "position": 7450,
       "id": "msg-7468",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/716a1923b714e51e57f7bd906095ada305f73724667c0b75b894b4447296b6be?t=1782932475644",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "检索",
-      "position": 8279,
+      "position": 8277,
       "id": "msg-8295",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/93234b9e8a1c9fe0e388789a077a9b94751592d2ae0f442eeb44b9dbb875f513?t=1781266341282",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "布里斯托尔行动",
-      "position": 8715,
+      "position": 8713,
       "id": "msg-8731",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/0212cc28aa206e8ae1836d82979f479e759c0360216c989ca8bd63f2e90554a7?t=1781177320428",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "瓷偶",
-      "position": 8963,
+      "position": 8961,
       "id": "msg-8979",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/60c99e6762a5b21fb3ff7fc39940e8899dfae0a31a06efd4232f8b977d937b52?t=1780809507420",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "图纸",
-      "position": 9176,
+      "position": 9174,
       "id": "msg-9192",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/ca3bdfaabca01d8664b4be3735086d0592baae1a49072164c2ac48c045857a0e?t=1784727224082",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "30-08-1895",
-      "position": 9550,
+      "position": 9548,
       "id": "msg-9566",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/7c325f3aa1c539cd66811686e3e0ca5cc716e66a8d9458d5a82209401fa62bf1?t=1781260278629",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "The Night Floors",
-      "position": 10091,
+      "position": 10089,
       "id": "msg-10107",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/716a1923b714e51e57f7bd906095ada305f73724667c0b75b894b4447296b6be?t=1782932475644",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "我的瓶子在哪？",
-      "position": 10424,
+      "position": 10422,
       "id": "msg-10440",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/716a1923b714e51e57f7bd906095ada305f73724667c0b75b894b4447296b6be?t=1782932475644",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "金甲虫",
-      "position": 10757,
+      "position": 10755,
       "id": "msg-10773",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/716a1923b714e51e57f7bd906095ada305f73724667c0b75b894b4447296b6be?t=1782932475644",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "争吵",
-      "position": 11159,
+      "position": 11157,
       "id": "msg-11175",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/619993131be02c72ae43ac782e7adfee855b00ce9058597025b2ea62167d5822?t=1781260702188",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/31eed48e5e79240433871e8d77a8b0133341cccad9fc8b866c36673f33ff1004?t=1782746573558"
     },
     {
       "name": "梦",
-      "position": 11410,
+      "position": 11408,
       "id": "msg-11426",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/e4b5fe2c4355536851a14284e5fdc3c92b395a82e486406ce2b239d49832d00f?t=1785841450478",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46bc43f02d1ad4fccda5ea4de96fe33ff389b229de5985855bf08c8836c5b8ef?t=1785841025724"
     },
     {
       "name": "芝加哥",
-      "position": 11623,
+      "position": 11621,
       "id": "msg-11638",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/9dbb656bdc832b8f53e5d904ea2c4e5389ba0407bc300721140f9a8ed317c987?t=1786602617779",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46bc43f02d1ad4fccda5ea4de96fe33ff389b229de5985855bf08c8836c5b8ef?t=1785841025724"
     },
     {
       "name": "夜幕降临",
-      "position": 11974,
+      "position": 11972,
       "id": "msg-11989",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/452ec9b5412b259bceb86c611dc19af37b8c22995d50df0603583e0bcdcb39b4?t=1783104476701",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46bc43f02d1ad4fccda5ea4de96fe33ff389b229de5985855bf08c8836c5b8ef?t=1785841025724"
     },
     {
       "name": "Flesh Tonight or",
-      "position": 12484,
+      "position": 12482,
       "id": "msg-12499",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/716a1923b714e51e57f7bd906095ada305f73724667c0b75b894b4447296b6be?t=1782932475644",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bd3f59a4790e7ad69363f0792d19486d586b1d25ae49d33dc1763aa0d59202aa?t=1782019246917"
     },
     {
       "name": "舞台道具",
-      "position": 12892,
+      "position": 12890,
       "id": "msg-12907",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/8aeb9d7c30aa7b79405303eb53da8c9ddd6f9d4242080937a5b8ee492d4f3094?t=1786693877522",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/bd3f59a4790e7ad69363f0792d19486d586b1d25ae49d33dc1763aa0d59202aa?t=1782019246917"
     },
     {
       "name": "书店",
-      "position": 13353,
+      "position": 13351,
       "id": "msg-13368",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/3774d763da6c733426f6a03bc31e986dd8a45221745189cf19bea00a99afeef6?t=1781012016921",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/46bc43f02d1ad4fccda5ea4de96fe33ff389b229de5985855bf08c8836c5b8ef?t=1785841025724"
     },
     {
       "name": "不可思议的风景",
-      "position": 13880,
+      "position": 13878,
       "id": "msg-13895",
       "backgroundImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/d6cf658361e59376573a87848047a1b2c446fe2980d04f7b97fa267eee61ce92?t=1786699560533",
       "rightImage": "https://storage.ccfolia-cdn.net/users/kHHA9H02fTgN201ubbqLFRvxuX12/files/fb740987b2a1fe3c4dc9de84b950ab8c4b8a525d7d3a17ea83efeeef243c1b94?t=1786821860722"
     },
     {
       "name": "幕间",
-      "position": 14054,
+      "position": 14052,
       "id": "msg-14069",
       "backgroundImage": "",
       "rightImage": ""
@@ -460883,8 +460877,8 @@
     "bubbleImageOpacity": 1
   },
   "meta": {
-    "exportedAt": "2026-11-28T14:40:10.415Z",
-    "totalMessages": 14794,
+    "exportedAt": "2026-11-28T15:14:17.347Z",
+    "totalMessages": 14792,
     "version": "8.0",
     "features": [
       "image-backgrounds",
