@@ -826,7 +826,7 @@
             height: calc(var(--vn-dialog-height) * 0.3);  /* 总高度 = 对话框高度 40% */
             width: auto;                                   /* 宽度按原比例 */
             right: 12px;
-            z-index: 3;
+            z-index: 2;                                    /* 高于对话框(1)，低于顶栏/章节菜单(3) */
             object-fit: contain;
             pointer-events: none;
             display: none;
