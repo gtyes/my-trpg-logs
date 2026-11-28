@@ -3311,19 +3311,6 @@
                                     <button type="button" class="secondary" @click="setAllTtsRolesEnabled(false)">全部禁用</button>
                                     <button type="button" class="secondary" @click="exportTtsRoleConfig">导出语音配置</button>
                                     <button type="button" class="secondary" @click="openTtsRoleConfigImport">导入语音配置</button>
-                                    <button type="button" class="warning" @click="scanTtsMessages"
-                                        :disabled="ttsScanning">
-                                        {{ ttsScanning ? '扫描中…' : '扫描待生成内容' }}
-                                    </button>
-                                    <button type="button" class="success" @click="exportTtsTasks"
-                                        title="首次选择仓库的 .tts-output 文件夹；之后直接合并未完成任务到 tasks.json"
-                                        :disabled="ttsScanning || !ttsTasks.length || (ttsScanSummary && ttsScanSummary.limitExceeded)">
-                                        导出并更新任务清单
-                                    </button>
-                                    <button v-if="ttsExportPayload" type="button" class="secondary"
-                                        @click="downloadPreparedTtsTasks">
-                                        下载任务清单
-                                    </button>
                                 </div>
 
                                 <input ref="ttsRoleConfigFileInput" type="file" accept=".json,application/json"
@@ -3421,35 +3408,6 @@
                                     </div>
                                 </div>
 
-                                <div v-if="ttsScanSummary" class="tts-summary">
-                                    <strong>扫描结果</strong>
-                                    <div>
-                                        参与角色 {{ ttsScanSummary.roleCount }} 个；
-                                        符合条件 {{ ttsScanSummary.messageCount.toLocaleString() }} 条；
-                                        去重待生成 {{ ttsScanSummary.taskCount.toLocaleString() }} 条；
-                                        待生成字符 {{ ttsScanSummary.pendingCharacters.toLocaleString() }}；
-                                        预计 {{ ttsScanSummary.estimatedMinutes }} 分钟 / {{ ttsScanSummary.estimatedSizeMb }} MB
-                                    </div>
-                                    <div>
-                                        月度预算使用约 {{ ttsScanSummary.budgetPercent }}%
-                                        （{{ ttsScanSummary.projectedMonthlyCharacters.toLocaleString() }} /
-                                        {{ ttsScanSummary.monthlyBudgetChars.toLocaleString() }}）
-                                    </div>
-                                    <div v-if="ttsScanSummary.limitExceeded" style="color:#b42318;font-weight:bold;">
-                                        超出月度预算，不能导出任务。
-                                    </div>
-                                    <details v-if="ttsScanSummary.byRole.length || ttsScanSummary.byChannel.length"
-                                        style="margin-top:6px;">
-                                        <summary>按角色 / 频道查看统计</summary>
-                                        <ul>
-                                            <li v-for="item in ttsScanSummary.byRole" :key="'tts-stat-role-' + item.name">
-                                                {{ item.name }}：{{ item.messages }} 条，{{ item.characters.toLocaleString() }} 字符
-                                            </li>
-                                            <li v-for="item in ttsScanSummary.byChannel" :key="'tts-stat-channel-' + item.name">
-                                                频道 {{ item.name }}：{{ item.messages }} 条，{{ item.characters.toLocaleString() }} 字符
-                                            </li>
-                                        </ul>
-                                    </details>
                                 </div>
                             </div>
 
@@ -3508,13 +3466,26 @@
                             <button type="button" class="secondary" @click="authorizeTtsOutputDirectory">
                                 选择/授权任务文件夹
                             </button>
-                            <button type="button" class="secondary" @click="openTtsManifestImport"
-                                title="首次选择 .tts-output 文件夹，之后直接导入其中的 manifest.json">
-                                导入语音清单
+                            <button type="button" class="warning" @click="scanTtsMessages"
+                                :disabled="ttsScanning">
+                                {{ ttsScanning ? '扫描中…' : '扫描待生成内容' }}
+                            </button>
+                            <button type="button" class="success" @click="exportTtsTasks"
+                                title="首次选择仓库的 .tts-output 文件夹；之后直接合并未完成任务到 tasks.json"
+                                :disabled="ttsScanning || !ttsTasks.length || (ttsScanSummary && ttsScanSummary.limitExceeded)">
+                                更新任务清单
+                            </button>
+                            <button v-if="ttsExportPayload" type="button" class="secondary"
+                                @click="downloadPreparedTtsTasks">
+                                下载任务清单
                             </button>
                             <button type="button" class="success" @click="startTtsGeneration"
                                 :disabled="ttsGenerationRunning">
                                 {{ ttsGenerationRunning ? '正在生成…' : '生成语音并上传 R2' }}
+                            </button>
+                            <button type="button" class="secondary" @click="openTtsManifestImport"
+                                title="首次选择 .tts-output 文件夹，之后直接导入其中的 manifest.json">
+                                导入语音清单
                             </button>
                         </div>
                         <input ref="ttsManifestFileInput" type="file" accept=".json,application/json"
@@ -6928,15 +6899,22 @@
                 let directoryPermissionError = '';
                 if (this.ttsManifestDirectoryHandle && this.ttsManifestDirectoryReady) {
                     try {
-                        const permission = await this.ttsManifestDirectoryHandle.queryPermission({ mode: 'readwrite' });
+                        let permission = await this.ttsManifestDirectoryHandle.queryPermission({ mode: 'readwrite' });
+                        if (permission !== 'granted') {
+                            permission = await this.ttsManifestDirectoryHandle.requestPermission({ mode: 'readwrite' });
+                        }
                         if (permission === 'granted') {
                             directoryHandle = this.ttsManifestDirectoryHandle;
                         } else {
-                            directoryPermissionError = '任务文件夹尚未获得读写授权。';
+                            directoryPermissionError = '任务文件夹未获得读写权限，请先点击“选择/授权任务文件夹”。';
                         }
                     } catch (error) {
-                        directoryPermissionError = error.message;
-                        console.error('检查 TTS 输出目录权限失败:', error);
+                        if (error && error.name === 'AbortError') {
+                            directoryPermissionError = '任务文件夹授权已取消，请先点击“选择/授权任务文件夹”。';
+                        } else {
+                            directoryPermissionError = error.message;
+                            console.error('检查 TTS 输出目录权限失败:', error);
+                        }
                     }
                 }
 
