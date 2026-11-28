@@ -3408,7 +3408,6 @@
                                     </div>
                                 </div>
 
-                                </div>
                             </div>
 
                         </div>
@@ -3487,6 +3486,36 @@
                                 title="首次选择 .tts-output 文件夹，之后直接导入其中的 manifest.json">
                                 导入语音清单
                             </button>
+                        </div>
+                        <div v-if="ttsScanSummary" class="tts-summary">
+                            <strong>扫描结果</strong>
+                            <div>
+                                参与角色 {{ ttsScanSummary.roleCount }} 个；
+                                符合条件 {{ ttsScanSummary.messageCount.toLocaleString() }} 条；
+                                去重待生成 {{ ttsScanSummary.taskCount.toLocaleString() }} 条；
+                                待生成字符 {{ ttsScanSummary.pendingCharacters.toLocaleString() }}；
+                                预计 {{ ttsScanSummary.estimatedMinutes }} 分钟 / {{ ttsScanSummary.estimatedSizeMb }} MB
+                            </div>
+                            <div>
+                                月度预算使用约 {{ ttsScanSummary.budgetPercent }}%
+                                （{{ ttsScanSummary.projectedMonthlyCharacters.toLocaleString() }} /
+                                {{ ttsScanSummary.monthlyBudgetChars.toLocaleString() }}）
+                            </div>
+                            <div v-if="ttsScanSummary.limitExceeded" style="color:#b42318;font-weight:bold;">
+                                超出月度预算，无法更新任务清单。
+                            </div>
+                            <details v-if="ttsScanSummary.byRole.length || ttsScanSummary.byChannel.length"
+                                style="margin-top:6px;">
+                                <summary>按角色 / 频道查看统计</summary>
+                                <ul>
+                                    <li v-for="item in ttsScanSummary.byRole" :key="'tts-stat-role-' + item.name">
+                                        {{ item.name }}：{{ item.messages }} 条，{{ item.characters.toLocaleString() }} 字符
+                                    </li>
+                                    <li v-for="item in ttsScanSummary.byChannel" :key="'tts-stat-channel-' + item.name">
+                                        频道 {{ item.name }}：{{ item.messages }} 条，{{ item.characters.toLocaleString() }} 字符
+                                    </li>
+                                </ul>
+                            </details>
                         </div>
                         <input ref="ttsManifestFileInput" type="file" accept=".json,application/json"
                             @change="importTtsManifestFile" style="display:none;">
