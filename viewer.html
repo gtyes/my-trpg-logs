@@ -863,9 +863,10 @@
         }
 
         .vn-overlay.vn-theme-theater .vn-name {
-            color: #c9a227 !important;
+            color: #e8c95a !important;
             font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
             font-weight: 600;
+            font-size: 22px;
             letter-spacing: 0.12em;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
         }
@@ -4701,7 +4702,15 @@
         function applyVnOrnament() {
             const img = document.getElementById('vnDialogOrnament');
             if (!img) return;
-            const url = (logData && logData.websiteSettings && logData.websiteSettings.vnDialogCornerImage) || '';
+            const settings = (logData && logData.websiteSettings) || {};
+            const url = settings.vnDialogCornerImage || '';
+
+            // 上/下边缘位置：相对对话框上边缘，正=在上方，负=在下方
+            const topRaw = Number(settings.vnDialogOrnamentTop);
+            const bottomRaw = Number(settings.vnDialogOrnamentBottom);
+            const topOffset = Number.isFinite(topRaw) ? topRaw : 15;
+            const bottomOffset = Number.isFinite(bottomRaw) ? bottomRaw : -15;
+
             if (url && url.trim()) {
                 img.src = url.trim();
                 img.style.display = 'block';
@@ -4709,6 +4718,10 @@
                 img.removeAttribute('src');
                 img.style.display = 'none';
             }
+
+            // 上边缘到对话框上缘的距离；总高度 = 上边缘 - 下边缘
+            img.style.top = `calc(var(--vn-dialog-height) * ${-topOffset / 100})`;
+            img.style.height = `calc(var(--vn-dialog-height) * ${(topOffset - bottomOffset) / 100})`;
         }
 
         // 加载日志数据

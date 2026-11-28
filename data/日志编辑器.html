@@ -2865,6 +2865,20 @@
                                         </div>
                                         <input type="text" v-model="websiteSettings.vnDialogCornerImage"
                                             placeholder="装饰图 URL（透明 PNG）" style="width: 100%; box-sizing: border-box;">
+
+                                        <div class="default-setting-group" style="margin-top: 10px;">
+                                            <span class="default-setting-label">上边缘位置</span>
+                                            <input type="number" v-model.number="websiteSettings.vnDialogOrnamentTop"
+                                                min="-100" max="100" step="1" style="width: 70px;">
+                                            <span style="font-size: 12px;">% 相对对话框上缘，正=上方、负=下方</span>
+                                        </div>
+
+                                        <div class="default-setting-group" style="margin-top: 6px;">
+                                            <span class="default-setting-label">下边缘位置</span>
+                                            <input type="number" v-model.number="websiteSettings.vnDialogOrnamentBottom"
+                                                min="-100" max="100" step="1" style="width: 70px;">
+                                            <span style="font-size: 12px;">% 相对对话框上缘，正=上方、负=下方</span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -4351,7 +4365,9 @@
                     },
                     rightFloatingImage: '',
                     vnDialogTheme: 'default',
-                    vnDialogCornerImage: ''
+                    vnDialogCornerImage: '',
+                    vnDialogOrnamentTop: 15,
+                    vnDialogOrnamentBottom: -15
                 },
 
                 // 对话模式对话框风格选项（带预览）
@@ -8943,7 +8959,9 @@ autoImportCharacterColors() {
                             theme: { lightColor: '#8b0000', darkColor: '#660000' },
                             rightFloatingImage: '',
                             vnDialogTheme: 'default',
-                            vnDialogCornerImage: ''
+                            vnDialogCornerImage: '',
+                            vnDialogOrnamentTop: 15,
+                            vnDialogOrnamentBottom: -15
                         };
 
                         // 合并设置，确保所有字段都存在
@@ -8962,7 +8980,9 @@ autoImportCharacterColors() {
                             },
                             rightFloatingImage: parsedData.websiteSettings.rightFloatingImage || defaultWebsiteSettings.rightFloatingImage,
                             vnDialogTheme: parsedData.websiteSettings.vnDialogTheme || defaultWebsiteSettings.vnDialogTheme,
-                            vnDialogCornerImage: parsedData.websiteSettings.vnDialogCornerImage || defaultWebsiteSettings.vnDialogCornerImage
+                            vnDialogCornerImage: parsedData.websiteSettings.vnDialogCornerImage || defaultWebsiteSettings.vnDialogCornerImage,
+                            vnDialogOrnamentTop: parsedData.websiteSettings.vnDialogOrnamentTop ?? defaultWebsiteSettings.vnDialogOrnamentTop,
+                            vnDialogOrnamentBottom: parsedData.websiteSettings.vnDialogOrnamentBottom ?? defaultWebsiteSettings.vnDialogOrnamentBottom
                         };
 
                         // 确保 titleColors 与标题长度匹配
@@ -10439,7 +10459,9 @@ autoImportCharacterColors() {
                         },
                         rightFloatingImage: this.websiteSettings.rightFloatingImage,
                         vnDialogTheme: this.websiteSettings.vnDialogTheme || 'default',
-                        vnDialogCornerImage: this.websiteSettings.vnDialogCornerImage || ''
+                        vnDialogCornerImage: this.websiteSettings.vnDialogCornerImage || '',
+                        vnDialogOrnamentTop: this.websiteSettings.vnDialogOrnamentTop ?? 15,
+                        vnDialogOrnamentBottom: this.websiteSettings.vnDialogOrnamentBottom ?? -15
                     },
 
                     // 导出章节数据（包含图片URL）
