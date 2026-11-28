@@ -2857,6 +2857,15 @@
                                             <div class="vn-dialog-theme-label">{{ option.label }}</div>
                                         </div>
                                     </div>
+
+                                    <div style="margin-top: 14px;">
+                                        <div class="format-setting-title" style="margin-bottom: 6px;">对话框右上角装饰图（可选）</div>
+                                        <div style="font-size: 12px; color: #666; margin-bottom: 6px;">
+                                            透明 PNG 会固定在对话框右上角并部分交叠；留空则不显示。
+                                        </div>
+                                        <input type="text" v-model="websiteSettings.vnDialogCornerImage"
+                                            placeholder="装饰图 URL（透明 PNG）" style="width: 100%; box-sizing: border-box;">
+                                    </div>
                                 </div>
 
                                 <button @click="saveWebsiteSettings" class="success">保存网站设置</button>
@@ -4341,7 +4350,8 @@
                         darkColor: '#660000'
                     },
                     rightFloatingImage: '',
-                    vnDialogTheme: 'default'
+                    vnDialogTheme: 'default',
+                    vnDialogCornerImage: ''
                 },
 
                 // 对话模式对话框风格选项（带预览）
@@ -8932,7 +8942,8 @@ autoImportCharacterColors() {
                             leftSidebar: { useImage: false, image: '', color: '#000000', opacity: 0.6 },
                             theme: { lightColor: '#8b0000', darkColor: '#660000' },
                             rightFloatingImage: '',
-                            vnDialogTheme: 'default'
+                            vnDialogTheme: 'default',
+                            vnDialogCornerImage: ''
                         };
 
                         // 合并设置，确保所有字段都存在
@@ -8950,7 +8961,8 @@ autoImportCharacterColors() {
                                 darkColor: parsedData.websiteSettings.theme?.darkColor || defaultWebsiteSettings.theme.darkColor
                             },
                             rightFloatingImage: parsedData.websiteSettings.rightFloatingImage || defaultWebsiteSettings.rightFloatingImage,
-                            vnDialogTheme: parsedData.websiteSettings.vnDialogTheme || defaultWebsiteSettings.vnDialogTheme
+                            vnDialogTheme: parsedData.websiteSettings.vnDialogTheme || defaultWebsiteSettings.vnDialogTheme,
+                            vnDialogCornerImage: parsedData.websiteSettings.vnDialogCornerImage || defaultWebsiteSettings.vnDialogCornerImage
                         };
 
                         // 确保 titleColors 与标题长度匹配
@@ -10426,7 +10438,8 @@ autoImportCharacterColors() {
                             darkColor: this.websiteSettings.theme.darkColor
                         },
                         rightFloatingImage: this.websiteSettings.rightFloatingImage,
-                        vnDialogTheme: this.websiteSettings.vnDialogTheme || 'default'
+                        vnDialogTheme: this.websiteSettings.vnDialogTheme || 'default',
+                        vnDialogCornerImage: this.websiteSettings.vnDialogCornerImage || ''
                     },
 
                     // 导出章节数据（包含图片URL）

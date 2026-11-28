@@ -818,6 +818,20 @@
             color: rgba(255, 255, 255, 0.45);
         }
 
+        /* 对话框右上角装饰图（透明 PNG，部分交叠出对话框） */
+        .vn-dialog-ornament {
+            position: absolute;
+            top: -46px;
+            right: 10px;
+            z-index: 3;
+            max-width: 260px;
+            max-height: 110px;
+            object-fit: contain;
+            pointer-events: none;
+            display: none;
+            filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4));
+        }
+
         /* ========== 对话主题皮肤 ========== */
         /* 主题 C · 黄衣剧院（黄衣之王） */
         .vn-overlay.vn-theme-theater .vn-dialog {
@@ -2188,6 +2202,9 @@
                 <div class="vn-extend" id="vnExtend"></div>
                 <div class="vn-hint" id="vnHint">点击继续 / 空格</div>
             </div>
+
+            <img class="vn-dialog-ornament" id="vnDialogOrnament" alt=""
+                onerror="this.style.display='none'">
         </div>
 
         <!-- 章节卡移到这里，才能铺满整个 vnOverlay -->
@@ -4677,6 +4694,19 @@
             applyVnTheme(theme);
         }
 
+        function applyVnOrnament() {
+            const img = document.getElementById('vnDialogOrnament');
+            if (!img) return;
+            const url = (logData && logData.websiteSettings && logData.websiteSettings.vnDialogCornerImage) || '';
+            if (url && url.trim()) {
+                img.src = url.trim();
+                img.style.display = 'block';
+            } else {
+                img.removeAttribute('src');
+                img.style.display = 'none';
+            }
+        }
+
         // 加载日志数据
         async function loadLogData() {
             try {
@@ -4691,6 +4721,7 @@
                 logData = await response.json();
                 console.log('日志数据加载成功，消息数:', (logData.logs || []).length);
                 initVnTheme();
+                applyVnOrnament();
 
                 // 设置标题
                 document.title = logData.title || logData.websiteSettings?.title || '';
